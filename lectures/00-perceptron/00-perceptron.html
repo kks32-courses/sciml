@@ -424,9 +424,9 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version-of-bingham-model">PyTorch version of Bingham Model</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2-bingham-model-only-shear-strain-rate-dot-gamma-input">PyTorch Example 2: Bingham model (only shear strain rate <span class="math notranslate nohighlight">\(\dot{\gamma}\)</span> input)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2-bingham-with-3-input-parameters-dot-gamma-tau-y-mu">PyTorch Example #2: Bingham with 3 input parameters (<span class="math notranslate nohighlight">\(\dot{\gamma}, \tau_y, \mu\)</span>)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3-a-non-linear-herschel-bulkley-model">PyTorch Example #3: A non-linear Herschel-Bulkley model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-1">PyTorch Example #1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2">PyTorch Example #2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3:</a></li>
 </ul>
             </nav>
         </div>
@@ -750,7 +750,7 @@ every single neural network and that’s going to be just a single neuron and in
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/37f3fe1a1b7c9e3b44081780fdac6a9f6e6490e373f237bf1c5697a8b645dfef.png" src="../../_images/37f3fe1a1b7c9e3b44081780fdac6a9f6e6490e373f237bf1c5697a8b645dfef.png" />
+<img alt="../../_images/406f1e856360ad1e1e20efcee83c0fccd6195c730dd7c367519976cf1c0763b7.png" src="../../_images/406f1e856360ad1e1e20efcee83c0fccd6195c730dd7c367519976cf1c0763b7.png" />
 </div>
 </div>
 </section>
@@ -783,7 +783,7 @@ every single neural network and that’s going to be just a single neuron and in
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/45bd0f7432e6a46c5f2ad90d340e15f43c72f9175172bdd6239e278fff9ebdaf.png" src="../../_images/45bd0f7432e6a46c5f2ad90d340e15f43c72f9175172bdd6239e278fff9ebdaf.png" />
+<img alt="../../_images/c5c685f15600cd0d4a866c6b5e77fe0f786e35835b6f64002485fea9c26c2b4e.png" src="../../_images/c5c685f15600cd0d4a866c6b5e77fe0f786e35835b6f64002485fea9c26c2b4e.png" />
 </div>
 </div>
 <p>So, what went wrong? Our predictions do not match the true Bingham model. We have not actually trained the neural network.</p>
@@ -890,6 +890,20 @@ $<span class="math notranslate nohighlight">\(\frac{\partial \text{loss}}{\parti
     <span class="c1"># Update weights using gradient descent</span>
     <span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_weights</span>
     <span class="n">bias</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_bias</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/numpy/core/_methods.py:118: RuntimeWarning: overflow encountered in reduce
+  ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
+/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:10: RuntimeWarning: overflow encountered in square
+  loss = ((y_pred - y_true) ** 2).mean()
+/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:13: RuntimeWarning: overflow encountered in multiply
+  grad_output = 2 * (y_pred - y_true) / num_samples
+/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:18: RuntimeWarning: invalid value encountered in subtract
+  weights -= learning_rate * grad_weights
+/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:19: RuntimeWarning: invalid value encountered in scalar subtract
+  bias -= learning_rate * grad_bias
 </pre></div>
 </div>
 </div>
@@ -1209,42 +1223,42 @@ input[type=range].anim-slider {
 </style>
 
 <div class="animation">
-  <img id="_anim_img0b7f75159ac14761b0fff0bffab85b19">
+  <img id="_anim_imge4b85fa6456447f9af0597e1ccba5eb3">
   <div class="anim-controls">
-    <input id="_anim_slider0b7f75159ac14761b0fff0bffab85b19" type="range" class="anim-slider"
+    <input id="_anim_slidere4b85fa6456447f9af0597e1ccba5eb3" type="range" class="anim-slider"
            name="points" min="0" max="1" step="1" value="0"
-           oninput="anim0b7f75159ac14761b0fff0bffab85b19.set_frame(parseInt(this.value));">
+           oninput="anime4b85fa6456447f9af0597e1ccba5eb3.set_frame(parseInt(this.value));">
     <div class="anim-buttons">
-      <button title="Decrease speed" aria-label="Decrease speed" onclick="anim0b7f75159ac14761b0fff0bffab85b19.slower()">
+      <button title="Decrease speed" aria-label="Decrease speed" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.slower()">
           <i class="fa fa-minus"></i></button>
-      <button title="First frame" aria-label="First frame" onclick="anim0b7f75159ac14761b0fff0bffab85b19.first_frame()">
+      <button title="First frame" aria-label="First frame" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.first_frame()">
         <i class="fa fa-fast-backward"></i></button>
-      <button title="Previous frame" aria-label="Previous frame" onclick="anim0b7f75159ac14761b0fff0bffab85b19.previous_frame()">
+      <button title="Previous frame" aria-label="Previous frame" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.previous_frame()">
           <i class="fa fa-step-backward"></i></button>
-      <button title="Play backwards" aria-label="Play backwards" onclick="anim0b7f75159ac14761b0fff0bffab85b19.reverse_animation()">
+      <button title="Play backwards" aria-label="Play backwards" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.reverse_animation()">
           <i class="fa fa-play fa-flip-horizontal"></i></button>
-      <button title="Pause" aria-label="Pause" onclick="anim0b7f75159ac14761b0fff0bffab85b19.pause_animation()">
+      <button title="Pause" aria-label="Pause" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.pause_animation()">
           <i class="fa fa-pause"></i></button>
-      <button title="Play" aria-label="Play" onclick="anim0b7f75159ac14761b0fff0bffab85b19.play_animation()">
+      <button title="Play" aria-label="Play" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.play_animation()">
           <i class="fa fa-play"></i></button>
-      <button title="Next frame" aria-label="Next frame" onclick="anim0b7f75159ac14761b0fff0bffab85b19.next_frame()">
+      <button title="Next frame" aria-label="Next frame" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.next_frame()">
           <i class="fa fa-step-forward"></i></button>
-      <button title="Last frame" aria-label="Last frame" onclick="anim0b7f75159ac14761b0fff0bffab85b19.last_frame()">
+      <button title="Last frame" aria-label="Last frame" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.last_frame()">
           <i class="fa fa-fast-forward"></i></button>
-      <button title="Increase speed" aria-label="Increase speed" onclick="anim0b7f75159ac14761b0fff0bffab85b19.faster()">
+      <button title="Increase speed" aria-label="Increase speed" onclick="anime4b85fa6456447f9af0597e1ccba5eb3.faster()">
           <i class="fa fa-plus"></i></button>
     </div>
-    <form title="Repetition mode" aria-label="Repetition mode" action="#n" name="_anim_loop_select0b7f75159ac14761b0fff0bffab85b19"
+    <form title="Repetition mode" aria-label="Repetition mode" action="#n" name="_anim_loop_selecte4b85fa6456447f9af0597e1ccba5eb3"
           class="anim-state">
-      <input type="radio" name="state" value="once" id="_anim_radio1_0b7f75159ac14761b0fff0bffab85b19"
+      <input type="radio" name="state" value="once" id="_anim_radio1_e4b85fa6456447f9af0597e1ccba5eb3"
              >
-      <label for="_anim_radio1_0b7f75159ac14761b0fff0bffab85b19">Once</label>
-      <input type="radio" name="state" value="loop" id="_anim_radio2_0b7f75159ac14761b0fff0bffab85b19"
+      <label for="_anim_radio1_e4b85fa6456447f9af0597e1ccba5eb3">Once</label>
+      <input type="radio" name="state" value="loop" id="_anim_radio2_e4b85fa6456447f9af0597e1ccba5eb3"
              checked>
-      <label for="_anim_radio2_0b7f75159ac14761b0fff0bffab85b19">Loop</label>
-      <input type="radio" name="state" value="reflect" id="_anim_radio3_0b7f75159ac14761b0fff0bffab85b19"
+      <label for="_anim_radio2_e4b85fa6456447f9af0597e1ccba5eb3">Loop</label>
+      <input type="radio" name="state" value="reflect" id="_anim_radio3_e4b85fa6456447f9af0597e1ccba5eb3"
              >
-      <label for="_anim_radio3_0b7f75159ac14761b0fff0bffab85b19">Reflect</label>
+      <label for="_anim_radio3_e4b85fa6456447f9af0597e1ccba5eb3">Reflect</label>
     </form>
   </div>
 </div>
@@ -1254,9 +1268,9 @@ input[type=range].anim-slider {
   /* Instantiate the Animation class. */
   /* The IDs given should match those used in the template above. */
   (function() {
-    var img_id = "_anim_img0b7f75159ac14761b0fff0bffab85b19";
-    var slider_id = "_anim_slider0b7f75159ac14761b0fff0bffab85b19";
-    var loop_select_id = "_anim_loop_select0b7f75159ac14761b0fff0bffab85b19";
+    var img_id = "_anim_imge4b85fa6456447f9af0597e1ccba5eb3";
+    var slider_id = "_anim_slidere4b85fa6456447f9af0597e1ccba5eb3";
+    var loop_select_id = "_anim_loop_selecte4b85fa6456447f9af0597e1ccba5eb3";
     var frames = new Array(21);
     
   frames[0] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAYAAAA10dzkAAAAOXRFWHRTb2Z0d2FyZQBNYXRwbG90\
@@ -9771,7 +9785,7 @@ AABJRU5ErkJggg==\
     /* set a timeout to make sure all the above elements are created before
        the object is initialized. */
     setTimeout(function() {
-        anim0b7f75159ac14761b0fff0bffab85b19 = new Animation(frames, img_id, slider_id, 200.0,
+        anime4b85fa6456447f9af0597e1ccba5eb3 = new Animation(frames, img_id, slider_id, 200.0,
                                  loop_select_id);
     }, 0);
   })()
@@ -9907,7 +9921,7 @@ AABJRU5ErkJggg==\
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/3cc742fdc007099616a202f45785320c982bb98942d288c1da35fed576e6432a.png" src="../../_images/3cc742fdc007099616a202f45785320c982bb98942d288c1da35fed576e6432a.png" />
+<img alt="../../_images/bd6ddb55538728530f63ae64d32122d5035318118b77dafefbbf45aa30b51f50.png" src="../../_images/bd6ddb55538728530f63ae64d32122d5035318118b77dafefbbf45aa30b51f50.png" />
 </div>
 </div>
 </section>
@@ -9966,8 +9980,11 @@ Bias: 5.00
 <p>That’s it! We now have a simple single layer neural network defined in PyTorch. To train it on data we need to loop through datasets, perform forward passes, compute loss, backpropagate and update weights.</p>
 </section>
 </section>
-<section id="pytorch-example-2-bingham-model-only-shear-strain-rate-dot-gamma-input">
-<h2>PyTorch Example 2: Bingham model (only shear strain rate <span class="math notranslate nohighlight">\(\dot{\gamma}\)</span> input)<a class="headerlink" href="#pytorch-example-2-bingham-model-only-shear-strain-rate-dot-gamma-input" title="Permalink to this heading">#</a></h2>
+<section id="pytorch-example-1">
+<h2>PyTorch Example #1<a class="headerlink" href="#pytorch-example-1" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><p>Bingham model (only shear strain rate <span class="math notranslate nohighlight">\(\dot{\gamma}\)</span> input)</p>
+</div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch version of NN for Bingham Plastic model</span>
@@ -10018,12 +10035,15 @@ Bias: 5.00
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/142a070498eafaf87ac37cd9848112dd597f27e68582bff96eaac2b6aeac18dc.png" src="../../_images/142a070498eafaf87ac37cd9848112dd597f27e68582bff96eaac2b6aeac18dc.png" />
+<img alt="../../_images/8d8055402e0312b4bb6f930218228d22c63aa4cd635c67f53472f0be8a437a01.png" src="../../_images/8d8055402e0312b4bb6f930218228d22c63aa4cd635c67f53472f0be8a437a01.png" />
 </div>
 </div>
 </section>
-<section id="pytorch-example-2-bingham-with-3-input-parameters-dot-gamma-tau-y-mu">
-<h2>PyTorch Example #2: Bingham with 3 input parameters (<span class="math notranslate nohighlight">\(\dot{\gamma}, \tau_y, \mu\)</span>)<a class="headerlink" href="#pytorch-example-2-bingham-with-3-input-parameters-dot-gamma-tau-y-mu" title="Permalink to this heading">#</a></h2>
+<section id="pytorch-example-2">
+<h2>PyTorch Example #2<a class="headerlink" href="#pytorch-example-2" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><p>Bingham with 3 input parameters (<span class="math notranslate nohighlight">\(\dot{\gamma}, \tau_y, \mu\)</span>)</p>
+</div></blockquote>
 <p>We now have three inputs (<span class="math notranslate nohighlight">\(\dot{\gamma}, \tau_y, \mu\)</span>) and predict the yield stress as the output. The main change other than the input is to define the network with 3 input layers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
@@ -10087,14 +10107,17 @@ Bias: 5.00
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/75eb1872eadcc7aedb9a70a1d324562d2fa9d87fa7b3810ec5021b3bbe0d13f6.png" src="../../_images/75eb1872eadcc7aedb9a70a1d324562d2fa9d87fa7b3810ec5021b3bbe0d13f6.png" />
+<img alt="../../_images/fab954e5094d0cdf2f8bfc693381a0934cedd6a71e109ce5102c2ed3c676c980.png" src="../../_images/fab954e5094d0cdf2f8bfc693381a0934cedd6a71e109ce5102c2ed3c676c980.png" />
 </div>
 </div>
 </section>
-<section id="pytorch-example-3-a-non-linear-herschel-bulkley-model">
-<h2>PyTorch Example #3: A non-linear Herschel-Bulkley model<a class="headerlink" href="#pytorch-example-3-a-non-linear-herschel-bulkley-model" title="Permalink to this heading">#</a></h2>
+<section id="pytorch-example-3">
+<h2>PyTorch Example #3:<a class="headerlink" href="#pytorch-example-3" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><p>A non-linear Herschel-Bulkley model</p>
+</div></blockquote>
 <p>Herschel-Bulkley model is a non-linear plastic model. We will try to fit the non-linear model by introducing additional hidden layer with 64 neurons.</p>
-<p><img alt="Herschel Bulkley" src="lectures/00-perceptron/herschel-bulkley.png" /></p>
+<p><img alt="Herschel Bulkley" src="../../_images/herschel-bulkley.png" /></p>
 <p>The PyTorch Neural Network requires four input parameters (<span class="math notranslate nohighlight">\(\nu, k, \dot{\gamma}, \tau_0)\)</span> and two hidden layers.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
@@ -10166,7 +10189,7 @@ Bias: 5.00
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/7bc47ec3e3140db278a6c22a65d8a5a94b7006d1da3ee580bd123557f3d623d5.png" src="../../_images/7bc47ec3e3140db278a6c22a65d8a5a94b7006d1da3ee580bd123557f3d623d5.png" />
+<img alt="../../_images/b18d1842920118bdc5d6260a65cef49533b6c18a56da95148dc9523911c38f42.png" src="../../_images/b18d1842920118bdc5d6260a65cef49533b6c18a56da95148dc9523911c38f42.png" />
 </div>
 </div>
 <blockquote>
@@ -10274,9 +10297,9 @@ Bias: 5.00
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version-of-bingham-model">PyTorch version of Bingham Model</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2-bingham-model-only-shear-strain-rate-dot-gamma-input">PyTorch Example 2: Bingham model (only shear strain rate <span class="math notranslate nohighlight">\(\dot{\gamma}\)</span> input)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2-bingham-with-3-input-parameters-dot-gamma-tau-y-mu">PyTorch Example #2: Bingham with 3 input parameters (<span class="math notranslate nohighlight">\(\dot{\gamma}, \tau_y, \mu\)</span>)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3-a-non-linear-herschel-bulkley-model">PyTorch Example #3: A non-linear Herschel-Bulkley model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-1">PyTorch Example #1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2">PyTorch Example #2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3:</a></li>
 </ul>
   </nav></div>
 
