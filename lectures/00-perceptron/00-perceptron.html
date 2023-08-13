@@ -383,10 +383,15 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-implementation">Perceptron implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Weights and biases</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
 </ul>
 </li>
@@ -405,6 +410,8 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="perceptron">
 <h1>Perceptron<a class="headerlink" href="#perceptron" title="Permalink to this heading">#</a></h1>
+<p>So let’s start now with just building from the ground up the fundamental building block of
+every single neural network and that’s going to be just a single neuron and in neural network language a single neuron is called a <code class="docutils literal notranslate"><span class="pre">perceptron</span></code>.</p>
 <p>The perceptron is a simple single layer neural network that takes an input vector <span class="math notranslate nohighlight">\(\boldsymbol{x} = [x_1, x_2, ..., x_n]\)</span>, multiplies it by a weight vector <span class="math notranslate nohighlight">\(\boldsymbol{w} = [w_1, w_2, ..., w_n]\)</span>, sums the weighted inputs, and passes the <span class="math notranslate nohighlight">\(\sum_i w_ix_i\)</span> added to a bias <span class="math notranslate nohighlight">\(w_0\)</span> as <span class="math notranslate nohighlight">\(z =  w_0 +  \sum_i w_ix_i\)</span>  through an activation function <span class="math notranslate nohighlight">\(g(z)\)</span> to produce an output <span class="math notranslate nohighlight">\(\hat{y}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[z = \mathrm{bias} + \mathrm{linear\_ combination\_ of \_ inputs}\]</div>
@@ -427,58 +434,251 @@ document.write(`
 <blockquote>
 <div><p>Credits: Alexander Amini, MIT</p>
 </div></blockquote>
+<section id="weights-and-biases">
+<h2>Weights and biases<a class="headerlink" href="#weights-and-biases" title="Permalink to this heading">#</a></h2>
+<p>The weights and biases are the parameters of the perceptron that allow it to learn complex mappings from inputs to outputs.</p>
+<p>The weights <span class="math notranslate nohighlight">\(w_i\)</span> determine how much influence each input <span class="math notranslate nohighlight">\(x_i\)</span> has on the output. Inputs with higher weights have a larger impact. The bias <span class="math notranslate nohighlight">\(b\)</span> allows the perceptron to shift the decision boundary away from the origin</p>
+<p>The input vector:</p>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{x} = [x_1, x_2, ..., x_n]\)</span></p>
+<p>The weight vector:</p>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{w} = [w_1, w_2, ..., w_n]\)</span></p>
+<p>Mathematically, the weighted sum is calculated as:</p>
+<p><span class="math notranslate nohighlight">\(z = \boldsymbol{w}^T\boldsymbol{x} = w_1 * x_1 + w_2 * x_2 + ... + w_n * x_n\)</span></p>
+<p>We then add the bias term <span class="math notranslate nohighlight">\(b\)</span> as:</p>
+<p><span class="math notranslate nohighlight">\(z = \boldsymbol{w}^T\boldsymbol{x} + b\)</span></p>
+<p>Where <span class="math notranslate nohighlight">\(z\)</span> is the pre-activation value before applying the nonlinear activation function.</p>
+<p>Here is a simple Numpy function that implements a perceptron:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+
+<span class="c1"># Perceptron function</span>
+<span class="k">def</span> <span class="nf">perceptron</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  
+  <span class="c1"># Calculate weighted sum</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span> 
+  <span class="k">return</span> <span class="n">z</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>      <span class="c1"># Example inputs   </span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">])</span>  <span class="c1"># Example weights </span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">1.0</span>                    <span class="c1"># Example bias    </span>
+
+<span class="c1"># Generate prediction</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">perceptron</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="c1"># Print prediction</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction: </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction: -6.000
+</pre></div>
+</div>
+</div>
+</div>
+<section id="nonlinear-activation-function">
+<h3>Nonlinear Activation Function<a class="headerlink" href="#nonlinear-activation-function" title="Permalink to this heading">#</a></h3>
+<p>Activation functions are an important component of artificial neural networks. They introduce non-linearity into the network, allowing it to learn complex patterns in data. Without activation functions, a neural network would essentially be just a linear regression model.</p>
+<p><img alt="Why we need activation functions" src="../../_images/why-activation.png" /></p>
+<blockquote>
+<div><p>Credits: Alexander Amini, MIT</p>
+</div></blockquote>
+<p>Some common activation functions include:</p>
+<p><strong>Sigmoid</strong></p>
+<p>The sigmoid function squashes the input into a range between 0 and 1, and is useful for models where we want to predict a probability as output. A downside is it can saturate and cause vanishing gradients.</p>
+<div class="math notranslate nohighlight">
+\[ \sigma(x) = \frac{1}{1 + e^{-x}} \]</div>
+<p>Use Sigmoid for binary classification problems where the output should be a probability between 0-1. Also useful as the output layer for multi-class classification.</p>
+<p><strong>Tanh</strong></p>
+<p>The tanh function squashes the input into a range between -1 and 1. It is a rescaled version of the sigmoid function. Like sigmoid, it can saturate.</p>
+<div class="math notranslate nohighlight">
+\[\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}} \]</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">Tanh</span></code> for models where you want your outputs centered around 0. Often used in recurrent neural networks.</p>
+<p>Here is some Python code to plot these activation functions using numpy and matplotlib:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># Sigmoid activation function</span>
+<span class="n">sigmoid</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+
+<span class="c1"># Tanh activation function</span>
+<span class="n">tanh</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span> 
+
+<span class="c1"># Plot the activation functions</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sigmoid</span><span class="p">,</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Sigmoid&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tanh</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Tanh&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Activation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Activation Functions&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/0aed8770172d02fc686ec625de81e6b327af735b02c8ba01547fa4f89d70323a.png" src="../../_images/0aed8770172d02fc686ec625de81e6b327af735b02c8ba01547fa4f89d70323a.png" />
+</div>
+</div>
+<p><strong>ReLU</strong> The Rectified Linear Unit (ReLU) thresholds the input at zero, returning 0 for negative values and the raw input for positive values. It helps avoid vanishing gradients and is computationally efficient. However, it has a problem with “dying” neurons if inputs are consistently negative. For example, if a neuron in the first layer learns weights that result in a negative input, it will output 0. In backpropagation, since the gradient of the ReLU function is 0 for negative inputs, this neuron will not update its weights. Over time it will not activate on any data and is considered “dead”.</p>
+<p>This limits the model capacity as neurons can effectively die and remain inactive for the rest of training. LeakyReLU solves this by having a small negative slope (e.g. 0.01x), so even when inputs are negative it will propagate some gradient to update weights.</p>
+<div class="math notranslate nohighlight">
+\[ f(x) = \max(0, x)\]</div>
+<p>Use ReLU for hidden layers in networks where your inputs are always positive. It trains faster than sigmoid/tanh.</p>
+<p><strong>LeakyReLU</strong></p>
+<p>The Leaky ReLU introduces a small slope (e.g. 0.01x) for negative values instead of threshholding at zero. This helps solve the “dying neuron” problem of ReLU units. The small negative slope avoids saturation while keeping gradients flowing even for negative regions.</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \max(\alpha x, x)\]</div>
+<p>Use LeakyReLU as a general purpose activation function that avoids both saturation and dying neurons.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># ReLU activation function</span>
+<span class="n">relu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># LeakyReLU activation function</span>
+<span class="n">leaky_relu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">0.1</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Plot the activation functions</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">relu</span><span class="p">,</span> <span class="s1">&#39;g--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ReLU&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">leaky_relu</span><span class="p">,</span> <span class="s1">&#39;r*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;LeakyReLU&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Activation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Activation Functions&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/921bfb0aeb0eb918e0e54d18f36883a27e3f461bef279c1858b3410b8144c92b.png" src="../../_images/921bfb0aeb0eb918e0e54d18f36883a27e3f461bef279c1858b3410b8144c92b.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="perceptron-implementation">
+<h2>Perceptron implementation<a class="headerlink" href="#perceptron-implementation" title="Permalink to this heading">#</a></h2>
+<p>Consider the following example of how a perceptron works. We have bias <span class="math notranslate nohighlight">\(b=1.0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{w} = [3; -2]\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\hat{y} &amp; = g (b + (\boldsymbol{w}^T\boldsymbol{x})) \\
+\hat{y} &amp; = g (1 + (\begin{bmatrix} 3 \\ -2 \end{bmatrix}^T \begin{bmatrix} x_1 \\ x_2 \end{bmatrix}))\\
+\hat{y} &amp; = g (1 + (3 * x_1 - 2 * x_2)) \\
+\end{align}
+\end{split}\]</div>
+<p>The term inside the non-linear function <span class="math notranslate nohighlight">\(g\)</span> <span class="math notranslate nohighlight">\((1 + 3 x_1 - 2 x_2)\)</span> is a line in 2D.</p>
+<p>We can plot all possible inputs to this neural network on a decision boundary. This two-dimensional line acts as a plane separating the input space. The plane has directionality - inputs on one side produce a certain output, while inputs on the other side produce the opposite output. For example, the input [-1, 2] lies on one side of the plane and generates a positive output. When we plug the components into the equation, we get a positive number that passes through the nonlinear activation function, propagating a positive value. Inputs on the other side of the decision boundary generate the opposite output due to the thresholding function. The sigmoid activation sits at this decision boundary, controlling how inputs move to one side or the other.</p>
+<p>For <span class="math notranslate nohighlight">\(\boldsymbol{x} = \begin{bmatrix} -1 \\ 2 \end{bmatrix}\)</span>. We have</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+\hat{y} &amp; = g (1 + (3 * x_1 - 2 * x_2)) \\
+\hat{y} &amp; = g (1 + (3 * -1  - 2 * 2)) \\
+\hat{y} &amp; = g (-6) \approx 0.002
+\end{align}
+\end{split}\]</div>
+<p>In this example, visualizing the full 2D input space is convenient because I can easily draw the decision boundary. However, most real-world problems have high-dimensional data. Image data contains thousands or millions of pixel values. Plotting decision boundaries is infeasible in high dimensions. This example provides intuition before building more complex models.</p>
+<p><img alt="nn-line" src="../../_images/nn-line.png" /></p>
+<blockquote>
+<div><p>Credits: Alexander Amini, MIT</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sigmoid function </span>
+<span class="k">def</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+  <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+
+<span class="c1"># Perceptron function</span>
+<span class="k">def</span> <span class="nf">perceptron</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>  
+  <span class="c1"># Calculate weighted sum</span>
+  <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span> 
+  <span class="n">y</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">y</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>      <span class="c1"># Example inputs   </span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">])</span>  <span class="c1"># Example weights </span>
+<span class="n">b</span> <span class="o">=</span> <span class="mf">1.0</span>                    <span class="c1"># Example bias</span>
+
+<span class="c1"># Generate prediction</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">perceptron</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="c1"># Print prediction</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Prediction: </span><span class="si">%.3f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction: 0.002
+</pre></div>
+</div>
+</div>
+</div>
+<blockquote>
+<div><p>💡 As we are using the <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> activation function, try varying the input <code class="docutils literal notranslate"><span class="pre">x</span></code> to see how the output <code class="docutils literal notranslate"><span class="pre">y</span></code> changes. Try for a different input <code class="docutils literal notranslate"><span class="pre">x</span></code>, which is below the line.</p>
+</div></blockquote>
+</section>
 <section id="bingham-model">
 <h2>Bingham model<a class="headerlink" href="#bingham-model" title="Permalink to this heading">#</a></h2>
 <section id="single-parameter-perceptron">
 <h3>Single parameter perceptron<a class="headerlink" href="#single-parameter-perceptron" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import numpy as np
-import matplotlib.pyplot as plt
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-# Generate synthetic data
-num_samples = 1000
-v_values = np.random.rand(num_samples, 1) * 10
-tau0_true = 5.0
-mu_true = 2.0
-y_true = tau0_true + mu_true * v_values
+<span class="c1"># Generate synthetic data</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">v_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">tau0_true</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">mu_true</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_values</span>
 
-# Initialize model weights
-weights = np.random.randn(1, 1)
-bias = np.random.randn()
-learning_rate = 0.01
+<span class="c1"># Initialize model weights</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.01</span>
 
-# Training loop
-epochs = 10000
-# Loss history
-losses = np.zeros(epochs)
-for epoch in range(epochs):
-    # Forward pass
-    y_pred = np.dot(v_values, weights) + bias
-    loss = ((y_pred - y_true) ** 2).mean()
-    losses[epoch] = loss
+<span class="c1"># Training loop</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="c1"># Loss history</span>
+<span class="n">losses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">epochs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="c1"># Forward pass</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v_values</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span> <span class="o">+</span> <span class="n">bias</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="p">((</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">losses</span><span class="p">[</span><span class="n">epoch</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
 
-    # Compute gradients
-    grad_output = 2 * (y_pred - y_true) / num_samples
-    grad_weights = np.dot(v_values.T, grad_output)
-    grad_bias = grad_output.sum()
+    <span class="c1"># Compute gradients</span>
+    <span class="n">grad_output</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_samples</span>
+    <span class="n">grad_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v_values</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">)</span>
+    <span class="n">grad_bias</span> <span class="o">=</span> <span class="n">grad_output</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
-    # Update weights using gradient descent
-    weights -= learning_rate * grad_weights
-    bias -= learning_rate * grad_bias
+    <span class="c1"># Update weights using gradient descent</span>
+    <span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_weights</span>
+    <span class="n">bias</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_bias</span>
 
-# Evaluation
-v_eval = np.linspace(0, 10, 100).reshape(-1, 1)
-y_pred_eval = np.dot(v_eval, weights) + bias
-y_true_eval = tau0_true + mu_true * v_eval
+<span class="c1"># Evaluation</span>
+<span class="n">v_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_pred_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span> <span class="o">+</span> <span class="n">bias</span>
+<span class="n">y_true_eval</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_eval</span>
 
-# Plot
-plt.plot(v_eval, y_true_eval, &#39;r-&#39;, label=&#39;True&#39;)
-plt.plot(v_eval, y_pred_eval, &#39;b.&#39;, label=&#39;Prediction&#39;)
-plt.xlabel(&#39;v&#39;)
-plt.ylabel(&#39;Shear Stress&#39;)
-plt.legend()
-plt.show()
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">y_true_eval</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">y_pred_eval</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -491,11 +691,11 @@ plt.show()
 <h3>Plot loss history<a class="headerlink" href="#plot-loss-history" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>plt.figure()
-plt.semilogy(np.arange(epochs), losses)
-plt.xlabel(&#39;epochs&#39;)
-plt.ylabel(&#39;loss&#39;)
-plt.show()
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">epochs</span><span class="p">),</span> <span class="n">losses</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epochs&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -504,12 +704,12 @@ plt.show()
 </div>
 </div>
 </section>
-<section id="weights-and-biases">
-<h3>Weights and biases<a class="headerlink" href="#weights-and-biases" title="Permalink to this heading">#</a></h3>
+<section id="id1">
+<h3>Weights and biases<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>print(&quot;Weights: %.2f&quot; % (weights))
-print(&quot;Bias: %.2f&quot; % (bias))
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Weights: </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">weights</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bias: </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bias</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -530,48 +730,48 @@ Bias: 4.74
 <h3>PyTorch version<a class="headerlink" href="#pytorch-version" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import torch
-import torch.nn as nn
-import torch.optim as optim
-import numpy as np
-import matplotlib.pyplot as plt
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 
-# Generate synthetic data
-num_samples = 10000
-v_values = torch.rand(num_samples, 1) * 10
-tau0_true = 5.0
-mu_true = 2.0
-y_true = tau0_true + mu_true * v_values
+<span class="c1"># Generate synthetic data</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">v_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">tau0_true</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">mu_true</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_values</span>
 
-model = nn.Sequential(nn.Linear(1, 1), nn.ReLU())
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
 
-# Loss and optimizer
-loss_function = nn.MSELoss()
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+<span class="c1"># Loss and optimizer</span>
+<span class="n">loss_function</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 
-# Training loop
-epochs = 5000
-for epoch in range(epochs):
-    model.zero_grad()
-    y_pred = model(v_values)
-    loss = loss_function(y_pred, y_true)
-    loss.backward()
-    optimizer.step()
+<span class="c1"># Training loop</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">v_values</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_function</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
 
-# Evaluation
-v_eval = torch.linspace(0, 10, 100).view(-1, 1)
-y_pred = model(v_eval)
-y_true_eval = tau0_true + mu_true * v_eval
+<span class="c1"># Evaluation</span>
+<span class="n">v_eval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
+<span class="n">y_true_eval</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_eval</span>
 
-# Plot
-plt.plot(v_eval.numpy(), y_true_eval.numpy(), &#39;r-&#39;, label=&#39;True&#39;, )
-plt.plot(v_eval.numpy(), y_pred.detach().numpy(), &#39;b.&#39;, label=&#39;Prediction&#39;)
-plt.xlabel(&#39;v&#39;)
-plt.ylabel(&#39;Shear Stress&#39;)
-plt.legend()
-plt.show()
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_true_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True&#39;</span><span class="p">,</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -585,55 +785,55 @@ plt.show()
 <h2>Multi-parameter perceptron<a class="headerlink" href="#multi-parameter-perceptron" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Generate data
-num_samples = 10000
-v_values = torch.rand(num_samples, 1) * 10
-tau0_values = torch.rand(num_samples, 1) * 10
-mu_values = torch.rand(num_samples, 1) * 5
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate data</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">v_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">tau0_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">mu_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span>
 
-# Inputs
-inputs = torch.cat([v_values, tau0_values, mu_values], dim=1)
+<span class="c1"># Inputs</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">v_values</span><span class="p">,</span> <span class="n">tau0_values</span><span class="p">,</span> <span class="n">mu_values</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-# Targets
-y_true = tau0_values + mu_values * v_values
+<span class="c1"># Targets</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_values</span> <span class="o">+</span> <span class="n">mu_values</span> <span class="o">*</span> <span class="n">v_values</span>
 
-# Model
-model = nn.Sequential(
-    nn.Linear(3, 1),
-    nn.ReLU()
-)
+<span class="c1"># Model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+<span class="p">)</span>
 
-# Training
-loss_fn = nn.MSELoss()
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+<span class="c1"># Training</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
 
-epochs = 5000
-for epoch in range(epochs):
-    y_pred = model(inputs)
-    loss = loss_fn(y_pred, y_true)
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
 
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
-# Evaluation
-v_eval = torch.linspace(0, 10, 100).view(-1, 1)
-tau0_eval = 7 * torch.ones_like(v_eval)
-mu_eval = 3 * torch.ones_like(v_eval)
+<span class="c1"># Evaluation</span>
+<span class="n">v_eval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">tau0_eval</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
+<span class="n">mu_eval</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
 
-inputs_eval = torch.cat([v_eval, tau0_eval, mu_eval], dim=1)
+<span class="n">inputs_eval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">tau0_eval</span><span class="p">,</span> <span class="n">mu_eval</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-y_pred = model(inputs_eval)
-y_true_eval = tau0_eval + mu_eval * v_eval
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs_eval</span><span class="p">)</span>
+<span class="n">y_true_eval</span> <span class="o">=</span> <span class="n">tau0_eval</span> <span class="o">+</span> <span class="n">mu_eval</span> <span class="o">*</span> <span class="n">v_eval</span>
 
-# Plot
-plt.plot(v_eval.numpy(), y_true_eval.numpy(), &#39;r-&#39;, label=&#39;True&#39;)
-plt.plot(v_eval.numpy(), y_pred.detach().numpy(), &#39;b.&#39;, label=&#39;Predicted&#39;)
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_true_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Predicted&#39;</span><span class="p">)</span>
 
-plt.xlabel(&#39;v&#39;)
-plt.ylabel(&#39;Shear Stress&#39;)
-plt.legend()
-plt.show()
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -646,62 +846,62 @@ plt.show()
 <h2>Herschel-Buckley Nonlinear Model<a class="headerlink" href="#herschel-buckley-nonlinear-model" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import torch
-import torch.nn as nn
-import torch.optim as optim
-import matplotlib.pyplot as plt
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-# Generate data
-num_samples = 10000
-v_values = torch.rand(num_samples, 1) * 10
-tau0_values = torch.rand(num_samples, 1) * 5
-k_values = torch.rand(num_samples, 1) * 2
-n_values = torch.rand(num_samples, 1) * 0.5 + 0.5 # 0.5 - 1.0
+<span class="c1"># Generate data</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">v_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">tau0_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span>
+<span class="n">k_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">n_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="c1"># 0.5 - 1.0</span>
 
-# Inputs
-inputs = torch.cat([v_values, tau0_values, k_values, n_values], dim=1)
+<span class="c1"># Inputs</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">v_values</span><span class="p">,</span> <span class="n">tau0_values</span><span class="p">,</span> <span class="n">k_values</span><span class="p">,</span> <span class="n">n_values</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-# Targets
-y_true = tau0_values + k_values * (v_values**n_values)
+<span class="c1"># Targets</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_values</span> <span class="o">+</span> <span class="n">k_values</span> <span class="o">*</span> <span class="p">(</span><span class="n">v_values</span><span class="o">**</span><span class="n">n_values</span><span class="p">)</span>
 
-# Model
-model = nn.Sequential(
-   nn.Linear(4, 64),
-   nn.Tanh(),
-   nn.Linear(64,1)
-)
+<span class="c1"># Model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+   <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+   <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+   <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
 
-# Training
-optimizer = optim.Adam(model.parameters())
-loss_fn = nn.MSELoss()
+<span class="c1"># Training</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
 
-epochs = 5000
-for epoch in range(epochs):
-   y_pred = model(inputs)
-   loss = loss_fn(y_pred, y_true)
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">5000</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+   <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+   <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
 
-   optimizer.zero_grad()
-   loss.backward()
-   optimizer.step()
+   <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+   <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+   <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
-# Evaluation
-v_eval = torch.linspace(0, 10, 100).unsqueeze(1)
-tau0_eval = 5 * torch.ones_like(v_eval)
-k_eval = 2 * torch.ones_like(v_eval)
-n_eval = 0.7 * torch.ones_like(v_eval)
+<span class="c1"># Evaluation</span>
+<span class="n">v_eval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">tau0_eval</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
+<span class="n">k_eval</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
+<span class="n">n_eval</span> <span class="o">=</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
 
-inputs_eval = torch.cat([v_eval, tau0_eval, k_eval, n_eval], dim=1)
-y_pred = model(inputs_eval)
+<span class="n">inputs_eval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">tau0_eval</span><span class="p">,</span> <span class="n">k_eval</span><span class="p">,</span> <span class="n">n_eval</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs_eval</span><span class="p">)</span>
 
-y_true_eval = tau0_eval + k_eval * (v_eval**n_eval)
+<span class="n">y_true_eval</span> <span class="o">=</span> <span class="n">tau0_eval</span> <span class="o">+</span> <span class="n">k_eval</span> <span class="o">*</span> <span class="p">(</span><span class="n">v_eval</span><span class="o">**</span><span class="n">n_eval</span><span class="p">)</span>
 
-# Plot
-plt.plot(v_eval.numpy(), y_true_eval.numpy(), &#39;r-&#39;, label=&#39;True&#39;)
-plt.plot(v_eval.numpy(), y_pred.detach().numpy(), &#39;b.&#39;, label=&#39;Predicted&#39;)
-plt.xlabel(&#39;Shear Rate&#39;)
-plt.ylabel(&#39;Shear Stress&#39;)
-plt.legend()
-plt.show()
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_true_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Predicted&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Shear Rate&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -770,10 +970,15 @@ plt.show()
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-implementation">Perceptron implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Weights and biases</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
 </ul>
 </li>
