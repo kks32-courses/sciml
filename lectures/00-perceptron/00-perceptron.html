@@ -426,7 +426,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-1">PyTorch Example #1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2">PyTorch Example #2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3</a></li>
 </ul>
             </nav>
         </div>
@@ -440,6 +440,8 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="perceptron">
 <h1>Perceptron<a class="headerlink" href="#perceptron" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/00-perceptron/00-perceptron-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/00-perceptron/00-perceptron.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>So let’s start now with just building from the ground up the fundamental building block of
 every single neural network and that’s going to be just a single neuron and in neural network language a single neuron is called a <code class="docutils literal notranslate"><span class="pre">perceptron</span></code>.</p>
 <p>The perceptron is a simple single layer neural network that takes an input vector <span class="math notranslate nohighlight">\(\boldsymbol{x} = [x_1, x_2, ..., x_n]\)</span>, multiplies it by a weight vector <span class="math notranslate nohighlight">\(\boldsymbol{w} = [w_1, w_2, ..., w_n]\)</span>, sums the weighted inputs, and passes the <span class="math notranslate nohighlight">\(\sum_i w_ix_i\)</span> added to a bias <span class="math notranslate nohighlight">\(w_0\)</span> as <span class="math notranslate nohighlight">\(z =  w_0 +  \sum_i w_ix_i\)</span>  through an activation function <span class="math notranslate nohighlight">\(g(z)\)</span> to produce an output <span class="math notranslate nohighlight">\(\hat{y}\)</span>:</p>
@@ -869,9 +871,7 @@ $<span class="math notranslate nohighlight">\(\frac{\partial \text{loss}}{\parti
 <div class="math notranslate nohighlight">
 \[b = b - \eta \frac{\partial \text{loss}}{\partial b}\]</div>
 <p>Where <span class="math notranslate nohighlight">\(\eta\)</span> is the learning rate.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># training the neural network with gradient-based optimization</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># training the neural network with gradient-based optimization</span>
 <span class="n">epochs</span> <span class="o">=</span> <span class="mi">1000</span>       <span class="c1"># Number of iterations</span>
 <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1"># eta</span>
 
@@ -891,22 +891,6 @@ $<span class="math notranslate nohighlight">\(\frac{\partial \text{loss}}{\parti
     <span class="n">weights</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_weights</span>
     <span class="n">bias</span> <span class="o">-=</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_bias</span>
 </pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/numpy/core/_methods.py:118: RuntimeWarning: overflow encountered in reduce
-  ret = umr_sum(arr, axis, dtype, out, keepdims, where=where)
-/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:10: RuntimeWarning: overflow encountered in square
-  loss = ((y_pred - y_true) ** 2).mean()
-/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:13: RuntimeWarning: overflow encountered in multiply
-  grad_output = 2 * (y_pred - y_true) / num_samples
-/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:18: RuntimeWarning: invalid value encountered in subtract
-  weights -= learning_rate * grad_weights
-/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_68427/4257830668.py:19: RuntimeWarning: invalid value encountered in scalar subtract
-  bias -= learning_rate * grad_bias
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="variants">
@@ -10112,7 +10096,7 @@ Bias: 5.00
 </div>
 </section>
 <section id="pytorch-example-3">
-<h2>PyTorch Example #3:<a class="headerlink" href="#pytorch-example-3" title="Permalink to this heading">#</a></h2>
+<h2>PyTorch Example #3<a class="headerlink" href="#pytorch-example-3" title="Permalink to this heading">#</a></h2>
 <blockquote>
 <div><p>A non-linear Herschel-Bulkley model</p>
 </div></blockquote>
@@ -10299,7 +10283,7 @@ Bias: 5.00
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-1">PyTorch Example #1</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2">PyTorch Example #2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3</a></li>
 </ul>
   </nav></div>
 
