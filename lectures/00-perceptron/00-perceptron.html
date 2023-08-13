@@ -393,8 +393,13 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-layer-neural-network">Single-Layer Neural Network</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-neural-networks-to-model-stress-strain-behavior-bingham-model">Using neural networks to model stress-strain behavior (Bingham model)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-bingham-fluid-with-single-layer-neural-network">Modeling Bingham fluid with single layer neural network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-the-single-layer-network">Initializing the single layer network</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-a-neural-network">Training a neural network</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Weights and biases</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
@@ -685,10 +690,88 @@ every single neural network and that’s going to be just a single neuron and in
 <p><img alt="Single layer NN" src="../../_images/single-layer-nn2.png" /></p>
 </section>
 </section>
+<section id="using-neural-networks-to-model-stress-strain-behavior-bingham-model">
+<h2>Using neural networks to model stress-strain behavior (Bingham model)<a class="headerlink" href="#using-neural-networks-to-model-stress-strain-behavior-bingham-model" title="Permalink to this heading">#</a></h2>
 <section id="bingham-model">
-<h2>Bingham model<a class="headerlink" href="#bingham-model" title="Permalink to this heading">#</a></h2>
-<section id="single-parameter-perceptron">
-<h3>Single parameter perceptron<a class="headerlink" href="#single-parameter-perceptron" title="Permalink to this heading">#</a></h3>
+<h3>Bingham model<a class="headerlink" href="#bingham-model" title="Permalink to this heading">#</a></h3>
+<p>The Bingham constitutive model describes the flow behavior of viscoplastic fluids that behave as rigid solids at low stresses but flow as viscous fluids at high stresses. There is a critical yield stress <span class="math notranslate nohighlight">\(\tau_y\)</span> that must be exceeded before flow occurs. Once the yield stress is exceeded, the material flows as a viscous fluid with a constant plastic viscosity <span class="math notranslate nohighlight">\(\mu\)</span>. The constitutive equation is:</p>
+<p><span class="math notranslate nohighlight">\(\tau = \tau_y + \mu\dot{\gamma}\)</span></p>
+<p>Where <span class="math notranslate nohighlight">\(\tau\)</span> is the shear stress, <span class="math notranslate nohighlight">\(\tau_y\)</span> is the yield stress, <span class="math notranslate nohighlight">\(\mu\)</span> is the plastic viscosity, and <span class="math notranslate nohighlight">\(\dot{\gamma}\)</span> is the shear rate. For <span class="math notranslate nohighlight">\(\tau &lt; \tau_y\)</span>, the shear rate is zero. For <span class="math notranslate nohighlight">\(\tau &gt; \tau_y\)</span>, the shear rate is proportional to the excess shear stress (<span class="math notranslate nohighlight">\(\tau - \tau_y\)</span>) and the viscosity <span class="math notranslate nohighlight">\(\mu\)</span>. The Bingham model captures the dual rigid and viscous behaviors seen in materials like toothpaste, mayonnaise, concrete, drilling muds, etc. It provides a simple yet powerful constitutive framework for modeling viscoplastic fluid flows.</p>
+<p><img alt="bingham" src="../../_images/bingham.png" /></p>
+</section>
+<section id="modeling-bingham-fluid-with-single-layer-neural-network">
+<h3>Modeling Bingham fluid with single layer neural network<a class="headerlink" href="#modeling-bingham-fluid-with-single-layer-neural-network" title="Permalink to this heading">#</a></h3>
+<p>Let us now model the bingham fluid model using a neural network. The first step is to generate data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># Generate synthetic data</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">1000</span>
+
+<span class="c1"># Range of strain rate values</span>
+<span class="n">v_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="c1"># Yield stress</span>
+<span class="n">tau0_true</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="c1"># Visocisty</span>
+<span class="n">mu_true</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="c1"># Shear stress = yield stress + viscosity * strain rate</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_values</span>
+
+<span class="c1"># Plot the bingham model</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_values</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Bingham&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;strain rate&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/37f3fe1a1b7c9e3b44081780fdac6a9f6e6490e373f237bf1c5697a8b645dfef.png" src="../../_images/37f3fe1a1b7c9e3b44081780fdac6a9f6e6490e373f237bf1c5697a8b645dfef.png" />
+</div>
+</div>
+</section>
+<section id="initializing-the-single-layer-network">
+<h3>Initializing the single layer network<a class="headerlink" href="#initializing-the-single-layer-network" title="Permalink to this heading">#</a></h3>
+<p>We are now going to define a single layer single neuron network, which has a bias value <span class="math notranslate nohighlight">\(b\)</span> and a weight vector <span class="math notranslate nohighlight">\(w\)</span> which is a scalar. We are only using the simple neuron without any non-linear activation function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model weights as random</span>
+<span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">bias</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+
+<span class="c1"># Define the bingham NN model</span>
+<span class="k">def</span> <span class="nf">bingham_nn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="c1"># Evaluation</span>
+<span class="n">v_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_true_eval</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_eval</span>
+<span class="n">y_pred_eval</span> <span class="o">=</span> <span class="n">bingham_nn</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bias</span><span class="p">)</span>
+
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">y_true_eval</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">y_pred_eval</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/45bd0f7432e6a46c5f2ad90d340e15f43c72f9175172bdd6239e278fff9ebdaf.png" src="../../_images/45bd0f7432e6a46c5f2ad90d340e15f43c72f9175172bdd6239e278fff9ebdaf.png" />
+</div>
+</div>
+<p>So, what went wrong? Our predictions do not match the true Bingham model. We have not actually trained the neural network.</p>
+</section>
+</section>
+<section id="training-a-neural-network">
+<h2>Training a neural network<a class="headerlink" href="#training-a-neural-network" title="Permalink to this heading">#</a></h2>
+<p><img alt="SGD" src="../../_images/sgd.gif" /></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -744,7 +827,6 @@ every single neural network and that’s going to be just a single neuron and in
 <img alt="../../_images/65e51a446c6463d4abfadd1e10dffeda708932a57305f818d114ec1bd0110132.png" src="../../_images/65e51a446c6463d4abfadd1e10dffeda708932a57305f818d114ec1bd0110132.png" />
 </div>
 </div>
-</section>
 <section id="plot-loss-history">
 <h3>Plot loss history<a class="headerlink" href="#plot-loss-history" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
@@ -1038,8 +1120,13 @@ Bias: 4.74
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-layer-neural-network">Single-Layer Neural Network</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-neural-networks-to-model-stress-strain-behavior-bingham-model">Using neural networks to model stress-strain behavior (Bingham model)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-bingham-fluid-with-single-layer-neural-network">Modeling Bingham fluid with single layer neural network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-the-single-layer-network">Initializing the single layer network</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-a-neural-network">Training a neural network</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Weights and biases</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
