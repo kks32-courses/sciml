@@ -387,7 +387,12 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-implementation">Perceptron implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-example">Perceptron: An example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-implementation">Perceptron: An implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-and-multi-output-perceptrons">Single and multi-output perceptrons</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-layer-neural-network">Single-Layer Neural Network</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
@@ -565,8 +570,8 @@ every single neural network and that’s going to be just a single neuron and in
 </div>
 </section>
 </section>
-<section id="perceptron-implementation">
-<h2>Perceptron implementation<a class="headerlink" href="#perceptron-implementation" title="Permalink to this heading">#</a></h2>
+<section id="perceptron-an-example">
+<h2>Perceptron: An example<a class="headerlink" href="#perceptron-an-example" title="Permalink to this heading">#</a></h2>
 <p>Consider the following example of how a perceptron works. We have bias <span class="math notranslate nohighlight">\(b=1.0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{w} = [3; -2]\)</span>.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -590,8 +595,10 @@ every single neural network and that’s going to be just a single neuron and in
 <p>In this example, visualizing the full 2D input space is convenient because I can easily draw the decision boundary. However, most real-world problems have high-dimensional data. Image data contains thousands or millions of pixel values. Plotting decision boundaries is infeasible in high dimensions. This example provides intuition before building more complex models.</p>
 <p><img alt="nn-line" src="../../_images/nn-line.png" /></p>
 <blockquote>
-<div><p>Credits: Alexander Amini, MIT</p>
+<div><p>Image credits: Alexander Amini, MIT</p>
 </div></blockquote>
+<section id="perceptron-an-implementation">
+<h3>Perceptron: An implementation<a class="headerlink" href="#perceptron-an-implementation" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sigmoid function </span>
@@ -626,6 +633,57 @@ every single neural network and that’s going to be just a single neuron and in
 <blockquote>
 <div><p>💡 As we are using the <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> activation function, try varying the input <code class="docutils literal notranslate"><span class="pre">x</span></code> to see how the output <code class="docutils literal notranslate"><span class="pre">y</span></code> changes. Try for a different input <code class="docutils literal notranslate"><span class="pre">x</span></code>, which is below the line.</p>
 </div></blockquote>
+</section>
+<section id="single-and-multi-output-perceptrons">
+<h3>Single and multi-output perceptrons<a class="headerlink" href="#single-and-multi-output-perceptrons" title="Permalink to this heading">#</a></h3>
+<p>A single perceptron neuron can be built up into a full neural network model. The key steps for a perceptron are:</p>
+<ul class="simple">
+<li><p>Dot product of inputs and weights</p></li>
+<li><p>Add bias</p></li>
+<li><p>Apply non-linear activation function</p></li>
+</ul>
+<p>These steps propagate information to produce the output. In a neural network, every neuron performs these computations.</p>
+<div class="math notranslate nohighlight">
+\[z = b + \sum_{j = 1}^m w_j x_j\]</div>
+<p>To create a multi-layer perceptron with multiple outputs, we use multiple perceptrons in the output layer. Each perceptron controls one output, but all perceptrons share the same inputs.</p>
+<p>To implement a multi-layer perceptron network from scratch:</p>
+<ul class="simple">
+<li><p>Initialize a weight matrix <span class="math notranslate nohighlight">\(\boldsymbol{w}\)</span>, where each row contains the weights for one perceptron.</p></li>
+<li><p>Initialize a bias vector <span class="math notranslate nohighlight">\(b\)</span>, one bias term per perceptron.</p></li>
+<li><p>Define a forward propagation function to pass inputs through the network:</p>
+<ul>
+<li><p>Compute the dot product of inputs <span class="math notranslate nohighlight">\(x\)</span> and weights  <span class="math notranslate nohighlight">\(\boldsymbol{w}\)</span></p></li>
+<li><p>Add the bias vector <span class="math notranslate nohighlight">\(b\)</span></p></li>
+<li><p>Apply non-linear activation function <span class="math notranslate nohighlight">\(g(z)\)</span></p></li>
+<li><p>Return outputs</p></li>
+</ul>
+</li>
+</ul>
+<div class="math notranslate nohighlight">
+\[z = b_i + \sum_{j = 1}^m w_{j,i} x_{j,i}\]</div>
+<p>Because all inputs are densely connected to all outputs, these layers are called <strong>Dense Layers</strong>.</p>
+<p>This forward function defines the computations for a complete neural network layer. Stacking layers together allows building deep networks with multiple nonlinear transformations.</p>
+<p><img alt="ouput of perceptrons" src="../../_images/multioutput-perceptrons.png" /></p>
+</section>
+<section id="single-layer-neural-network">
+<h3>Single-Layer Neural Network<a class="headerlink" href="#single-layer-neural-network" title="Permalink to this heading">#</a></h3>
+<p>A single layer neural network, also known as a perceptron, is the simplest type of neural network. It consists of a single layer of input nodes fully connected to a layer of output nodes.</p>
+<p>Let’s now focus on a single neuron <span class="math notranslate nohighlight">\(z_2\)</span>. Here <span class="math notranslate nohighlight">\(z_2\)</span> takes the weighted inputs from <span class="math notranslate nohighlight">\(\boldsymbol{x}\)</span> added to the bias term.</p>
+<div class="math notranslate nohighlight">
+\[z_2 = b_2^{(1)} + \sum_{j=1}^m w_{j,2}^{(1)} x_j = b_2^{(1)} + w_{1,2}^{(1)}x_1 + w_{2,2}^{(1)}x_2 + w_{m,2}^{(1)}x_m\]</div>
+<p><img alt="Single layer NN" src="../../_images/single-layer-nn1.png" /></p>
+<p>Hidden layers are layers in a neural network that sit between the input layer and the output layer. While the input and output layers connect to the external world, hidden layers only connect to other neurons within the network.</p>
+<p>Hidden layers enable neural networks to learn more complex relationships between inputs and outputs. Specifically, hidden layers allow the network to model nonlinear relationships, which is crucial for solving more difficult problems.</p>
+<p>The power of deep neural networks comes from having multiple hidden layers. Each layer transforms the representation of the data into a slightly more abstract representation. With enough layers, very complex functions can be modeled.</p>
+<p>The number of hidden layers and neurons per layer are part of the neural network architecture. Tuning the hidden layer structure is an important part of applying neural networks to a problem.</p>
+<p>We define a hidden layer as:</p>
+<div class="math notranslate nohighlight">
+\[z_2 = b_i^{(1)} + \sum_{j=1}^m w_{j,i}^{(1)} x_j\]</div>
+<p>Final output:</p>
+<div class="math notranslate nohighlight">
+\[\hat{y}_i = g(b_i^{(2)} + \sum_{j=1}^{d_1} w_{j,i}^{(2)} g(z_j))\]</div>
+<p><img alt="Single layer NN" src="../../_images/single-layer-nn2.png" /></p>
+</section>
 </section>
 <section id="bingham-model">
 <h2>Bingham model<a class="headerlink" href="#bingham-model" title="Permalink to this heading">#</a></h2>
@@ -974,7 +1032,12 @@ Bias: 4.74
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-implementation">Perceptron implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-example">Perceptron: An example</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-implementation">Perceptron: An implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-and-multi-output-perceptrons">Single and multi-output perceptrons</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-layer-neural-network">Single-Layer Neural Network</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
