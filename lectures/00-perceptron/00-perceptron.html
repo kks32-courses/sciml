@@ -411,9 +411,17 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-neural-network">Bingham Neural Network</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-of-overfitting">The problem of overfitting</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-of-overfitting">Definition of Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#causes-of-overfitting">Causes of Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#consequences-of-overfitting">Consequences of Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-detect-overfitting">How to Detect Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#strategies-to-combat-overfitting">Strategies to Combat Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-detect-overfitting-with-validation-dataset">How to detect overfitting with validation dataset</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Weights and biases</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version-of-bingham-model">PyTorch version of Bingham Model</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-parameter-perceptron">Multi-parameter perceptron</a></li>
@@ -9835,11 +9843,61 @@ AABJRU5ErkJggg==\
 </div>
 </div>
 </section>
-<section id="plot-loss-history">
-<h3>Plot loss history<a class="headerlink" href="#plot-loss-history" title="Permalink to this heading">#</a></h3>
+<section id="the-problem-of-overfitting">
+<h3>The problem of overfitting<a class="headerlink" href="#the-problem-of-overfitting" title="Permalink to this heading">#</a></h3>
+<section id="definition-of-overfitting">
+<h4>Definition of Overfitting<a class="headerlink" href="#definition-of-overfitting" title="Permalink to this heading">#</a></h4>
+<p>Overfitting occurs when a model performs exceptionally well on the training data but poorly on unseen data, such as validation or test data. This phenomenon is indicative of the model’s inability to generalize from the training data to new, unseen examples.</p>
+</section>
+<section id="causes-of-overfitting">
+<h4>Causes of Overfitting<a class="headerlink" href="#causes-of-overfitting" title="Permalink to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p><strong>Complex Models</strong>: Models with too many parameters relative to the number of training examples can easily fit the noise in the data, capturing spurious correlations.</p></li>
+<li><p><strong>Insufficient Data</strong>: A small dataset may not represent the underlying distribution well, allowing the model to memorize the data rather than learn the underlying pattern.</p></li>
+<li><p><strong>Noisy Data</strong>: If the training data contain errors or irrelevant information, a complex model may learn these inaccuracies.</p></li>
+</ol>
+</section>
+<section id="consequences-of-overfitting">
+<h4>Consequences of Overfitting<a class="headerlink" href="#consequences-of-overfitting" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Poor Generalization</strong>: An overfitted model will perform poorly on new data, limiting its usefulness in making predictions on unseen examples.</p></li>
+<li><p><strong>Misleading Performance Metrics</strong>: Overfitting can lead to overly optimistic performance estimates on the training data, which do not translate to real-world performance.</p></li>
+</ul>
+</section>
+<section id="how-to-detect-overfitting">
+<h4>How to Detect Overfitting<a class="headerlink" href="#how-to-detect-overfitting" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Validation Set</strong>: By evaluating the model on a separate validation set, one can compare performance on the training data and unseen data. A significant drop in performance on the validation set is indicative of overfitting.</p></li>
+<li><p><strong>Learning Curves</strong>: Plotting the training and validation loss (or other metrics) as a function of training epochs can reveal overfitting. If the validation loss starts increasing while the training loss continues to decrease, this is a classic sign of overfitting.</p></li>
+</ul>
+</section>
+<section id="strategies-to-combat-overfitting">
+<h4>Strategies to Combat Overfitting<a class="headerlink" href="#strategies-to-combat-overfitting" title="Permalink to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p><strong>Regularization</strong>: Techniques like L1 or L2 regularization add penalties to the loss function that discourage the model from fitting the noise in the data.</p></li>
+<li><p><strong>Early Stopping</strong>: Monitoring the validation loss and stopping training when it starts to increase can prevent the model from overfitting the training data.</p></li>
+<li><p><strong>Cross-Validation</strong>: This method involves splitting the data into several subsets and validating the model on different subsets, providing a more robust estimate of its generalization ability.</p></li>
+<li><p><strong>Pruning</strong>: For tree-based models, pruning involves removing sections of the tree that provide little predictive power.</p></li>
+<li><p><strong>Using More Data</strong>: If available, more training examples can make it harder for the model to fit the noise.</p></li>
+<li><p><strong>Simplifying the Model</strong>: Choosing a model with fewer parameters or constraining its complexity can help prevent overfitting.</p></li>
+</ol>
+<p>Overfitting is a central challenge in SciML, representing a failure of the model to abstract the underlying patterns in the data. It underscores the principle that a model performing well on the training data does not necessarily translate to good real-world performance. Understanding and combating overfitting are essential skills for graduate students in SciML, requiring both theoretical understanding and practical experience with various techniques and strategies.</p>
+<p><img alt="overfitting" src="../../_images/overfitting.png" /></p>
+<blockquote>
+<div><p>Example of under and overfitting the data</p>
+</div></blockquote>
+</section>
+<section id="how-to-detect-overfitting-with-validation-dataset">
+<h4>How to detect overfitting with validation dataset<a class="headerlink" href="#how-to-detect-overfitting-with-validation-dataset" title="Permalink to this heading">#</a></h4>
+<p>In practice, the learning algorithm does not actually ﬁnd the best function, but merely one thatsigniﬁcantly reduces the training error. These additional limitations, such as theimperfection of the optimization algorithm, mean that the learning algorithm’seﬀective capacitymay be less than the representational capacity of the modelfamily.</p>
+<p>Our modern ideas about improving the generalization of machine learningmodels are reﬁnements of thought dating back to philosophers at least as early as Ptolemy. Many early scholars invoke a principle of parsimony that is now mostwidely known as <code class="docutils literal notranslate"><span class="pre">Occam’s</span> <span class="pre">razor</span></code> (c. 1287–1347). This principle states that amongcompeting hypotheses that explain known observations equally well, we shouldchoose the “simplest” one. This idea was formalized and made more precise in the twentieth century by the founders of statistical learning theory.</p>
+<p>We must remember that while simpler functions are more likely to generalize(to have a small gap between training and test error), we must still choose asuﬃciently complex hypothesis to achieve low training error. Typically, trainingerror decreases until it asymptotes to the minimum possible error value as modelcapacity increases (assuming the error measure has a minimum value). Typically generalization error has a U-shaped curve as a function of model capacity.</p>
+<p>At the left end of the graph, training error and generalization errorare both high. This is the <strong>underfitting regime</strong>. As we increase capacity, training error decreases, but the gap between training and generalization error increases. Eventually,the size of this gap outweighs the decrease in training error, and we enter the <strong>overfitting regime</strong>, where capacity is too large, above the <strong>optimal capacity</strong>.</p>
+<p><img alt="Training validation fit" src="../../_images/training-validation-fit.png" /></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let us now plot the loss history of training with epochs</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">epochs</span><span class="p">),</span> <span class="n">losses</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epochs&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
@@ -9848,29 +9906,32 @@ AABJRU5ErkJggg==\
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/477407a5f4a757e7764cfca881b66d3ad46d413369367e94ae6a0576f19b0cb2.png" src="../../_images/477407a5f4a757e7764cfca881b66d3ad46d413369367e94ae6a0576f19b0cb2.png" />
+<img alt="../../_images/3cc742fdc007099616a202f45785320c982bb98942d288c1da35fed576e6432a.png" src="../../_images/3cc742fdc007099616a202f45785320c982bb98942d288c1da35fed576e6432a.png" />
 </div>
 </div>
 </section>
+</section>
 <section id="id1">
 <h3>Weights and biases<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>For simple models, we can also plot the weights and biases to understand how well the model fits the true Bingham response. In the original Bingham model, we had a yield stress <span class="math notranslate nohighlight">\(\tau_y = 5.0\)</span> (bias <span class="math notranslate nohighlight">\(b\)</span>) and a viscosity <span class="math notranslate nohighlight">\(\mu = 2\)</span> (weight <span class="math notranslate nohighlight">\(\boldsymbol{w}\)</span>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Weights: </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">weights</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Weights: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bias: </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bias</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Weights: 2.04
-Bias: 4.74
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Weights: [2.]
+Bias: 5.00
 </pre></div>
 </div>
 </div>
 </div>
+<p>We see that the weight and biases are pretty close to the actual values of the Bingham model data on which it was trained. For more complex NN, we could also plot how weights and biases change over epochs.</p>
 </section>
-<section id="pytorch-version">
-<h3>PyTorch version<a class="headerlink" href="#pytorch-version" title="Permalink to this heading">#</a></h3>
+<section id="pytorch-version-of-bingham-model">
+<h3>PyTorch version of Bingham Model<a class="headerlink" href="#pytorch-version-of-bingham-model" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
@@ -9887,6 +9948,7 @@ Bias: 4.74
 <span class="n">mu_true</span> <span class="o">=</span> <span class="mf">2.0</span>
 <span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_values</span>
 
+<span class="c1"># Bingham Neural Network model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
 
 <span class="c1"># Loss and optimizer</span>
@@ -9901,7 +9963,6 @@ Bias: 4.74
     <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_function</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
     <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
     <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
 
 <span class="c1"># Evaluation</span>
 <span class="n">v_eval</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -9919,7 +9980,7 @@ Bias: 4.74
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/9e58dd72e3d7ed2dd19b4e056bd70988f127d4efd879570a9d288acb423e09de.png" src="../../_images/9e58dd72e3d7ed2dd19b4e056bd70988f127d4efd879570a9d288acb423e09de.png" />
+<img alt="../../_images/a9a59d254302db5a1b5ef96f7a07c68006ec5a6e6b67a1168bec253d4eb2898c.png" src="../../_images/a9a59d254302db5a1b5ef96f7a07c68006ec5a6e6b67a1168bec253d4eb2898c.png" />
 </div>
 </div>
 </section>
@@ -10141,9 +10202,17 @@ Bias: 4.74
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-neural-network">Bingham Neural Network</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-of-overfitting">The problem of overfitting</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#definition-of-overfitting">Definition of Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#causes-of-overfitting">Causes of Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#consequences-of-overfitting">Consequences of Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-detect-overfitting">How to Detect Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#strategies-to-combat-overfitting">Strategies to Combat Overfitting</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-detect-overfitting-with-validation-dataset">How to detect overfitting with validation dataset</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Weights and biases</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version-of-bingham-model">PyTorch version of Bingham Model</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-parameter-perceptron">Multi-parameter perceptron</a></li>
