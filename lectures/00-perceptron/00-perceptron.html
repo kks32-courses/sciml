@@ -1,0 +1,835 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Perceptron &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/00-perceptron/00-perceptron';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Scientific Machine Learning (SciML)" href="../../README.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Perceptron</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/00-perceptron/00-perceptron.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/00-perceptron/00-perceptron.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/00-perceptron/00-perceptron.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Perceptron</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-parameter-perceptron">Multi-parameter perceptron</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#herschel-buckley-nonlinear-model">Herschel-Buckley Nonlinear Model</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="perceptron">
+<h1>Perceptron<a class="headerlink" href="#perceptron" title="Permalink to this heading">#</a></h1>
+<p>The perceptron is a simple single layer neural network that takes an input vector <span class="math notranslate nohighlight">\(\boldsymbol{x} = [x_1, x_2, ..., x_n]\)</span>, multiplies it by a weight vector <span class="math notranslate nohighlight">\(\boldsymbol{w} = [w_1, w_2, ..., w_n]\)</span>, sums the weighted inputs, and passes the <span class="math notranslate nohighlight">\(\sum_i w_ix_i\)</span> added to a bias <span class="math notranslate nohighlight">\(w_0\)</span> as <span class="math notranslate nohighlight">\(z =  w_0 +  \sum_i w_ix_i\)</span>  through an activation function <span class="math notranslate nohighlight">\(g(z)\)</span> to produce an output <span class="math notranslate nohighlight">\(\hat{y}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[z = \mathrm{bias} + \mathrm{linear\_ combination\_ of \_ inputs}\]</div>
+<div class="math notranslate nohighlight">
+\[z = w_0 + \boldsymbol{w}^T\boldsymbol{x} = w_0 +  \sum_i w_ix_i \]</div>
+<div class="math notranslate nohighlight">
+\[\hat{y} = g(z) \]</div>
+<p>The activation function <span class="math notranslate nohighlight">\(g\)</span> introduces nonlinearity to allow the perceptron to learn complex mappings from inputs to outputs. Typical choices for <span class="math notranslate nohighlight">\(g\)</span> are <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code>, <code class="docutils literal notranslate"><span class="pre">tanh</span></code>, or <code class="docutils literal notranslate"><span class="pre">ReLU</span></code> functions, though the original perceptron used a step function.</p>
+<p>The perceptron can be trained via supervised learning, adjusting the weights and biases to minimize the loss between the predicted <span class="math notranslate nohighlight">\(\hat{y}\)</span> and the true label <span class="math notranslate nohighlight">\(y^{\text{true}}\)</span>. Backpropagation combined with gradient descent can be used to iteratively update the weights to reduce the loss.</p>
+<p>The key components of a perceptron are:</p>
+<ul class="simple">
+<li><p>Input vector <span class="math notranslate nohighlight">\(\boldsymbol{x}\)</span></p></li>
+<li><p>Weight vector <span class="math notranslate nohighlight">\(\boldsymbol{w}\)</span></p></li>
+<li><p>Weighted sum <span class="math notranslate nohighlight">\(z = \boldsymbol{w}^T\boldsymbol{x}\)</span></p></li>
+<li><p>Nonlinear activation <span class="math notranslate nohighlight">\(g\)</span></p></li>
+<li><p>Output prediction <span class="math notranslate nohighlight">\(\hat{y}\)</span></p></li>
+</ul>
+<p>The perceptron provides a basic model of a neuron, and multilayer perceptrons composed of many interconnected perceptrons can be used to build neural networks with substantial representational power. A perceptron takes a set of inputs, scales them by corresponding weights, sums them together with a bias, applies a non-linear step function, and produces an output. This simple model can represent linear decision boundaries and serves as a building block for more complex neural networks. In training, weights are updated based on the difference between the predicted output and the actual label, often using the Perceptron learning algorithm.</p>
+<p><img alt="Perceptron" src="../../_images/perceptron.png" /></p>
+<blockquote>
+<div><p>Credits: Alexander Amini, MIT</p>
+</div></blockquote>
+<section id="bingham-model">
+<h2>Bingham model<a class="headerlink" href="#bingham-model" title="Permalink to this heading">#</a></h2>
+<section id="single-parameter-perceptron">
+<h3>Single parameter perceptron<a class="headerlink" href="#single-parameter-perceptron" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate synthetic data
+num_samples = 1000
+v_values = np.random.rand(num_samples, 1) * 10
+tau0_true = 5.0
+mu_true = 2.0
+y_true = tau0_true + mu_true * v_values
+
+# Initialize model weights
+weights = np.random.randn(1, 1)
+bias = np.random.randn()
+learning_rate = 0.01
+
+# Training loop
+epochs = 10000
+# Loss history
+losses = np.zeros(epochs)
+for epoch in range(epochs):
+    # Forward pass
+    y_pred = np.dot(v_values, weights) + bias
+    loss = ((y_pred - y_true) ** 2).mean()
+    losses[epoch] = loss
+
+    # Compute gradients
+    grad_output = 2 * (y_pred - y_true) / num_samples
+    grad_weights = np.dot(v_values.T, grad_output)
+    grad_bias = grad_output.sum()
+
+    # Update weights using gradient descent
+    weights -= learning_rate * grad_weights
+    bias -= learning_rate * grad_bias
+
+# Evaluation
+v_eval = np.linspace(0, 10, 100).reshape(-1, 1)
+y_pred_eval = np.dot(v_eval, weights) + bias
+y_true_eval = tau0_true + mu_true * v_eval
+
+# Plot
+plt.plot(v_eval, y_true_eval, &#39;r-&#39;, label=&#39;True&#39;)
+plt.plot(v_eval, y_pred_eval, &#39;b.&#39;, label=&#39;Prediction&#39;)
+plt.xlabel(&#39;v&#39;)
+plt.ylabel(&#39;Shear Stress&#39;)
+plt.legend()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/65e51a446c6463d4abfadd1e10dffeda708932a57305f818d114ec1bd0110132.png" src="../../_images/65e51a446c6463d4abfadd1e10dffeda708932a57305f818d114ec1bd0110132.png" />
+</div>
+</div>
+</section>
+<section id="plot-loss-history">
+<h3>Plot loss history<a class="headerlink" href="#plot-loss-history" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>plt.figure()
+plt.semilogy(np.arange(epochs), losses)
+plt.xlabel(&#39;epochs&#39;)
+plt.ylabel(&#39;loss&#39;)
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/477407a5f4a757e7764cfca881b66d3ad46d413369367e94ae6a0576f19b0cb2.png" src="../../_images/477407a5f4a757e7764cfca881b66d3ad46d413369367e94ae6a0576f19b0cb2.png" />
+</div>
+</div>
+</section>
+<section id="weights-and-biases">
+<h3>Weights and biases<a class="headerlink" href="#weights-and-biases" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>print(&quot;Weights: %.2f&quot; % (weights))
+print(&quot;Bias: %.2f&quot; % (bias))
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Weights: 2.04
+Bias: 4.74
+</pre></div>
+</div>
+</div>
+</div>
+<p>Given the mean squared error loss function:</p>
+<p><span class="math notranslate nohighlight">\(L = \frac{1}{N} \sum_{i=1}^{N} (y_{\text{pred},i} - y_{\text{true},i})^2\)</span></p>
+<p>where NN is the number of samples, <span class="math notranslate nohighlight">\(y_{pred,i}\)</span> is the predicted value for the i-th sample, and <span class="math notranslate nohighlight">\(y_{true,i}\)</span>​ is the true value for the i-th sample.</p>
+<p>We want to find the gradient of this loss with respect to the predictions <span class="math notranslate nohighlight">\(y_{pred,i}\)</span>​, so we’ll take the derivative of the loss with respect to <span class="math notranslate nohighlight">\(y_{pred,i}\)</span>:</p>
+<p><span class="math notranslate nohighlight">\(\frac{\partial L}{\partial y_{\text{pred},i}} = \frac{2}{N} \sum_{i=1}^{N} (y_{\text{pred},i} - y_{\text{true},i})\)</span></p>
+</section>
+<section id="pytorch-version">
+<h3>PyTorch version<a class="headerlink" href="#pytorch-version" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import torch
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# Generate synthetic data
+num_samples = 10000
+v_values = torch.rand(num_samples, 1) * 10
+tau0_true = 5.0
+mu_true = 2.0
+y_true = tau0_true + mu_true * v_values
+
+model = nn.Sequential(nn.Linear(1, 1), nn.ReLU())
+
+# Loss and optimizer
+loss_function = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+# Training loop
+epochs = 5000
+for epoch in range(epochs):
+    model.zero_grad()
+    y_pred = model(v_values)
+    loss = loss_function(y_pred, y_true)
+    loss.backward()
+    optimizer.step()
+
+
+# Evaluation
+v_eval = torch.linspace(0, 10, 100).view(-1, 1)
+y_pred = model(v_eval)
+y_true_eval = tau0_true + mu_true * v_eval
+
+# Plot
+plt.plot(v_eval.numpy(), y_true_eval.numpy(), &#39;r-&#39;, label=&#39;True&#39;, )
+plt.plot(v_eval.numpy(), y_pred.detach().numpy(), &#39;b.&#39;, label=&#39;Prediction&#39;)
+plt.xlabel(&#39;v&#39;)
+plt.ylabel(&#39;Shear Stress&#39;)
+plt.legend()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9e58dd72e3d7ed2dd19b4e056bd70988f127d4efd879570a9d288acb423e09de.png" src="../../_images/9e58dd72e3d7ed2dd19b4e056bd70988f127d4efd879570a9d288acb423e09de.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="multi-parameter-perceptron">
+<h2>Multi-parameter perceptron<a class="headerlink" href="#multi-parameter-perceptron" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Generate data
+num_samples = 10000
+v_values = torch.rand(num_samples, 1) * 10
+tau0_values = torch.rand(num_samples, 1) * 10
+mu_values = torch.rand(num_samples, 1) * 5
+
+# Inputs
+inputs = torch.cat([v_values, tau0_values, mu_values], dim=1)
+
+# Targets
+y_true = tau0_values + mu_values * v_values
+
+# Model
+model = nn.Sequential(
+    nn.Linear(3, 1),
+    nn.ReLU()
+)
+
+# Training
+loss_fn = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+epochs = 5000
+for epoch in range(epochs):
+    y_pred = model(inputs)
+    loss = loss_fn(y_pred, y_true)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+# Evaluation
+v_eval = torch.linspace(0, 10, 100).view(-1, 1)
+tau0_eval = 7 * torch.ones_like(v_eval)
+mu_eval = 3 * torch.ones_like(v_eval)
+
+inputs_eval = torch.cat([v_eval, tau0_eval, mu_eval], dim=1)
+
+y_pred = model(inputs_eval)
+y_true_eval = tau0_eval + mu_eval * v_eval
+
+# Plot
+plt.plot(v_eval.numpy(), y_true_eval.numpy(), &#39;r-&#39;, label=&#39;True&#39;)
+plt.plot(v_eval.numpy(), y_pred.detach().numpy(), &#39;b.&#39;, label=&#39;Predicted&#39;)
+
+plt.xlabel(&#39;v&#39;)
+plt.ylabel(&#39;Shear Stress&#39;)
+plt.legend()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/75eb1872eadcc7aedb9a70a1d324562d2fa9d87fa7b3810ec5021b3bbe0d13f6.png" src="../../_images/75eb1872eadcc7aedb9a70a1d324562d2fa9d87fa7b3810ec5021b3bbe0d13f6.png" />
+</div>
+</div>
+</section>
+<section id="herschel-buckley-nonlinear-model">
+<h2>Herschel-Buckley Nonlinear Model<a class="headerlink" href="#herschel-buckley-nonlinear-model" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>import torch
+import torch.nn as nn
+import torch.optim as optim
+import matplotlib.pyplot as plt
+
+# Generate data
+num_samples = 10000
+v_values = torch.rand(num_samples, 1) * 10
+tau0_values = torch.rand(num_samples, 1) * 5
+k_values = torch.rand(num_samples, 1) * 2
+n_values = torch.rand(num_samples, 1) * 0.5 + 0.5 # 0.5 - 1.0
+
+# Inputs
+inputs = torch.cat([v_values, tau0_values, k_values, n_values], dim=1)
+
+# Targets
+y_true = tau0_values + k_values * (v_values**n_values)
+
+# Model
+model = nn.Sequential(
+   nn.Linear(4, 64),
+   nn.Tanh(),
+   nn.Linear(64,1)
+)
+
+# Training
+optimizer = optim.Adam(model.parameters())
+loss_fn = nn.MSELoss()
+
+epochs = 5000
+for epoch in range(epochs):
+   y_pred = model(inputs)
+   loss = loss_fn(y_pred, y_true)
+
+   optimizer.zero_grad()
+   loss.backward()
+   optimizer.step()
+
+# Evaluation
+v_eval = torch.linspace(0, 10, 100).unsqueeze(1)
+tau0_eval = 5 * torch.ones_like(v_eval)
+k_eval = 2 * torch.ones_like(v_eval)
+n_eval = 0.7 * torch.ones_like(v_eval)
+
+inputs_eval = torch.cat([v_eval, tau0_eval, k_eval, n_eval], dim=1)
+y_pred = model(inputs_eval)
+
+y_true_eval = tau0_eval + k_eval * (v_eval**n_eval)
+
+# Plot
+plt.plot(v_eval.numpy(), y_true_eval.numpy(), &#39;r-&#39;, label=&#39;True&#39;)
+plt.plot(v_eval.numpy(), y_pred.detach().numpy(), &#39;b.&#39;, label=&#39;Predicted&#39;)
+plt.xlabel(&#39;Shear Rate&#39;)
+plt.ylabel(&#39;Shear Stress&#39;)
+plt.legend()
+plt.show()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7bc47ec3e3140db278a6c22a65d8a5a94b7006d1da3ee580bd123557f3d623d5.png" src="../../_images/7bc47ec3e3140db278a6c22a65d8a5a94b7006d1da3ee580bd123557f3d623d5.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/00-perceptron"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../README.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Scientific Machine Learning (SciML)</p>
+      </div>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bingham-model">Bingham model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-parameter-perceptron">Single parameter perceptron</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-loss-history">Plot loss history</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version">PyTorch version</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-parameter-perceptron">Multi-parameter perceptron</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#herschel-buckley-nonlinear-model">Herschel-Buckley Nonlinear Model</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
