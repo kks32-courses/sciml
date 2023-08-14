@@ -61,6 +61,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'README';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -350,6 +352,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts">Key Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ai-ml-dl">AI/ML/DL</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning">Machine Learning</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lectures">Lectures</a></li>
 </ul>
             </nav>
@@ -367,8 +374,63 @@ document.write(`
 <blockquote>
 <div><p>Krishna Kumar</p>
 </div></blockquote>
+<p>Scientific Machine Learning (SciML) represents a multi-disciplinary approach that fuses the physical laws governing a system (such as equations from physics or engineering) with data-driven machine learning methodologies. SciML uses domain knowledge to design appropriate machine-learning models for different scientific challenges. This domain expertise helps select relevant features, appropriate model architectures, useful validation metrics, etc. SciML exploits structure in scientific data like symmetries and conservation laws to develop more suitable machine learning techniques. For example, physics-informed neural networks incorporate physical principles into their design of loss functions. SciML research also includes extracting fundamental laws or PDEs from neural networks by observing system behavior.</p>
+<section id="key-concepts">
+<h2>Key Concepts<a class="headerlink" href="#key-concepts" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Modeling and Simulation</strong>: SciML allows for integrating physics-based models with ML algorithms. This combination enables more accurate simulations and predictions, primarily when the physics of a system is partially known or complex to model explicitly.</p></li>
+<li><p><strong>Data Efficiency</strong>: By incorporating scientific knowledge, SciML techniques can require less data to make accurate predictions when collecting large amounts of data is expensive or impractical.</p></li>
+<li><p><strong>Interpretability</strong>: SciML often provides more insight into the underlying system’s behavior than traditional black-box machine learning models. Engineers can leverage this understanding to design and optimize systems more effectively.</p></li>
+<li><p><strong>Optimization and Control</strong>: SciML is utilized in optimization and control processes, where it can handle complex problems with various constraints and objectives, guided by both data and underlying physical principles.</p></li>
+<li><p><strong>Domains of Application</strong>: SciML has found applications in various engineering fields, including but not limited to mechanical engineering, electrical engineering, chemical engineering, environmental engineering, and more.</p></li>
+</ol>
+<p>Many modern software packages and platforms now offer tools explicitly designed for SciML, like TensorFlow, PyTorch, and Julia’s SciML ecosystem. These frameworks allow engineers to harness the power of SciML without necessarily being experts in machine learning.</p>
+<section id="ai-ml-dl">
+<h3>AI/ML/DL<a class="headerlink" href="#ai-ml-dl" title="Permalink to this heading">#</a></h3>
+<p>AI (Artificial Intelligence) refers to the broader concept of machines being able to carry out tasks that require human-like intelligence and cognition. AI encompasses various techniques like machine learning, deep Learning, knowledge representation, logic, planning, etc.</p>
+<p>ML (Machine Learning) is a subset of AI that focuses on algorithms that can learn from data to make predictions, classifications or decisions without being explicitly programmed. Popular ML techniques include regression, decision trees, random forests, clustering, neural networks, etc.</p>
+<p>Deep Learning is a specialized branch of ML that uses multi-layered artificial neural networks to extract higher-level features and patterns from raw data. It imitates how the human brain processes information. The additional neural network layers enable learning more complex features and concepts.</p>
+<p>Some key differences:</p>
+<ul class="simple">
+<li><p>AI is the broader parent field encompassing a variety of approaches, while ML and Deep Learning are specific disciplines within AI.</p></li>
+<li><p>ML focuses on general-purpose algorithms to uncover insights from data, while Deep Learning uses multilayer neural nets for advanced learning capabilities.</p></li>
+<li><p>ML relies greatly on feature engineering, while Deep Learning performs automated feature extraction.
+Deep Learning models are ML models that substantially improve performance on complex tasks like computer vision, speech recognition, and natural language processing.</p></li>
+<li><p>Deep Learning requires massive datasets and significant computing power, while some ML techniques can work with smaller data.</p></li>
+</ul>
+<p>In summary, Deep Learning is a state-of-the-art ML technique for many problems, while ML and AI represent the field dedicated to achieving artificial intelligence.</p>
+<p><img alt="AI ML" src="_images/ai-ml.png" /></p>
+</section>
+<section id="machine-learning">
+<h3>Machine Learning<a class="headerlink" href="#machine-learning" title="Permalink to this heading">#</a></h3>
+<p>Machine learning describes the process by which a computer adapts from experience <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span>, on task <span class="math notranslate nohighlight">\(\boldsymbol{T}\)</span>, to improve performance <span class="math notranslate nohighlight">\(\boldsymbol{P}\)</span>. (Mitchel T. (1997))</p>
+<ul class="simple">
+<li><p>Task, <span class="math notranslate nohighlight">\(\boldsymbol{T}\)</span></p>
+<ul>
+<li><p>the problem we hope to solve.</p></li>
+<li><p>examples: classification, regression, etc.</p></li>
+</ul>
+</li>
+<li><p>The Performance Measure, <span class="math notranslate nohighlight">\(\boldsymbol{P}\)</span></p>
+<ul>
+<li><p>quantitative metric to prove we can solve the task.</p></li>
+<li><p>examples: MSE, MAE, Cross-Entropy, etc.</p></li>
+</ul>
+</li>
+<li><p>Experience, <span class="math notranslate nohighlight">\(\boldsymbol{E}\)</span></p>
+<ul>
+<li><p>some form of data/information.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
 <section id="lectures">
 <h2>Lectures<a class="headerlink" href="#lectures" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>00 Perceptron - (Exercise: <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/00-perceptron/00-perceptron-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+Solution: <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/00-perceptron/00-perceptron.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>)</p></li>
+</ul>
 </section>
 <div class="toctree-wrapper compound">
 </div>
@@ -432,6 +494,11 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts">Key Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ai-ml-dl">AI/ML/DL</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#machine-learning">Machine Learning</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lectures">Lectures</a></li>
 </ul>
   </nav></div>
