@@ -422,9 +422,16 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version-of-bingham-model">PyTorch version of Bingham Model</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-1">PyTorch Example #1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2">PyTorch Example #2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-example-1">Neural Network Example #1</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorflow-2-0-keras">TensorFlow 2.0/Keras</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors">Tensors</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorflow-computational-graph">TensorFlow Computational Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-example-2">Neural Network Example #2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-example-3">Neural Network Example #3</a></li>
 </ul>
             </nav>
         </div>
@@ -9778,6 +9785,18 @@ AABJRU5ErkJggg==\
 <blockquote>
 <div><p>💡 Try the different settings to understand the effect of learning rate</p>
 </div></blockquote>
+<p>An epoch in the training process of a neural network refers to one complete iteration over the entire training dataset. The optimization algorithm minimizes a predefined loss function during each epoch, reflecting the discrepancy between the predicted and actual target values.</p>
+<p>Here is a step-by-step breakdown of what happens during an epoch:</p>
+<ol class="arabic simple">
+<li><p><strong>Batch processing</strong>: The training dataset is partitioned into smaller subsets called batches. The batch size is a critical hyperparameter and has implications for the stochasticity of the gradient descent process. Smaller batches yield noisier gradients, which can aid in escaping local minima, whereas larger batches provide a more accurate estimate of the gradient.</p></li>
+<li><p><strong>Forward Propagation</strong>: For each batch, the model computes the predicted output through a series of mathematical operations defined by the architecture. This process is referred to as a “forward pass.”</p></li>
+<li><p><strong>Loss Computation</strong>: The loss function, carefully chosen to align with the problem’s objective, is computed using the predicted output and the true target values. This loss quantifies the error or the discrepancy between the prediction and the actual target values.</p></li>
+<li><p><strong>Backward Propagation</strong>: The gradients of the loss with respect to the model’s parameters are computed using the chain rule. This process is known as “backpropagation” and forms the core of training deep learning models.</p></li>
+<li><p><strong>Parameter Update</strong>: The calculated gradients are used to update the model’s parameters (such as weights and biases) using an optimization algorithm (e.g., SGD, Adam). The update is performed in a direction that reduces the loss, and the learning rate hyperparameter controls the step size of this update.</p></li>
+<li><p><strong>Iteration over Batches</strong>: Steps 2-5 are iteratively performed for each batch in the training data, constituting one entire epoch.</p></li>
+<li><p><strong>Subsequent Epochs</strong>: The entire process is repeated for a predefined number of epochs. Often, the data is shuffled between epochs to prevent any ordering biases in the training process.</p></li>
+</ol>
+<p>Training a model for more epochs means the model has more opportunities to learn from the data. However, training for too many epochs may cause the model to “overfit” the training data, meaning that it becomes specialized to the training data at the expense of its ability to generalize to unseen data. Therefore, the number of epochs is a hyperparameter that needs to be carefully chosen and validated using a separate validation dataset.</p>
 </section>
 </section>
 </section>
@@ -9965,8 +9984,8 @@ Bias: 5.00
 <p>That’s it! We now have a simple single layer neural network defined in PyTorch. To train it on data we need to loop through datasets, perform forward passes, compute loss, backpropagate and update weights.</p>
 </section>
 </section>
-<section id="pytorch-example-1">
-<h2>PyTorch Example #1<a class="headerlink" href="#pytorch-example-1" title="Permalink to this heading">#</a></h2>
+<section id="neural-network-example-1">
+<h2>Neural Network Example #1<a class="headerlink" href="#neural-network-example-1" title="Permalink to this heading">#</a></h2>
 <blockquote>
 <div><p>Bingham model (only shear strain rate <span class="math notranslate nohighlight">\(\dot{\gamma}\)</span> input)</p>
 </div></blockquote>
@@ -10023,9 +10042,83 @@ Bias: 5.00
 <img alt="../../_images/142a070498eafaf87ac37cd9848112dd597f27e68582bff96eaac2b6aeac18dc.png" src="../../_images/142a070498eafaf87ac37cd9848112dd597f27e68582bff96eaac2b6aeac18dc.png" />
 </div>
 </div>
+<section id="tensorflow-2-0-keras">
+<h3>TensorFlow 2.0/Keras<a class="headerlink" href="#tensorflow-2-0-keras" title="Permalink to this heading">#</a></h3>
+<p>TensorFlow 2.0 is an open-source machine learning framework developed by Google, designed to facilitate the building, training, and deployment of various machine learning models. TensorFlow 2.0 brought several improvements over its predecessor, including ease of use, more robust support for distributed training, and integration with Keras as its high-level API.</p>
+<p>Initially developed as an independent neural network library, Keras serves as a user-friendly interface for building deep learning models. It provides a set of high-level building blocks to create neural networks, making it easier to design and experiment with complex architectures. With TensorFlow 2.0, Keras became the default high-level API, allowing researchers and practitioners to harness the power of TensorFlow with a more accessible and streamlined interface.</p>
+<section id="tensors">
+<h4>Tensors<a class="headerlink" href="#tensors" title="Permalink to this heading">#</a></h4>
+<p>Tensors are the primary data structure used in TensorFlow. A tensor is a multidimensional array representing anything from a scalar to a high-dimensional matrix. The dimensions of a tensor are referred to as “ranks,” with rank 0 corresponding to a scalar and rank 1 to a vector.</p>
+<p>Tensors are used to represent the input, output, and transformations within the computational graph. They are immutable, meaning their values cannot be changed once set, and they are strongly typed, meaning that they have a specific datatype (e.g., float32, int32).</p>
+<p>Using tensors enables TensorFlow to be highly versatile and capable of running on various hardware platforms (including GPUs and TPUs), as the same tensor operations can be efficiently mapped to different computational devices.</p>
 </section>
-<section id="pytorch-example-2">
-<h2>PyTorch Example #2<a class="headerlink" href="#pytorch-example-2" title="Permalink to this heading">#</a></h2>
+<section id="tensorflow-computational-graph">
+<h4>TensorFlow Computational Graph<a class="headerlink" href="#tensorflow-computational-graph" title="Permalink to this heading">#</a></h4>
+<p>The computational graph is a core concept in TensorFlow, representing the sequence of operations performed during a computation. Here is how it works:</p>
+<ol class="arabic simple">
+<li><p><strong>Graph Construction</strong>: In TensorFlow, computations are represented as a directed acyclic graph. Each node in the graph corresponds to an operation (e.g., addition, multiplication), and the edges represent the flow of data encapsulated as tensors. This graph-centric design allows for a high degree of parallelism and optimization by the underlying TensorFlow runtime.</p></li>
+<li><p><strong>Eager Execution</strong>: Starting with TensorFlow 2.0, eager execution became the default mode. Eager execution means operations are immediately executed as soon as they are called, and the results can be retrieved without having to run a separate session. This mode simplifies the development process and improves debugging capabilities.</p></li>
+<li><p><strong>Graph Execution</strong>: For more optimized execution, TensorFlow 2.0 still allows for graph execution. The computational graph is first compiled in this mode, and then the execution is optimized for the underlying hardware (like GPUs). This can lead to significant performance gains, especially in large-scale models.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">ReLU</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">SGD</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># Generate synthetic data</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">v_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">num_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">tau0_true</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">mu_true</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_values</span>
+
+<span class="c1"># Bingham Neural Network model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">([</span>
+    <span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,)),</span>
+    <span class="n">ReLU</span><span class="p">()</span>
+<span class="p">])</span>
+
+<span class="c1"># Compile the model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">SGD</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_squared_error&#39;</span><span class="p">)</span>
+
+<span class="c1"># Training the model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">v_values</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Evaluation</span>
+<span class="n">v_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">v_eval</span><span class="p">)</span>
+<span class="n">y_true_eval</span> <span class="o">=</span> <span class="n">tau0_true</span> <span class="o">+</span> <span class="n">mu_true</span> <span class="o">*</span> <span class="n">v_eval</span>
+
+<span class="c1"># Plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">y_true_eval</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eval</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="s1">&#39;b.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Shear Stress&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING:absl:At this time, the v2.11+ optimizer `tf.keras.optimizers.SGD` runs slowly on M1/M2 Macs, please use the legacy Keras optimizer instead, located at `tf.keras.optimizers.legacy.SGD`.
+WARNING:absl:There is a known slowdown when using v2.11+ Keras optimizers on M1/M2 Macs. Falling back to the legacy Keras optimizer, i.e., `tf.keras.optimizers.legacy.SGD`.
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4/4 [==============================] - 0s 543us/step
+</pre></div>
+</div>
+<img alt="../../_images/29fcb09c7fdd10a23050323b5b0aee0b4504349977fe10f1c68ad5293acdc6f0.png" src="../../_images/29fcb09c7fdd10a23050323b5b0aee0b4504349977fe10f1c68ad5293acdc6f0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="neural-network-example-2">
+<h2>Neural Network Example #2<a class="headerlink" href="#neural-network-example-2" title="Permalink to this heading">#</a></h2>
 <blockquote>
 <div><p>Bingham with 3 input parameters (<span class="math notranslate nohighlight">\(\dot{\gamma}, \tau_y, \mu\)</span>)</p>
 </div></blockquote>
@@ -10096,8 +10189,8 @@ Bias: 5.00
 </div>
 </div>
 </section>
-<section id="pytorch-example-3">
-<h2>PyTorch Example #3<a class="headerlink" href="#pytorch-example-3" title="Permalink to this heading">#</a></h2>
+<section id="neural-network-example-3">
+<h2>Neural Network Example #3<a class="headerlink" href="#neural-network-example-3" title="Permalink to this heading">#</a></h2>
 <blockquote>
 <div><p>A non-linear Herschel-Bulkley model</p>
 </div></blockquote>
@@ -10177,6 +10270,18 @@ Bias: 5.00
 <img alt="../../_images/b18d1842920118bdc5d6260a65cef49533b6c18a56da95148dc9523911c38f42.png" src="../../_images/b18d1842920118bdc5d6260a65cef49533b6c18a56da95148dc9523911c38f42.png" />
 </div>
 </div>
+<p>Hyperparameters are values that we set before beginning the training process. They guide the learning process and differ from model parameters, which are learned from the training data. Below are some key hyperparameters:</p>
+<ol class="arabic simple">
+<li><p><strong>Learning Rate</strong>: This hyperparameter controls the step size when updating the model’s weights. If you set it too low, the model converges slowly. If you set it too high, the learning process might diverge.</p></li>
+<li><p><strong>Batch Size</strong>: This defines the number of training examples you use in one iteration to update the model’s weights. A smaller batch size typically leads to a regularizing effect and lower generalization error, while a larger batch size results in faster training but may converge to a suboptimal solution.</p></li>
+<li><p><strong>Number of Epochs</strong>: You set the number of epochs to define how many times the learning algorithm will work through the entire training dataset. An epoch is a full pass through all training samples.</p></li>
+<li><p><strong>Regularization Parameters</strong>: If you apply regularization techniques like L1 or L2, you must set the strength of the penalty as a hyperparameter. Regularization adds penalties to the model parameters to prevent overfitting.</p></li>
+<li><p><strong>Optimization Algorithm</strong>: You choose the optimization algorithm (e.g., SGD, Adam, RMSProp) and its specific parameters (e.g., momentum) as hyperparameters.</p></li>
+<li><p><strong>Network Architecture</strong>: The structure of the neural network, including the number of hidden layers, the number of units in each layer, the activation functions, etc., is determined by hyperparameters that you set.</p></li>
+<li><p><strong>Initialization</strong>: You decide how to set the model’s weights before training, significantly affecting learning. Choices like Xavier or He initialization have corresponding hyperparameters you must set.</p></li>
+<li><p><strong>Early Stopping</strong>: You can also set parameters related to when to stop training, such as if the validation error stops improving. These choices are considered hyperparameters.</p></li>
+</ol>
+<p>Hyperparameters play a vital role in the behavior and performance of a learning algorithm. Finding the best set of hyperparameters, a process called hyperparameter tuning or optimization is essential in training an effective model. Methods for hyperparameter tuning include grid search, random search, Bayesian optimization, and others.</p>
 <blockquote>
 <div><p>💡 Try to change the hyperparameters (learning rate, number of layers in the neural network and activation function) to reduce the error.</p>
 </div></blockquote>
@@ -10280,9 +10385,16 @@ Bias: 5.00
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-version-of-bingham-model">PyTorch version of Bingham Model</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-1">PyTorch Example #1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-2">PyTorch Example #2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-example-3">PyTorch Example #3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-example-1">Neural Network Example #1</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorflow-2-0-keras">TensorFlow 2.0/Keras</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tensors">Tensors</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#tensorflow-computational-graph">TensorFlow Computational Graph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-example-2">Neural Network Example #2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network-example-3">Neural Network Example #3</a></li>
 </ul>
   </nav></div>
 
