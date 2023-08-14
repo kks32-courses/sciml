@@ -383,10 +383,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-example">Perceptron: An example</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-implementation">Perceptron: An implementation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-and-multi-output-perceptrons">Single and multi-output perceptrons</a></li>
@@ -508,8 +506,9 @@ every single neural network and that’s going to be just a single neuron and in
 </div>
 </div>
 </div>
+</section>
 <section id="nonlinear-activation-function">
-<h3>Nonlinear Activation Function<a class="headerlink" href="#nonlinear-activation-function" title="Permalink to this heading">#</a></h3>
+<h2>Nonlinear Activation Function<a class="headerlink" href="#nonlinear-activation-function" title="Permalink to this heading">#</a></h2>
 <p>Activation functions are an important component of artificial neural networks. They introduce non-linearity into the network, allowing it to learn complex patterns in data. Without activation functions, a neural network would essentially be just a linear regression model.</p>
 <p><img alt="Why we need activation functions" src="../../_images/why-activation.png" /></p>
 <blockquote>
@@ -595,7 +594,6 @@ every single neural network and that’s going to be just a single neuron and in
 <img alt="../../_images/921bfb0aeb0eb918e0e54d18f36883a27e3f461bef279c1858b3410b8144c92b.png" src="../../_images/921bfb0aeb0eb918e0e54d18f36883a27e3f461bef279c1858b3410b8144c92b.png" />
 </div>
 </div>
-</section>
 </section>
 <section id="perceptron-an-example">
 <h2>Perceptron: An example<a class="headerlink" href="#perceptron-an-example" title="Permalink to this heading">#</a></h2>
@@ -9893,6 +9891,9 @@ AABJRU5ErkJggg==\
 <p>We must remember that while simpler functions are more likely to generalize(to have a small gap between training and test error), we must still choose asuﬃciently complex hypothesis to achieve low training error. Typically, trainingerror decreases until it asymptotes to the minimum possible error value as modelcapacity increases (assuming the error measure has a minimum value). Typically generalization error has a U-shaped curve as a function of model capacity.</p>
 <p>At the left end of the graph, training error and generalization errorare both high. This is the <strong>underfitting regime</strong>. As we increase capacity, training error decreases, but the gap between training and generalization error increases. Eventually,the size of this gap outweighs the decrease in training error, and we enter the <strong>overfitting regime</strong>, where capacity is too large, above the <strong>optimal capacity</strong>.</p>
 <p><img alt="Training validation fit" src="../../_images/training-validation-fit.png" /></p>
+<blockquote>
+<div><p>Image credits: Goodfellow, I., Bengio, Y., &amp; Courville, A. (2016). Deep learning. MIT press.</p>
+</div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Let us now plot the loss history of training with epochs</span>
@@ -10019,7 +10020,7 @@ Bias: 5.00
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/8d8055402e0312b4bb6f930218228d22c63aa4cd635c67f53472f0be8a437a01.png" src="../../_images/8d8055402e0312b4bb6f930218228d22c63aa4cd635c67f53472f0be8a437a01.png" />
+<img alt="../../_images/142a070498eafaf87ac37cd9848112dd597f27e68582bff96eaac2b6aeac18dc.png" src="../../_images/142a070498eafaf87ac37cd9848112dd597f27e68582bff96eaac2b6aeac18dc.png" />
 </div>
 </div>
 </section>
@@ -10240,10 +10241,8 @@ Bias: 5.00
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-biases">Weights and biases</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-activation-function">Nonlinear Activation Function</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-example">Perceptron: An example</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#perceptron-an-implementation">Perceptron: An implementation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#single-and-multi-output-perceptrons">Single and multi-output perceptrons</a></li>
