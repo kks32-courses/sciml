@@ -1407,6 +1407,18 @@ $<span class="math notranslate nohighlight">\(\frac{\partial \text{loss}}{\parti
 </div>
 </div>
 </div>
+<p>Hyperparameters are values that we set before beginning the training process. They guide the learning process and differ from model parameters, which are learned from the training data. Below are some key hyperparameters:</p>
+<ol class="arabic simple">
+<li><p><strong>Learning Rate</strong>: This hyperparameter controls the step size when updating the model’s weights. If you set it too low, the model converges slowly. If you set it too high, the learning process might diverge.</p></li>
+<li><p><strong>Batch Size</strong>: This defines the number of training examples you use in one iteration to update the model’s weights. A smaller batch size typically leads to a regularizing effect and lower generalization error, while a larger batch size results in faster training but may converge to a suboptimal solution.</p></li>
+<li><p><strong>Number of Epochs</strong>: You set the number of epochs to define how many times the learning algorithm will work through the entire training dataset. An epoch is a full pass through all training samples.</p></li>
+<li><p><strong>Regularization Parameters</strong>: If you apply regularization techniques like L1 or L2, you must set the strength of the penalty as a hyperparameter. Regularization adds penalties to the model parameters to prevent overfitting.</p></li>
+<li><p><strong>Optimization Algorithm</strong>: You choose the optimization algorithm (e.g., SGD, Adam, RMSProp) and its specific parameters (e.g., momentum) as hyperparameters.</p></li>
+<li><p><strong>Network Architecture</strong>: The structure of the neural network, including the number of hidden layers, the number of units in each layer, the activation functions, etc., is determined by hyperparameters that you set.</p></li>
+<li><p><strong>Initialization</strong>: You decide how to set the model’s weights before training, significantly affecting learning. Choices like Xavier or He initialization have corresponding hyperparameters you must set.</p></li>
+<li><p><strong>Early Stopping</strong>: You can also set parameters related to when to stop training, such as if the validation error stops improving. These choices are considered hyperparameters.</p></li>
+</ol>
+<p>Hyperparameters play a vital role in the behavior and performance of a learning algorithm. Finding the best set of hyperparameters, a process called hyperparameter tuning or optimization is essential in training an effective model. Methods for hyperparameter tuning include grid search, random search, Bayesian optimization, and others.</p>
 <blockquote>
 <div><p>💡 Try to change the hyperparameters (learning rate, number of layers in the neural network and activation function) to reduce the error.</p>
 </div></blockquote>
