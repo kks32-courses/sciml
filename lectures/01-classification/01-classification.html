@@ -61,6 +61,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/01-classification/01-classification';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -381,16 +383,27 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">01: Classification</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#liquefaction-classification">Liquefaction classification</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-packages">Install Packages</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#liquefaction">Liquefaction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lateral-spreading-classification">Lateral spreading classification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classification-decision-trees">Classification: Decision Trees</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gini-impurity">GINI Impurity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-splitting">Decision Tree splitting</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-using-gini-impurity">Example Using Gini Impurity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-with-scikit-learn">Decision tree with SciKit Learn</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-a-decision-tree">Visualize a decision tree</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai-with-shap">Explainable AI with SHAP</a></li>
 </ul>
 </li>
@@ -413,16 +426,83 @@ document.write(`
 </div></blockquote>
 <p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/01-classification/01-classification-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
 <strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/01-classification/01-classification.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
-<section id="liquefaction-classification">
-<h2>Liquefaction classification<a class="headerlink" href="#liquefaction-classification" title="Permalink to this heading">#</a></h2>
+<section id="liquefaction">
+<h2>Liquefaction<a class="headerlink" href="#liquefaction" title="Permalink to this heading">#</a></h2>
+<blockquote>
+<div><p>Durante, M. G., &amp; Rathje, E. M. (2021). An exploration of the use of machine learning to predict lateral spreading. Earthquake Spectra, 37(4), 2288-2314.</p>
+</div></blockquote>
+<p>Soil liquefaction is a phenomenon that typically occurs in saturated loose sandy soils subjected to rapid loading conditions, such as earthquakes. The generation of excess pore water pressure is a direct consequence of the rapid loading, which can lead to a sudden reduction in the strength and stiffness of the soil. In the presence of gently sloping ground or near the free face of a slope, the occurrence of earthquake-induced liquefaction may generate lateral displacements, known as lateral spreading.</p>
 <p><img alt="liquefaction" src="../../_images/liquefaction.png" /></p>
+<blockquote>
+<div><p>Fig: (a) Observed liquefaction-related damage (data from NZGD, 2013), and (b) lateral spreading
+horizontal displacement observed from optical image correlation (data from Rathje et al., 2017b) in the
+Avon River area for the 2011 Christchurch earthquake</p>
+</div></blockquote>
+</section>
+<section id="lateral-spreading-classification">
+<h2>Lateral spreading classification<a class="headerlink" href="#lateral-spreading-classification" title="Permalink to this heading">#</a></h2>
+<p>Durante and Rathje (2021) classified sites that experienced more than 0.3 m displacement as lateral spreading. We now evaluate different factors that influence soil lateral spreading, such as (i) Ground Water Table (ground water closer to surface means more chance of liquefaction), (ii) slope angle (steeper the slope more lateral spreading), (iii) PGA - Peak Ground acceleration (intensity of earthquake shaking), and (iv) elevation (certain sites on high terrace don’t show lateral spreading).</p>
 <p><img alt="Factors affecting liquefaction" src="../../_images/liq-factors.png" /></p>
 <blockquote>
 <div><p>Image credits: Durante and Rathje (2021).</p>
 </div></blockquote>
 </section>
-<section id="install-packages">
-<h2>Install Packages<a class="headerlink" href="#install-packages" title="Permalink to this heading">#</a></h2>
+<section id="classification-decision-trees">
+<h2>Classification: Decision Trees<a class="headerlink" href="#classification-decision-trees" title="Permalink to this heading">#</a></h2>
+<p>Classification is the task of predicting a categorical target variable based on input data. There are two main types of classification:</p>
+<p><strong>Binary classification</strong>: The target variable has two possible classes, often labeled 0 and 1. The goal is to predict which of the two classes an input belongs to. Examples include spam detection, disease diagnosis, etc.</p>
+<p><strong>Multi-class classification</strong>: The target variable has more than two possible discrete values or classes. The goal is to predict the specific class an input belongs to out of the multiple choices. Examples include image recognition, document categorization, etc.</p>
+<p>A decision tree is a supervised learning model used for both binary and multi-class classification. It works by recursively partitioning the input space into smaller subspaces based on the value of different predictor variables. The goal is to create leaf nodes that contain cases with similar values of the target variable.</p>
+<p>The structure of a decision tree consists of:</p>
+<ul class="simple">
+<li><p><strong>Root node</strong>: This is the topmost node in the tree and contains the full dataset.</p></li>
+<li><p><strong>Internal nodes</strong>: These represent points where the data is split based on values of predictor variables.</p></li>
+<li><p><strong>Branches</strong>: These connect the internal nodesbased on possible values of predictors.</p></li>
+<li><p><strong>Leaf nodes</strong>: These represent the final classifications or predictions.</p></li>
+</ul>
+<p>Decision trees can handle both categorical and continuous predictors.</p>
+<p>Some key advantages of decision trees are:</p>
+<ul class="simple">
+<li><p><strong>Interpretability</strong> - The tree structure and rules are easy to understand.</p></li>
+<li><p><strong>Non-parametric</strong> - No assumptions about data distribution.</p></li>
+<li><p><strong>Handles nonlinear relationships</strong> - By partitioning data recursively.</p></li>
+<li><p><strong>Handles categorical variables</strong> - No need for dummy coding.</p></li>
+</ul>
+<p><img alt="liquefaction decision tree" src="../../_images/liq-dt.png" /></p>
+<section id="gini-impurity">
+<h3>GINI Impurity<a class="headerlink" href="#gini-impurity" title="Permalink to this heading">#</a></h3>
+<p>Gini impurity is used to evaluate how good a split is by calculating the impurity of the subsets resulting from the split. A lower Gini score means that the split is separating the classes well. It quantifies the disorder or uncertainty within a set of data.</p>
+<p>The Gini impurity for a binary classification is calculated as:
+$<span class="math notranslate nohighlight">\(Gini(t)=1−\sum(p_i)^2\)</span>$</p>
+<p>where <span class="math notranslate nohighlight">\(p_i\)</span>​ is the probability of class <span class="math notranslate nohighlight">\(i\)</span> in the set.</p>
+</section>
+<section id="decision-tree-splitting">
+<h3>Decision Tree splitting<a class="headerlink" href="#decision-tree-splitting" title="Permalink to this heading">#</a></h3>
+<p>A decision tree decides a split by selecting a feature and a value to divide the dataset into two or more homogenous subsets, according to a certain criterion. The ultimate goal is to find the splits that produce the purest subsets, meaning that each subset ideally contains data points from only one class. Here’s how it works:</p>
+<ul class="simple">
+<li><p><strong>Selection of Criteria</strong>: The method used to decide a split depends on the criterion being used. Common criteria for classification tasks include Gini Impurity, Information Gain, and Chi-Squared. For regression tasks, variance reduction is often used.</p></li>
+<li><p><strong>Evaluate Each Feature and Potential Split</strong>: For each feature in the dataset, the algorithm calculates the criterion’s value for every potential split point. Split points can be the actual values of a continuous feature or different categories of a categorical feature.</p></li>
+<li><p><strong>Choose the Best Split</strong>: The algorithm selects the feature and split point that produces the subsets with the highest purity according to the chosen criterion. For example:
+In the case of Gini Impurity, the best split minimizes the impurity.
+In the case of Information Gain, the best split maximizes the gain.</p></li>
+<li><p><strong>Create Subsets</strong>: Once the best split has been identified, the dataset is divided into subsets according to the chosen feature and split point.</p></li>
+<li><p><strong>Repeat</strong>: Steps 1-4 are repeated recursively on each of the subsets until a stopping criterion is met, such as reaching a certain tree depth or the subsets being pure enough.</p></li>
+</ul>
+<section id="example-using-gini-impurity">
+<h4>Example Using Gini Impurity<a class="headerlink" href="#example-using-gini-impurity" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>For each feature, consider all possible values for splitting.</p></li>
+<li><p>Choose the split that results in the lowest weighted Gini Impurity.</p></li>
+<li><p>Calculate the Gini Impurity for each possible split as:</p></li>
+<li><p>Divide the dataset accordingly and continue the process.</p></li>
+</ul>
+<p>In the context of decision trees, the splitting process is essential as it helps the model generalize the pattern from the training data, enabling accurate predictions or classifications for unseen data. It’s the core step in building the tree, and different algorithms might have variations in the splitting procedure.</p>
+</section>
+</section>
+</section>
+<section id="decision-tree-with-scikit-learn">
+<h2>Decision tree with SciKit Learn<a class="headerlink" href="#decision-tree-with-scikit-learn" title="Permalink to this heading">#</a></h2>
+<p>Scikit-learn, often referred to as sklearn, is one of the most popular libraries for machine learning in Python</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>scikit-learn<span class="w"> </span>--user
@@ -445,9 +525,8 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
 <section id="explore-data">
-<h2>Explore data<a class="headerlink" href="#explore-data" title="Permalink to this heading">#</a></h2>
+<h3>Explore data<a class="headerlink" href="#explore-data" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/NHERI-SimCenter/SimCenter_DesignSafe_ML_2022/main/notebooks/day2/RF_YN_Model3.csv&#39;</span><span class="p">)</span>
@@ -1000,6 +1079,7 @@ Name: Target, dtype: int64
 </div>
 </section>
 </section>
+</section>
 <section class="tex2jax_ignore mathjax_ignore" id="decision-tree-classifier">
 <h1>Decision tree classifier<a class="headerlink" href="#decision-tree-classifier" title="Permalink to this heading">#</a></h1>
 <div class="cell docutils container">
@@ -1036,6 +1116,22 @@ Name: Target, dtype: int64
 </div>
 </div>
 </div>
+<section id="metrics">
+<h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">#</a></h2>
+<p>A confusion matrix is commonly used to evaluate the performance of a machine learning classification model. It is an N x N matrix that summarizes how well the model classifies examples into N distinct classes.</p>
+<p>The confusion matrix compares the actual target values to the predicted values. It shows the number of true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN) for each class. A higher count of TP and TN indicates better model performance, while more FP and FN points mean the model is making errors.</p>
+<p>Key evaluation metrics derived from the confusion matrix are accuracy, recall (or true positive rate), and precision. Accuracy measures the overall percentage of correct classifications, treating false positives and false negatives equally.</p>
+<p>Recall calculates the fraction of positive cases that are correctly classified as positive. It looks across the rows of the confusion matrix. Precision looks down the columns, measuring the fraction of positive predictions that are true positives. High precision means few false positives.</p>
+<p>For binary classification, the formulas for these metrics are:</p>
+<p>Accuracy = <span class="math notranslate nohighlight">\((TP + TN)/(TP + TN + FP + FN)\)</span></p>
+<p>Recall = <span class="math notranslate nohighlight">\(TP/(TP + FN)\)</span> = TP/(all positive data)</p>
+<p>Precision = <span class="math notranslate nohighlight">\(TP/(TP + FP)\)</span> = TP/(all positive predictions)</p>
+<p>The confusion matrix and these metrics provide a quantitative assessment of model performance on a classification problem. They highlight the types of errors and allow targeted improvement.</p>
+<p>Researchers commonly use receiver operating characteristic (ROC) curves to evaluate the performance of machine learning classification models. A ROC curve plots the true positive rate (TPR) against the false positive rate (FPR) for different classification probability thresholds. The TPR, also called recall, represents the percentage of positive cases correctly classified. The FPR represents the percentage of negative cases incorrectly classified as positive.</p>
+<p>The FPR represents the fraction of the negative points that are incorrectly classified as positive (FPR = FP/(FP + TN) = FP/(all negative data)). An ideal classifier will have a ROC curve that passes through the top left corner, with a TPR of 1 and FPR of 0. A random classifier will have a ROC curve along the diagonal line where TPR equals FPR. Less accurate models have curves closer to the diagonal, while more accurate models have curves further up and left.</p>
+<p>The area under the ROC curve (AUC) quantifies the model’s performance. Larger AUC values indicate better classification, with a maximum of 1. AUC values near 0.5 imply performance equal to a random classifier.</p>
+<p>Although designed for binary classification, ROC analysis can be extended to multi-class problems using a one-vs-rest approach. This involves creating a binary classifier for each class against the rest. The per-class ROC curves are averaged, weighting by class size, to produce an overall curve.</p>
+</section>
 <section id="visualize-a-decision-tree">
 <h2>Visualize a decision tree<a class="headerlink" href="#visualize-a-decision-tree" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -1056,9 +1152,12 @@ Name: Target, dtype: int64
 </div>
 </div>
 </section>
+<section id="random-forest">
+<h2>Random Forest<a class="headerlink" href="#random-forest" title="Permalink to this heading">#</a></h2>
+<p><img alt="Decision tree vs Random Forest" src="../../_images/decision-tree-rf.png" /></p>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="extreme-gradient-boosting">
-<h1>Extreme Gradient Boosting<a class="headerlink" href="#extreme-gradient-boosting" title="Permalink to this heading">#</a></h1>
+<section id="extreme-gradient-boosting">
+<h2>Extreme Gradient Boosting<a class="headerlink" href="#extreme-gradient-boosting" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>xgboost
@@ -1146,6 +1245,7 @@ Requirement already satisfied: scipy in /opt/conda/lib/python3.9/site-packages (
 </div>
 </div>
 </div>
+</section>
 <section id="explainable-ai-with-shap">
 <h2>Explainable AI with SHAP<a class="headerlink" href="#explainable-ai-with-shap" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -1356,16 +1456,27 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">01: Classification</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#liquefaction-classification">Liquefaction classification</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-packages">Install Packages</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#liquefaction">Liquefaction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lateral-spreading-classification">Lateral spreading classification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classification-decision-trees">Classification: Decision Trees</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gini-impurity">GINI Impurity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-splitting">Decision Tree splitting</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-using-gini-impurity">Example Using Gini Impurity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-with-scikit-learn">Decision tree with SciKit Learn</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-a-decision-tree">Visualize a decision tree</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai-with-shap">Explainable AI with SHAP</a></li>
 </ul>
 </li>
