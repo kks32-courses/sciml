@@ -400,6 +400,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction">Prediction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-a-decision-tree">Visualize a decision tree</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a></li>
@@ -510,7 +511,11 @@ In the case of Information Gain, the best split maximizes the gain.</p></li>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: sklearn in /opt/conda/lib/python3.9/site-packages (0.0.post5)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: scikit-learn in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (1.3.0)
+Requirement already satisfied: numpy&gt;=1.17.3 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (1.25.2)
+Requirement already satisfied: scipy&gt;=1.5.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (1.11.1)
+Requirement already satisfied: joblib&gt;=1.1.1 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (1.3.2)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (3.2.0)
 </pre></div>
 </div>
 </div>
@@ -521,6 +526,18 @@ In the case of Information Gain, the best split maximizes the gain.</p></li>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">tree</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">krishna</span><span class="o">/</span><span class="n">courses</span><span class="o">/</span><span class="n">CE397</span><span class="o">-</span><span class="n">Scientific</span><span class="o">-</span><span class="n">MachineLearning</span><span class="o">/</span><span class="n">sciml</span><span class="o">/</span><span class="n">lectures</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">Cell</span> <span class="mi">11</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#X11sZmlsZQ%3D%3D?line=0&#39;</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#X11sZmlsZQ%3D%3D?line=1&#39;</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#X11sZmlsZQ%3D%3D?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">tree</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;pandas&#39;
 </pre></div>
 </div>
 </div>
@@ -1094,16 +1111,27 @@ Name: Target, dtype: int64
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6678082191780822
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">krishna</span><span class="o">/</span><span class="n">courses</span><span class="o">/</span><span class="n">CE397</span><span class="o">-</span><span class="n">Scientific</span><span class="o">-</span><span class="n">MachineLearning</span><span class="o">/</span><span class="n">sciml</span><span class="o">/</span><span class="n">lectures</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">Cell</span> <span class="mi">25</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#X63sZmlsZQ%3D%3D?line=0&#39;</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#X63sZmlsZQ%3D%3D?line=1&#39;</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#X63sZmlsZQ%3D%3D?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+
+<span class="ne">NameError</span>: name &#39;clf&#39; is not defined
 </pre></div>
 </div>
 </div>
 </div>
+<section id="prediction">
+<h2>Prediction<a class="headerlink" href="#prediction" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[</span><span class="mi">4</span><span class="p">]</span>
@@ -1116,6 +1144,7 @@ Name: Target, dtype: int64
 </div>
 </div>
 </div>
+</section>
 <section id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">#</a></h2>
 <p>A confusion matrix is commonly used to evaluate the performance of a machine learning classification model. It is an N x N matrix that summarizes how well the model classifies examples into N distinct classes.</p>
@@ -1473,6 +1502,7 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction">Prediction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-a-decision-tree">Visualize a decision tree</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a></li>
