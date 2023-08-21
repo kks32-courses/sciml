@@ -161,6 +161,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">Perceptron</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">01: Classification</a></li>
 
+
+
 </ul>
 
     </div>
@@ -421,12 +423,53 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-decision-trees">Summary of decision trees</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-hyperparameter-tuning">Automatic Hyperparameter tuning</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai-with-shap">Explainable AI with SHAP</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-hyperparameter-tuning">Automatic Hyperparameter tuning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#k-fold-cross-validation-cv">K-Fold Cross-Validation (CV)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-k-fold-cv-works">How K-Fold CV Works:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-k-fold-cv">Benefits of K-Fold CV</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drawbacks">Drawbacks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#xgboost-extreme-gradient-boosting">XGBoost (Extreme Gradient Boosting)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-boosting-framework">Gradient Boosting Framework</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xgboost-enhancements">XGBoost Enhancements</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-missing-data">Handling Missing Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#column-block-and-parallelization">Column Block and Parallelization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hyperparameters">Hyperparameters</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai">Explainable AI</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-importance-metrics">Feature Importance Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-importance-metrics">Types of Importance Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-based-importance">1. <strong>Weight-Based Importance</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#permutation-importance">2. <strong>Permutation Importance</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shapley-values">3. Shapley Values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-shap-values-an-analogy">Understanding SHAP Values: An Analogy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#the-project">The Project</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#shapley-value-concept">Shapley Value Concept</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#step-by-step-explanation">Step by Step Explanation</a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-contributions">Calculating Contributions</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positive-vs-negative-shap-values">Positive vs. Negative SHAP Values</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positive-prediction">Positive prediction</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#negative-prediction">Negative prediction</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-explanation">Global explanation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -453,6 +496,61 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>scikit-learn<span class="w"> </span>pandas
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: scikit-learn in /usr/local/lib/python3.10/dist-packages (1.2.2)
+Requirement already satisfied: pandas in /usr/local/lib/python3.10/dist-packages (1.5.3)
+Requirement already satisfied: numpy&gt;=1.17.3 in /usr/local/lib/python3.10/dist-packages (from scikit-learn) (1.23.5)
+Requirement already satisfied: scipy&gt;=1.3.2 in /usr/local/lib/python3.10/dist-packages (from scikit-learn) (1.10.1)
+Requirement already satisfied: joblib&gt;=1.1.1 in /usr/local/lib/python3.10/dist-packages (from scikit-learn) (1.3.2)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn) (3.2.0)
+Requirement already satisfied: python-dateutil&gt;=2.8.1 in /usr/local/lib/python3.10/dist-packages (from pandas) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas) (2023.3)
+Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.1-&gt;pandas) (1.16.0)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>xgboost
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: xgboost in /usr/local/lib/python3.10/dist-packages (1.7.6)
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages (from xgboost) (1.23.5)
+Requirement already satisfied: scipy in /usr/local/lib/python3.10/dist-packages (from xgboost) (1.10.1)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>shap
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: shap in /usr/local/lib/python3.10/dist-packages (0.42.0)
+Requirement already satisfied: numpy in /usr/local/lib/python3.10/dist-packages (from shap) (1.23.5)
+Requirement already satisfied: scipy in /usr/local/lib/python3.10/dist-packages (from shap) (1.10.1)
+Requirement already satisfied: scikit-learn in /usr/local/lib/python3.10/dist-packages (from shap) (1.2.2)
+Requirement already satisfied: pandas in /usr/local/lib/python3.10/dist-packages (from shap) (1.5.3)
+Requirement already satisfied: tqdm&gt;=4.27.0 in /usr/local/lib/python3.10/dist-packages (from shap) (4.66.1)
+Requirement already satisfied: packaging&gt;20.9 in /usr/local/lib/python3.10/dist-packages (from shap) (23.1)
+Requirement already satisfied: slicer==0.0.7 in /usr/local/lib/python3.10/dist-packages (from shap) (0.0.7)
+Requirement already satisfied: numba in /usr/local/lib/python3.10/dist-packages (from shap) (0.56.4)
+Requirement already satisfied: cloudpickle in /usr/local/lib/python3.10/dist-packages (from shap) (2.2.1)
+Requirement already satisfied: llvmlite&lt;0.40,&gt;=0.39.0dev0 in /usr/local/lib/python3.10/dist-packages (from numba-&gt;shap) (0.39.1)
+Requirement already satisfied: setuptools in /usr/local/lib/python3.10/dist-packages (from numba-&gt;shap) (67.7.2)
+Requirement already satisfied: python-dateutil&gt;=2.8.1 in /usr/local/lib/python3.10/dist-packages (from pandas-&gt;shap) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas-&gt;shap) (2023.3)
+Requirement already satisfied: joblib&gt;=1.1.1 in /usr/local/lib/python3.10/dist-packages (from scikit-learn-&gt;shap) (1.3.2)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn-&gt;shap) (3.2.0)
+Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.1-&gt;pandas-&gt;shap) (1.16.0)
 </pre></div>
 </div>
 </div>
@@ -502,7 +600,9 @@ Avon River area for the 2011 Christchurch earthquake</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
+<div class="output text_html">
+  <div id="df-0ed10b6e-a4c5-4f3d-ad4f-def0992f4606" class="colab-df-container">
+    <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -582,7 +682,148 @@ Avon River area for the 2011 Christchurch earthquake</p>
     </tr>
   </tbody>
 </table>
-</div></div></div>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-0ed10b6e-a4c5-4f3d-ad4f-def0992f4606')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-0ed10b6e-a4c5-4f3d-ad4f-def0992f4606 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-0ed10b6e-a4c5-4f3d-ad4f-def0992f4606');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-9dffed22-cb9e-4c31-b416-77a0d8d788bf">
+  <button class="colab-df-quickchart" onclick="quickchart('df-9dffed22-cb9e-4c31-b416-77a0d8d788bf')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-9dffed22-cb9e-4c31-b416-77a0d8d788bf button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
 </div>
 </section>
 <section id="filtering-for-features">
@@ -596,7 +837,9 @@ Avon River area for the 2011 Christchurch earthquake</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
+<div class="output text_html">
+  <div id="df-8ab7a54e-e843-43ba-8b0b-ee0d8d1fbe71" class="colab-df-container">
+    <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -664,7 +907,148 @@ Avon River area for the 2011 Christchurch earthquake</p>
     </tr>
   </tbody>
 </table>
-</div></div></div>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-8ab7a54e-e843-43ba-8b0b-ee0d8d1fbe71')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-8ab7a54e-e843-43ba-8b0b-ee0d8d1fbe71 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-8ab7a54e-e843-43ba-8b0b-ee0d8d1fbe71');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-bb4137e6-a496-473c-9663-5ef4d1e22a60">
+  <button class="colab-df-quickchart" onclick="quickchart('df-bb4137e6-a496-473c-9663-5ef4d1e22a60')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-bb4137e6-a496-473c-9663-5ef4d1e22a60 button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -700,7 +1084,9 @@ Name: Target, dtype: int64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
+<div class="output text_html">
+  <div id="df-e06f0d92-8492-4b91-87e3-b5c51536a047" class="colab-df-container">
+    <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -817,7 +1203,148 @@ Name: Target, dtype: int64
   </tbody>
 </table>
 <p>7291 rows × 5 columns</p>
-</div></div></div>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-e06f0d92-8492-4b91-87e3-b5c51536a047')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-e06f0d92-8492-4b91-87e3-b5c51536a047 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-e06f0d92-8492-4b91-87e3-b5c51536a047');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-35c35f1c-da0a-406f-97af-f23a9f06634f">
+  <button class="colab-df-quickchart" onclick="quickchart('df-35c35f1c-da0a-406f-97af-f23a9f06634f')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-35c35f1c-da0a-406f-97af-f23a9f06634f button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
 </div>
 <p>We are going to use the <code class="docutils literal notranslate"><span class="pre">train_test_split</span></code> function twice to split the data into training + validation and testing. Then, we split the <code class="docutils literal notranslate"><span class="pre">training</span> <span class="pre">+</span> <span class="pre">validation</span></code> into training and validation. We retrain the target values for now, so we can check how good is our prediction.</p>
 <div class="cell docutils container">
@@ -835,7 +1362,9 @@ Name: Target, dtype: int64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
+<div class="output text_html">
+  <div id="df-1455eefb-db23-45c0-b50a-ac1d5c3a10ad" class="colab-df-container">
+    <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -862,44 +1391,44 @@ Name: Target, dtype: int64
   </thead>
   <tbody>
     <tr>
-      <th>2074</th>
-      <td>2.243060</td>
-      <td>1.128009</td>
-      <td>0.556541</td>
-      <td>0.412280</td>
+      <th>4842</th>
+      <td>2.465091</td>
+      <td>1.366231</td>
+      <td>1.337589</td>
+      <td>0.402446</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>311</th>
+      <td>2.220278</td>
+      <td>0.697772</td>
+      <td>1.524962</td>
+      <td>0.485805</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3988</th>
+      <td>2.223850</td>
+      <td>0.525416</td>
+      <td>2.593247</td>
+      <td>0.490235</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>3225</th>
-      <td>2.310902</td>
-      <td>1.983713</td>
-      <td>0.000000</td>
-      <td>0.413459</td>
+      <th>4773</th>
+      <td>1.673375</td>
+      <td>2.422799</td>
+      <td>1.074945</td>
+      <td>0.371233</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>5816</th>
-      <td>3.042242</td>
-      <td>0.149327</td>
-      <td>0.661831</td>
-      <td>0.443339</td>
+      <th>323</th>
+      <td>2.934342</td>
+      <td>0.669136</td>
+      <td>2.542488</td>
+      <td>0.481632</td>
       <td>0</td>
-    </tr>
-    <tr>
-      <th>4520</th>
-      <td>1.672946</td>
-      <td>0.603445</td>
-      <td>0.345039</td>
-      <td>0.420741</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3056</th>
-      <td>2.001447</td>
-      <td>1.024880</td>
-      <td>0.816727</td>
-      <td>0.443319</td>
-      <td>1</td>
     </tr>
     <tr>
       <th>...</th>
@@ -910,49 +1439,190 @@ Name: Target, dtype: int64
       <td>...</td>
     </tr>
     <tr>
-      <th>3561</th>
-      <td>1.691960</td>
-      <td>0.755911</td>
-      <td>0.659987</td>
-      <td>0.474853</td>
+      <th>2823</th>
+      <td>1.719638</td>
+      <td>2.359258</td>
+      <td>0.000000</td>
+      <td>0.401707</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>5725</th>
-      <td>2.835478</td>
-      <td>0.884954</td>
-      <td>1.378123</td>
-      <td>0.415294</td>
+      <th>2806</th>
+      <td>1.618360</td>
+      <td>2.329173</td>
+      <td>0.000000</td>
+      <td>0.401707</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>5563</th>
+      <td>2.897944</td>
+      <td>0.507353</td>
+      <td>0.394654</td>
+      <td>0.421380</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>4625</th>
-      <td>0.782569</td>
-      <td>0.996662</td>
-      <td>0.211627</td>
-      <td>0.413167</td>
-      <td>0</td>
+      <th>6361</th>
+      <td>1.885435</td>
+      <td>0.081483</td>
+      <td>0.190712</td>
+      <td>0.426110</td>
+      <td>1</td>
     </tr>
     <tr>
-      <th>7188</th>
-      <td>1.217597</td>
-      <td>0.470850</td>
-      <td>0.766472</td>
-      <td>0.415762</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>4005</th>
-      <td>2.679003</td>
-      <td>0.591425</td>
-      <td>1.528928</td>
-      <td>0.487123</td>
+      <th>1745</th>
+      <td>2.698600</td>
+      <td>2.163888</td>
+      <td>1.044354</td>
+      <td>0.368342</td>
       <td>0</td>
     </tr>
   </tbody>
 </table>
 <p>292 rows × 5 columns</p>
-</div></div></div>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-1455eefb-db23-45c0-b50a-ac1d5c3a10ad')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-1455eefb-db23-45c0-b50a-ac1d5c3a10ad button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-1455eefb-db23-45c0-b50a-ac1d5c3a10ad');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-b6f2d000-2131-4c6a-8b76-1b85a7cd7737">
+  <button class="colab-df-quickchart" onclick="quickchart('df-b6f2d000-2131-4c6a-8b76-1b85a7cd7737')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-b6f2d000-2131-4c6a-8b76-1b85a7cd7737 button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -970,7 +1640,9 @@ Name: Target, dtype: int64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
+<div class="output text_html">
+  <div id="df-7dde36e0-340e-4764-9ee5-61e51a34edd6" class="colab-df-container">
+    <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -996,43 +1668,184 @@ Name: Target, dtype: int64
   </thead>
   <tbody>
     <tr>
-      <th>5703</th>
-      <td>1.342004</td>
-      <td>0.491025</td>
-      <td>5.150787</td>
-      <td>0.422555</td>
+      <th>182</th>
+      <td>1.995111</td>
+      <td>0.720363</td>
+      <td>1.056944</td>
+      <td>0.419531</td>
     </tr>
     <tr>
-      <th>4128</th>
-      <td>1.397046</td>
-      <td>0.072770</td>
-      <td>0.246042</td>
-      <td>0.513281</td>
+      <th>6863</th>
+      <td>1.642848</td>
+      <td>0.287636</td>
+      <td>0.744498</td>
+      <td>0.449792</td>
     </tr>
     <tr>
-      <th>2347</th>
-      <td>2.186488</td>
-      <td>1.370897</td>
-      <td>0.508970</td>
-      <td>0.410625</td>
+      <th>638</th>
+      <td>2.408738</td>
+      <td>1.675044</td>
+      <td>0.882258</td>
+      <td>0.495766</td>
     </tr>
     <tr>
-      <th>3489</th>
-      <td>1.549115</td>
-      <td>0.861001</td>
-      <td>0.940807</td>
-      <td>0.471565</td>
+      <th>4770</th>
+      <td>1.853496</td>
+      <td>0.561542</td>
+      <td>0.044951</td>
+      <td>0.429180</td>
     </tr>
     <tr>
-      <th>6496</th>
-      <td>1.990132</td>
-      <td>0.137762</td>
-      <td>0.612021</td>
-      <td>0.431009</td>
+      <th>4452</th>
+      <td>1.826260</td>
+      <td>0.518457</td>
+      <td>0.481842</td>
+      <td>0.418497</td>
     </tr>
   </tbody>
 </table>
-</div></div></div>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-7dde36e0-340e-4764-9ee5-61e51a34edd6')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-7dde36e0-340e-4764-9ee5-61e51a34edd6 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-7dde36e0-340e-4764-9ee5-61e51a34edd6');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-d343c9ba-1859-40be-9f1b-62ab5474d84e">
+  <button class="colab-df-quickchart" onclick="quickchart('df-d343c9ba-1859-40be-9f1b-62ab5474d84e')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-d343c9ba-1859-40be-9f1b-62ab5474d84e button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1041,11 +1854,11 @@ Name: Target, dtype: int64
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5703    0
-4128    1
-2347    0
-3489    1
-6496    0
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>182     0
+6863    0
+638     1
+4770    1
+4452    0
 Name: Target, dtype: int64
 </pre></div>
 </div>
@@ -1129,7 +1942,7 @@ In the case of Information Gain, the best split maximizes the gain.</p></li>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><style>#sk-container-id-1 {color: black;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=3)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=3)</pre></div></div></div></div></div></div></div>
+<div class="output text_html"><style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=3)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" checked><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=3)</pre></div></div></div></div></div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1140,9 +1953,9 @@ In the case of Information Gain, the best split maximizes the gain.</p></li>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training score: 66.00%
-Validation score: 63.70%
-Testing score: 68.04%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training score: 68.54%
+Validation score: 64.04%
+Testing score: 67.44%
 </pre></div>
 </div>
 </div>
@@ -1154,7 +1967,7 @@ Testing score: 68.04%
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6803770351328192
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6743787489288775
 </pre></div>
 </div>
 </div>
@@ -1181,7 +1994,7 @@ Testing score: 68.04%
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-<span class="n">tree</span><span class="o">.</span><span class="n">plot_tree</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> 
+<span class="n">tree</span><span class="o">.</span><span class="n">plot_tree</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span>
                <span class="n">feature_names</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;GWD (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;L (km)&#39;</span><span class="p">,</span> <span class="s1">&#39;Slope (%)&#39;</span><span class="p">,</span> <span class="s1">&#39;PGA (g)&#39;</span><span class="p">],</span>
                <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Liquefaction&#39;</span><span class="p">,</span> <span class="s1">&#39;No liquefaction&#39;</span><span class="p">],</span>
                <span class="n">filled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
@@ -1190,11 +2003,7 @@ Testing score: 68.04%
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_49557/636362235.py:8: UserWarning: Matplotlib is currently using module://matplotlib_inline.backend_inline, which is a non-GUI backend, so cannot show the figure.
-  fig.show()
-</pre></div>
-</div>
-<img alt="../../_images/63cd2cb1fad577a40ec057dee44b48d891a67df8441d963f8137441c23268321.png" src="../../_images/63cd2cb1fad577a40ec057dee44b48d891a67df8441d963f8137441c23268321.png" />
+<img alt="../../_images/dedb97910048a0caafc63108c881474888d34951bcf83462b6d70eb630f704e8.png" src="../../_images/dedb97910048a0caafc63108c881474888d34951bcf83462b6d70eb630f704e8.png" />
 </div>
 </div>
 </section>
@@ -1212,7 +2021,7 @@ Testing score: 68.04%
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><style>#sk-container-id-4 {color: black;}#sk-container-id-4 pre{padding: 0;}#sk-container-id-4 div.sk-toggleable {background-color: white;}#sk-container-id-4 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-4 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-4 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-4 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-4 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-4 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-4 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-4 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-4 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-4 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-4 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-4 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-4 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-4 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-4 div.sk-item {position: relative;z-index: 1;}#sk-container-id-4 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-4 div.sk-item::before, #sk-container-id-4 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-4 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-4 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-4 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-4 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-4 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-4 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-4 div.sk-label-container {text-align: center;}#sk-container-id-4 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-4 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-4" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=7)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox" checked><label for="sk-estimator-id-4" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=7)</pre></div></div></div></div></div></div></div>
+<div class="output text_html"><style>#sk-container-id-2 {color: black;background-color: white;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=7)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=7)</pre></div></div></div></div></div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1223,8 +2032,8 @@ Testing score: 68.04%
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training score: 77.85%
-Validation score: 77.05%
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training score: 77.97%
+Validation score: 72.95%
 Testing score: 74.98%
 </pre></div>
 </div>
@@ -1259,28 +2068,28 @@ Testing score: 74.98%
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
 
 <span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    
+
     <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
-    
+
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
         <span class="n">cm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">)</span>
-    
+
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="s1">&#39;No&#39;</span><span class="p">,</span><span class="s1">&#39;Yes&#39;</span><span class="p">])</span> 
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="s1">&#39;No&#39;</span><span class="p">,</span><span class="s1">&#39;Yes&#39;</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;No&#39;</span><span class="p">,</span><span class="s1">&#39;Yes&#39;</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
-    
+
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
             <span class="n">text</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
-    
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Confusion Matrix&#39;</span><span class="p">)</span>    
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Confusion Matrix&#39;</span><span class="p">)</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -1297,7 +2106,7 @@ Testing score: 74.98%
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5c30017b466a65239d30d5d885ea368be4dbc5a6515ea97d3d45424f9dc33dc0.png" src="../../_images/5c30017b466a65239d30d5d885ea368be4dbc5a6515ea97d3d45424f9dc33dc0.png" />
+<img alt="../../_images/8c00016f9734de527ab1deae8f478d3a8b32e703b23278498ac51b2a26fc504a.png" src="../../_images/8c00016f9734de527ab1deae8f478d3a8b32e703b23278498ac51b2a26fc504a.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1310,7 +2119,7 @@ Testing score: 74.98%
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/5b497b76807d32484898aad4e543d9acf4c36b79f5803386c2937d3945e33f72.png" src="../../_images/5b497b76807d32484898aad4e543d9acf4c36b79f5803386c2937d3945e33f72.png" />
+<img alt="../../_images/5c4940f0bad3cea270d4d1b8ec63f834a39a9d6b559831edef671d18b0376503.png" src="../../_images/5c4940f0bad3cea270d4d1b8ec63f834a39a9d6b559831edef671d18b0376503.png" />
 </div>
 </div>
 </section>
@@ -1318,7 +2127,9 @@ Testing score: 74.98%
 <h3>ROC<a class="headerlink" href="#roc" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_roc_cur</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">):</span>  
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">make_scorer</span>
+
+<span class="k">def</span> <span class="nf">plot_roc_cur</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">):</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ROC&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;False Positive Rate&#39;</span><span class="p">)</span>
@@ -1328,13 +2139,13 @@ Testing score: 74.98%
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="n">probs</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">probs</span><span class="p">)</span> 
+<span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">probs</span><span class="p">)</span>
 <span class="n">plot_roc_cur</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/b6c2ec1c9f1950e76cc5d01de2e3378d64faa58d2324e47cd833d3940ed6b02a.png" src="../../_images/b6c2ec1c9f1950e76cc5d01de2e3378d64faa58d2324e47cd833d3940ed6b02a.png" />
+<img alt="../../_images/606309a82242c4efd4c20988a7c58e4ebcd9b368a071a47006514e038ef7a0b2.png" src="../../_images/606309a82242c4efd4c20988a7c58e4ebcd9b368a071a47006514e038ef7a0b2.png" />
 </div>
 </div>
 <section id="precision-recall-curve">
@@ -1376,7 +2187,7 @@ Testing score: 74.98%
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/aafb90b85f4d38826e1b68b36ecdca5acde45e7b62175a376050deb2efb278c1.png" src="../../_images/aafb90b85f4d38826e1b68b36ecdca5acde45e7b62175a376050deb2efb278c1.png" />
+<img alt="../../_images/043c6e0a1e97fa598fa7a6c51b1c22a8b98e039d9576a1eca30982e315b57368.png" src="../../_images/043c6e0a1e97fa598fa7a6c51b1c22a8b98e039d9576a1eca30982e315b57368.png" />
 </div>
 </div>
 </section>
@@ -1390,8 +2201,9 @@ Testing score: 74.98%
 </ul>
 </section>
 </section>
-<section id="random-forest">
-<h2>Random Forest<a class="headerlink" href="#random-forest" title="Permalink to this heading">#</a></h2>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="random-forest">
+<h1>Random Forest<a class="headerlink" href="#random-forest" title="Permalink to this heading">#</a></h1>
 <p>A random forest is an ensemble method that builds multiple decision trees and combines their predictions. Here’s how it works:</p>
 <p><strong>Bootstrapping</strong>: For each tree in the forest, a subset of the training data is sampled with replacement. This helps in reducing overfitting by ensuring that each tree in the forest sees a slightly different subset of the data.</p>
 <p><strong>Random Feature Selection</strong>: When splitting a node, a random subset of features is considered. This further decorrelates the trees and improves generalization.</p>
@@ -1411,7 +2223,7 @@ Testing score: 74.98%
 <p>In the context of SciML, both decision trees and random forests can be powerful tools. Decision trees are often used for their interpretability and simplicity, while random forests are employed for their robustness and improved predictive accuracy. Understanding the underlying mechanics and differences between these methods can help researchers and practitioners make informed choices for their specific applications.</p>
 <p><img alt="Decision tree vs Random Forest" src="../../_images/decision-tree-rf.png" /></p>
 <section id="automatic-hyperparameter-tuning">
-<h3>Automatic Hyperparameter tuning<a class="headerlink" href="#automatic-hyperparameter-tuning" title="Permalink to this heading">#</a></h3>
+<h2>Automatic Hyperparameter tuning<a class="headerlink" href="#automatic-hyperparameter-tuning" title="Permalink to this heading">#</a></h2>
 <p>Like we varied <code class="docutils literal notranslate"><span class="pre">max_depth</span></code>, there are other hyperparameters than can be tuned to improve performance.</p>
 <p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html">https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html</a></p>
 <p>Cohen’s kappa score measures the agreement between two raters/classifiers while taking into account the agreement expected by chance.</p>
@@ -1429,11 +2241,38 @@ $p_e$ is the expected agreement by chance
 <p>So in this approach, we are using <code class="docutils literal notranslate"><span class="pre">GridSearchCV</span></code> to optimize the hyperparameters of a Random Forest Classifier to maximize the kappa score, rather than just overall accuracy.</p>
 <p>The goal is to tune hyperparameters like <code class="docutils literal notranslate"><span class="pre">max_depth</span></code>, <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code> etc. to find the values that result in the best kappa score, indicating the model’s predictions have the strongest agreement with the true labels after accounting for chance.</p>
 <p>This often results in a model that generalizes better than just optimizing for accuracy. The final model can then be evaluated with cross-validation to estimate real-world performance.</p>
+</section>
+<section id="k-fold-cross-validation-cv">
+<h2>K-Fold Cross-Validation (CV)<a class="headerlink" href="#k-fold-cross-validation-cv" title="Permalink to this heading">#</a></h2>
+<p>K-fold cross-validation is a popular resampling procedure used to evaluate a machine learning model’s performance.</p>
+<section id="how-k-fold-cv-works">
+<h3>How K-Fold CV Works:<a class="headerlink" href="#how-k-fold-cv-works" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Partitioning:</strong> The original training data set is randomly partitioned into <span class="math notranslate nohighlight">\( k \)</span> equal-sized subsets or “folds.”</p></li>
+<li><p><strong>Training and Validation:</strong> Of the <span class="math notranslate nohighlight">\( k \)</span> folds, <span class="math notranslate nohighlight">\( (k-1) \)</span> are used for training, and one is used for validation. This is repeated <span class="math notranslate nohighlight">\( k \)</span> times.</p></li>
+<li><p><strong>Evaluation:</strong> You’ll train the model on <span class="math notranslate nohighlight">\( (k-1) \)</span> folds and validate it on the remaining fold, recording the error metric.</p></li>
+<li><p><strong>Aggregation:</strong> Average the recorded error metrics to obtain a single value that represents the model’s performance.</p></li>
+</ol>
+</section>
+<section id="benefits-of-k-fold-cv">
+<h3>Benefits of K-Fold CV<a class="headerlink" href="#benefits-of-k-fold-cv" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Bias-Variance Tradeoff:</strong> Good bias-variance tradeoff.</p></li>
+<li><p><strong>Utilizing All Data:</strong> Beneficial when dataset size is limited.</p></li>
+<li><p><strong>Reduction in Overfitting:</strong> Helps in detecting overfitting.</p></li>
+</ul>
+</section>
+<section id="drawbacks">
+<h3>Drawbacks<a class="headerlink" href="#drawbacks" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Computationally Expensive:</strong> Requires training and validating the model <span class="math notranslate nohighlight">\( k \)</span> times.</p></li>
+<li><p><strong>Randomness in Partitions:</strong> Performance estimate can be sensitive to how the data is divided.</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span><span class="p">,</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">cross_val_predict</span><span class="p">,</span> <span class="n">KFold</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">make_scorer</span> 
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">make_scorer</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
 </pre></div>
 </div>
@@ -1441,7 +2280,7 @@ $p_e$ is the expected agreement by chance
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#define function to find best parameter combination based on Cohen’s kappa coefficient </span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#define function to find best parameter combination based on Cohen’s kappa coefficient</span>
 <span class="k">def</span> <span class="nf">rfr_model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="c1"># Perform Grid-Search</span>
     <span class="n">kappa_scorer</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">cohen_kappa_score</span><span class="p">)</span>
@@ -1454,12 +2293,12 @@ $p_e$ is the expected agreement by chance
             <span class="s1">&#39;criterion&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span><span class="s1">&#39;entropy&#39;</span><span class="p">),</span>
         <span class="p">},</span>
         <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">kappa_scorer</span><span class="p">)</span>
-    
+
     <span class="n">grid_result</span> <span class="o">=</span> <span class="n">gsc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="n">best_params</span> <span class="o">=</span> <span class="n">grid_result</span><span class="o">.</span><span class="n">best_params_</span>
-    
-    <span class="n">rfr</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;max_depth&quot;</span><span class="p">],</span> 
-                                 <span class="n">n_estimators</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;n_estimators&quot;</span><span class="p">],</span> 
+
+    <span class="n">rfr</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;max_depth&quot;</span><span class="p">],</span>
+                                 <span class="n">n_estimators</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;n_estimators&quot;</span><span class="p">],</span>
                                  <span class="n">max_features</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;max_features&quot;</span><span class="p">],</span> <span class="n">criterion</span> <span class="o">=</span> <span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;criterion&quot;</span><span class="p">])</span>
     <span class="c1"># Perform K-Fold CV</span>
     <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">rfr</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
@@ -1480,61 +2319,8 @@ $p_e$ is the expected agreement by chance
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_validation.py:425: FitFailedWarning: 
-800 fits failed out of a total of 2400.
-The score on these train-test partitions for these parameters will be set to nan.
-If these failures are not expected, you can try to debug them by setting error_score=&#39;raise&#39;.
-
-Below are more details about the failures:
---------------------------------------------------------------------------------
-622 fits failed with the following error:
-Traceback (most recent call last):
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_validation.py&quot;, line 732, in _fit_and_score
-    estimator.fit(X_train, y_train, **fit_params)
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 1144, in wrapper
-    estimator._validate_params()
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 637, in _validate_params
-    validate_parameter_constraints(
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/utils/_param_validation.py&quot;, line 95, in validate_parameter_constraints
-    raise InvalidParameterError(
-sklearn.utils._param_validation.InvalidParameterError: The &#39;max_features&#39; parameter of RandomForestClassifier must be an int in the range [1, inf), a float in the range (0.0, 1.0], a str among {&#39;log2&#39;, &#39;sqrt&#39;} or None. Got &#39;auto&#39; instead.
-
---------------------------------------------------------------------------------
-178 fits failed with the following error:
-Traceback (most recent call last):
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_validation.py&quot;, line 732, in _fit_and_score
-    estimator.fit(X_train, y_train, **fit_params)
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 1144, in wrapper
-    estimator._validate_params()
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 637, in _validate_params
-    validate_parameter_constraints(
-  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/utils/_param_validation.py&quot;, line 95, in validate_parameter_constraints
-    raise InvalidParameterError(
-sklearn.utils._param_validation.InvalidParameterError: The &#39;max_features&#39; parameter of RandomForestClassifier must be an int in the range [1, inf), a float in the range (0.0, 1.0], a str among {&#39;sqrt&#39;, &#39;log2&#39;} or None. Got &#39;auto&#39; instead.
-
-  warnings.warn(some_fits_failed_message, FitFailedWarning)
-/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_search.py:976: UserWarning: One or more of the test scores are non-finite: [ nan  nan  nan  nan  nan 0.26 0.22 0.31 0.31 0.32 0.28 0.28 0.31 0.31
- 0.32  nan  nan  nan  nan  nan 0.31 0.35 0.36 0.36 0.36 0.32 0.35 0.35
- 0.35 0.35  nan  nan  nan  nan  nan 0.36 0.37 0.37 0.37 0.37 0.36 0.37
- 0.38 0.38 0.37  nan  nan  nan  nan  nan 0.4  0.38 0.39 0.4  0.39 0.4
- 0.38 0.4  0.39 0.39  nan  nan  nan  nan  nan 0.43 0.44 0.45 0.46 0.46
- 0.41 0.44 0.45 0.45 0.46  nan  nan  nan  nan  nan 0.47 0.48 0.49 0.49
- 0.49 0.48 0.48 0.49 0.49 0.5   nan  nan  nan  nan  nan 0.49 0.52 0.52
- 0.53 0.52 0.5  0.5  0.52 0.52 0.52  nan  nan  nan  nan  nan 0.53 0.54
- 0.54 0.56 0.55 0.52 0.53 0.54 0.56 0.55  nan  nan  nan  nan  nan 0.26
- 0.27 0.3  0.3  0.33 0.22 0.24 0.29 0.32 0.32  nan  nan  nan  nan  nan
- 0.32 0.36 0.35 0.34 0.35 0.33 0.34 0.35 0.35 0.35  nan  nan  nan  nan
-  nan 0.35 0.36 0.37 0.37 0.37 0.36 0.37 0.37 0.37 0.37  nan  nan  nan
-  nan  nan 0.38 0.38 0.39 0.39 0.39 0.37 0.39 0.39 0.4  0.39  nan  nan
-  nan  nan  nan 0.42 0.43 0.43 0.44 0.45 0.42 0.42 0.43 0.44 0.44  nan
-  nan  nan  nan  nan 0.45 0.48 0.47 0.48 0.48 0.46 0.46 0.48 0.48 0.48
-  nan  nan  nan  nan  nan 0.5  0.5  0.51 0.5  0.51 0.47 0.51 0.5  0.51
- 0.51  nan  nan  nan  nan  nan 0.52 0.54 0.53 0.54 0.54 0.5  0.52 0.54
- 0.54 0.54]
-  warnings.warn(
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.78 0.78 0.77 0.8  0.81 0.81 0.77 0.77 0.8  0.78]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Scores: {} [0.77910959 0.7859589  0.79245283 0.82161235 0.7838765  0.80617496
+ 0.78559177 0.81818182 0.80445969 0.81989708]
 </pre></div>
 </div>
 </div>
@@ -1545,67 +2331,93 @@ sklearn.utils._param_validation.InvalidParameterError: The &#39;max_features&#39
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Best parameters:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores:&#39;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores (average):&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores (average):&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Best parameters: RandomForestClassifier(max_depth=9)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Best parameters: RandomForestClassifier(max_depth=9, max_features=&#39;log2&#39;, n_estimators=1000)
 ---
-CV scores: [0.78 0.78 0.77 0.8  0.81 0.81 0.77 0.77 0.8  0.78]
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">krishna</span><span class="o">/</span><span class="n">courses</span><span class="o">/</span><span class="n">CE397</span><span class="o">-</span><span class="n">Scientific</span><span class="o">-</span><span class="n">MachineLearning</span><span class="o">/</span><span class="n">sciml</span><span class="o">/</span><span class="n">lectures</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">Cell</span> <span class="mi">54</span> <span class="n">line</span> <span class="mi">5</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=3&#39;</span><span class="o">&gt;</span><span class="mi">4</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores:&#39;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
-<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=4&#39;</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores (average):&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=5&#39;</span><span class="o">&gt;</span><span class="mi">6</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">))</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=6&#39;</span><span class="o">&gt;</span><span class="mi">7</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
-
-<span class="ne">NameError</span>: name &#39;mean&#39; is not defined
+CV scores: [0.77910959 0.7859589  0.79245283 0.82161235 0.7838765  0.80617496
+ 0.78559177 0.81818182 0.80445969 0.81989708]
+CV scores (average): 0.7997315491435419
+Training score: 0.8700274348422496
+Testing score: 0.7986289631533847
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 </section>
-<section id="extreme-gradient-boosting">
-<h2>Extreme Gradient Boosting<a class="headerlink" href="#extreme-gradient-boosting" title="Permalink to this heading">#</a></h2>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>xgboost
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: xgboost in /opt/conda/lib/python3.9/site-packages (1.7.6)
-Requirement already satisfied: numpy in /opt/conda/lib/python3.9/site-packages (from xgboost) (1.22.2)
-Requirement already satisfied: scipy in /opt/conda/lib/python3.9/site-packages (from xgboost) (1.8.0)
-</pre></div>
-</div>
-</div>
-</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="xgboost-extreme-gradient-boosting">
+<h1>XGBoost (Extreme Gradient Boosting)<a class="headerlink" href="#xgboost-extreme-gradient-boosting" title="Permalink to this heading">#</a></h1>
+<p>XGBoost is a popular and efficient gradient boosting framework that’s widely used in machine learning, including in scientific contexts. It builds on the idea of boosting, where weak learners are combined to create a strong learner.</p>
+<section id="gradient-boosting-framework">
+<h2>Gradient Boosting Framework<a class="headerlink" href="#gradient-boosting-framework" title="Permalink to this heading">#</a></h2>
+<p>Gradient Boosting is an ensemble learning method that fits a sequence of weak learners (such as shallow decision trees) on modified versions of the data.</p>
+<p>The general form of the boosting model is:</p>
+<div class="math notranslate nohighlight">
+\[ f(x) = \sum_{k=1}^K \alpha_k h_k(x) \]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f(x)\)</span> is the prediction for input <span class="math notranslate nohighlight">\( x \)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\( \alpha_k \)</span> is the weight of the <span class="math notranslate nohighlight">\( k \)</span>-th weak learner</p></li>
+<li><p><span class="math notranslate nohighlight">\( h_k(x) \)</span> is the prediction of the <span class="math notranslate nohighlight">\( k \)</span>-th weak learner</p></li>
+<li><p><span class="math notranslate nohighlight">\( K \)</span> is the total number of weak learners</p></li>
+</ul>
+</section>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Initialization:</strong> Start with a constant prediction <span class="math notranslate nohighlight">\( f_0(x) \)</span></p></li>
+<li><p><strong>Iteratively Add Trees:</strong> For <span class="math notranslate nohighlight">\( k = 1 \)</span> to <span class="math notranslate nohighlight">\( K \)</span>:
+a. Compute the negative gradient (or “pseudo-residuals”) of the loss function:
+$<span class="math notranslate nohighlight">\( r_i = -\frac{\partial L(y_i, f(x_i))}{\partial f(x_i)} \)</span><span class="math notranslate nohighlight">\(
+b. Fit a weak learner to predict the pseudo-residuals.
+c. Compute the weight \)</span> \alpha_k <span class="math notranslate nohighlight">\( that minimizes the loss.
+d. Update the model by adding the weighted weak learner:
+   \)</span><span class="math notranslate nohighlight">\( f_k(x) = f_{k-1}(x) + \alpha_k h_k(x) \)</span>$</p></li>
+</ol>
+</section>
+<section id="xgboost-enhancements">
+<h2>XGBoost Enhancements<a class="headerlink" href="#xgboost-enhancements" title="Permalink to this heading">#</a></h2>
+<p>XGBoost adds several enhancements to the basic gradient boosting framework:</p>
+<section id="regularization">
+<h3>Regularization<a class="headerlink" href="#regularization" title="Permalink to this heading">#</a></h3>
+<p>XGBoost includes L1 (Lasso) and L2 (Ridge) regularization terms in the loss function to prevent overfitting:</p>
+<div class="math notranslate nohighlight">
+\[ \text{Loss} = L(y, f(x)) + \lambda_1 \sum |\alpha_k| + \lambda_2 \sum \alpha_k^2 \]</div>
+</section>
+<section id="handling-missing-data">
+<h3>Handling Missing Data<a class="headerlink" href="#handling-missing-data" title="Permalink to this heading">#</a></h3>
+<p>XGBoost can automatically learn the best direction to handle missing values during training, allowing it to handle datasets with missing data.</p>
+</section>
+<section id="column-block-and-parallelization">
+<h3>Column Block and Parallelization<a class="headerlink" href="#column-block-and-parallelization" title="Permalink to this heading">#</a></h3>
+<p>XGBoost employs a column block structure that allows parallelization over both instances and features, leading to efficient computation.</p>
+</section>
+<section id="hyperparameters">
+<h3>Hyperparameters<a class="headerlink" href="#hyperparameters" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>learning_rate:</strong> Step size shrinkage to prevent overfitting.</p></li>
+<li><p><strong>max_depth:</strong> Maximum depth of the decision trees.</p></li>
+<li><p><strong>n_estimators:</strong> Number of boosting rounds.</p></li>
+<li><p><strong>subsample:</strong> Fraction of the data to be used for each boosting round, enabling stochastic gradient boosting.</p></li>
+</ul>
+<p><img alt="XGB" src="../../_images/xgb.png" /></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">xgboost</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xgb</span> <span class="o">=</span> <span class="n">xgboost</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">xgboost</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
 <span class="n">xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><style>#sk-container-id-2 {color: black;}#sk-container-id-2 pre{padding: 0;}#sk-container-id-2 div.sk-toggleable {background-color: white;}#sk-container-id-2 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-2 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-2 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-2 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-2 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-2 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-2 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-2 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-2 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-2 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-2 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-2 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-2 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-2 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-2 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-2 div.sk-item {position: relative;z-index: 1;}#sk-container-id-2 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-2 div.sk-item::before, #sk-container-id-2 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-2 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-2 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-2 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-2 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-2 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-2 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-2 div.sk-label-container {text-align: center;}#sk-container-id-2 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-2 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-2" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>XGBClassifier(base_score=None, booster=None, callbacks=None,
+<div class="output text_html"><style>#sk-container-id-3 {color: black;background-color: white;}#sk-container-id-3 pre{padding: 0;}#sk-container-id-3 div.sk-toggleable {background-color: white;}#sk-container-id-3 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-3 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-3 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-3 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-3 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-3 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-3 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-3 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-3 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-3 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-3 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-3 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-3 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-3 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-3 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-3 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-3 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-3 div.sk-item {position: relative;z-index: 1;}#sk-container-id-3 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-3 div.sk-item::before, #sk-container-id-3 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-3 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-3 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-3 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-3 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-3 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-3 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-3 div.sk-label-container {text-align: center;}#sk-container-id-3 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-3 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-3" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -1615,7 +2427,7 @@ Requirement already satisfied: scipy in /opt/conda/lib/python3.9/site-packages (
               max_delta_step=None, max_depth=9, max_leaves=None,
               min_child_weight=None, missing=nan, monotone_constraints=None,
               n_estimators=100, n_jobs=None, num_parallel_tree=None,
-              predictor=None, random_state=None, ...)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" checked><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">XGBClassifier</label><div class="sk-toggleable__content"><pre>XGBClassifier(base_score=None, booster=None, callbacks=None,
+              predictor=None, random_state=None, ...)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox" checked><label for="sk-estimator-id-3" class="sk-toggleable__label sk-toggleable__label-arrow">XGBClassifier</label><div class="sk-toggleable__content"><pre>XGBClassifier(base_score=None, booster=None, callbacks=None,
               colsample_bylevel=None, colsample_bynode=None,
               colsample_bytree=None, early_stopping_rounds=None,
               enable_categorical=False, eval_metric=None, feature_types=None,
@@ -1629,86 +2441,721 @@ Requirement already satisfied: scipy in /opt/conda/lib/python3.9/site-packages (
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xgb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">xgb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">xgb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">xgb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.8664383561643836
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xgb</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.8543273350471294
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.8063410454155956
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training score: 99.69%
+Validation score: 77.40%
+Testing score: 85.78%
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="explainable-ai-with-shap">
-<h2>Explainable AI with SHAP<a class="headerlink" href="#explainable-ai-with-shap" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="explainable-ai">
+<h2>Explainable AI<a class="headerlink" href="#explainable-ai" title="Permalink to this heading">#</a></h2>
+<section id="feature-importance-metrics">
+<h3>Feature Importance Metrics<a class="headerlink" href="#feature-importance-metrics" title="Permalink to this heading">#</a></h3>
+<p>Feature importance metrics provide insights into the contribution of individual features (or variables) to a predictive model. Understanding the importance of different features can help in feature selection, model interpretation, and understanding the underlying relationships within the data.</p>
+<section id="types-of-importance-metrics">
+<h4>Types of Importance Metrics<a class="headerlink" href="#types-of-importance-metrics" title="Permalink to this heading">#</a></h4>
+<section id="weight-based-importance">
+<h5>1. <strong>Weight-Based Importance</strong><a class="headerlink" href="#weight-based-importance" title="Permalink to this heading">#</a></h5>
+<p>In models like linear regression or logistic regression, the magnitude of the coefficients can indicate the importance of features. For tree-based models like Random Forest, the importance of a feature can be calculated based on the average gain of the feature when it is used in trees.</p>
+</section>
+<section id="permutation-importance">
+<h5>2. <strong>Permutation Importance</strong><a class="headerlink" href="#permutation-importance" title="Permalink to this heading">#</a></h5>
+<p>Permutation importance is a method that can be applied to any model. It is computed as follows:</p>
+<p>a. <strong>Calculate a Performance Metric:</strong> Train the model and calculate a performance metric (such as accuracy or MSE) using a validation set.
+b. <strong>Permute the Feature Values:</strong> Shuffle the values of the feature of interest across the validation set, destroying the relationship between the feature and the target.
+c. <strong>Recompute the Performance Metric:</strong> Use the permuted data to compute the performance metric again.
+d. <strong>Calculate Importance:</strong> The difference between the original metric and the permuted metric provides a measure of importance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>shap
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Compute feature importance for random forest</span>
+<span class="k">def</span> <span class="nf">plot_feature_importance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="n">df2</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">df2</span><span class="o">.</span><span class="n">columns</span>
+    <span class="n">importances</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">feature_importances_</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">importances</span><span class="p">)[</span><span class="o">-</span><span class="mi">10</span><span class="p">:]</span>  <span class="c1"># top 10 features</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Feature Importances&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)),</span> <span class="n">importances</span><span class="p">[</span><span class="n">indices</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)),</span> <span class="p">[</span><span class="n">features</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Relative Importance&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">fi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;feature&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+                       <span class="s1">&#39;importance&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">feature_importances_</span><span class="p">})</span><span class="o">.</span>\
+                       <span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span> <span class="n">ascending</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display results for decision tree</span>
+<span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">clf</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: shap in /opt/conda/lib/python3.9/site-packages (0.42.1)
-Requirement already satisfied: numpy in /opt/conda/lib/python3.9/site-packages (from shap) (1.22.2)
-Requirement already satisfied: scipy in /opt/conda/lib/python3.9/site-packages (from shap) (1.8.0)
-Requirement already satisfied: scikit-learn in /opt/conda/lib/python3.9/site-packages (from shap) (1.3.0)
-Requirement already satisfied: pandas in /opt/conda/lib/python3.9/site-packages (from shap) (1.4.1)
-Requirement already satisfied: tqdm&gt;=4.27.0 in /opt/conda/lib/python3.9/site-packages (from shap) (4.63.0)
-Requirement already satisfied: packaging&gt;20.9 in /opt/conda/lib/python3.9/site-packages (from shap) (21.3)
-Requirement already satisfied: slicer==0.0.7 in /opt/conda/lib/python3.9/site-packages (from shap) (0.0.7)
-Requirement already satisfied: numba in /opt/conda/lib/python3.9/site-packages (from shap) (0.57.1)
-Requirement already satisfied: cloudpickle in /opt/conda/lib/python3.9/site-packages (from shap) (2.0.0)
-Requirement already satisfied: pyparsing!=3.0.5,&gt;=2.0.2 in /opt/conda/lib/python3.9/site-packages (from packaging&gt;20.9-&gt;shap) (3.0.7)
-Requirement already satisfied: llvmlite&lt;0.41,&gt;=0.40.0dev0 in /opt/conda/lib/python3.9/site-packages (from numba-&gt;shap) (0.40.1)
-Requirement already satisfied: python-dateutil&gt;=2.8.1 in /opt/conda/lib/python3.9/site-packages (from pandas-&gt;shap) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /opt/conda/lib/python3.9/site-packages (from pandas-&gt;shap) (2021.3)
-Requirement already satisfied: joblib&gt;=1.1.1 in /opt/conda/lib/python3.9/site-packages (from scikit-learn-&gt;shap) (1.3.1)
-Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /opt/conda/lib/python3.9/site-packages (from scikit-learn-&gt;shap) (3.2.0)
-Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-packages (from python-dateutil&gt;=2.8.1-&gt;pandas-&gt;shap) (1.16.0)
+<img alt="../../_images/e5e1d286a43cd45f1af3917e901d291046a8a54468a78225fee3b9681deff5ad.png" src="../../_images/e5e1d286a43cd45f1af3917e901d291046a8a54468a78225fee3b9681deff5ad.png" />
+<div class="output text_html">
+  <div id="df-9d5b8082-4282-4194-9341-b6911eec6d8c" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>feature</th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>PGA (g)</td>
+      <td>0.422601</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>L (km)</td>
+      <td>0.287876</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>GWD (m)</td>
+      <td>0.250497</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Slope (%)</td>
+      <td>0.039026</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-9d5b8082-4282-4194-9341-b6911eec6d8c')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-9d5b8082-4282-4194-9341-b6911eec6d8c button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-9d5b8082-4282-4194-9341-b6911eec6d8c');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-8c475816-b2c9-452f-aeb9-26877260f678">
+  <button class="colab-df-quickchart" onclick="quickchart('df-8c475816-b2c9-452f-aeb9-26877260f678')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-8c475816-b2c9-452f-aeb9-26877260f678 button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display results for random forest</span>
+<span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">rf</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../../_images/4a34c2b92f78992163c512008629283cef8936d8f4ecba261bd72bee978c3d81.png" src="../../_images/4a34c2b92f78992163c512008629283cef8936d8f4ecba261bd72bee978c3d81.png" />
+<div class="output text_html">
+  <div id="df-eccf3312-04d0-431e-ae40-94fc136298e4" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>feature</th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>PGA (g)</td>
+      <td>0.390678</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>L (km)</td>
+      <td>0.294591</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>GWD (m)</td>
+      <td>0.223014</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Slope (%)</td>
+      <td>0.091718</td>
+    </tr>
+  </tbody>
+</table>
 </div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-eccf3312-04d0-431e-ae40-94fc136298e4')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-eccf3312-04d0-431e-ae40-94fc136298e4 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-eccf3312-04d0-431e-ae40-94fc136298e4');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-9c838131-92b8-47c3-b37b-6edaeb682825">
+  <button class="colab-df-quickchart" onclick="quickchart('df-9c838131-92b8-47c3-b37b-6edaeb682825')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-9c838131-92b8-47c3-b37b-6edaeb682825 button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display results for XGB</span>
+<span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">xgb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/84cf002956e63f590382445a050212279dc03fa29be2d35dbaa4978faa6f6423.png" src="../../_images/84cf002956e63f590382445a050212279dc03fa29be2d35dbaa4978faa6f6423.png" />
+<div class="output text_html">
+  <div id="df-7ed6f8ff-49c7-4d88-b1c8-a5e4d9163a8e" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>feature</th>
+      <th>importance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>PGA (g)</td>
+      <td>0.359728</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>L (km)</td>
+      <td>0.269205</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>GWD (m)</td>
+      <td>0.234558</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Slope (%)</td>
+      <td>0.136509</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-7ed6f8ff-49c7-4d88-b1c8-a5e4d9163a8e')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-7ed6f8ff-49c7-4d88-b1c8-a5e4d9163a8e button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-7ed6f8ff-49c7-4d88-b1c8-a5e4d9163a8e');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-6ddf9f6b-36ba-48a8-8c8e-617b18b2886d">
+  <button class="colab-df-quickchart" onclick="quickchart('df-6ddf9f6b-36ba-48a8-8c8e-617b18b2886d')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-6ddf9f6b-36ba-48a8-8c8e-617b18b2886d button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
+</div>
+</section>
+</section>
+</section>
+<section id="shapley-values">
+<h3>3. Shapley Values<a class="headerlink" href="#shapley-values" title="Permalink to this heading">#</a></h3>
+<p>SHAP values are based on cooperative game theory and provide a unified measure of feature importance. They give the average contribution of a feature value to every possible prediction.</p>
+<p>For a model with <span class="math notranslate nohighlight">\(M\)</span> features, the Shapley value for feature <span class="math notranslate nohighlight">\( i \)</span> is computed as:</p>
+<div class="math notranslate nohighlight">
+\[ \phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(M - |S| - 1)!}{M!} [v(S \cup \{i\}) - v(S)] \]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( S \)</span> is a subset of features excluding feature <span class="math notranslate nohighlight">\( i \)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\( N \)</span> is the set of all features</p></li>
+<li><p><span class="math notranslate nohighlight">\( v(S) \)</span> is the value function that gives the prediction for subset <span class="math notranslate nohighlight">\( S \)</span></p></li>
+</ul>
+</section>
+<section id="understanding-shap-values-an-analogy">
+<h3>Understanding SHAP Values: An Analogy<a class="headerlink" href="#understanding-shap-values-an-analogy" title="Permalink to this heading">#</a></h3>
+<p>SHAP values help us understand how different features (or variables) contribute to a prediction in a machine learning model. To explain this without mathematics, let’s use an analogy of three team members working together on a project. Imagine that the team members are Alice, Bob, and Charlie, and we want to know how much each one contributed to the project’s success.</p>
+<section id="the-project">
+<h4>The Project<a class="headerlink" href="#the-project" title="Permalink to this heading">#</a></h4>
+<p>The project’s success is measured by the total output, and we want to fairly distribute the credit for this success among Alice, Bob, and Charlie.</p>
+</section>
+<section id="shapley-value-concept">
+<h4>Shapley Value Concept<a class="headerlink" href="#shapley-value-concept" title="Permalink to this heading">#</a></h4>
+<p>Imagine breaking down the project into smaller tasks and observing how much the output changes when each team member is added or removed. The goal is to find the average contribution of each member over all possible ways the team could have been formed.</p>
+<section id="step-by-step-explanation">
+<h5>Step by Step Explanation<a class="headerlink" href="#step-by-step-explanation" title="Permalink to this heading">#</a></h5>
+<ol class="arabic simple">
+<li><p><strong>No Team Members:</strong> First, we measure the output with no team members working (a baseline).</p></li>
+<li><p><strong>Adding One Member:</strong> Then, we add each team member one by one and measure how much the output changes.</p>
+<ul class="simple">
+<li><p>With Alice alone</p></li>
+<li><p>With Bob alone</p></li>
+<li><p>With Charlie alone</p></li>
+</ul>
+</li>
+<li><p><strong>Adding Two Members:</strong> Next, we measure the change in output with pairs of team members:</p>
+<ul class="simple">
+<li><p>Alice and Bob</p></li>
+<li><p>Alice and Charlie</p></li>
+<li><p>Bob and Charlie</p></li>
+</ul>
+</li>
+<li><p><strong>All Three Members:</strong> Finally, we measure the output with all three working together.</p></li>
+</ol>
+</section>
+</section>
+<section id="calculating-contributions">
+<h4>Calculating Contributions<a class="headerlink" href="#calculating-contributions" title="Permalink to this heading">#</a></h4>
+<p>By comparing all these different combinations, we can calculate the average contribution of each team member. The SHAP value for each person is their fair share of the contribution to the project’s success.</p>
+<ul class="simple">
+<li><p><strong>Alice’s SHAP Value:</strong> The average change in output when Alice is part of the team.</p></li>
+<li><p><strong>Bob’s SHAP Value:</strong> The average change in output when Bob is part of the team.</p></li>
+<li><p><strong>Charlie’s SHAP Value:</strong> The average change in output when Charlie is part of the team.</p></li>
+</ul>
+<p><img alt="Shapley" src="../../_images/shap.png" /></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">shap</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using `tqdm.autonotebook.tqdm` in notebook mode. Use `tqdm.tqdm` instead to force console mode (e.g. in jupyter console)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">xgb</span><span class="p">)</span>
+<span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">xgb</span><span class="p">)</span>
 <span class="n">shap_values</span> <span class="o">=</span> <span class="n">explainer</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1721,7 +3168,9 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div>
+<div class="output text_html">
+  <div id="df-74639c10-39e3-4896-921d-f604f7d9b1f3" class="colab-df-container">
+    <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
@@ -1748,49 +3197,214 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
   </thead>
   <tbody>
     <tr>
-      <th>1494</th>
-      <td>2.389243</td>
-      <td>1.458294</td>
-      <td>1.042721</td>
-      <td>0.373080</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2137</th>
-      <td>1.798434</td>
-      <td>0.742778</td>
-      <td>0.834584</td>
-      <td>0.424421</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>4589</th>
-      <td>2.050072</td>
-      <td>2.451880</td>
-      <td>1.738290</td>
-      <td>0.371928</td>
+      <th>182</th>
+      <td>1.995111</td>
+      <td>0.720363</td>
+      <td>1.056944</td>
+      <td>0.419531</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>161</th>
-      <td>1.566298</td>
-      <td>2.154551</td>
-      <td>0.909582</td>
-      <td>0.377088</td>
+      <th>6863</th>
+      <td>1.642848</td>
+      <td>0.287636</td>
+      <td>0.744498</td>
+      <td>0.449792</td>
       <td>0</td>
     </tr>
     <tr>
-      <th>4893</th>
-      <td>1.466750</td>
-      <td>1.989314</td>
-      <td>0.892403</td>
-      <td>0.382741</td>
+      <th>638</th>
+      <td>2.408738</td>
+      <td>1.675044</td>
+      <td>0.882258</td>
+      <td>0.495766</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4770</th>
+      <td>1.853496</td>
+      <td>0.561542</td>
+      <td>0.044951</td>
+      <td>0.429180</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4452</th>
+      <td>1.826260</td>
+      <td>0.518457</td>
+      <td>0.481842</td>
+      <td>0.418497</td>
       <td>0</td>
     </tr>
   </tbody>
 </table>
-</div></div></div>
 </div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-74639c10-39e3-4896-921d-f604f7d9b1f3')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-74639c10-39e3-4896-921d-f604f7d9b1f3 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-74639c10-39e3-4896-921d-f604f7d9b1f3');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-de22a794-0f7a-4a9a-b35a-bafdeca046e2">
+  <button class="colab-df-quickchart" onclick="quickchart('df-de22a794-0f7a-4a9a-b35a-bafdeca046e2')"
+            title="Suggest charts."
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+    background-color: #E8F0FE;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: #1967D2;
+    height: 32px;
+    padding: 0 0 0 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: #E2EBFA;
+    box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: #174EA6;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+    background-color: #3B4455;
+    fill: #D2E3FC;
+  }
+
+  [theme=dark] .colab-df-quickchart:hover {
+    background-color: #434B5C;
+    box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+    fill: #FFFFFF;
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const charts = await google.colab.kernel.invokeFunction(
+          'suggestCharts', [key], {});
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-de22a794-0f7a-4a9a-b35a-bafdeca046e2 button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+    </div>
+  </div>
+</div></div>
+</div>
+<p>SHAP values are a measure used to explain the output of machine learning models. They tell us how much each feature in the model contributes to a particular prediction, compared to a baseline prediction.</p>
+</section>
+<section id="positive-vs-negative-shap-values">
+<h4>Positive vs. Negative SHAP Values<a class="headerlink" href="#positive-vs-negative-shap-values" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Positive SHAP Values:</strong> When a feature has a positive SHAP value, it means that the presence (or value) of that feature pushes the model’s output higher than the baseline.</p>
+<ul>
+<li><p><strong>Example:</strong> In our lateral spreading prediction the PGA (a feature) gives a positive SHAP value, it means that higher PGA are generally associated with higher chance of lateral spreading.</p></li>
+</ul>
+</li>
+<li><p><strong>Negative SHAP Values:</strong> Conversely, when a feature has a negative SHAP value, it means that the presence (or value) of that feature pushes the model’s output lower than the baseline.</p>
+<ul>
+<li><p><strong>Example:</strong> Still considering lateral spreading, if water table being too low (a feature) gives a negative SHAP value, it suggests that such sites are generally predicted to have less chance of lateral spreading.</p></li>
+</ul>
+</li>
+</ul>
+<p>The term <span class="math notranslate nohighlight">\(E(f(x))\)</span> represents the expected value or average prediction of the model over the entire dataset. Think of it as the “baseline prediction.” When you see <span class="math notranslate nohighlight">\(E(f(x))\)</span> , it’s referring to what the model would predict on average, without considering any specific feature values.</p>
+<ul class="simple">
+<li><p><strong>Example:</strong> In the context of predicting house prices, <span class="math notranslate nohighlight">\(E(f(x))\)</span>  might be the average chance of lateral spreading the model predicts when it doesn’t consider any specific features of the sites. It’s the starting point before we account for unique factors like having GWT or a high PGA.</p></li>
+</ul>
+</section>
+<section id="positive-prediction">
+<h4>Positive prediction<a class="headerlink" href="#positive-prediction" title="Permalink to this heading">#</a></h4>
+<p>In this example, we show a site that is predicted to have positive lateral spreading (failure). Here, the high slope anlge (0.835%) has the most influence in the positive prediction of lateral spreading, followed by a shallow ground water depth of 1.8 m and its close proximity to the river (L = 0.74 km).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shap</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">waterfall</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1798,9 +3412,13 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/da19f8811dcbf9ca5e0a9f1fb36ad9829f5ac97997f04fafd35977b3c7bb05c8.png" src="../../_images/da19f8811dcbf9ca5e0a9f1fb36ad9829f5ac97997f04fafd35977b3c7bb05c8.png" />
+<img alt="../../_images/d39fb60d9377edee1d3b06dd5b048ab59233dbb51b592bcd2634943eef375d87.png" src="../../_images/d39fb60d9377edee1d3b06dd5b048ab59233dbb51b592bcd2634943eef375d87.png" />
 </div>
 </div>
+</section>
+<section id="negative-prediction">
+<h4>Negative prediction<a class="headerlink" href="#negative-prediction" title="Permalink to this heading">#</a></h4>
+<p>In this example, we show XGB predicting a site that has no chance of lateral spreading. The distance to the river (L ~ 2 km) seems to be the primary reason.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shap</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">waterfall</span><span class="p">(</span><span class="n">shap_values</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
@@ -1808,9 +3426,15 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a102c9d8fa8b8ec684ec5b95bea50cd0b053aa5c27c435807db88c98996eb9f8.png" src="../../_images/a102c9d8fa8b8ec684ec5b95bea50cd0b053aa5c27c435807db88c98996eb9f8.png" />
+<img alt="../../_images/0710818d78c121f0130a2bd90d62fa220010e8849c79a38703274fd16cb9284e.png" src="../../_images/0710818d78c121f0130a2bd90d62fa220010e8849c79a38703274fd16cb9284e.png" />
 </div>
 </div>
+</section>
+</section>
+<section id="global-explanation">
+<h3>Global explanation<a class="headerlink" href="#global-explanation" title="Permalink to this heading">#</a></h3>
+<p>We also observe global SHAP values and see how different features influence the results. High feature values are shown in red and Low feature values are shown in blue. For e.g., shorter distance to the river (blue points for <span class="math notranslate nohighlight">\(L\)</span>) are associated with high chance of lateral spreading. Similarly, deeper ground water depth (red GWD) means lower chances of lateral spreading.</p>
+<p>However, we do see that high PGA, shows less chance of lateral spreading, contradictory to the engineering understanding that high acceleration will cause more displacements and failures.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shap</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">beeswarm</span><span class="p">(</span><span class="n">shap_values</span><span class="p">)</span>
@@ -1818,9 +3442,13 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/72090d06b64958e4c3845e3fa89be8bdd197ca8e12e6b5d54c1312be5c87e2d8.png" src="../../_images/72090d06b64958e4c3845e3fa89be8bdd197ca8e12e6b5d54c1312be5c87e2d8.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>No data for colormapping provided via &#39;c&#39;. Parameters &#39;vmin&#39;, &#39;vmax&#39; will be ignored
+</pre></div>
+</div>
+<img alt="../../_images/8dc19335e405009786ef26b02ec2831fde6a25ea018c33f4ac9c5f14a90759c2.png" src="../../_images/8dc19335e405009786ef26b02ec2831fde6a25ea018c33f4ac9c5f14a90759c2.png" />
 </div>
 </div>
+</section>
 </section>
 </section>
 
@@ -1918,12 +3546,53 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-decision-trees">Summary of decision trees</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-hyperparameter-tuning">Automatic Hyperparameter tuning</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai-with-shap">Explainable AI with SHAP</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-hyperparameter-tuning">Automatic Hyperparameter tuning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#k-fold-cross-validation-cv">K-Fold Cross-Validation (CV)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-k-fold-cv-works">How K-Fold CV Works:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-k-fold-cv">Benefits of K-Fold CV</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#drawbacks">Drawbacks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#xgboost-extreme-gradient-boosting">XGBoost (Extreme Gradient Boosting)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-boosting-framework">Gradient Boosting Framework</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#algorithm">Algorithm</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xgboost-enhancements">XGBoost Enhancements</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization">Regularization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-missing-data">Handling Missing Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#column-block-and-parallelization">Column Block and Parallelization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hyperparameters">Hyperparameters</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai">Explainable AI</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-importance-metrics">Feature Importance Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-importance-metrics">Types of Importance Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-based-importance">1. <strong>Weight-Based Importance</strong></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#permutation-importance">2. <strong>Permutation Importance</strong></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#shapley-values">3. Shapley Values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-shap-values-an-analogy">Understanding SHAP Values: An Analogy</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#the-project">The Project</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#shapley-value-concept">Shapley Value Concept</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#step-by-step-explanation">Step by Step Explanation</a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#calculating-contributions">Calculating Contributions</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positive-vs-negative-shap-values">Positive vs. Negative SHAP Values</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positive-prediction">Positive prediction</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#negative-prediction">Negative prediction</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-explanation">Global explanation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
