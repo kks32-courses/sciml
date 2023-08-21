@@ -53,9 +53,3 @@ Machine learning describes the process by which a computer adapts from experienc
   
 * Experience, $\boldsymbol{E}$
   - some form of data/information.
-
-
-## Lectures
-
-* 00 Perceptron - (Exercise: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/00-perceptron/00-perceptron-exercise.ipynb)
-Solution: [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/00-perceptron/00-perceptron.ipynb))
