@@ -66,6 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/01-classification/01-classification';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Perceptron" href="../00-perceptron/00-perceptron.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -156,8 +157,10 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">Perceptron</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">01: Classification</a></li>
+
 </ul>
 
     </div>
@@ -383,8 +386,17 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">01: Classification</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-packages">Install packages</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#liquefaction">Liquefaction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lateral-spreading-classification">Lateral spreading classification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lateral-spreading-classification">Lateral spreading classification</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-for-features">Filtering for features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-testing-and-validation">Training, testing and validation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classification-decision-trees">Classification: Decision Trees</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gini-impurity">GINI Impurity</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-splitting">Decision Tree splitting</a><ul class="nav section-nav flex-column">
@@ -394,16 +406,25 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-with-scikit-learn">Decision tree with SciKit Learn</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction">Prediction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-a-decision-tree">Visualizing a decision tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-model">Update model</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-metrics">Plot metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confusion-matrix">Confusion Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#roc">ROC</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#precision-recall-curve">Precision recall curve</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction">Prediction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-a-decision-tree">Visualize a decision tree</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-decision-trees">Summary of decision trees</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-hyperparameter-tuning">Automatic Hyperparameter tuning</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai-with-shap">Explainable AI with SHAP</a></li>
 </ul>
@@ -427,6 +448,16 @@ document.write(`
 </div></blockquote>
 <p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/01-classification/01-classification-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
 <strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/01-classification/01-classification.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="install-packages">
+<h2>Install packages<a class="headerlink" href="#install-packages" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>scikit-learn<span class="w"> </span>pandas
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="liquefaction">
 <h2>Liquefaction<a class="headerlink" href="#liquefaction" title="Permalink to this heading">#</a></h2>
 <blockquote>
@@ -447,96 +478,16 @@ Avon River area for the 2011 Christchurch earthquake</p>
 <blockquote>
 <div><p>Image credits: Durante and Rathje (2021).</p>
 </div></blockquote>
-</section>
-<section id="classification-decision-trees">
-<h2>Classification: Decision Trees<a class="headerlink" href="#classification-decision-trees" title="Permalink to this heading">#</a></h2>
-<p>Classification is the task of predicting a categorical target variable based on input data. There are two main types of classification:</p>
-<p><strong>Binary classification</strong>: The target variable has two possible classes, often labeled 0 and 1. The goal is to predict which of the two classes an input belongs to. Examples include spam detection, disease diagnosis, etc.</p>
-<p><strong>Multi-class classification</strong>: The target variable has more than two possible discrete values or classes. The goal is to predict the specific class an input belongs to out of the multiple choices. Examples include image recognition, document categorization, etc.</p>
-<p>A decision tree is a supervised learning model used for both binary and multi-class classification. It works by recursively partitioning the input space into smaller subspaces based on the value of different predictor variables. The goal is to create leaf nodes that contain cases with similar values of the target variable.</p>
-<p>The structure of a decision tree consists of:</p>
-<ul class="simple">
-<li><p><strong>Root node</strong>: This is the topmost node in the tree and contains the full dataset.</p></li>
-<li><p><strong>Internal nodes</strong>: These represent points where the data is split based on values of predictor variables.</p></li>
-<li><p><strong>Branches</strong>: These connect the internal nodesbased on possible values of predictors.</p></li>
-<li><p><strong>Leaf nodes</strong>: These represent the final classifications or predictions.</p></li>
-</ul>
-<p>Decision trees can handle both categorical and continuous predictors.</p>
-<p>Some key advantages of decision trees are:</p>
-<ul class="simple">
-<li><p><strong>Interpretability</strong> - The tree structure and rules are easy to understand.</p></li>
-<li><p><strong>Non-parametric</strong> - No assumptions about data distribution.</p></li>
-<li><p><strong>Handles nonlinear relationships</strong> - By partitioning data recursively.</p></li>
-<li><p><strong>Handles categorical variables</strong> - No need for dummy coding.</p></li>
-</ul>
-<p><img alt="liquefaction decision tree" src="../../_images/liq-dt.png" /></p>
-<section id="gini-impurity">
-<h3>GINI Impurity<a class="headerlink" href="#gini-impurity" title="Permalink to this heading">#</a></h3>
-<p>Gini impurity is used to evaluate how good a split is by calculating the impurity of the subsets resulting from the split. A lower Gini score means that the split is separating the classes well. It quantifies the disorder or uncertainty within a set of data.</p>
-<p>The Gini impurity for a binary classification is calculated as:
-$<span class="math notranslate nohighlight">\(Gini(t)=1−\sum(p_i)^2\)</span>$</p>
-<p>where <span class="math notranslate nohighlight">\(p_i\)</span>​ is the probability of class <span class="math notranslate nohighlight">\(i\)</span> in the set.</p>
-</section>
-<section id="decision-tree-splitting">
-<h3>Decision Tree splitting<a class="headerlink" href="#decision-tree-splitting" title="Permalink to this heading">#</a></h3>
-<p>A decision tree decides a split by selecting a feature and a value to divide the dataset into two or more homogenous subsets, according to a certain criterion. The ultimate goal is to find the splits that produce the purest subsets, meaning that each subset ideally contains data points from only one class. Here’s how it works:</p>
-<ul class="simple">
-<li><p><strong>Selection of Criteria</strong>: The method used to decide a split depends on the criterion being used. Common criteria for classification tasks include Gini Impurity, Information Gain, and Chi-Squared. For regression tasks, variance reduction is often used.</p></li>
-<li><p><strong>Evaluate Each Feature and Potential Split</strong>: For each feature in the dataset, the algorithm calculates the criterion’s value for every potential split point. Split points can be the actual values of a continuous feature or different categories of a categorical feature.</p></li>
-<li><p><strong>Choose the Best Split</strong>: The algorithm selects the feature and split point that produces the subsets with the highest purity according to the chosen criterion. For example:
-In the case of Gini Impurity, the best split minimizes the impurity.
-In the case of Information Gain, the best split maximizes the gain.</p></li>
-<li><p><strong>Create Subsets</strong>: Once the best split has been identified, the dataset is divided into subsets according to the chosen feature and split point.</p></li>
-<li><p><strong>Repeat</strong>: Steps 1-4 are repeated recursively on each of the subsets until a stopping criterion is met, such as reaching a certain tree depth or the subsets being pure enough.</p></li>
-</ul>
-<section id="example-using-gini-impurity">
-<h4>Example Using Gini Impurity<a class="headerlink" href="#example-using-gini-impurity" title="Permalink to this heading">#</a></h4>
-<ul class="simple">
-<li><p>For each feature, consider all possible values for splitting.</p></li>
-<li><p>Choose the split that results in the lowest weighted Gini Impurity.</p></li>
-<li><p>Calculate the Gini Impurity for each possible split as:</p></li>
-<li><p>Divide the dataset accordingly and continue the process.</p></li>
-</ul>
-<p>In the context of decision trees, the splitting process is essential as it helps the model generalize the pattern from the training data, enabling accurate predictions or classifications for unseen data. It’s the core step in building the tree, and different algorithms might have variations in the splitting procedure.</p>
-</section>
-</section>
-</section>
-<section id="decision-tree-with-scikit-learn">
-<h2>Decision tree with SciKit Learn<a class="headerlink" href="#decision-tree-with-scikit-learn" title="Permalink to this heading">#</a></h2>
-<p>Scikit-learn, often referred to as sklearn, is one of the most popular libraries for machine learning in Python</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>scikit-learn<span class="w"> </span>pandas
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: scikit-learn in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (1.3.0)
-Requirement already satisfied: pandas in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (2.0.3)
-Requirement already satisfied: numpy&gt;=1.17.3 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (1.25.2)
-Requirement already satisfied: scipy&gt;=1.5.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (1.11.1)
-Requirement already satisfied: joblib&gt;=1.1.1 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (1.3.2)
-Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from scikit-learn) (3.2.0)
-Requirement already satisfied: python-dateutil&gt;=2.8.2 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from pandas) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from pandas) (2023.3)
-Requirement already satisfied: tzdata&gt;=2022.1 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from pandas) (2023.3)
-Requirement already satisfied: six&gt;=1.5 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas) (1.16.0)
-</pre></div>
-</div>
-</div>
-</div>
+<section id="explore-data">
+<h3>Explore data<a class="headerlink" href="#explore-data" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">tree</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
 </pre></div>
 </div>
 </div>
 </div>
-<section id="explore-data">
-<h3>Explore data<a class="headerlink" href="#explore-data" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;https://raw.githubusercontent.com/kks32-courses/sciml/main/lectures/01-classification/RF_YN_Model3.csv&#39;</span><span class="p">)</span>
@@ -633,6 +584,10 @@ Requirement already satisfied: six&gt;=1.5 in /opt/homebrew/Caskroom/miniforge/b
 </table>
 </div></div></div>
 </div>
+</section>
+<section id="filtering-for-features">
+<h3>Filtering for features<a class="headerlink" href="#filtering-for-features" title="Permalink to this heading">#</a></h3>
+<p>Remove any feature in the dataset that we don’t want to include in the training process.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Test ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Elevation&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -730,6 +685,14 @@ Name: Target, dtype: int64
 </div>
 </div>
 </div>
+</section>
+<section id="training-testing-and-validation">
+<h3>Training, testing and validation<a class="headerlink" href="#training-testing-and-validation" title="Permalink to this heading">#</a></h3>
+<p>When developing a machine learning model, it is common practice to divide the available data into three subsets - training, validation, and testing. This is done to properly assess model performance and generalizability.</p>
+<p>The training set is used to fit the parameters of the model. The majority of the data, typically 60-80%, is allocated for training so that the model can learn the underlying patterns.</p>
+<p>The validation set is used to tune any hyperparameters of the model and make architectural choices. For example, it helps decide the number of hidden layers and units in a neural network. Typically 20% of data is used for validation.</p>
+<p>The test set provides an unbiased evaluation of the fully-trained model’s performance. It is critical for getting an accurate estimate of how the model will work on new unseen data. Usually 20% of the data is reserved for testing.</p>
+<p>The splits should be made randomly while ensuring the class distribution is approximately balanced across all sets. No data from the validation or test sets should be used during training. This prevents overfitting and ensures the evaluation reflects real-world performance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span>
@@ -856,6 +819,7 @@ Name: Target, dtype: int64
 <p>7291 rows × 5 columns</p>
 </div></div></div>
 </div>
+<p>We are going to use the <code class="docutils literal notranslate"><span class="pre">train_test_split</span></code> function twice to split the data into training + validation and testing. Then, we split the <code class="docutils literal notranslate"><span class="pre">training</span> <span class="pre">+</span> <span class="pre">validation</span></code> into training and validation. We retrain the target values for now, so we can check how good is our prediction.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train_target</span><span class="p">,</span> <span class="n">X_val_test_target</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_val_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
@@ -1092,6 +1056,71 @@ Name: Target, dtype: int64
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="decision-tree-classifier">
 <h1>Decision tree classifier<a class="headerlink" href="#decision-tree-classifier" title="Permalink to this heading">#</a></h1>
+<section id="classification-decision-trees">
+<h2>Classification: Decision Trees<a class="headerlink" href="#classification-decision-trees" title="Permalink to this heading">#</a></h2>
+<p>Classification is the task of predicting a categorical target variable based on input data. There are two main types of classification:</p>
+<p><strong>Binary classification</strong>: The target variable has two possible classes, often labeled 0 and 1. The goal is to predict which of the two classes an input belongs to. Examples include spam detection, disease diagnosis, etc.</p>
+<p><strong>Multi-class classification</strong>: The target variable has more than two possible discrete values or classes. The goal is to predict the specific class an input belongs to out of the multiple choices. Examples include image recognition, document categorization, etc.</p>
+<p>A decision tree is a flowchart-like structure where each internal node represents a test on a feature (e.g., “is feature A &gt; 5?”), each branch represents an outcome of the test, and each leaf node represents a class label. A decision tree is a supervised learning model used for both binary and multi-class classification. It works by recursively partitioning the input space into smaller subspaces based on the value of different predictor variables. The goal is to create leaf nodes that contain cases with similar values of the target variable.</p>
+<p>The process of learning a decision tree involves selecting features and split points that best separate the classes, based on a criterion such as information gain or Gini impurity. It continues until a stopping criterion is met, like reaching a maximum depth or a minimum number of samples per leaf.</p>
+<p>The structure of a decision tree consists of:</p>
+<ul class="simple">
+<li><p><strong>Root node</strong>: This is the topmost node in the tree and contains the full dataset.</p></li>
+<li><p><strong>Internal nodes</strong>: These represent points where the data is split based on values of predictor variables.</p></li>
+<li><p><strong>Branches</strong>: These connect the internal nodesbased on possible values of predictors.</p></li>
+<li><p><strong>Leaf nodes</strong>: These represent the final classifications or predictions.</p></li>
+</ul>
+<p>Decision trees can handle both categorical and continuous predictors.</p>
+<p>Some key advantages of decision trees are:</p>
+<ul class="simple">
+<li><p><strong>Interpretability</strong> - The tree structure and rules are easy to understand.</p></li>
+<li><p><strong>Non-parametric</strong> - No assumptions about data distribution.</p></li>
+<li><p><strong>Handles nonlinear relationships</strong> - By partitioning data recursively.</p></li>
+<li><p><strong>Handles categorical variables</strong> - No need for dummy coding.</p></li>
+</ul>
+<p><img alt="liquefaction decision tree" src="../../_images/liq-dt.png" /></p>
+<section id="gini-impurity">
+<h3>GINI Impurity<a class="headerlink" href="#gini-impurity" title="Permalink to this heading">#</a></h3>
+<p>Gini impurity is used to evaluate how good a split is by calculating the impurity of the subsets resulting from the split. A lower Gini score means that the split is separating the classes well. It quantifies the disorder or uncertainty within a set of data.</p>
+<p>The Gini impurity for a binary classification is calculated as:
+$<span class="math notranslate nohighlight">\(Gini(t)=1−\sum(p_i)^2\)</span>$</p>
+<p>where <span class="math notranslate nohighlight">\(p_i\)</span>​ is the probability of class <span class="math notranslate nohighlight">\(i\)</span> in the set.</p>
+</section>
+<section id="decision-tree-splitting">
+<h3>Decision Tree splitting<a class="headerlink" href="#decision-tree-splitting" title="Permalink to this heading">#</a></h3>
+<p>A decision tree decides a split by selecting a feature and a value to divide the dataset into two or more homogenous subsets, according to a certain criterion. The ultimate goal is to find the splits that produce the purest subsets, meaning that each subset ideally contains data points from only one class. Here’s how it works:</p>
+<ul class="simple">
+<li><p><strong>Selection of Criteria</strong>: The method used to decide a split depends on the criterion being used. Common criteria for classification tasks include Gini Impurity, Information Gain, and Chi-Squared. For regression tasks, variance reduction is often used.</p></li>
+<li><p><strong>Evaluate Each Feature and Potential Split</strong>: For each feature in the dataset, the algorithm calculates the criterion’s value for every potential split point. Split points can be the actual values of a continuous feature or different categories of a categorical feature.</p></li>
+<li><p><strong>Choose the Best Split</strong>: The algorithm selects the feature and split point that produces the subsets with the highest purity according to the chosen criterion. For example:
+In the case of Gini Impurity, the best split minimizes the impurity.
+In the case of Information Gain, the best split maximizes the gain.</p></li>
+<li><p><strong>Create Subsets</strong>: Once the best split has been identified, the dataset is divided into subsets according to the chosen feature and split point.</p></li>
+<li><p><strong>Repeat</strong>: Steps 1-4 are repeated recursively on each of the subsets until a stopping criterion is met, such as reaching a certain tree depth or the subsets being pure enough.</p></li>
+</ul>
+<section id="example-using-gini-impurity">
+<h4>Example Using Gini Impurity<a class="headerlink" href="#example-using-gini-impurity" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>For each feature, consider all possible values for splitting.</p></li>
+<li><p>Choose the split that results in the lowest weighted Gini Impurity.</p></li>
+<li><p>Calculate the Gini Impurity for each possible split as:</p></li>
+<li><p>Divide the dataset accordingly and continue the process.</p></li>
+</ul>
+<p>In the context of decision trees, the splitting process is essential as it helps the model generalize the pattern from the training data, enabling accurate predictions or classifications for unseen data. It’s the core step in building the tree, and different algorithms might have variations in the splitting procedure.</p>
+</section>
+</section>
+</section>
+<section id="decision-tree-with-scikit-learn">
+<h2>Decision tree with SciKit Learn<a class="headerlink" href="#decision-tree-with-scikit-learn" title="Permalink to this heading">#</a></h2>
+<p>Scikit-learn, often referred to as sklearn, is one of the most popular libraries for machine learning in Python</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">tree</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -1118,8 +1147,20 @@ Testing score: 68.04%
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.6803770351328192
+</pre></div>
+</div>
+</div>
+</div>
 <section id="prediction">
-<h2>Prediction<a class="headerlink" href="#prediction" title="Permalink to this heading">#</a></h2>
+<h3>Prediction<a class="headerlink" href="#prediction" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[</span><span class="mi">4</span><span class="p">]</span>
@@ -1132,6 +1173,64 @@ Testing score: 68.04%
 </div>
 </div>
 </div>
+</section>
+<section id="visualizing-a-decision-tree">
+<h3>Visualizing a decision tree<a class="headerlink" href="#visualizing-a-decision-tree" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
+<span class="n">tree</span><span class="o">.</span><span class="n">plot_tree</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> 
+               <span class="n">feature_names</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;GWD (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;L (km)&#39;</span><span class="p">,</span> <span class="s1">&#39;Slope (%)&#39;</span><span class="p">,</span> <span class="s1">&#39;PGA (g)&#39;</span><span class="p">],</span>
+               <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Liquefaction&#39;</span><span class="p">,</span> <span class="s1">&#39;No liquefaction&#39;</span><span class="p">],</span>
+               <span class="n">filled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_49557/636362235.py:8: UserWarning: Matplotlib is currently using module://matplotlib_inline.backend_inline, which is a non-GUI backend, so cannot show the figure.
+  fig.show()
+</pre></div>
+</div>
+<img alt="../../_images/63cd2cb1fad577a40ec057dee44b48d891a67df8441d963f8137441c23268321.png" src="../../_images/63cd2cb1fad577a40ec057dee44b48d891a67df8441d963f8137441c23268321.png" />
+</div>
+</div>
+</section>
+<section id="update-model">
+<h3>Update model<a class="headerlink" href="#update-model" title="Permalink to this heading">#</a></h3>
+<p>We increase the <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> to 7 so we have a better fit.</p>
+<blockquote>
+<div><p>💡 Try varying the <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> from 5 - 9.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clf</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>#sk-container-id-4 {color: black;}#sk-container-id-4 pre{padding: 0;}#sk-container-id-4 div.sk-toggleable {background-color: white;}#sk-container-id-4 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-4 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-4 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-4 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-4 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-4 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-4 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-4 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-4 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-4 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-4 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-4 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-4 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-4 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-4 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-4 div.sk-item {position: relative;z-index: 1;}#sk-container-id-4 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-4 div.sk-item::before, #sk-container-id-4 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-4 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-4 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-4 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-4 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-4 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-4 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-4 div.sk-label-container {text-align: center;}#sk-container-id-4 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-4 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-4" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>DecisionTreeClassifier(max_depth=7)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox" checked><label for="sk-estimator-id-4" class="sk-toggleable__label sk-toggleable__label-arrow">DecisionTreeClassifier</label><div class="sk-toggleable__content"><pre>DecisionTreeClassifier(max_depth=7)</pre></div></div></div></div></div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Validation score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score: </span><span class="si">%.2f%%</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">clf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training score: 77.85%
+Validation score: 77.05%
+Testing score: 74.98%
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="metrics">
 <h2>Metrics<a class="headerlink" href="#metrics" title="Permalink to this heading">#</a></h2>
@@ -1148,30 +1247,332 @@ Testing score: 68.04%
 <p>The FPR represents the fraction of the negative points that are incorrectly classified as positive (FPR = FP/(FP + TN) = FP/(all negative data)). An ideal classifier will have a ROC curve that passes through the top left corner, with a TPR of 1 and FPR of 0. A random classifier will have a ROC curve along the diagonal line where TPR equals FPR. Less accurate models have curves closer to the diagonal, while more accurate models have curves further up and left.</p>
 <p>The area under the ROC curve (AUC) quantifies the model’s performance. Larger AUC values indicate better classification, with a maximum of 1. AUC values near 0.5 imply performance equal to a random classifier.</p>
 <p>Although designed for binary classification, ROC analysis can be extended to multi-class problems using a one-vs-rest approach. This involves creating a binary classifier for each class against the rest. The per-class ROC curves are averaged, weighting by class size, to produce an overall curve.</p>
+<section id="plot-metrics">
+<h3>Plot metrics<a class="headerlink" href="#plot-metrics" title="Permalink to this heading">#</a></h3>
 </section>
-<section id="visualize-a-decision-tree">
-<h2>Visualize a decision tree<a class="headerlink" href="#visualize-a-decision-tree" title="Permalink to this heading">#</a></h2>
+<section id="confusion-matrix">
+<h3>Confusion Matrix<a class="headerlink" href="#confusion-matrix" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">))</span>
-<span class="n">tree</span><span class="o">.</span><span class="n">plot_tree</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> 
-               <span class="n">feature_names</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;GWD (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;L (km)&#39;</span><span class="p">,</span> <span class="s1">&#39;Slope (%)&#39;</span><span class="p">,</span> <span class="s1">&#39;PGA (g)&#39;</span><span class="p">],</span>
-               <span class="n">class_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Liquefaction&#39;</span><span class="p">,</span> <span class="s1">&#39;No liquefaction&#39;</span><span class="p">],</span>
-               <span class="n">filled</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    
+    <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_true</span><span class="p">)</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="s1">&#39;No&#39;</span><span class="p">,</span><span class="s1">&#39;Yes&#39;</span><span class="p">])</span> 
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">([</span><span class="s1">&#39;No&#39;</span><span class="p">,</span><span class="s1">&#39;Yes&#39;</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;True&#39;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Confusion Matrix&#39;</span><span class="p">)</span>    
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make prediction on test set</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="c1"># plot confusion matrix for test set</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/27d05a36e02df0a0d04e0f553cacf68ff56a1bcc9938ab667e8fa6ff5f6657b3.png" src="../../_images/27d05a36e02df0a0d04e0f553cacf68ff56a1bcc9938ab667e8fa6ff5f6657b3.png" />
+<img alt="../../_images/5c30017b466a65239d30d5d885ea368be4dbc5a6515ea97d3d45424f9dc33dc0.png" src="../../_images/5c30017b466a65239d30d5d885ea368be4dbc5a6515ea97d3d45424f9dc33dc0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># make prediction on training set</span>
+<span class="n">y_pred_train</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<span class="c1"># plot confusion matrix for training set</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">y_pred_train</span><span class="p">,</span> <span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/5b497b76807d32484898aad4e543d9acf4c36b79f5803386c2937d3945e33f72.png" src="../../_images/5b497b76807d32484898aad4e543d9acf4c36b79f5803386c2937d3945e33f72.png" />
 </div>
 </div>
 </section>
+<section id="roc">
+<h3>ROC<a class="headerlink" href="#roc" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_roc_cur</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">):</span>  
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;ROC&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;darkblue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;False Positive Rate&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True Positive Rate&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Receiver Operating Characteristic (ROC) Curve&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">probs</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">probs</span><span class="p">)</span> 
+<span class="n">plot_roc_cur</span><span class="p">(</span><span class="n">fper</span><span class="p">,</span> <span class="n">tper</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b6c2ec1c9f1950e76cc5d01de2e3378d64faa58d2324e47cd833d3940ed6b02a.png" src="../../_images/b6c2ec1c9f1950e76cc5d01de2e3378d64faa58d2324e47cd833d3940ed6b02a.png" />
+</div>
+</div>
+<section id="precision-recall-curve">
+<h4>Precision recall curve<a class="headerlink" href="#precision-recall-curve" title="Permalink to this heading">#</a></h4>
+<p>A precision-recall curve (PR curve) is another common technique used to evaluate the performance of classification models, alongside ROC curves. The PR curve plots precision vs. recall at different thresholds.</p>
+<p>Precision measures the fraction of positive predictions that are true positives, while recall (same as true positive rate) measures the fraction of actual positives correctly predicted as positive.</p>
+<p>A PR curve shows the tradeoff between precision and recall. High recall means detecting most of the positive cases, but potentially more false positives. High precision means positive predictions are more accurate, but some positives may be missed.</p>
+<p>The curve is generated by varying the classification threshold and plotting precision and recall at each threshold. A perfect classifier will have a horizontal line at precision = 1. Random guessing produces a diagonal line.</p>
+<p>The area under the PR curve (AUC) summarizes the overall performance. Higher AUC indicates better classification performance.</p>
+<p><strong>Advantages of PR curves</strong>:</p>
+<ul class="simple">
+<li><p>Better visualization of performance for imbalanced classes. ROC curves can hide poor performance on the minority class.</p></li>
+<li><p>Directly shows precision-recall tradeoff important for many applications.</p></li>
+<li><p>Can be more useful than ROC curves when the positive class is more important.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">precision_recall_curve</span><span class="p">,</span> <span class="n">roc_curve</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1">#use logistic regression model to make predictions</span>
+<span class="n">y_score</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1">#calculate precision and recall</span>
+<span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">precision_recall_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_score</span><span class="p">)</span>
+
+<span class="c1">#create precision recall curve</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">recall</span><span class="p">,</span> <span class="n">precision</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">)</span>
+
+<span class="c1">#add axis labels to plot</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Precision-Recall Curve&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Precision&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Recall&#39;</span><span class="p">)</span>
+
+<span class="c1">#display plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/aafb90b85f4d38826e1b68b36ecdca5acde45e7b62175a376050deb2efb278c1.png" src="../../_images/aafb90b85f4d38826e1b68b36ecdca5acde45e7b62175a376050deb2efb278c1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="summary-of-decision-trees">
+<h3>Summary of decision trees<a class="headerlink" href="#summary-of-decision-trees" title="Permalink to this heading">#</a></h3>
+<p>Pros and Cons</p>
+<ul class="simple">
+<li><p>Pros: Simple to understand and visualize, able to handle categorical and numerical data.</p></li>
+<li><p>Cons: Prone to overfitting, especially when the tree is deep, leading to poor generalization to unseen data. A small change in the data can lead to a very different tree.</p></li>
+</ul>
+</section>
+</section>
 <section id="random-forest">
 <h2>Random Forest<a class="headerlink" href="#random-forest" title="Permalink to this heading">#</a></h2>
+<p>A random forest is an ensemble method that builds multiple decision trees and combines their predictions. Here’s how it works:</p>
+<p><strong>Bootstrapping</strong>: For each tree in the forest, a subset of the training data is sampled with replacement. This helps in reducing overfitting by ensuring that each tree in the forest sees a slightly different subset of the data.</p>
+<p><strong>Random Feature Selection</strong>: When splitting a node, a random subset of features is considered. This further decorrelates the trees and improves generalization.</p>
+<p><strong>Voting or Averaging</strong>: For a classification problem, the mode of the classes predicted by individual trees is taken, and for regression, the mean prediction is used.</p>
+<p><strong>Pros and Cons</strong></p>
+<ul class="simple">
+<li><p>Pros: Reduced risk of overfitting compared to a single decision tree, often gives better predictive performance, handles missing data well.</p></li>
+<li><p>Cons: More computationally expensive, harder to interpret because of the ensemble nature.</p></li>
+</ul>
+<p><strong>Difference Between Random Forest and Decision Tree</strong></p>
+<ul class="simple">
+<li><p>Composition: A decision tree is a single tree, while a random forest is a collection of decision trees.</p></li>
+<li><p>Overfitting: Random forests are generally less prone to overfitting compared to individual decision trees.</p></li>
+<li><p>Prediction: A decision tree makes a prediction based on a single path through the tree, while a random forest averages or takes a vote from multiple trees.</p></li>
+<li><p>Computation and Interpretation: Random forests are more computationally intensive and less interpretable than individual decision trees.</p></li>
+</ul>
+<p>In the context of SciML, both decision trees and random forests can be powerful tools. Decision trees are often used for their interpretability and simplicity, while random forests are employed for their robustness and improved predictive accuracy. Understanding the underlying mechanics and differences between these methods can help researchers and practitioners make informed choices for their specific applications.</p>
 <p><img alt="Decision tree vs Random Forest" src="../../_images/decision-tree-rf.png" /></p>
+<section id="automatic-hyperparameter-tuning">
+<h3>Automatic Hyperparameter tuning<a class="headerlink" href="#automatic-hyperparameter-tuning" title="Permalink to this heading">#</a></h3>
+<p>Like we varied <code class="docutils literal notranslate"><span class="pre">max_depth</span></code>, there are other hyperparameters than can be tuned to improve performance.</p>
+<p><a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html">https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html</a></p>
+<p>Cohen’s kappa score measures the agreement between two raters/classifiers while taking into account the agreement expected by chance.</p>
+<p>The <span class="math notranslate nohighlight">\(\kappa\)</span> score is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\kappa = (p_o - p_e) / (1 - p_e)\]</div>
+<p>Where:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$p_o$ is the observed agreement between raters (accuracy)
+$p_e$ is the expected agreement by chance
+</pre></div>
+</div>
+<p>Values range from -1 to 1, where 0 is chance level agreement and 1 is perfect agreement.</p>
+<p>In machine learning, kappa can be used as an evaluation metric for classification models. It gives a more robust measure of performance than simple accuracy, by accounting for random chance.</p>
+<p><code class="docutils literal notranslate"><span class="pre">GridSearchCV</span></code> is a tool in sklearn to perform hyperparameter tuning. It tries out all combinations of specified hyperparameters, fits a model on each, and returns the best performing configuration based on a scoring metric (like kappa).</p>
+<p>So in this approach, we are using <code class="docutils literal notranslate"><span class="pre">GridSearchCV</span></code> to optimize the hyperparameters of a Random Forest Classifier to maximize the kappa score, rather than just overall accuracy.</p>
+<p>The goal is to tune hyperparameters like <code class="docutils literal notranslate"><span class="pre">max_depth</span></code>, <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code> etc. to find the values that result in the best kappa score, indicating the model’s predictions have the strongest agreement with the true labels after accounting for chance.</p>
+<p>This often results in a model that generalizes better than just optimizing for accuracy. The final model can then be evaluated with cross-validation to estimate real-world performance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span><span class="p">,</span> <span class="n">GridSearchCV</span><span class="p">,</span> <span class="n">cross_val_predict</span><span class="p">,</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">cohen_kappa_score</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">,</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">classification_report</span><span class="p">,</span> <span class="n">make_scorer</span> 
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#define function to find best parameter combination based on Cohen’s kappa coefficient </span>
+<span class="k">def</span> <span class="nf">rfr_model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="c1"># Perform Grid-Search</span>
+    <span class="n">kappa_scorer</span> <span class="o">=</span> <span class="n">make_scorer</span><span class="p">(</span><span class="n">cohen_kappa_score</span><span class="p">)</span>
+    <span class="n">gsc</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="n">RandomForestClassifier</span><span class="p">(),</span>
+        <span class="n">param_grid</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span>
+            <span class="s1">&#39;n_estimators&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span>
+            <span class="s1">&#39;max_features&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span><span class="s1">&#39;sqrt&#39;</span><span class="p">,</span><span class="s1">&#39;log2&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;criterion&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;gini&#39;</span><span class="p">,</span><span class="s1">&#39;entropy&#39;</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="n">kappa_scorer</span><span class="p">)</span>
+    
+    <span class="n">grid_result</span> <span class="o">=</span> <span class="n">gsc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">best_params</span> <span class="o">=</span> <span class="n">grid_result</span><span class="o">.</span><span class="n">best_params_</span>
+    
+    <span class="n">rfr</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;max_depth&quot;</span><span class="p">],</span> 
+                                 <span class="n">n_estimators</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;n_estimators&quot;</span><span class="p">],</span> 
+                                 <span class="n">max_features</span><span class="o">=</span><span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;max_features&quot;</span><span class="p">],</span> <span class="n">criterion</span> <span class="o">=</span> <span class="n">best_params</span><span class="p">[</span><span class="s2">&quot;criterion&quot;</span><span class="p">])</span>
+    <span class="c1"># Perform K-Fold CV</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">rfr</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">cross_val_predict</span><span class="p">(</span><span class="n">rfr</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">optimised_random_forest</span> <span class="o">=</span> <span class="n">gsc</span><span class="o">.</span><span class="n">best_estimator_</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scores: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scores</span><span class="p">,</span> <span class="n">optimised_random_forest</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># run optimization algorithm and print CV scores</span>
+<span class="n">scores</span><span class="p">,</span> <span class="n">rf</span> <span class="o">=</span> <span class="n">rfr_model</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_validation.py:425: FitFailedWarning: 
+800 fits failed out of a total of 2400.
+The score on these train-test partitions for these parameters will be set to nan.
+If these failures are not expected, you can try to debug them by setting error_score=&#39;raise&#39;.
+
+Below are more details about the failures:
+--------------------------------------------------------------------------------
+622 fits failed with the following error:
+Traceback (most recent call last):
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_validation.py&quot;, line 732, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 1144, in wrapper
+    estimator._validate_params()
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 637, in _validate_params
+    validate_parameter_constraints(
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/utils/_param_validation.py&quot;, line 95, in validate_parameter_constraints
+    raise InvalidParameterError(
+sklearn.utils._param_validation.InvalidParameterError: The &#39;max_features&#39; parameter of RandomForestClassifier must be an int in the range [1, inf), a float in the range (0.0, 1.0], a str among {&#39;log2&#39;, &#39;sqrt&#39;} or None. Got &#39;auto&#39; instead.
+
+--------------------------------------------------------------------------------
+178 fits failed with the following error:
+Traceback (most recent call last):
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_validation.py&quot;, line 732, in _fit_and_score
+    estimator.fit(X_train, y_train, **fit_params)
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 1144, in wrapper
+    estimator._validate_params()
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/base.py&quot;, line 637, in _validate_params
+    validate_parameter_constraints(
+  File &quot;/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/utils/_param_validation.py&quot;, line 95, in validate_parameter_constraints
+    raise InvalidParameterError(
+sklearn.utils._param_validation.InvalidParameterError: The &#39;max_features&#39; parameter of RandomForestClassifier must be an int in the range [1, inf), a float in the range (0.0, 1.0], a str among {&#39;sqrt&#39;, &#39;log2&#39;} or None. Got &#39;auto&#39; instead.
+
+  warnings.warn(some_fits_failed_message, FitFailedWarning)
+/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/sklearn/model_selection/_search.py:976: UserWarning: One or more of the test scores are non-finite: [ nan  nan  nan  nan  nan 0.26 0.22 0.31 0.31 0.32 0.28 0.28 0.31 0.31
+ 0.32  nan  nan  nan  nan  nan 0.31 0.35 0.36 0.36 0.36 0.32 0.35 0.35
+ 0.35 0.35  nan  nan  nan  nan  nan 0.36 0.37 0.37 0.37 0.37 0.36 0.37
+ 0.38 0.38 0.37  nan  nan  nan  nan  nan 0.4  0.38 0.39 0.4  0.39 0.4
+ 0.38 0.4  0.39 0.39  nan  nan  nan  nan  nan 0.43 0.44 0.45 0.46 0.46
+ 0.41 0.44 0.45 0.45 0.46  nan  nan  nan  nan  nan 0.47 0.48 0.49 0.49
+ 0.49 0.48 0.48 0.49 0.49 0.5   nan  nan  nan  nan  nan 0.49 0.52 0.52
+ 0.53 0.52 0.5  0.5  0.52 0.52 0.52  nan  nan  nan  nan  nan 0.53 0.54
+ 0.54 0.56 0.55 0.52 0.53 0.54 0.56 0.55  nan  nan  nan  nan  nan 0.26
+ 0.27 0.3  0.3  0.33 0.22 0.24 0.29 0.32 0.32  nan  nan  nan  nan  nan
+ 0.32 0.36 0.35 0.34 0.35 0.33 0.34 0.35 0.35 0.35  nan  nan  nan  nan
+  nan 0.35 0.36 0.37 0.37 0.37 0.36 0.37 0.37 0.37 0.37  nan  nan  nan
+  nan  nan 0.38 0.38 0.39 0.39 0.39 0.37 0.39 0.39 0.4  0.39  nan  nan
+  nan  nan  nan 0.42 0.43 0.43 0.44 0.45 0.42 0.42 0.43 0.44 0.44  nan
+  nan  nan  nan  nan 0.45 0.48 0.47 0.48 0.48 0.46 0.46 0.48 0.48 0.48
+  nan  nan  nan  nan  nan 0.5  0.5  0.51 0.5  0.51 0.47 0.51 0.5  0.51
+ 0.51  nan  nan  nan  nan  nan 0.52 0.54 0.53 0.54 0.54 0.5  0.52 0.54
+ 0.54 0.54]
+  warnings.warn(
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[0.78 0.78 0.77 0.8  0.81 0.81 0.77 0.77 0.8  0.78]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#print GridSearch results</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Best parameters:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores:&#39;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores (average):&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Overall score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Best parameters: RandomForestClassifier(max_depth=9)
+---
+CV scores: [0.78 0.78 0.77 0.8  0.81 0.81 0.77 0.77 0.8  0.78]
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">krishna</span><span class="o">/</span><span class="n">courses</span><span class="o">/</span><span class="n">CE397</span><span class="o">-</span><span class="n">Scientific</span><span class="o">-</span><span class="n">MachineLearning</span><span class="o">/</span><span class="n">sciml</span><span class="o">/</span><span class="n">lectures</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">/</span><span class="mi">01</span><span class="o">-</span><span class="n">classification</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">Cell</span> <span class="mi">54</span> <span class="n">line</span> <span class="mi">5</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;---&#39;</span><span class="p">)</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=3&#39;</span><span class="o">&gt;</span><span class="mi">4</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores:&#39;</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=4&#39;</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;CV scores (average):&#39;</span><span class="p">,</span> <span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=5&#39;</span><span class="o">&gt;</span><span class="mi">6</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">))</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/01-classification/01-classification.ipynb#Y144sZmlsZQ%3D%3D?line=6&#39;</span><span class="o">&gt;</span><span class="mi">7</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Testing score:&#39;</span><span class="p">,</span> <span class="n">rf</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+
+<span class="ne">NameError</span>: name &#39;mean&#39; is not defined
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="extreme-gradient-boosting">
 <h2>Extreme Gradient Boosting<a class="headerlink" href="#extreme-gradient-boosting" title="Permalink to this heading">#</a></h2>
@@ -1454,6 +1855,15 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
   
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../00-perceptron/00-perceptron.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Perceptron</p>
+      </div>
+    </a>
 </div></div>
   
 </div>
@@ -1473,8 +1883,17 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">01: Classification</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-packages">Install packages</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#liquefaction">Liquefaction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lateral-spreading-classification">Lateral spreading classification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lateral-spreading-classification">Lateral spreading classification</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-for-features">Filtering for features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-testing-and-validation">Training, testing and validation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classification-decision-trees">Classification: Decision Trees</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gini-impurity">GINI Impurity</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-splitting">Decision Tree splitting</a><ul class="nav section-nav flex-column">
@@ -1484,16 +1903,25 @@ Requirement already satisfied: six&gt;=1.5 in /opt/conda/lib/python3.9/site-pack
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-with-scikit-learn">Decision tree with SciKit Learn</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-data">Explore data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction">Prediction</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizing-a-decision-tree">Visualizing a decision tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-model">Update model</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-metrics">Plot metrics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confusion-matrix">Confusion Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#roc">ROC</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#precision-recall-curve">Precision recall curve</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-tree-classifier">Decision tree classifier</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction">Prediction</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrics">Metrics</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-a-decision-tree">Visualize a decision tree</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-decision-trees">Summary of decision trees</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#random-forest">Random Forest</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-hyperparameter-tuning">Automatic Hyperparameter tuning</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extreme-gradient-boosting">Extreme Gradient Boosting</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explainable-ai-with-shap">Explainable AI with SHAP</a></li>
 </ul>
