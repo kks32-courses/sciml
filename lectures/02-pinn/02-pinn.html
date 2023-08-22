@@ -390,9 +390,14 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">02: Physics-Informed Neural Networks (PINNs)</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">02: Physics-Informed Neural Networks (PINNs)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universal-approximation-theorem">Universal Approximation Theorem</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-nn">Data-driven NN</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-neural-network-approximation">Data-driven Neural Network approximation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-data-driven-model">Test the data-driven model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-error">Plot error</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extrapolate-outside-training-range">Extrapolate outside training range</a></li>
 </ul>
 </li>
@@ -446,9 +451,128 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 </div>
 </div>
 </div>
+<section id="universal-approximation-theorem">
+<h2>Universal Approximation Theorem<a class="headerlink" href="#universal-approximation-theorem" title="Permalink to this heading">#</a></h2>
+<p>Te Universal Approximation Theorem is a critical aspect of neural networks. It essentially states that a feedforward neural network with a single hidden layer containing a finite number of neurons can approximate continuous functions on compact subsets of <span class="math notranslate nohighlight">\(\mathbb{R}^n\)</span> , under mild assumptions on the activation function. This property makes neural networks incredibly powerful tools for modeling an array of nonlinear systems.</p>
+<p>A typical neural network consists of an input layer, one or more hidden layers, and an output layer. The neurons in these layers are connected by weighted links, and each connection has an associated weight that the network adjusts during the learning process.</p>
+<p>Each neuron processes input, applies an activation function (like the sigmoid, tanh, or ReLU), and produces an output. The complexity of the functions that can be modeled by the network depends on the architecture, including the number of hidden layers and the number of neurons in each layer.</p>
+<p>The Universal Approximation Theorem formally states that a neural network with just one hidden layer can approximate any continuous function to an arbitrary level of accuracy, given a sufficient (but finite) number of neurons in the hidden layer.</p>
+<p>Let <span class="math notranslate nohighlight">\(\varphi: \mathbb{R} \rightarrow \mathbb{R}\)</span> be a nonconstant, bounded, and continuous activation function. Consider a feedforward neural network mapping <span class="math notranslate nohighlight">\(\mathbb{R}^n\)</span> to <span class="math notranslate nohighlight">\(\mathbb{R}^m\)</span> with a single hidden layer containing <span class="math notranslate nohighlight">\(K\)</span> hidden units. Let <span class="math notranslate nohighlight">\(w_{kj}\)</span> denote the weight connecting the <span class="math notranslate nohighlight">\(j^{th}\)</span> input to the <span class="math notranslate nohighlight">\(k^{th}\)</span> hidden unit, <span class="math notranslate nohighlight">\(b_k\)</span> the bias of the <span class="math notranslate nohighlight">\(k^{th}\)</span> hidden unit, <span class="math notranslate nohighlight">\(v_{ik}\)</span> the weight connecting the <span class="math notranslate nohighlight">\(k^{th}\)</span> hidden unit to the <span class="math notranslate nohighlight">\(i^{th}\)</span> output unit, and <span class="math notranslate nohighlight">\(c_i\)</span> the bias of the <span class="math notranslate nohighlight">\(i^{th}\)</span> output unit.</p>
+<p>The function computed by the neural network can be expressed as:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = V\varphi(Wx + b) + c\]</div>
+<p>Where <span class="math notranslate nohighlight">\(x \in \mathbb{R}^n\)</span>, <span class="math notranslate nohighlight">\(f(x) \in \mathbb{R}^m\)</span>, <span class="math notranslate nohighlight">\(W\)</span> is a <span class="math notranslate nohighlight">\(K\times n\)</span> matrix of weights <span class="math notranslate nohighlight">\(w_{kj}\)</span>, <span class="math notranslate nohighlight">\(b \in \mathbb{R}^K\)</span> is the vector of hidden biases <span class="math notranslate nohighlight">\(b_k\)</span>, <span class="math notranslate nohighlight">\(V\)</span> is an <span class="math notranslate nohighlight">\(m\times K\)</span> matrix of weights <span class="math notranslate nohighlight">\(v_{ik}\)</span>, and <span class="math notranslate nohighlight">\(c \in \mathbb{R}^m\)</span> is the vector of output biases <span class="math notranslate nohighlight">\(c_i\)</span>. The activation function <span class="math notranslate nohighlight">\(\varphi\)</span> is applied element-wise to the hidden layer values <span class="math notranslate nohighlight">\(Wx + b\)</span>.</p>
+<p>The universal approximation theorem states that if <span class="math notranslate nohighlight">\(\varphi\)</span> is nonconstant, bounded, and continuous, then for any continuous function <span class="math notranslate nohighlight">\(g(x)\)</span> defined on a compact subset of <span class="math notranslate nohighlight">\(\mathbb{R}^n\)</span>, and any <span class="math notranslate nohighlight">\(\epsilon &gt; 0\)</span>, there exists a neural network <span class="math notranslate nohighlight">\(f(x)\)</span> with parameters <span class="math notranslate nohighlight">\(W, b, V, c\)</span> such that:</p>
+<div class="math notranslate nohighlight">
+\[|f(x) - g(x)|_{\infty} &lt; \epsilon \quad \forall x \in \mathbb{R}^n\]</div>
+<p>for all <span class="math notranslate nohighlight">\(x\)</span> in the compact set. In other words, the neural network can approximate the function <span class="math notranslate nohighlight">\(g(x)\)</span> arbitrarily well, given enough hidden units.</p>
+<p>The proof relies on the fact that finite linear combinations of activation functions can uniformly approximate any continuous function on a compact set, based on the <a class="reference external" href="https://en.wikipedia.org/wiki/Stone%E2%80%93Weierstrass_theorem">Weierstrass approximation theorem</a>. Adding more hidden units increases the space of functions that can be represented by the neural network.</p>
+<p>Although powerful, the universal approximation property doesn’t guarantee an easy learning process. The theorem does not provide guidance on the optimal architecture, nor does it tell us anything about the learnability of the function. Training deep neural networks to approximate complex functions can still be a challenging task, requiring careful consideration of the architecture, learning algorithm, and hyperparameters.</p>
+</section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="data-driven-nn">
 <h1>Data-driven NN<a class="headerlink" href="#data-driven-nn" title="Permalink to this heading">#</a></h1>
+<p>Given a set of discrete data, generated from <span class="math notranslate nohighlight">\(f(x, y) = \sin(x) \sin(y)\)</span> over the domain <span class="math notranslate nohighlight">\(x, y \rightarrow [-\pi, \pi] \times [-\pi, \pi]\)</span>, we want to fit a surface, in the form of a neural network, to this dataset. A multi-layer neural network approximating the function <span class="math notranslate nohighlight">\(f\)</span> can be constructed as <span class="math notranslate nohighlight">\(\hat{f} : (x, y) \mapsto \mathcal{N}_f(x, y; \mathbf{W}, \mathbf{b})\)</span>, with inputs <span class="math notranslate nohighlight">\(x, y\)</span> and output <span class="math notranslate nohighlight">\(\hat{f}\)</span>.</p>
+<p>Let’s go ahead and create the dataset and visualize it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="c1"># Generate training data</span>
+<span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">f_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y_data</span><span class="p">)</span>
+<span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">f_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">x_data</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_data</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">f_data</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># plot training data in 2D with matplotlib as a contour plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x_data</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">y_data</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">f_data</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="mi">100</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9030127e8762407535b8fc7f9aabcbff384e15963c8bb26f849cfe55d1838bc2.png" src="../../_images/9030127e8762407535b8fc7f9aabcbff384e15963c8bb26f849cfe55d1838bc2.png" />
+</div>
+</div>
+<p>We will use a four-layer NN with 10 neurons each and a hyperbolic-tangent activation function at each layer</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">StandardNN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StandardNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_features</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">out_features</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+
+
+<span class="c1"># Define model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">StandardNN</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Once the networks are initialized, we set up the optimization problem and train the network by minimizing an objective function, i.e. solving the optimization problem for <span class="math notranslate nohighlight">\(W\)</span> and <span class="math notranslate nohighlight">\(b\)</span>. The optimization problem for a data-driven curve-fitting is defined as:
+$<span class="math notranslate nohighlight">\(
+\begin{aligned}
+\text{arg min}_{W,b} \mathcal{L}(W, b) &amp;:= \left\| f(x^*, y^*) - \mathcal{N}_f(x^*, y^*; W, b) \right\|, \tag{6} \\
+\end{aligned}
+\)</span><span class="math notranslate nohighlight">\(
+where \)</span>x^<em>, y^</em><span class="math notranslate nohighlight">\( is the set of all discrete points where \)</span>f<span class="math notranslate nohighlight">\( is given. For the loss-function \)</span>\left| \circ \right|<span class="math notranslate nohighlight">\(, we use the mean squared-error norm
+\)</span><span class="math notranslate nohighlight">\(
+\left\| \circ \right\| = \frac{1}{N} \sum_{x^*, y^* \in I} \left( f(x^*, y^*) - \hat{f}(x^*, y^*) \right)^2.
+\)</span>$</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define loss function and optimizer</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+<span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Training loop</span>
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5000</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Data-driven model training progress&#39;</span><span class="p">):</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">f_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">f_pred</span><span class="p">,</span> <span class="n">f_data</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+<span class="c1"># Plot the loss on a semilog scale</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Training Loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "4550dd3d614d4f009beba9d7084aceac", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/0af650c4ee4691c60f35622cb9c661811cca5ae7afe2a7a1dba47234af92844e.png" src="../../_images/0af650c4ee4691c60f35622cb9c661811cca5ae7afe2a7a1dba47234af92844e.png" />
+</div>
+</div>
+<blockquote>
+<div><p>💡 When the loss function is non-smooth like the one shown here, it means we are probably using a higher learning rate. Try reducing the learning rate to 0.005 and 0.001 to see the effect on the loss evolution</p>
+</div></blockquote>
+<section id="data-driven-neural-network-approximation">
+<h2>Data-driven Neural Network approximation<a class="headerlink" href="#data-driven-neural-network-approximation" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -485,7 +609,7 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 
 <span class="c1"># Define loss function and optimizer</span>
 <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 
 <span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -511,12 +635,10 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1ec475de3f70475b806e498f76d857d2", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/a7a3d6603c5cc70a51a2c7978cde1310361e61651fcbb26e97ba67b25c8ca971.png" src="../../_images/a7a3d6603c5cc70a51a2c7978cde1310361e61651fcbb26e97ba67b25c8ca971.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "36a84f060ac5417893e02dbf37728ebe", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/a52bcad3239497d25aa0f62ba5c93b9b7538eedb522d01a2a834cd367b943808.png" src="../../_images/a52bcad3239497d25aa0f62ba5c93b9b7538eedb522d01a2a834cd367b943808.png" />
 </div>
 </div>
-<blockquote>
-<div><p>💡 When the loss function is non-smooth like the one shown here, it means we are probably using a higher learning rate. Try reducing the learning rate to 0.005 and 0.001 to see the effect on the loss evolution</p>
-</div></blockquote>
+</section>
 <section id="test-the-data-driven-model">
 <h2>Test the data-driven model<a class="headerlink" href="#test-the-data-driven-model" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -539,9 +661,31 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/053b4c6914722a6144fb2d15786ba0e2dfc23bc393af14ab3bfc43330e11151e.png" src="../../_images/053b4c6914722a6144fb2d15786ba0e2dfc23bc393af14ab3bfc43330e11151e.png" />
+<img alt="../../_images/de0d7eb2b35e9a0ec2441e12eff1fc3cdce561ff70ba51eb2f6d92761e3d9ea9.png" src="../../_images/de0d7eb2b35e9a0ec2441e12eff1fc3cdce561ff70ba51eb2f6d92761e3d9ea9.png" />
 </div>
 </div>
+<section id="plot-error">
+<h3>Plot error<a class="headerlink" href="#plot-error" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+
+<span class="n">error</span> <span class="o">=</span> <span class="n">f_test</span> <span class="o">-</span> <span class="n">f_pred</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))])</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Error between prediction and original data&#39;</span><span class="p">,</span> 
+                  <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span>
+                  <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">90</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
 <section id="extrapolate-outside-training-range">
 <h3>Extrapolate outside training range<a class="headerlink" href="#extrapolate-outside-training-range" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
@@ -564,7 +708,7 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/cc38c73a5d8d102f483011826391d886ada837f4af8c73b62451748f2f44744f.png" src="../../_images/cc38c73a5d8d102f483011826391d886ada837f4af8c73b62451748f2f44744f.png" />
+<img alt="../../_images/7e66f14ecd7a0c6add39ca7355d419e7da7898fb016d61391cb302b3b1d88ecf.png" src="../../_images/7e66f14ecd7a0c6add39ca7355d419e7da7898fb016d61391cb302b3b1d88ecf.png" />
 </div>
 </div>
 </section>
@@ -687,24 +831,6 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 <img alt="../../_images/348fee33ca3ebf29819569333dacea47e69f15274f5b0f3a36b6c5dfa6adb3a8.png" src="../../_images/348fee33ca3ebf29819569333dacea47e69f15274f5b0f3a36b6c5dfa6adb3a8.png" />
 </div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
-
-<span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span>
-    <span class="n">go</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">f_test</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
-<span class="p">])</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Original Data&#39;</span><span class="p">,</span> <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
-                  <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">90</span><span class="p">))</span>
-
-<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-</div>
-</div>
 <section id="error-plot">
 <h3>Error plot<a class="headerlink" href="#error-plot" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
@@ -716,7 +842,7 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))])</span>
 
 <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Error between prediction and original data&#39;</span><span class="p">,</span> 
-                  <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                  <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span>
                   <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">90</span><span class="p">))</span>
 
 <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -814,9 +940,14 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">02: Physics-Informed Neural Networks (PINNs)</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">02: Physics-Informed Neural Networks (PINNs)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universal-approximation-theorem">Universal Approximation Theorem</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-nn">Data-driven NN</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-driven-neural-network-approximation">Data-driven Neural Network approximation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-data-driven-model">Test the data-driven model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-error">Plot error</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extrapolate-outside-training-range">Extrapolate outside training range</a></li>
 </ul>
 </li>
