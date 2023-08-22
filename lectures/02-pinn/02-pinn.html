@@ -400,6 +400,7 @@ document.write(`
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns">PINNs</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-pinn-model">Test the PINN model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-plot">Error plot</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extrapolate-outside-training-regime">Extrapolate outside training regime</a></li>
 </ul>
 </li>
@@ -486,7 +487,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "19fc39ee816f4edab741ffbd1934f810", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/d51fd5aa67dfb9199fd194e72b8bad949d8354e8c3e36ffb9d3f2897715a481c.png" src="../../_images/d51fd5aa67dfb9199fd194e72b8bad949d8354e8c3e36ffb9d3f2897715a481c.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "1ec475de3f70475b806e498f76d857d2", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/a7a3d6603c5cc70a51a2c7978cde1310361e61651fcbb26e97ba67b25c8ca971.png" src="../../_images/a7a3d6603c5cc70a51a2c7978cde1310361e61651fcbb26e97ba67b25c8ca971.png" />
 </div>
 </div>
 <blockquote>
@@ -514,7 +515,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/97f2806b1d77787e2ddf627da695de3767eaffecacde0fe128461e9719c17511.png" src="../../_images/97f2806b1d77787e2ddf627da695de3767eaffecacde0fe128461e9719c17511.png" />
+<img alt="../../_images/053b4c6914722a6144fb2d15786ba0e2dfc23bc393af14ab3bfc43330e11151e.png" src="../../_images/053b4c6914722a6144fb2d15786ba0e2dfc23bc393af14ab3bfc43330e11151e.png" />
 </div>
 </div>
 <section id="extrapolate-outside-training-range">
@@ -539,7 +540,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/ffbe0993c709a0a96a5bf3c07790f34e33c65c4ae9df7424bd5bee8028ded7f0.png" src="../../_images/ffbe0993c709a0a96a5bf3c07790f34e33c65c4ae9df7424bd5bee8028ded7f0.png" />
+<img alt="../../_images/cc38c73a5d8d102f483011826391d886ada837f4af8c73b62451748f2f44744f.png" src="../../_images/cc38c73a5d8d102f483011826391d886ada837f4af8c73b62451748f2f44744f.png" />
 </div>
 </div>
 </section>
@@ -560,7 +561,7 @@ document.write(`
 <p>Putting it together, the Laplacian of <span class="math notranslate nohighlight">\(f\)</span> is:</p>
 <div class="math notranslate nohighlight">
 \[ \nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} = -\sin(x) \sin(y) - \sin(x) \sin(y) = -2 \sin(x) \sin(y) \]</div>
-<p>So, the loss function for PINN is:</p>
+<p>Rearranging the terms to equate to zero, we get the loss function for PINN as:</p>
 <div class="math notranslate nohighlight">
 \[\mathcal{L} = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} + 2 \sin(x) \sin(y)\]</div>
 <div class="cell docutils container">
@@ -634,7 +635,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "e69a9eabd1b34f579e77059cfaec76bb", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/450961b9268040991ff386c08e3626293083c61fbd98ed7ac8c8fa1001d54943.png" src="../../_images/450961b9268040991ff386c08e3626293083c61fbd98ed7ac8c8fa1001d54943.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6e1c6a3f5dc341fe916b83d2dee5cf85", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/aae4ef5f7a9b8f335817cf467789af9d7915e9d04cf4c5eb952df8fef25f6637.png" src="../../_images/aae4ef5f7a9b8f335817cf467789af9d7915e9d04cf4c5eb952df8fef25f6637.png" />
 </div>
 </div>
 <section id="test-the-pinn-model">
@@ -659,9 +660,49 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a7ef4380019885ac929778dbf4282a1a0e1710962c4ba87dee608a0d7d7d4f65.png" src="../../_images/a7ef4380019885ac929778dbf4282a1a0e1710962c4ba87dee608a0d7d7d4f65.png" />
+<img alt="../../_images/348fee33ca3ebf29819569333dacea47e69f15274f5b0f3a36b6c5dfa6adb3a8.png" src="../../_images/348fee33ca3ebf29819569333dacea47e69f15274f5b0f3a36b6c5dfa6adb3a8.png" />
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span>
+    <span class="n">go</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">f_test</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="p">])</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Original Data&#39;</span><span class="p">,</span> <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                  <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">90</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<section id="error-plot">
+<h3>Error plot<a class="headerlink" href="#error-plot" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+
+<span class="n">error</span> <span class="o">=</span> <span class="n">f_test</span> <span class="o">-</span> <span class="n">f_pred</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">go</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))])</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Error between prediction and original data&#39;</span><span class="p">,</span> 
+                  <span class="n">autosize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                  <span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">65</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">90</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
 <section id="extrapolate-outside-training-regime">
 <h3>Extrapolate outside training regime<a class="headerlink" href="#extrapolate-outside-training-regime" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
@@ -684,7 +725,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/565c2d2e3f7ef42e3b967634db34a1f5c3224dc418fe72da76f353d80be67c39.png" src="../../_images/565c2d2e3f7ef42e3b967634db34a1f5c3224dc418fe72da76f353d80be67c39.png" />
+<img alt="../../_images/a9df9dd32492c1f450a116c65ca7ddff8f67a7e2125d43c11431090406eec23e.png" src="../../_images/a9df9dd32492c1f450a116c65ca7ddff8f67a7e2125d43c11431090406eec23e.png" />
 </div>
 </div>
 </section>
@@ -759,6 +800,7 @@ document.write(`
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns">PINNs</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-pinn-model">Test the PINN model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-plot">Error plot</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extrapolate-outside-training-regime">Extrapolate outside training regime</a></li>
 </ul>
 </li>
@@ -788,7 +830,7 @@ By Krishna Kumar
     
   <p class="copyright">
     
-      © Copyright 2022.
+      © Copyright 2023.
       <br/>
     
   </p>
