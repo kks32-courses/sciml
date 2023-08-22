@@ -405,6 +405,7 @@ document.write(`
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns">PINNs</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function">Loss Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-gradients-with-pytorch">Computing Gradients with PyTorch</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-implementation">PINNs implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-pinn-model">Test the PINN model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-plot">Error plot</a></li>
@@ -745,6 +746,57 @@ where \)</span>x^<em>, y^</em><span class="math notranslate nohighlight">\( is t
 <div><p>Schematic of a physics-informed neural network (PINN), where the loss function of PINN contains a mismatch in the given data on the state variables or boundary and initial conditions, i.e., <span class="math notranslate nohighlight">\(MSE_{u,BC,IC}\)</span>, and the residual for the PDE on a set of random points in the time-space domain, i.e., <span class="math notranslate nohighlight">\(MSE_R\)</span>. The hyperparameters of PINN can be learned by minimizing the total loss <span class="math notranslate nohighlight">\(MSE = MSE_{u,BC,IC} + MSE_R\)</span>.</p>
 </div></blockquote>
 </section>
+<section id="computing-gradients-with-pytorch">
+<h2>Computing Gradients with PyTorch<a class="headerlink" href="#computing-gradients-with-pytorch" title="Permalink to this heading">#</a></h2>
+<p>PyTorch provides automatic differentiation capabilities through the autograd package. This allows you to automatically compute gradients of tensors with respect to other tensors.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">grad()</span></code> function computes the gradient of a tensor <code class="docutils literal notranslate"><span class="pre">f</span></code> with respect to a tensor <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<p>For example, let’s compute the gradient of <span class="math notranslate nohighlight">\(f(x) = x^2\)</span> at <span class="math notranslate nohighlight">\(x = 3\)</span>, which is <span class="math notranslate nohighlight">\(f^\prime(x) = 2 * x = 2 * 3 = 6\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">3.</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">f_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f_x</span><span class="p">)</span> <span class="c1"># Output: tensor([6.])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([6.])
+</pre></div>
+</div>
+</div>
+</div>
+<p>This computes the gradient <span class="math notranslate nohighlight">\(df/dx\)</span> at <span class="math notranslate nohighlight">\(x=3\)</span>, which is 6.</p>
+<p>Some key things about <code class="docutils literal notranslate"><span class="pre">grad()</span></code>:</p>
+<ul class="simple">
+<li><p>The first argument is the tensor to compute gradients wrt (<code class="docutils literal notranslate"><span class="pre">f</span></code> in this case).</p></li>
+<li><p>The second argument is the tensor to take gradient of <code class="docutils literal notranslate"><span class="pre">(x)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">grad()</span></code> returns a list of gradient tensors. For a single input, we take the first element <code class="docutils literal notranslate"><span class="pre">[0]</span></code>.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">create_graph=True</span></code>:</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">grad()</span></code> does not construct computational graphs for its backward pass. Setting <code class="docutils literal notranslate"><span class="pre">create_graph=True</span></code> forces it to construct the graphs, allowing you to take higher order derivatives.</p>
+<p>For example let’s compute the second derivative <span class="math notranslate nohighlight">\(f^{\prime\prime}(x) = 2\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">3.</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> 
+<span class="n">f_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> 
+
+<span class="n">f_xx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f_x</span><span class="p">,</span> <span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">f_xx</span><span class="p">)</span> <span class="c1"># Output: 2</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensor([2.])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="pinns-implementation">
 <h2>PINNs implementation<a class="headerlink" href="#pinns-implementation" title="Permalink to this heading">#</a></h2>
 <p>Continuing with fitting the data generated from <span class="math notranslate nohighlight">\(f (x, y) = \sin(x) \sin(y)\)</span>, we know that this is a solution
@@ -772,22 +824,6 @@ to <span class="math notranslate nohighlight">\(\nabla f + 2f = 0\)</span>. We c
 <p>The total loss function for PINN is:</p>
 <div class="math notranslate nohighlight">
 \[\text{arg min}_{W,b} \mathcal{L} = \mathcal{L}_{data}  + \mathcal{L}_{pde} =  \left\|f(x, y) - \hat{f}(x^*, y^*)\right\| + \left\| \nabla^2 \hat{f}(x^*, y^*) + 2 \hat{f}(x^*, y^*) \right\| \]</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the loss function</span>
-<span class="k">def</span> <span class="nf">loss_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">f_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">f_xx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f_x</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">f_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">y</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">f_yy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">f_y</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">y</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="n">pde_loss</span> <span class="o">=</span> <span class="n">f_xx</span> <span class="o">+</span> <span class="n">f_yy</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">f</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">f</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pde_loss</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -1029,6 +1065,7 @@ to <span class="math notranslate nohighlight">\(\nabla f + 2f = 0\)</span>. We c
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns">PINNs</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function">Loss Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-gradients-with-pytorch">Computing Gradients with PyTorch</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-implementation">PINNs implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-pinn-model">Test the PINN model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-plot">Error plot</a></li>
