@@ -4,6 +4,7 @@
 title: Scientific Machine Learning (SciML)
 author: Krishna Kumar
 logo: logo.png
+copyright: "2023"
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
