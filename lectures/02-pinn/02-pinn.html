@@ -527,9 +527,7 @@ Requirement already satisfied: platformdirs&gt;=2.5 in /opt/homebrew/Caskroom/mi
 </div>
 <p>Once the networks are initialized, we set up the optimization problem and train the network by minimizing an objective function, i.e. solving the optimization problem for <span class="math notranslate nohighlight">\(W\)</span> and <span class="math notranslate nohighlight">\(b\)</span>. The optimization problem for a data-driven curve-fitting is defined as:
 $<span class="math notranslate nohighlight">\(
-\begin{aligned}
-\text{arg min}_{W,b} \mathcal{L}(W, b) &amp;:= \left\| f(x^*, y^*) - \mathcal{N}_f(x^*, y^*; W, b) \right\|, \tag{6} \\
-\end{aligned}
+\text{arg min}_{W,b} \mathcal{L}(W, b) := \left\| f(x^*, y^*) - \mathcal{N}_f(x^*, y^*; W, b) \right\|
 \)</span><span class="math notranslate nohighlight">\(
 where \)</span>x^<em>, y^</em><span class="math notranslate nohighlight">\( is the set of all discrete points where \)</span>f<span class="math notranslate nohighlight">\( is given. For the loss-function \)</span>\left| \circ \right|<span class="math notranslate nohighlight">\(, we use the mean squared-error norm
 \)</span><span class="math notranslate nohighlight">\(
@@ -729,9 +727,10 @@ where \)</span>x^<em>, y^</em><span class="math notranslate nohighlight">\( is t
 <p>Putting it together, the Laplacian of <span class="math notranslate nohighlight">\(f\)</span> is:</p>
 <div class="math notranslate nohighlight">
 \[ \nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} = -\sin(x) \sin(y) - \sin(x) \sin(y) = -2 \sin(x) \sin(y) \]</div>
-<p>Rearranging the terms to equate to zero, we get the loss function for PINN as:</p>
+<p>Therefore, <span class="math notranslate nohighlight">\(f(x,y) = \sin(x) \sin(y)\)</span> is a solution to <span class="math notranslate nohighlight">\(\nabla^2 f + 2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} + 2 f = 0\)</span></p>
+<p>Based on the physics-informed deep learning framework, the governing equation can be imposed through the objective function. The optimization problem can then be defined as</p>
 <div class="math notranslate nohighlight">
-\[\mathcal{L} = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} + 2 \sin(x) \sin(y)\]</div>
+\[\text{arg min}_{W,b} \mathcal{L}(W, b) =  \left\| \nabla^2 \hat{f}(x^*, y^*) + 2 \hat{f}(x^*, y^*) \right\| = \left\| \frac{\partial^2 \hat{f}(x^*, y^*)}{\partial x^2} + \frac{\partial^2 \hat{f}(x^*, y^*)}{\partial y^2} + 2 \sin(x) \sin(y) \right\|\]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -777,7 +776,7 @@ where \)</span>x^<em>, y^</em><span class="math notranslate nohighlight">\( is t
 <span class="n">model</span> <span class="o">=</span> <span class="n">PINN</span><span class="p">()</span>
 
 <span class="c1"># Define optimizer</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
 
 <span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -803,7 +802,7 @@ where \)</span>x^<em>, y^</em><span class="math notranslate nohighlight">\( is t
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "6e1c6a3f5dc341fe916b83d2dee5cf85", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/aae4ef5f7a9b8f335817cf467789af9d7915e9d04cf4c5eb952df8fef25f6637.png" src="../../_images/aae4ef5f7a9b8f335817cf467789af9d7915e9d04cf4c5eb952df8fef25f6637.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "c8855e400a204cb6a07ddbce223b71ff", "version_major": 2, "version_minor": 0}</script><img alt="../../_images/d67aa728add06f433f61cb969d201bca39596533ba2f7438a570ae1301b68de0.png" src="../../_images/d67aa728add06f433f61cb969d201bca39596533ba2f7438a570ae1301b68de0.png" />
 </div>
 </div>
 <section id="test-the-pinn-model">
