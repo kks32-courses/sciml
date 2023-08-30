@@ -2035,6 +2035,35 @@ Testing score: 74.98%
 <p>Recall = <span class="math notranslate nohighlight">\(TP/(TP + FN)\)</span> = TP/(all positive data)</p>
 <p>Precision = <span class="math notranslate nohighlight">\(TP/(TP + FP)\)</span> = TP/(all positive predictions)</p>
 <p>The confusion matrix and these metrics provide a quantitative assessment of model performance on a classification problem. They highlight the types of errors and allow targeted improvement.</p>
+<p><strong>Precision</strong>:</p>
+<ul class="simple">
+<li><p>Definition: Ratio of correctly predicted positive observations to the total predicted positives.</p></li>
+<li><p>Formula:
+$<span class="math notranslate nohighlight">\( \text{Precision} = \frac{\text{True Positive}}{\text{True Positive} + \text{False Positive}} \)</span>$</p></li>
+<li><p>Interpretation: Of all instances labeled as positive, how many were actually positive?</p></li>
+</ul>
+<p><strong>Recall (Sensitivity)</strong>:</p>
+<ul class="simple">
+<li><p>Definition: Ratio of correctly predicted positive observations to all actual positives.</p></li>
+<li><p>Formula:
+$<span class="math notranslate nohighlight">\( \text{Recall} = \frac{\text{True Positive}}{\text{True Positive} + \text{False Negative}} \)</span>$</p></li>
+<li><p>Interpretation: Of all actual positive instances, how many were correctly labeled?</p></li>
+</ul>
+<p><strong>Trade-off</strong>:</p>
+<ul class="simple">
+<li><p>Precision and recall often have a trade-off.</p></li>
+<li><p>F1 score combines both:
+$<span class="math notranslate nohighlight">\( F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} \)</span>$</p></li>
+</ul>
+<p><strong>Decision Trees and Precision-Recall</strong>:</p>
+<ul class="simple">
+<li><p>Decision trees use feature thresholds to make decisions.</p></li>
+<li><p>Adjusting decision thresholds can influence precision and recall.</p></li>
+<li><p>Precision-Recall curves visualize the trade-off.</p></li>
+</ul>
+<blockquote>
+<div><p>Note: Consider both precision and recall for imbalanced datasets or when false positives and negatives have different implications.</p>
+</div></blockquote>
 <p>Researchers commonly use receiver operating characteristic (ROC) curves to evaluate the performance of machine learning classification models. A ROC curve plots the true positive rate (TPR) against the false positive rate (FPR) for different classification probability thresholds. The TPR, also called recall, represents the percentage of positive cases correctly classified. The FPR represents the percentage of negative cases incorrectly classified as positive.</p>
 <p>The FPR represents the fraction of the negative points that are incorrectly classified as positive (FPR = FP/(FP + TN) = FP/(all negative data)). An ideal classifier will have a ROC curve that passes through the top left corner, with a TPR of 1 and FPR of 0. A random classifier will have a ROC curve along the diagonal line where TPR equals FPR. Less accurate models have curves closer to the diagonal, while more accurate models have curves further up and left.</p>
 <p>The area under the ROC curve (AUC) quantifies the model’s performance. Larger AUC values indicate better classification, with a maximum of 1. AUC values near 0.5 imply performance equal to a random classifier.</p>
