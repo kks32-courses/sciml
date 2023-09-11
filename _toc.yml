@@ -7,4 +7,4 @@ chapters:
   - file: lectures/00-perceptron/00-perceptron
   - file: lectures/01-classification/01-classification
   - file: lectures/02-pinn/02-pinn
-  - file: lectures/02-pinn/02a-ode
+  - file: lectures/03-pinn-ode/03-pinn-ode
