@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>02a: Solving ODEs &#8212; Scientific Machine Learning (SciML)</title>
+    <title>03: Ordinary Differential Equations in SciML &#8212; Scientific Machine Learning (SciML)</title>
   
   
   
@@ -63,10 +63,9 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/02-pinn/02a-ode';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/03-pinn-ode/03-ode';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="02: Physics-Informed Neural Networks (PINNs)" href="02-pinn.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -157,16 +156,13 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="current nav bd-sidenav">
+        <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
-
-
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">02a: Solving ODEs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
 
 
 </ul>
@@ -223,7 +219,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/02-pinn/02a-ode.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/03-pinn-ode/03-ode.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -271,7 +267,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/02-pinn/02a-ode.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/03-pinn-ode/03-ode.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -301,7 +297,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/02-pinn/02a-ode.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/03-pinn-ode/03-ode.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -383,7 +379,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>02a: Solving ODEs</h1>
+    <h1>03: Ordinary Differential Equations in SciML</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -393,16 +389,51 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">02a: Solving ODEs</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#projectile-motion-using-4th-order-runge-kutta-method">Projectile Motion using 4th Order Runge-Kutta Method</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-for-vertical-motion">Equations for Vertical Motion</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-the-4th-order-runge-kutta-method">Implementing the 4th Order Runge-Kutta Method</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-to-our-system">Applying to our System</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">03: Ordinary Differential Equations in SciML</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-an-ode">What is an ODE?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relevance-in-sciml">Relevance in SciML</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-solutions">Numerical Solutions</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-euler">Explicit Euler</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ode-of-projectile-motion">ODE of Projectile Motion</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#horizontal-motion-x-direction">Horizontal Motion (x-direction)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vertical-motion-y-direction">Vertical Motion (y-direction)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analytical-solution-of-projectile">Analytical solution of projectile</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#assumptions">Assumptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Horizontal Motion (x-direction)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Vertical Motion (y-direction)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-of-flight">Time of Flight</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-height">Maximum Height</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#range">Range</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-euler">Explicit Euler</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-idea">Basic Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterative-formula">Iterative Formula</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-by-step-procedure">Step-by-Step Procedure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#projectile-motion-using-4th-order-runge-kutta-method">Projectile Motion using 4th Order Runge-Kutta Method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-for-vertical-motion">Equations for Vertical Motion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-the-4th-order-runge-kutta-method">Implementing the 4th Order Runge-Kutta Method</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-to-our-system">Applying to our System</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#physics-informed-neural-network-of-projectile-motion">Physics-Informed Neural Network of Projectile Motion</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Basic Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pinn-loss-function">PINN Loss Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#physics-based-loss">Physics-based Loss</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-condition-loss">Initial Condition Loss</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#total-loss">Total Loss</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
             </nav>
@@ -415,14 +446,214 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="a-solving-odes">
-<h1>02a: Solving ODEs<a class="headerlink" href="#a-solving-odes" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="ordinary-differential-equations-in-sciml">
+<h1>03: Ordinary Differential Equations in SciML<a class="headerlink" href="#ordinary-differential-equations-in-sciml" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/03-pinn-ode/03-pinn-ode-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/03-pinn-ode/03-pinn-ode.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="what-is-an-ode">
+<h2>What is an ODE?<a class="headerlink" href="#what-is-an-ode" title="Permalink to this heading">#</a></h2>
+<p>An Ordinary Differential Equation (ODE) is an equation that involves functions of only one independent variable and its derivatives. The term “ordinary” is used in contrast with the term “partial”, indicating that only one variable’s derivatives are present.</p>
+<p>Mathematically, an ODE can be represented as:
+$<span class="math notranslate nohighlight">\( F(t, y, y', y'', \dots, y^{(n)}) = 0 \)</span>$
+Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( t \)</span> is the independent variable.</p></li>
+<li><p><span class="math notranslate nohighlight">\( y \)</span> is the dependent variable.</p></li>
+<li><p><span class="math notranslate nohighlight">\( y', y'', \dots, y^{(n)} \)</span> are the first, second, …, and nth derivatives of <span class="math notranslate nohighlight">\( y \)</span> with respect to <span class="math notranslate nohighlight">\( t \)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\( n \)</span> is the order of the differential equation.</p></li>
+</ul>
+<section id="relevance-in-sciml">
+<h3>Relevance in SciML<a class="headerlink" href="#relevance-in-sciml" title="Permalink to this heading">#</a></h3>
+<p>ODEs are fundamental in modeling various scientific phenomena:</p>
+<ol class="arabic simple">
+<li><p><strong>Physics</strong>: Describing motion (Newton’s second law), electrical circuits, or heat transfer.</p></li>
+<li><p><strong>Biology</strong>: Modeling population dynamics, spread of diseases, or neural activity.</p></li>
+<li><p><strong>Economics</strong>: Representing economic growth, inflation dynamics, or stock prices.</p></li>
+</ol>
+<p>In SciML, we often leverage ODEs to:</p>
+<ul class="simple">
+<li><p>Develop interpretable models based on scientific principles.</p></li>
+<li><p>Integrate data-driven techniques to refine or augment traditional models.</p></li>
+<li><p>Solve high-dimensional or complex systems efficiently using machine learning accelerators.</p></li>
+</ul>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="projectile-motion-using-4th-order-runge-kutta-method">
-<h1>Projectile Motion using 4th Order Runge-Kutta Method<a class="headerlink" href="#projectile-motion-using-4th-order-runge-kutta-method" title="Permalink to this heading">#</a></h1>
+<section id="numerical-solutions">
+<h3>Numerical Solutions<a class="headerlink" href="#numerical-solutions" title="Permalink to this heading">#</a></h3>
+<p>Analytical solutions to ODEs are not always possible, especially for complex or nonlinear systems. In such cases, numerical methods, like the Euler method, Runge-Kutta methods, or adaptive step-size solvers, are employed.</p>
+<p>In the context of SciML, there’s a growing interest in using neural networks as function approximators to solve ODEs, leading to the development of Neural ODEs. These are especially useful when the system’s dynamics are only partially known, and data can help “fill in the gaps”.</p>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="ode-of-projectile-motion">
+<h1>ODE of Projectile Motion<a class="headerlink" href="#ode-of-projectile-motion" title="Permalink to this heading">#</a></h1>
+<p><img alt="Projectile" src="../../_images/projectile.gif" /></p>
+<p>The motion of a projectile under the influence of gravity can be described using ordinary differential equations (ODEs). Let’s break down the motion into its horizontal and vertical components.</p>
+<section id="horizontal-motion-x-direction">
+<h2>Horizontal Motion (x-direction)<a class="headerlink" href="#horizontal-motion-x-direction" title="Permalink to this heading">#</a></h2>
+<p>The horizontal motion of a projectile is uniform, meaning there is no acceleration in the horizontal direction (assuming no air resistance). Therefore, the velocity in the horizontal direction, <span class="math notranslate nohighlight">\(v_x\)</span>, remains constant.</p>
+<p>The ODE for horizontal motion is:
+$<span class="math notranslate nohighlight">\( \frac{dx}{dt} = v_x \)</span>$
+Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( x \)</span> is the horizontal position.</p></li>
+<li><p><span class="math notranslate nohighlight">\( v_x \)</span> is the initial horizontal velocity.</p></li>
+</ul>
+</section>
+<section id="vertical-motion-y-direction">
+<h2>Vertical Motion (y-direction)<a class="headerlink" href="#vertical-motion-y-direction" title="Permalink to this heading">#</a></h2>
+<p>The vertical motion of a projectile is influenced by the acceleration due to gravity, <span class="math notranslate nohighlight">\( g \)</span>. The acceleration is constant and acts downward.</p>
+<p>The ODEs for vertical motion are:
+$<span class="math notranslate nohighlight">\( \frac{dy}{dt} = v_y \)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\( \frac{dv_y}{dt} = -g \)</span>$
+Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( y \)</span> is the vertical position.</p></li>
+<li><p><span class="math notranslate nohighlight">\( v_y \)</span> is the vertical velocity.</p></li>
+<li><p><span class="math notranslate nohighlight">\( g \)</span> is the acceleration due to gravity (approximately <span class="math notranslate nohighlight">\( 9.81 \, \text{m/s}^2 \)</span> near the surface of the Earth).</p></li>
+</ul>
+<p>Note: The negative sign in the second equation indicates that gravity acts in the opposite direction to the positive y-direction.</p>
+<p>If you include air resistance, the equations become more complex and are typically nonlinear. The exact form of the equations with air resistance depends on the assumptions you make about the drag force (e.g., whether it’s proportional to velocity or the square of velocity).</p>
+</section>
+<section id="analytical-solution-of-projectile">
+<h2>Analytical solution of projectile<a class="headerlink" href="#analytical-solution-of-projectile" title="Permalink to this heading">#</a></h2>
+<p>Projectile motion refers to the motion of an object thrown or projected into the air, subject to only the acceleration of gravity. The object is called a projectile, and its path is called its trajectory. The analytical equations for projectile motion can be derived from the basic principles of kinematics.</p>
+<section id="assumptions">
+<h3>Assumptions<a class="headerlink" href="#assumptions" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>The only force acting on the projectile is gravity.</p></li>
+<li><p>Air resistance is negligible.</p></li>
+<li><p>The Earth’s curvature and rotation are not considered.</p></li>
+</ol>
+</section>
+<section id="id1">
+<h3>Horizontal Motion (x-direction)<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>In the absence of air resistance, there’s no horizontal acceleration, and the horizontal velocity remains constant:
+$<span class="math notranslate nohighlight">\( v_x = v_0 \cos(\theta) \)</span>$
+Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( v_0 \)</span> is the initial velocity.</p></li>
+<li><p><span class="math notranslate nohighlight">\( \theta \)</span> is the angle of projection with the horizontal.</p></li>
+</ul>
+<p>The horizontal displacement is given by:
+$<span class="math notranslate nohighlight">\( x(t) = v_0 \cos(\theta) t \)</span>$</p>
+</section>
+<section id="id2">
+<h3>Vertical Motion (y-direction)<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>The vertical acceleration is constant and equal to the acceleration due to gravity, <span class="math notranslate nohighlight">\( g \)</span>. The initial vertical velocity is:
+$<span class="math notranslate nohighlight">\( v_y = v_0 \sin(\theta) \)</span>$</p>
+<p>The vertical displacement as a function of time is:
+$<span class="math notranslate nohighlight">\( y(t) = v_0 \sin(\theta) t - \frac{1}{2} g t^2 \)</span>$</p>
+</section>
+<section id="time-of-flight">
+<h3>Time of Flight<a class="headerlink" href="#time-of-flight" title="Permalink to this heading">#</a></h3>
+<p>The total time the projectile is in the air is called the time of flight, <span class="math notranslate nohighlight">\( T \)</span>:
+$<span class="math notranslate nohighlight">\( T = \frac{2 v_0 \sin(\theta)}{g} \)</span>$</p>
+</section>
+<section id="maximum-height">
+<h3>Maximum Height<a class="headerlink" href="#maximum-height" title="Permalink to this heading">#</a></h3>
+<p>The maximum height <span class="math notranslate nohighlight">\( H \)</span> reached by the projectile is:
+$<span class="math notranslate nohighlight">\( H = \frac{v_0^2 \sin^2(\theta)}{2g} \)</span>$</p>
+</section>
+<section id="range">
+<h3>Range<a class="headerlink" href="#range" title="Permalink to this heading">#</a></h3>
+<p>The horizontal distance covered by the projectile during its time of flight is called the range, <span class="math notranslate nohighlight">\( R \)</span>:
+$<span class="math notranslate nohighlight">\( R = \frac{v_0^2 \sin(2\theta)}{g} \)</span>$</p>
+</section>
+</section>
+<section id="explicit-euler">
+<h2>Explicit Euler<a class="headerlink" href="#explicit-euler" title="Permalink to this heading">#</a></h2>
+<p>The explicit Euler method, often simply referred to as the Euler method, is a first-order numerical procedure for solving ordinary differential equations (ODEs) with a given initial value. It’s one of the simplest methods in terms of concept and implementation.</p>
+<section id="basic-idea">
+<h3>Basic Idea<a class="headerlink" href="#basic-idea" title="Permalink to this heading">#</a></h3>
+<p>Given an ODE of the form:
+$<span class="math notranslate nohighlight">\( \frac{dy}{dt} = f(t, y) \)</span><span class="math notranslate nohighlight">\(
+with an initial condition \)</span> y(t_0) = y_0 <span class="math notranslate nohighlight">\(, the explicit Euler method approximates the solution by taking small steps in the independent variable, \)</span> t <span class="math notranslate nohighlight">\(, and updating the dependent variable, \)</span> y $, using the derivative information.</p>
+</section>
+<section id="iterative-formula">
+<h3>Iterative Formula<a class="headerlink" href="#iterative-formula" title="Permalink to this heading">#</a></h3>
+<p>The method can be described iteratively as:
+$<span class="math notranslate nohighlight">\( y_{n+1} = y_n + h f(t_n, y_n) \)</span>$
+Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( y_{n+1} \)</span> is the approximation of the solution at time <span class="math notranslate nohighlight">\( t_{n+1} \)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\( y_n \)</span> is the approximation of the solution at time <span class="math notranslate nohighlight">\( t_n \)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\( h \)</span> is the step size.</p></li>
+<li><p><span class="math notranslate nohighlight">\( f(t_n, y_n) \)</span> is the value of the derivative at <span class="math notranslate nohighlight">\( t_n, y_n \)</span>.</p></li>
+</ul>
+</section>
+<section id="step-by-step-procedure">
+<h3>Step-by-Step Procedure<a class="headerlink" href="#step-by-step-procedure" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Start with the initial condition <span class="math notranslate nohighlight">\( y(t_0) = y_0 \)</span>.</p></li>
+<li><p>Compute the derivative <span class="math notranslate nohighlight">\( f(t_0, y_0) \)</span>.</p></li>
+<li><p>Update the solution using the formula: <span class="math notranslate nohighlight">\( y_1 = y_0 + h f(t_0, y_0) \)</span>.</p></li>
+<li><p>Repeat the process for subsequent time steps.</p></li>
+</ol>
+</section>
+<section id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">#</a></h3>
+<p>While the explicit Euler method is straightforward and easy to implement, it has some limitations:</p>
+<ol class="arabic simple">
+<li><p><strong>Stability</strong>: For certain problems, especially those with stiff equations, the method can be unstable unless very small step sizes are used.</p></li>
+<li><p><strong>Accuracy</strong>: Being a first-order method, its local truncation error is proportional to <span class="math notranslate nohighlight">\( h^2 \)</span>, which means that to double the accuracy, the step size must be halved.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">explicit_euler</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">9.81</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y0</span>
+    <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">g</span>  <span class="c1"># subtracting because g is acting downwards</span>
+
+        <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span>
+
+    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span>
+
+<span class="c1"># Given parameters</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span>  <span class="c1"># 45 degrees</span>
+<span class="n">v0</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># m/s initial speed</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># initial height</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">/</span> <span class="mf">9.81</span>  <span class="c1"># total time for projectile to reach the ground</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># time step</span>
+
+<span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">explicit_euler</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">v0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">dt</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+
+<span class="c1"># Compute the horizontal motion (uniform)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span>
+
+<span class="c1"># Plotting</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Projectile motion&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Projectile motion using Explicit Euler&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Horizontal Distance (m)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Vertical Height (m)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b1a244a11c597a095b1180c70488dbb935b9f3fe841659632973c838354acaad.png" src="../../_images/b1a244a11c597a095b1180c70488dbb935b9f3fe841659632973c838354acaad.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="projectile-motion-using-4th-order-runge-kutta-method">
+<h2>Projectile Motion using 4th Order Runge-Kutta Method<a class="headerlink" href="#projectile-motion-using-4th-order-runge-kutta-method" title="Permalink to this heading">#</a></h2>
 <p>Let’s solve the equations of motion for a projectile using the 4th order Runge-Kutta method. Since the horizontal motion is uniform and can be directly integrated, we’ll focus on the vertical motion.</p>
 <section id="equations-for-vertical-motion">
-<h2>Equations for Vertical Motion<a class="headerlink" href="#equations-for-vertical-motion" title="Permalink to this heading">#</a></h2>
+<h3>Equations for Vertical Motion<a class="headerlink" href="#equations-for-vertical-motion" title="Permalink to this heading">#</a></h3>
 <p>The equation for the vertical motion under gravity, neglecting air resistance, is given by:
 $<span class="math notranslate nohighlight">\( \frac{d^2y}{dt^2} = -g \)</span>$</p>
 <p>To solve it using the Runge-Kutta method, we’ll convert this second-order ODE into two first-order ODEs:</p>
@@ -432,7 +663,7 @@ $<span class="math notranslate nohighlight">\( \frac{d^2y}{dt^2} = -g \)</span>$
 </ol>
 </section>
 <section id="implementing-the-4th-order-runge-kutta-method">
-<h2>Implementing the 4th Order Runge-Kutta Method<a class="headerlink" href="#implementing-the-4th-order-runge-kutta-method" title="Permalink to this heading">#</a></h2>
+<h3>Implementing the 4th Order Runge-Kutta Method<a class="headerlink" href="#implementing-the-4th-order-runge-kutta-method" title="Permalink to this heading">#</a></h3>
 <p>Given the following initial conditions:</p>
 <ul class="simple">
 <li><p>Initial height: <span class="math notranslate nohighlight">\( y_0 = 0 \)</span> (assuming it’s launched from the ground)</p></li>
@@ -446,19 +677,18 @@ $<span class="math notranslate nohighlight">\( \frac{d^2y}{dt^2} = -g \)</span>$
 <li><p><span class="math notranslate nohighlight">\( k_3 = \Delta t \cdot f(t + 0.5\Delta t, y + 0.5k_2) \)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\( k_4 = \Delta t \cdot f(t + \Delta t, y + k_3) \)</span></p></li>
 </ul>
-<p>Then, the new value of y is:
-$<span class="math notranslate nohighlight">\( y_{new} = y + \frac{1}{6}(k_1 + 2k_2 + 2k_3 + k_4) \)</span>$</p>
+<p>Then, the new value of y is: <span class="math notranslate nohighlight">\(y_{new} = y + \frac{1}{6}(k_1 + 2k_2 + 2k_3 + k_4)\)</span></p>
 <section id="applying-to-our-system">
-<h3>Applying to our System<a class="headerlink" href="#applying-to-our-system" title="Permalink to this heading">#</a></h3>
+<h4>Applying to our System<a class="headerlink" href="#applying-to-our-system" title="Permalink to this heading">#</a></h4>
 <p>For the first equation, <span class="math notranslate nohighlight">\( \frac{dy}{dt} = v \)</span>:</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\( k_{1y} = \Delta t \cdot v \)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\( k_{2y} = \Delta t \cdot (v + 0.5\Delta t \cdot (-g)) \)</span></p></li>
 <li><p><span class="math notranslate nohighlight">\( k_{3y} = \Delta t \cdot (v + 0.5\Delta t \cdot (-g)) \)</span>
 (Same as <span class="math notranslate nohighlight">\(k_{2y}\)</span> because acceleration due to gravity is constant)</p></li>
-<li><p><span class="math notranslate nohighlight">\( k_{4y} = \Delta t \cdot (v + \Delta t \cdot (-g)) \)</span>$</p></li>
+<li><p><span class="math notranslate nohighlight">\( k_{4y} = \Delta t \cdot (v + \Delta t \cdot (-g)) \)</span></p></li>
 </ul>
-<p>Subsequently, <span class="math notranslate nohighlight">\( y_{new} = y + \frac{1}{6}(k_{1y} + 2k_{2y} + 2k_{3y} + k_{4y}) \)</span></p>
+<p>Subsequently, <span class="math notranslate nohighlight">\(y_{new} = y + \frac{1}{6}(k_{1y} + 2k_{2y} + 2k_{3y} + k_{4y})\)</span></p>
 <p>For the second equation, <span class="math notranslate nohighlight">\( \frac{dv}{dt} = -g \)</span>:</p>
 <ul class="simple">
 <li><p><span class="math notranslate nohighlight">\( k_{1v} = \Delta t \cdot (-g) \)</span></p></li>
@@ -470,7 +700,7 @@ $<span class="math notranslate nohighlight">\( y_{new} = y + \frac{1}{6}(k_1 + 2
 <p>By iterating over these steps for each time step, we can compute the projectile’s vertical position and velocity over time.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="k">def</span> <span class="nf">runge_kutta_4th_order</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">9.81</span><span class="p">):</span>
@@ -525,68 +755,45 @@ $<span class="math notranslate nohighlight">\( y_{new} = y + \frac{1}{6}(k_1 + 2
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/be1125aca1d61839dbc97e8421fe98724fa8cbba87a03fd0d02c7c5611721a26.png" src="../../_images/be1125aca1d61839dbc97e8421fe98724fa8cbba87a03fd0d02c7c5611721a26.png" />
-</div>
 </div>
 </section>
 </section>
 </section>
-<section class="tex2jax_ignore mathjax_ignore" id="explicit-euler">
-<h1>Explicit Euler<a class="headerlink" href="#explicit-euler" title="Permalink to this heading">#</a></h1>
+<section id="physics-informed-neural-network-of-projectile-motion">
+<h2>Physics-Informed Neural Network of Projectile Motion<a class="headerlink" href="#physics-informed-neural-network-of-projectile-motion" title="Permalink to this heading">#</a></h2>
+<p>Physics-Informed Neural Networks (PINNs) are a class of neural networks that incorporate physical principles (usually in the form of differential equations) into the learning process. By doing so, PINNs can leverage both data and known physics to make predictions, which can be especially useful when data is sparse.</p>
+<section id="id3">
+<h3>Basic Idea<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>Given an ordinary differential equation (ODE) of the form:
+$<span class="math notranslate nohighlight">\( \frac{dy}{dt} = f(t, y) \)</span>$
+a PINN aims to train a neural network model to satisfy this ODE while also fitting any available data.</p>
+</section>
+<section id="pinn-loss-function">
+<h3>PINN Loss Function<a class="headerlink" href="#pinn-loss-function" title="Permalink to this heading">#</a></h3>
+<p>The loss function for a PINN typically consists of two parts:</p>
+<ol class="arabic simple">
+<li><p>A term that ensures the neural network’s output satisfies the given ODE.</p></li>
+<li><p>A term that ensures the neural network’s output matches any given initial or boundary conditions.</p></li>
+</ol>
+<p>For the provided code, which seems to be modeling the motion of a projectile under gravity, the loss function can be described as follows:</p>
+</section>
+<section id="physics-based-loss">
+<h3>Physics-based Loss<a class="headerlink" href="#physics-based-loss" title="Permalink to this heading">#</a></h3>
+<p>The second derivative of the predicted trajectory with respect to time, <span class="math notranslate nohighlight">\( \frac{d^2y}{dt^2} \)</span>, should be equal to the negative acceleration due to gravity, <span class="math notranslate nohighlight">\( -g \)</span>. The discrepancy between these values forms the physics-based loss:
+$<span class="math notranslate nohighlight">\( \text{loss\_physics} = \text{mean}\left( \left( \frac{d^2y_{\text{pred}}}{dt^2} + g \right)^2 \right) \)</span>$</p>
+</section>
+<section id="initial-condition-loss">
+<h3>Initial Condition Loss<a class="headerlink" href="#initial-condition-loss" title="Permalink to this heading">#</a></h3>
+<p>The predicted trajectory should also satisfy the given initial conditions for position, <span class="math notranslate nohighlight">\( y_{\text{initial}} \)</span>, and velocity, <span class="math notranslate nohighlight">\( v_{\text{initial}} \)</span>. The discrepancy between the predicted and given initial conditions forms the initial condition loss:
+$<span class="math notranslate nohighlight">\( \text{loss\_initial} = \left( y_{\text{pred}}(t_0) - y_{\text{initial}} \right)^2 + \left( \frac{dy_{\text{pred}}}{dt}(t_0) - v_{\text{initial}} \right)^2 \)</span>$</p>
+</section>
+<section id="total-loss">
+<h3>Total Loss<a class="headerlink" href="#total-loss" title="Permalink to this heading">#</a></h3>
+<p>The total loss is the sum of the physics-based loss and the initial condition loss:
+$<span class="math notranslate nohighlight">\( \text{loss} = \text{loss\_physics} + \text{loss\_initial} \)</span>$</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-<span class="k">def</span> <span class="nf">explicit_euler</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="mf">9.81</span><span class="p">):</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-
-    <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">y0</span>
-    <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v0</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">g</span>  <span class="c1"># subtracting because g is acting downwards</span>
-
-        <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">dt</span>
-
-    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span>
-
-<span class="c1"># Given parameters</span>
-<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">4</span>  <span class="c1"># 45 degrees</span>
-<span class="n">v0</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># m/s initial speed</span>
-<span class="n">y0</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># initial height</span>
-<span class="n">T</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">/</span> <span class="mf">9.81</span>  <span class="c1"># total time for projectile to reach the ground</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># time step</span>
-
-<span class="n">y</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">explicit_euler</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">v0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">dt</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
-
-<span class="c1"># Compute the horizontal motion (uniform)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">v0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span>
-
-<span class="c1"># Plotting</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Projectile motion&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Projectile motion using Explicit Euler&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Horizontal Distance (m)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Vertical Height (m)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/52913d457bb8069ed3e00e331263fdc86a7d2a552aee4893404cac075f7f2dc9.png" src="../../_images/52913d457bb8069ed3e00e331263fdc86a7d2a552aee4893404cac075f7f2dc9.png" />
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -656,19 +863,10 @@ $<span class="math notranslate nohighlight">\( y_{new} = y + \frac{1}{6}(k_1 + 2
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "1474a85d0eca425a83c89082aeba607d"}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0, Loss: 302.5135541461069
-Epoch 1000, Loss: 22.61660873392652
-Epoch 2000, Loss: 1.5989485408899868
-Epoch 3000, Loss: 0.09331983717738641
-Epoch 4000, Loss: 0.018365084036006295
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PINN prediction&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Explicit Euler&#39;</span><span class="p">)</span>
@@ -681,10 +879,9 @@ Epoch 4000, Loss: 0.018365084036006295
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/7104f7240a804361a4071346b198e5eb4c061d6c45b2b927725fc307f468df52.png" src="../../_images/7104f7240a804361a4071346b198e5eb4c061d6c45b2b927725fc307f468df52.png" />
 </div>
-</div>
+</section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -700,7 +897,7 @@ Epoch 4000, Loss: 0.018365084036006295
         },
         kernelOptions: {
             name: "python3",
-            path: "./lectures/02-pinn"
+            path: "./lectures/03-pinn-ode"
         },
         predefinedOutput: true
     }
@@ -718,15 +915,6 @@ Epoch 4000, Loss: 0.018365084036006295
   
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="02-pinn.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">02: Physics-Informed Neural Networks (PINNs)</p>
-      </div>
-    </a>
 </div></div>
   
 </div>
@@ -745,16 +933,51 @@ Epoch 4000, Loss: 0.018365084036006295
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">02a: Solving ODEs</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#projectile-motion-using-4th-order-runge-kutta-method">Projectile Motion using 4th Order Runge-Kutta Method</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-for-vertical-motion">Equations for Vertical Motion</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-the-4th-order-runge-kutta-method">Implementing the 4th Order Runge-Kutta Method</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-to-our-system">Applying to our System</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">03: Ordinary Differential Equations in SciML</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-an-ode">What is an ODE?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relevance-in-sciml">Relevance in SciML</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-solutions">Numerical Solutions</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-euler">Explicit Euler</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#ode-of-projectile-motion">ODE of Projectile Motion</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#horizontal-motion-x-direction">Horizontal Motion (x-direction)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vertical-motion-y-direction">Vertical Motion (y-direction)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analytical-solution-of-projectile">Analytical solution of projectile</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#assumptions">Assumptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Horizontal Motion (x-direction)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Vertical Motion (y-direction)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-of-flight">Time of Flight</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-height">Maximum Height</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#range">Range</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-euler">Explicit Euler</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-idea">Basic Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterative-formula">Iterative Formula</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-by-step-procedure">Step-by-Step Procedure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#projectile-motion-using-4th-order-runge-kutta-method">Projectile Motion using 4th Order Runge-Kutta Method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-for-vertical-motion">Equations for Vertical Motion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementing-the-4th-order-runge-kutta-method">Implementing the 4th Order Runge-Kutta Method</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#applying-to-our-system">Applying to our System</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#physics-informed-neural-network-of-projectile-motion">Physics-Informed Neural Network of Projectile Motion</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Basic Idea</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pinn-loss-function">PINN Loss Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#physics-based-loss">Physics-based Loss</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-condition-loss">Initial Condition Loss</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#total-loss">Total Loss</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
   </nav></div>
