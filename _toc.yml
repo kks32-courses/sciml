@@ -9,3 +9,4 @@ chapters:
   - file: lectures/02-pinn/02-pinn
   - file: lectures/03-pinn-ode/03-pinn-ode
   - file: lectures/04-pde-fdm/04-pde-fdm
+  - file: lectures/05-pinn-heat-transfer/05-pinn-heat-transfer
