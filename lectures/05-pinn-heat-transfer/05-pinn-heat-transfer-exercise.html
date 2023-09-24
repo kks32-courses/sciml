@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>04: PINN - Heat transfer &#8212; Scientific Machine Learning (SciML)</title>
+    <title>05: PINNs and steady-state heat transfer &#8212; Scientific Machine Learning (SciML)</title>
   
   
   
@@ -62,7 +62,9 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/pinn-heat-transfer/04-pinn_heat_transfer';</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/05-pinn-heat-transfer/05-pinn-heat-transfer-exercise';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -176,6 +178,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
 </ul>
 
     </div>
@@ -230,7 +234,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/pinn-heat-transfer/04-pinn_heat_transfer.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/05-pinn-heat-transfer/05-pinn-heat-transfer-exercise.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -278,7 +282,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/pinn-heat-transfer/04-pinn_heat_transfer.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/05-pinn-heat-transfer/05-pinn-heat-transfer-exercise.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -308,7 +312,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/pinn-heat-transfer/04-pinn_heat_transfer.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/05-pinn-heat-transfer/05-pinn-heat-transfer-exercise.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -390,7 +394,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>04: PINN - Heat transfer</h1>
+    <h1>05: PINNs and steady-state heat transfer</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -400,8 +404,21 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deepxde-implementation">DeepXDE implementation</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">05: PINNs and steady-state heat transfer</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-steady-state-heat-transfer-problem-using-pinns">Solving the Steady-State Heat Transfer Problem Using PINNs</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach">Approach:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#colocation-points">Colocation Points</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importance-of-colocation-points">Importance of Colocation Points:</a></li>
 </ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-steady-state-heat-transfer">PINNs Steady State Heat Transfer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deepxde-implementation">DeepXDE implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
             </nav>
         </div>
     </div>
@@ -412,12 +429,105 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="pinn-heat-transfer">
-<h1>04: PINN - Heat transfer<a class="headerlink" href="#pinn-heat-transfer" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="pinns-and-steady-state-heat-transfer">
+<h1>05: PINNs and steady-state heat transfer<a class="headerlink" href="#pinns-and-steady-state-heat-transfer" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/05-pinn-heat-transfer/05-pinn-heat-transfer-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/05-pinn-heat-transfer/05-pinn-heat-transfer.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="solving-the-steady-state-heat-transfer-problem-using-pinns">
+<h1>Solving the Steady-State Heat Transfer Problem Using PINNs<a class="headerlink" href="#solving-the-steady-state-heat-transfer-problem-using-pinns" title="Permalink to this heading">#</a></h1>
+<p>The steady-state heat transfer problem is governed by the Laplace’s equation in the absence of internal heat sources:</p>
+<div class="math notranslate nohighlight">
+\[
+\nabla^2 T(x,y) = 0
+\]</div>
+<p>Where <span class="math notranslate nohighlight">\( T(x,y) \)</span> represents the temperature distribution over a 2D domain.</p>
+<section id="approach">
+<h2>Approach:<a class="headerlink" href="#approach" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Neural Network Architecture</strong>:</p>
+<ul class="simple">
+<li><p>Utilize a feed-forward neural network with multiple layers and neurons.</p></li>
+<li><p>The network will take spatial coordinates <span class="math notranslate nohighlight">\((x,y)\)</span> as input and produce the predicted temperature <span class="math notranslate nohighlight">\( T(x,y) \)</span> at that point.</p></li>
+</ul>
+</li>
+<li><p><strong>Physics-Informed Loss</strong>:</p>
+<ul class="simple">
+<li><p>The loss function will be a combination of:</p>
+<ol class="arabic simple">
+<li><p>A term ensuring the boundary conditions for the predicted temperature.</p></li>
+<li><p>A term ensuring the Laplace’s equation (PDE) is satisfied across the domain.</p></li>
+</ol>
+</li>
+<li><p>This is achieved by utilizing colocation points within the domain and on the boundaries. At each point, the PDE’s residual (difference between its left and right sides) is evaluated using the neural network’s prediction and gradients.</p></li>
+</ul>
+</li>
+<li><p><strong>Training</strong>:</p>
+<ul class="simple">
+<li><p>The objective is to minimize the combined loss, ensuring the PDE and boundary conditions are met.</p></li>
+<li><p>Backpropagation will be employed to update the weights of the network, with optimization algorithms like Adam or L-BFGS.</p></li>
+</ul>
+</li>
+<li><p><strong>Prediction</strong>:</p>
+<ul class="simple">
+<li><p>After training, the network can estimate the temperature distribution <span class="math notranslate nohighlight">\( T(x,y) \)</span> for any point within the domain. This prediction respects the Laplace’s equation and boundary conditions.</p></li>
+</ul>
+</li>
+</ol>
+<p>Using PINNs eliminates the need for a traditional meshing process present in methods like Finite Element or Finite Difference. It seamlessly incorporates the physics during training, enabling accurate predictions even with limited data availability.</p>
+<p><img alt="Heat transfer" src="../../_images/2d-heat-transfer.png" /></p>
+</section>
+<section id="colocation-points">
+<h2>Colocation Points<a class="headerlink" href="#colocation-points" title="Permalink to this heading">#</a></h2>
+<p>In physics-informed neural networks (PINNs), we approximate the solution to a partial differential equation (PDE) using a neural network. Unlike traditional deep learning problems where the network is trained solely on data points (e.g., labeled images in image classification), PINNs leverage the known physics (expressed as differential equations) of the problem. The goal is to find a neural network solution that both fits the provided data and also satisfies the PDE across the entire domain.</p>
+<section id="importance-of-colocation-points">
+<h3>Importance of Colocation Points:<a class="headerlink" href="#importance-of-colocation-points" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Enforce PDE Constraints</strong>:</p>
+<ul class="simple">
+<li><p>Colocation points are used to ensure that the PDE constraints are satisfied not just at the observed data points, but across the entire domain of interest.</p></li>
+<li><p>These points allow us to enforce the differential equation by evaluating the residuals (i.e., the difference between the left and right side of the PDE) at these points and minimizing them during training.</p></li>
+</ul>
+</li>
+<li><p><strong>Boundary Conditions</strong>:</p>
+<ul class="simple">
+<li><p>For problems like heat transfer, boundary conditions (specified values or gradients on the boundaries) are crucial.</p></li>
+<li><p>By placing colocation points on the boundaries, we can ensure the neural network respects these boundary conditions.</p></li>
+</ul>
+</li>
+<li><p><strong>Improved Generalization</strong>:</p>
+<ul class="simple">
+<li><p>By ensuring that the neural network solution adheres to the underlying physics across the domain, PINNs often exhibit better generalization capabilities.</p></li>
+<li><p>For instance, even if you have sparse data in some regions, the model can still provide accurate predictions because it’s being guided by the PDE.</p></li>
+</ul>
+</li>
+<li><p><strong>Regularization</strong>:</p>
+<ul class="simple">
+<li><p>The physics (PDE) provides an inherent regularization to the problem.</p></li>
+<li><p>By enforcing the PDE at colocation points, the neural network is less likely to overfit to noisy data since it also has to satisfy the PDE.</p></li>
+</ul>
+</li>
+<li><p><strong>Domain and Boundary Sampling</strong>:</p>
+<ul class="simple">
+<li><p>As observed in the provided code, the <code class="docutils literal notranslate"><span class="pre">DataGeneratorXY</span></code> class generates random colocation points within the domain (<code class="docutils literal notranslate"><span class="pre">x_dom</span></code>, <code class="docutils literal notranslate"><span class="pre">y_dom</span></code>) and on the boundaries (<code class="docutils literal notranslate"><span class="pre">x_bc_left</span></code>, <code class="docutils literal notranslate"><span class="pre">x_bc_right</span></code>, <code class="docutils literal notranslate"><span class="pre">x_bc_bot</span></code>, <code class="docutils literal notranslate"><span class="pre">x_bc_top</span></code>).</p></li>
+<li><p>This distributed sampling helps in adequately enforcing both the PDE and the boundary conditions across the computational domain.</p></li>
+</ul>
+</li>
+<li><p><strong>Visualization and Debugging</strong>:</p>
+<ul class="simple">
+<li><p>By plotting the colocation points, as done in the <code class="docutils literal notranslate"><span class="pre">plot_data</span></code> method, we can visually inspect the distribution of points to ensure that there’s adequate coverage across the domain and boundaries.</p></li>
+<li><p>It’s a useful check to make sure the physics will be well-enforced during training.</p></li>
+</ul>
+</li>
+</ol>
+<p>In summary, colocation points in PINNs are a critical component that allows the integration of physical knowledge (PDEs and boundary conditions) into the neural network training process, enabling accurate predictions even with limited or noisy data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
+<span class="n">cycol</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="s1">&#39;bgrcmk&#39;</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">DataGeneratorXY</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; Generates 2D collocation grid for a rectangular domain</span>
@@ -513,13 +623,42 @@ document.write(`
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">target_data</span>
+    
+    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="p">(</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">t_val</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_data</span><span class="p">):</span>
+            <span class="n">x_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">t_idx</span><span class="p">,:]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="n">y_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">t_idx</span><span class="p">,:]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">cycol</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Training Data&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
+<blockquote>
+<div><p>Vary the number of colocation points:</p>
+</div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dg</span> <span class="o">=</span> <span class="n">DataGeneratorXY</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">],</span> <span class="n">num_sample</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                     <span class="n">targets</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;domain&#39;</span><span class="p">,</span> <span class="s1">&#39;bc-top&#39;</span><span class="p">,</span> <span class="s1">&#39;bc-top&#39;</span><span class="p">,</span> <span class="s1">&#39;bc-left&#39;</span><span class="p">,</span> <span class="s1">&#39;bc-right&#39;</span><span class="p">,</span> <span class="s1">&#39;bc-bot&#39;</span><span class="p">])</span>
+<span class="n">input_data</span><span class="p">,</span> <span class="n">target_data</span> <span class="o">=</span> <span class="n">dg</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+<span class="n">dg</span><span class="o">.</span><span class="n">plot_data</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="pinns-steady-state-heat-transfer">
+<h2>PINNs Steady State Heat Transfer<a class="headerlink" href="#pinns-steady-state-heat-transfer" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
@@ -530,17 +669,7 @@ document.write(`
 <span class="k">class</span> <span class="nc">HeatNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">HeatNet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hidden_layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="p">)</span>
+        
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -550,28 +679,12 @@ document.write(`
         <span class="k">return</span> <span class="n">T</span>
 
     <span class="k">def</span> <span class="nf">loss_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="n">T_x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">T_y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">y</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">T_xx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">T_x</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">x</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">T_yy</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">T_y</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">y</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="c1"># PDE loss</span>
-        <span class="n">loss_PDE</span> <span class="o">=</span> <span class="p">((</span><span class="n">T_xx</span> <span class="o">+</span> <span class="n">T_yy</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
         <span class="c1"># BC loss</span>
-        <span class="n">mask_left</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">mask_right</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">mask_bottom</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">mask_top1</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">)</span>
-        <span class="n">mask_top2</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mf">0.5</span><span class="p">)</span>
 
-        <span class="n">loss_left</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">mask_left</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="n">loss_right</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">mask_right</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="n">loss_bottom</span> <span class="o">=</span> <span class="p">(</span><span class="n">T</span><span class="p">[</span><span class="n">mask_bottom</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="n">loss_top1</span> <span class="o">=</span> <span class="p">((</span><span class="n">T</span><span class="p">[</span><span class="n">mask_top1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">mask_top1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="n">loss_top2</span> <span class="o">=</span> <span class="p">((</span><span class="n">T</span><span class="p">[</span><span class="n">mask_top2</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">mask_top2</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_PDE</span> <span class="o">+</span> <span class="n">loss_left</span> <span class="o">+</span> <span class="n">loss_right</span> <span class="o">+</span> <span class="n">loss_bottom</span> <span class="o">+</span> <span class="n">loss_top1</span> <span class="o">+</span> <span class="n">loss_top2</span>
+        <span class="c1"># total loss</span>
         <span class="k">return</span> <span class="n">loss</span>
 
 <span class="c1"># Instantiate the model</span>
@@ -608,31 +721,10 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ipython-input-19-d159df7bdc83&gt;:67: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
-  x_data = torch.tensor(x_data, dtype=torch.float32, requires_grad=True)
-&lt;ipython-input-19-d159df7bdc83&gt;:68: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.clone().detach() or sourceTensor.clone().detach().requires_grad_(True), rather than torch.tensor(sourceTensor).
-  y_data = torch.tensor(y_data, dtype=torch.float32, requires_grad=True)
-</pre></div>
-</div>
-<script type="application/vnd.jupyter.widget-view+json">{"model_id": "506984797dcb4328a8663141819ac6fa", "version_major": 2, "version_minor": 0}</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 0/1000, Loss: 1.1403765678405762
-Epoch 100/1000, Loss: 0.2852590084075928
-Epoch 200/1000, Loss: 0.2204679548740387
-Epoch 300/1000, Loss: 0.17355327308177948
-Epoch 400/1000, Loss: 0.13387514650821686
-Epoch 500/1000, Loss: 0.11003094166517258
-Epoch 600/1000, Loss: 0.09422235190868378
-Epoch 700/1000, Loss: 0.09743916988372803
-Epoch 800/1000, Loss: 0.0716414824128151
-Epoch 900/1000, Loss: 0.06318959593772888
-</pre></div>
-</div>
-<img alt="../../_images/e2e51b05bfbb7ba9ec5f611c9a2bfc77985031f9ab69900f600474e17c16fb45.png" src="../../_images/e2e51b05bfbb7ba9ec5f611c9a2bfc77985031f9ab69900f600474e17c16fb45.png" />
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
 
 <span class="c1"># Flatten and stack tensors</span>
 <span class="c1"># Flatten tensors</span>
@@ -649,82 +741,42 @@ Epoch 900/1000, Loss: 0.06318959593772888
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/7b4e047125115096667041186c5dcb7b4d015ccda32766ae1c55117a8b48cc4b.png" src="../../_images/7b4e047125115096667041186c5dcb7b4d015ccda32766ae1c55117a8b48cc4b.png" />
-</div>
 </div>
 <section id="deepxde-implementation">
-<h2>DeepXDE implementation<a class="headerlink" href="#deepxde-implementation" title="Permalink to this heading">#</a></h2>
+<h3>DeepXDE implementation<a class="headerlink" href="#deepxde-implementation" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>!pip3 install deepxde --quiet
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>deepxde<span class="w"> </span>--quiet
+<span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>tensorflow<span class="w"> </span>--quiet
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>!DDE_BACKEND=tensorflow
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span><span class="nv">DDE_BACKEND</span><span class="o">=</span>tensorflow
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">deepxde</span> <span class="k">as</span> <span class="nn">dde</span>
-<span class="kn">from</span> <span class="nn">deepxde.backend</span> <span class="kn">import</span> <span class="n">pytorch</span> <span class="k">as</span> <span class="n">dde</span>
 
-<span class="k">def</span> <span class="nf">pde</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="n">dy_xx</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">dy_yy</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dy_xx</span> <span class="o">+</span> <span class="n">dy_yy</span>
-
-<span class="k">def</span> <span class="nf">boundary_l</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">on_boundary</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">boundary_r</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">on_boundary</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">boundary_b</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">on_boundary</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">boundary_t1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">on_boundary</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.5</span>
-
-<span class="k">def</span> <span class="nf">boundary_t2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">on_boundary</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">on_boundary</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.5</span>
-
-<span class="k">def</span> <span class="nf">func_t1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="k">def</span> <span class="nf">func_t2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="c1"># Geometry and time domain</span>
-<span class="n">geom</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="c1"># PDE</span>
 
 <span class="c1"># Boundary conditions</span>
-<span class="n">bc_l</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">DirichletBC</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">boundary_l</span><span class="p">)</span>
-<span class="n">bc_r</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">DirichletBC</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">boundary_r</span><span class="p">)</span>
-<span class="n">bc_b</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">DirichletBC</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">boundary_b</span><span class="p">)</span>
-<span class="n">bc_t1</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">DirichletBC</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">func_t1</span><span class="p">,</span> <span class="n">boundary_t1</span><span class="p">)</span>
-<span class="n">bc_t2</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">DirichletBC</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="n">func_t2</span><span class="p">,</span> <span class="n">boundary_t2</span><span class="p">)</span>
+
+<span class="c1"># Geometry and time domain</span>
+
+<span class="c1"># Boundary conditions</span>
 
 <span class="c1"># Define the data</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">PDE</span><span class="p">(</span>
-    <span class="n">geom</span><span class="p">,</span>
-    <span class="n">pde</span><span class="p">,</span>
-    <span class="p">[</span><span class="n">bc_l</span><span class="p">,</span> <span class="n">bc_r</span><span class="p">,</span> <span class="n">bc_b</span><span class="p">,</span> <span class="n">bc_t1</span><span class="p">,</span> <span class="n">bc_t2</span><span class="p">],</span>
-    <span class="n">num_domain</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
-    <span class="n">num_boundary</span><span class="o">=</span><span class="mi">2000</span>
-<span class="p">)</span>
 
 <span class="c1"># Define the neural network</span>
-<span class="n">net</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">FNN</span><span class="p">([</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">40</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;tanh&quot;</span><span class="p">,</span> <span class="s2">&quot;Glorot uniform&quot;</span><span class="p">)</span>
 
 <span class="c1"># Define the model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">dde</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
 
 <span class="c1"># Train the model</span>
 <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;adam&quot;</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
@@ -732,31 +784,10 @@ Epoch 900/1000, Loss: 0.06318959593772888
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compiling model...
-Building feed-forward neural network...
-&#39;build&#39; took 0.071709 s
-
-&#39;compile&#39; took 0.853986 s
-
-Training model...
-
-0         [1.24e-02, 3.11e-03, 9.70e-02, 2.58e-02, 1.86e-01, 1.54e-01]    [1.24e-02, 3.11e-03, 9.70e-02, 2.58e-02, 1.86e-01, 1.54e-01]    []  
-1000      [1.90e-02, 2.44e-02, 6.20e-02, 3.98e-02, 7.42e-02, 1.18e-01]    [1.90e-02, 2.44e-02, 6.20e-02, 3.98e-02, 7.42e-02, 1.18e-01]    []  
-
-Best model at step 1000:
-  train loss: 3.37e-01
-  test loss: 3.37e-01
-  test metric: []
-
-&#39;train&#39; took 8.721388 s
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot loss history</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot loss history</span>
 <span class="n">dde</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">external</span><span class="o">.</span><span class="n">plot_loss_history</span><span class="p">(</span><span class="n">losshistory</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Iterations&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">)</span>
@@ -767,13 +798,10 @@ Best model at step 1000:
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/be3a47c09aa2a8e58199cdf64565ace867d824793f20d14d3c8fd60df00da565.png" src="../../_images/be3a47c09aa2a8e58199cdf64565ace867d824793f20d14d3c8fd60df00da565.png" />
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="c1"># Generate a grid over the domain</span>
@@ -795,10 +823,8 @@ Best model at step 1000:
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/73cc0fdd4a4058090a488d6aaef98e883dfe37d0e26a4dd84ccafa0f3a89b6ec.png" src="../../_images/73cc0fdd4a4058090a488d6aaef98e883dfe37d0e26a4dd84ccafa0f3a89b6ec.png" />
 </div>
-</div>
+</section>
 </section>
 </section>
 
@@ -815,7 +841,7 @@ Best model at step 1000:
         },
         kernelOptions: {
             name: "python3",
-            path: "./lectures/pinn-heat-transfer"
+            path: "./lectures/05-pinn-heat-transfer"
         },
         predefinedOutput: true
     }
@@ -847,8 +873,21 @@ Best model at step 1000:
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deepxde-implementation">DeepXDE implementation</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">05: PINNs and steady-state heat transfer</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-steady-state-heat-transfer-problem-using-pinns">Solving the Steady-State Heat Transfer Problem Using PINNs</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach">Approach:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#colocation-points">Colocation Points</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importance-of-colocation-points">Importance of Colocation Points:</a></li>
 </ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-steady-state-heat-transfer">PINNs Steady State Heat Transfer</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deepxde-implementation">DeepXDE implementation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>

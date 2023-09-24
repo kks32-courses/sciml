@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>HW 02: Physics-Informed Neural Networks (PINNs) Assignment: Exponential Decay ODE &#8212; Scientific Machine Learning (SciML)</title>
+    <title>HW 03: Finite Difference solution to heat transfer &#8212; Scientific Machine Learning (SciML)</title>
   
   
   
@@ -62,9 +62,7 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'assignments/hw02_pinn-ode';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'assignments/hw03-fd-heat';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -234,7 +232,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/assignments/hw02_pinn-ode.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/assignments/hw03-fd-heat.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -282,7 +280,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Fassignments/hw02_pinn-ode.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Fassignments/hw03-fd-heat.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -312,7 +310,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/assignments/hw02_pinn-ode.ipynb" target="_blank"
+      <li><a href="../_sources/assignments/hw03-fd-heat.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -394,7 +392,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>HW 02: Physics-Informed Neural Networks (PINNs) Assignment: Exponential Decay ODE</h1>
+    <h1>HW 03: Finite Difference solution to heat transfer</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -404,10 +402,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-background">Problem Background</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps">Steps:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bonus-challenges">Bonus Challenges:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective">Objective:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry">Geometry:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deliverables">Deliverables:</a></li>
 </ul>
             </nav>
         </div>
@@ -419,74 +417,73 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="hw-02-physics-informed-neural-networks-pinns-assignment-exponential-decay-ode">
-<h1>HW 02: Physics-Informed Neural Networks (PINNs) Assignment: Exponential Decay ODE<a class="headerlink" href="#hw-02-physics-informed-neural-networks-pinns-assignment-exponential-decay-ode" title="Permalink to this heading">#</a></h1>
-<section id="problem-background">
-<h2>Problem Background<a class="headerlink" href="#problem-background" title="Permalink to this heading">#</a></h2>
-<p>Consider the simple ordinary differential equation (ODE) of exponential decay:</p>
-<div class="math notranslate nohighlight">
-\[\frac{du}{dt} + \lambda u(t) = 0\]</div>
-<p>with the initial condition:</p>
-<div class="math notranslate nohighlight">
-\[u(0) = u_0\]</div>
-<p>Where <span class="math notranslate nohighlight">\(\lambda\)</span> is a positive decay constant and <span class="math notranslate nohighlight">\(u_0\)</span> is the initial amount of the substance at time <span class="math notranslate nohighlight">\(t = 0\)</span>.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="hw-03-finite-difference-solution-to-heat-transfer">
+<h1>HW 03: Finite Difference solution to heat transfer<a class="headerlink" href="#hw-03-finite-difference-solution-to-heat-transfer" title="Permalink to this heading">#</a></h1>
+<section id="objective">
+<h2>Objective:<a class="headerlink" href="#objective" title="Permalink to this heading">#</a></h2>
+<p>In this assignment, you will perform a Finite Difference (FD) simulation to study heat transfer in a given geometry. You will be provided with a figure outlining the geometry and the heat source. Your objective is to simulate heat transfer until a steady state is reached.</p>
+</section>
+<section id="geometry">
+<h2>Geometry:<a class="headerlink" href="#geometry" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>A 2D geometry of dimensions: 100 units x 100 units.</p></li>
+</ul>
+<p><img alt="2D Heat transfer" src="../_images/heat-transfer.png" /></p>
 </section>
 <section id="problem-statement">
-<h2>Problem Statement<a class="headerlink" href="#problem-statement" title="Permalink to this heading">#</a></h2>
+<h2>Problem Statement:<a class="headerlink" href="#problem-statement" title="Permalink to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p><strong>Formulate the ODE as a Physics-Informed Neural Network (PINN)</strong>: Solve it using a deep learning framework of your choice (e.g., TensorFlow, PyTorch). The goal is to train a neural network to approximate the solution <span class="math notranslate nohighlight">\(u(t)\)</span>.</p></li>
-<li><p><strong>Loss Function Definition</strong>: Construct a loss function that takes into account both the differential equation and the initial condition.</p></li>
-<li><p><strong>Training the Neural Network</strong>: Use the loss function to train the network. Subsequently, compare the network’s predictions to the analytical solution of the ODE, which is given by:</p></li>
-</ol>
-<div class="math notranslate nohighlight">
-\[u(t) = u_0 e^{-\lambda t}\]</div>
-<ol class="arabic simple" start="4">
-<li><p><strong>Sensitivity Analysis</strong>: Alter the values of <span class="math notranslate nohighlight">\(\lambda\)</span> and <span class="math notranslate nohighlight">\(u_0\)</span> to analyze the difference between the neural network solution and the analytical one.</p></li>
-</ol>
-</section>
-<section id="steps">
-<h2>Steps:<a class="headerlink" href="#steps" title="Permalink to this heading">#</a></h2>
-<ol class="arabic">
-<li><p><strong>Defining the Neural Network Model</strong>:</p>
+<li><p><strong>Discretization</strong>:</p>
 <ul class="simple">
-<li><p>Design a simple feed-forward neural network with a few hidden layers. The input layer should have one neuron (representing time <span class="math notranslate nohighlight">\(t\)</span>) and the output layer should also have one neuron (representing <span class="math notranslate nohighlight">\(u(t)\)</span>).</p></li>
+<li><p>Discretize the given 2D geometry using an appropriate grid spacing.</p></li>
+<li><p>Ensure that the grid is fine enough to capture the details of the heat source and any geometrical intricacies.</p></li>
 </ul>
 </li>
-<li><p><strong>Loss Function</strong>:</p>
-<ul>
-<li><p>The PINN loss is defined as the combination of the squared residuals of the differential equation and the squared difference of the neural network’s prediction for the initial condition.</p>
-<div class="math notranslate nohighlight">
-\[L = \int_{0}^{T} \left( \frac{du_{NN}}{dt} + \lambda u_{NN}(t) \right)^2 dt + \left( u_{NN}(0) - u_0 \right)^2\]</div>
-<p>Here, <span class="math notranslate nohighlight">\(u_{NN}(t)\)</span> represents the neural network’s prediction for <span class="math notranslate nohighlight">\(u(t)\)</span>.</p>
-</li>
+<li><p><strong>Initial and Boundary Conditions</strong>:</p>
+<ul class="simple">
+<li><p>Assume an initial temperature of 0°C throughout the domain.</p></li>
+<li><p>Use Dirichlet boundary conditions on all four sides of the domain. Assume these values or modify based on the provided figure.</p></li>
 </ul>
 </li>
-<li><p><strong>Training the Network</strong>:</p>
+<li><p><strong>Heat Source</strong>:</p>
 <ul class="simple">
-<li><p>Employ an optimizer (like Adam) to minimize the loss function. Ensure to train for enough epochs until the loss converges.</p></li>
+<li><p>Based on the provided figure, incorporate the heat source into your FD formulation. If the heat source varies spatially, ensure that this is captured accurately in your simulations.</p></li>
 </ul>
 </li>
-<li><p><strong>Comparison and Sensitivity Analysis</strong>:</p>
+<li><p><strong>FD Formulation</strong>:</p>
 <ul class="simple">
-<li><p>Compare the neural network’s prediction with the analytical solution over a range of <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
-<li><p>Modify the values of <span class="math notranslate nohighlight">\(\lambda\)</span> and <span class="math notranslate nohighlight">\(u_0\)</span> to observe the neural network’s approximation in relation to the analytical solution for different parameter values.</p></li>
+<li><p>Use a central difference scheme for the spatial derivatives.</p></li>
+<li><p>For time marching, you can employ an explicit Euler time marching scheme.</p></li>
+</ul>
+</li>
+<li><p><strong>Simulation</strong>:</p>
+<ul class="simple">
+<li><p>Simulate the heat transfer process until steady state is reached. The steady state can be considered reached when the maximum temperature difference between two consecutive time steps in the entire domain is less than a small threshold (e.g., 0.01°C).</p></li>
+</ul>
+</li>
+<li><p><strong>Analysis</strong>:</p>
+<ul class="simple">
+<li><p>Plot the temperature distribution at various time steps to show the evolution of temperature in the domain.</p></li>
+<li><p>Analyze the steady-state temperature distribution. Identify and explain any interesting features or patterns you observe.</p></li>
+<li><p>Compare the steady-state temperature distribution with any analytical solution or intuitive expectation based on the geometry and heat source.</p></li>
 </ul>
 </li>
 </ol>
 </section>
-<section id="bonus-challenges">
-<h2>Bonus Challenges:<a class="headerlink" href="#bonus-challenges" title="Permalink to this heading">#</a></h2>
-<ol class="arabic">
-<li><p><strong>Forcing Function</strong>: Extend the problem to include a forcing function <span class="math notranslate nohighlight">\(f(t)\)</span> such that:</p>
-<div class="math notranslate nohighlight">
-\[\frac{du}{dt} + \lambda u(t) = f(t)\]</div>
+<section id="deliverables">
+<h2>Deliverables:<a class="headerlink" href="#deliverables" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Code</strong>: A well-commented code in Python for the FD simulation.</p></li>
+<li><p><strong>Notebook</strong>:</p>
+<ul class="simple">
+<li><p>Introduction: Briefly describe the problem and your approach.</p></li>
+<li><p>Methodology: Explain your FD formulation and time marching scheme, and any other computational considerations.</p></li>
+<li><p>Results: Present the temperature distributions at various time steps and the final steady-state distribution.</p></li>
+<li><p>Analysis: Discuss the results, emphasizing any interesting observations, comparisons, and patterns.</p></li>
+<li><p>Conclusion: Sum up your findings and suggest any potential extensions or future work.</p></li>
+</ul>
 </li>
-<li><p><strong>Noise Effects</strong>: Investigate the repercussions of noise in the initial condition and examine the neural network’s ability to cope with noisy data.</p></li>
-<li><p><strong>Performance Comparison</strong>: Contrast the performance of the PINN with traditional numerical methods like Euler’s method or the Runge-Kutta method.</p></li>
-<li><p><strong>Network Architecture Exploration</strong>: Delve into the neural network’s architecture. Examine how altering the depth and width of the neural network impacts its efficiency.</p></li>
 </ol>
-<hr class="docutils" />
-<p>This assignment aims to provide a practical approach to using PINNs for solving 1D ODEs. Through it, students will be able to understand the strengths and limitations of this method.</p>
 </section>
 </section>
 
@@ -535,10 +532,10 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-background">Problem Background</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps">Steps:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bonus-challenges">Bonus Challenges:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective">Objective:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry">Geometry:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deliverables">Deliverables:</a></li>
 </ul>
   </nav></div>
 
