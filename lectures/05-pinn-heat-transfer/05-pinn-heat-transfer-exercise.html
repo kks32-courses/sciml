@@ -413,6 +413,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-steady-state-heat-transfer">PINNs Steady State Heat Transfer</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deepxde-implementation">DeepXDE implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glorot-initialization">Glorot initialization</a></li>
 </ul>
 </li>
 </ul>
@@ -759,6 +760,21 @@ document.write(`
 </div>
 </div>
 </div>
+</section>
+<section id="glorot-initialization">
+<h3>Glorot initialization<a class="headerlink" href="#glorot-initialization" title="Permalink to this heading">#</a></h3>
+<p>The <strong>Glorot uniform initializer</strong>, also known as <strong>Xavier uniform initializer</strong>, is a method used to set the initial random weights of neural networks in a way that helps in achieving faster and more effective training. The Glorot uniform initializer sets the weights by drawing them from a distribution that is uniform within a specific range.</p>
+<p>The range for drawing the weights <span class="math notranslate nohighlight">\( w \)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[ -\sqrt{\frac{6}{n_{\text{in}} + n_{\text{out}}}} \leq w \leq \sqrt{\frac{6}{n_{\text{in}} + n_{\text{out}}}} \]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( n_{\text{in}} \)</span> is the number of input units in the layer (i.e., the size of the previous layer).</p></li>
+<li><p><span class="math notranslate nohighlight">\( n_{\text{out}} \)</span> is the number of output units in the layer (i.e., the size of the current layer).</p></li>
+</ul>
+<p>The name “Glorot” comes from the first author of a 2010 paper that introduced this initializer, Xavier Glorot.</p>
+<p>The Glorot uniform initializer is particularly designed for Sigmoid and hyperbolic tangent (tanh) activation functions. If you’re using ReLU activations or its variants, the He initializer might be more appropriate.</p>
+<p>In popular deep learning frameworks like TensorFlow and Keras, the Glorot uniform initializer is often the default weight initializer.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -882,6 +898,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-steady-state-heat-transfer">PINNs Steady State Heat Transfer</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deepxde-implementation">DeepXDE implementation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#glorot-initialization">Glorot initialization</a></li>
 </ul>
 </li>
 </ul>
