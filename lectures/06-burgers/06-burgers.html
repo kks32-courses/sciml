@@ -414,9 +414,6 @@ document.write(`
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#foward-solution-to-burgers-equation">Foward solution to Burgers’ Equation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-and-boundary-conditions">Initial and Boundary Conditions:</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis:</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pde">PDE</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network">Neural Network</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-neural-network-pde">PINNs=Neural Network + PDE</a><ul class="nav section-nav flex-column">
@@ -427,9 +424,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Neural Network</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-data">Generate data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-data">Generate data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-data">Prepare Data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-data">Training Data</a></li>
 </ul>
@@ -441,22 +436,21 @@ document.write(`
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-solution-to-burger-s-equation">Inverse Solution to Burger’s Equation</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-problems">Inverse Problems</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-for-inverse-problems-or-data-driven-discovery-of-nonlinear-partial-differential-equations">PINNs for Inverse Problems or “Data-driven Discovery of Nonlinear Partial Differential Equations”</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Analysis:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Neural Network</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">PINNs=Neural Network + PDE</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">PINNs’ Loss function</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Total Loss:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">PINNs=Neural Network + PDE</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">PINNs’ Loss function</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Total Loss:</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Neural Network</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initialize-our-parameters">Initialize our parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-data">Visualize the data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Prepare Data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Training data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Train Neural Network</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Prepare Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Training data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Train Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Plots</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References:</a></li>
 </ul>
 </li>
@@ -682,9 +676,6 @@ document.write(`
 <h2>Initial and Boundary Conditions:<a class="headerlink" href="#initial-and-boundary-conditions" title="Permalink to this heading">#</a></h2>
 <p>Given as a matrix (We will extract them from the reference solution)</p>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="analysis">
-<h1>Analysis:<a class="headerlink" href="#analysis" title="Permalink to this heading">#</a></h1>
 <section id="pde">
 <h2>PDE<a class="headerlink" href="#pde" title="Permalink to this heading">#</a></h2>
 <p>Let:</p>
@@ -852,26 +843,35 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
 </div>
 </section>
 </section>
-</section>
-<section class="tex2jax_ignore mathjax_ignore" id="generate-data">
-<h1>Generate data<a class="headerlink" href="#generate-data" title="Permalink to this heading">#</a></h1>
+<section id="generate-data">
+<h2>Generate data<a class="headerlink" href="#generate-data" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;Burgers.mat&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">scipy.io</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/kks32-courses/sciml/raw/main/lectures/06-burgers/Burgers.mat&quot;</span>
+
+<span class="c1"># Download the file</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">matdata</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="c1"># Write to local file </span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;burgers.mat&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+  <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">matdata</span><span class="p">)</span>
+
+<span class="c1"># Load Burger&#39;s mat file into dict</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;burgers.mat&#39;</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>                                   <span class="c1"># 256 points between -1 and 1 [256x1]</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span>                                   <span class="c1"># 100 time points between 0 and 1 [100x1]</span>
 <span class="n">usol</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;usol&#39;</span><span class="p">]</span>                             <span class="c1"># solution of 256x100 grid points</span>
 
 <span class="n">X</span><span class="p">,</span> <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">)</span>                         <span class="c1"># makes 2 arrays X and T such that u(X[i],T[j])=usol[i][j] are a tuple</span>
-<span class="n">plot3D</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">usol</span><span class="p">))</span> <span class="c1">#f_real was defined previously(function)</span>
+<span class="n">plot3D</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">usol</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/torch/functional.py:504: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /Users/runner/work/_temp/anaconda/conda-bld/pytorch_1682343668887/work/aten/src/ATen/native/TensorShape.cpp:3484.)
-  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
-</pre></div>
-</div>
 <img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
 <img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
 </div>
@@ -890,6 +890,7 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
 </div>
 </div>
 </div>
+</section>
 <section id="prepare-data">
 <h2>Prepare Data<a class="headerlink" href="#prepare-data" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -1078,7 +1079,7 @@ tensor(8.1312e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0242, grad_fn=&lt;DivB
 tensor(7.9274e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0247, grad_fn=&lt;DivBackward0&gt;)
 tensor(7.6622e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0250, grad_fn=&lt;DivBackward0&gt;)
 tensor(7.4923e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0244, grad_fn=&lt;DivBackward0&gt;)
-Training time: 207.67
+Training time: 207.31
 Test Error: 0.02438
 </pre></div>
 </div>
@@ -1091,11 +1092,11 @@ Test Error: 0.02438
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ipython-input-6-50a19b9bceb9&gt;:9: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42557/2764407204.py:9: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
   ax = plt.subplot(gs0[:, :])
 </pre></div>
 </div>
-<img alt="../../_images/6c79ad3851d48789e2b08c02bb14fa69d180c8649f154ab6bc3b5860c96bf836.png" src="../../_images/6c79ad3851d48789e2b08c02bb14fa69d180c8649f154ab6bc3b5860c96bf836.png" />
+<img alt="../../_images/01392d4853c5a7cab3864a5c2eb8fe0951ddba4aadc0de93e7a8bc9dd8386d95.png" src="../../_images/01392d4853c5a7cab3864a5c2eb8fe0951ddba4aadc0de93e7a8bc9dd8386d95.png" />
 </div>
 </div>
 <section id="plots">
@@ -1125,8 +1126,8 @@ Test Error: 0.02438
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a7dece24944c9888d87e6677df6bd0f6a19177fe7e69b80278221f40baa9738e.png" src="../../_images/a7dece24944c9888d87e6677df6bd0f6a19177fe7e69b80278221f40baa9738e.png" />
-<img alt="../../_images/38aef8f80ff20d4508233b4e46456396aaefb3791c205f1accb83791e30852e3.png" src="../../_images/38aef8f80ff20d4508233b4e46456396aaefb3791c205f1accb83791e30852e3.png" />
+<img alt="../../_images/4480da6ccdbcc9070177f3d61151a597d491eda994d3c79e2a5010b0ae15ee93.png" src="../../_images/4480da6ccdbcc9070177f3d61151a597d491eda994d3c79e2a5010b0ae15ee93.png" />
+<img alt="../../_images/29794e748989a95a6846ed3d87c2500416ad153280889b7d6f515989afff70b0.png" src="../../_images/29794e748989a95a6846ed3d87c2500416ad153280889b7d6f515989afff70b0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1136,8 +1137,8 @@ Test Error: 0.02438
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2ca5940c2b5dc37519cbf287b7193395fd9ffbd0b63b3af1c2da28fbc96828bc.png" src="../../_images/2ca5940c2b5dc37519cbf287b7193395fd9ffbd0b63b3af1c2da28fbc96828bc.png" />
-<img alt="../../_images/9ea5baaa4c7149949d74ed2844063b7d046944cd58b1802e03aca9f336b56b54.png" src="../../_images/9ea5baaa4c7149949d74ed2844063b7d046944cd58b1802e03aca9f336b56b54.png" />
+<img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
+<img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
 </div>
 </div>
 </section>
@@ -1177,8 +1178,6 @@ Test Error: 0.02438
 \[u_t+\mathscr{N}[u;\lambda]=0\]</div>
 <p>where, <span class="math notranslate nohighlight">\(u(x,t)\)</span> is the hidden solution and <span class="math notranslate nohighlight">\(\mathscr{N}[;\lambda]\)</span> is a nonlinear operator parameterized by <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
 <p>In short: We will use a PINN to get <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
-<section id="id2">
-<h2>Analysis:<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>Let:</p>
 <p><span class="math notranslate nohighlight">\(u_t=\frac{\partial u}{\partial t}\)</span></p>
 <p><span class="math notranslate nohighlight">\(u_x=\frac{\partial u}{\partial x}\)</span></p>
@@ -1195,9 +1194,8 @@ Test Error: 0.02438
 \[u_t+\mathscr{N}[u;\lambda]=0\]</div>
 <p>So we can use a PINN to obtain <span class="math notranslate nohighlight">\(\lambda\)</span>!</p>
 <p>In our case (from the reference solution) <span class="math notranslate nohighlight">\(\lambda=[\lambda_1,\lambda_2]=[1,\nu]=\left[1,\frac{1}{100\pi}\right]\)</span></p>
-</section>
-<section id="id3">
-<h2>Neural Network<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
+<section id="id2">
+<h2>Neural Network<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
 <p>A Neural Network is a function:</p>
 <div class="math notranslate nohighlight">
 \[N(X)=W_n\sigma_{n-1}(W_{n-1}\sigma_{n-2}(...(W_2(W_1X+b_1)+b_2)+..)+b_{n-1})+b_n\]</div>
@@ -1205,8 +1203,8 @@ Test Error: 0.02438
 <div><p>Note: We usually train our N by iteratively minimizing a loss function in the training dataset(known data) to get <span class="math notranslate nohighlight">\(W_i\)</span> and <span class="math notranslate nohighlight">\(b_i\)</span>.</p>
 </div></blockquote>
 </section>
-<section id="id4">
-<h2>PINNs=Neural Network + PDE<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<section id="id3">
+<h2>PINNs=Neural Network + PDE<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
 <p>(See: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0021999118307125">https://www.sciencedirect.com/science/article/pii/S0021999118307125</a>)</p>
 <p>We can use a neural network to approximate any function (Universal APproximation Theorem): (See:<a class="reference external" href="https://book.sciml.ai/notes/03/">https://book.sciml.ai/notes/03/</a>)
 $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
@@ -1227,8 +1225,8 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 <p>So:</p>
 <div class="math notranslate nohighlight">
 \[f(t,x)\approx 0\]</div>
-<section id="id5">
-<h3>PINNs’ Loss function<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h3>
+<section id="id4">
+<h3>PINNs’ Loss function<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
 <p>We evaluate <span class="math notranslate nohighlight">\(f\)</span> in a certain number of points (<span class="math notranslate nohighlight">\(N_u\)</span>) inside our domain <span class="math notranslate nohighlight">\((x,t)\)</span>. Then we iteratively minimize a loss function related to <span class="math notranslate nohighlight">\(f\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[MSE_f=\frac{1}{N_u}\sum^{N_u}_{i=1}|f(t_u^i,x_u^i)|^2\]</div>
@@ -1237,16 +1235,16 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 <div class="math notranslate nohighlight">
 \[MSE_{u}=\frac{1}{N_u}\sum^{N_u}_{i=1}|u(t_{u}^i,x_u^i)-N(t_{u}^i,x_u^i)|^2\]</div>
 <p>Please note that <span class="math notranslate nohighlight">\(\{t_u^i,x_u^i\}_{i=1}^N\)</span> are the same in <span class="math notranslate nohighlight">\(MSE_f\)</span> and <span class="math notranslate nohighlight">\(MSE_u\)</span></p>
-<section id="id6">
-<h4>Total Loss:<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h4>
+<section id="id5">
+<h4>Total Loss:<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h4>
 <div class="math notranslate nohighlight">
 \[MSE=MSE_{u}+MSE_f\]</div>
 <p>NOTE: We minimize <span class="math notranslate nohighlight">\(MSE\)</span> to obtain the <span class="math notranslate nohighlight">\(N\)</span>’s parameters (i.e, <span class="math notranslate nohighlight">\(W_i\)</span> and <span class="math notranslate nohighlight">\(b_i\)</span>) and the ODE parameters (i.e., <span class="math notranslate nohighlight">\(\lambda\)</span>)<span class="math notranslate nohighlight">\(\rightarrow\)</span> We will ask our neural network to find our <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
 </section>
 </section>
 </section>
-<section id="id7">
-<h2>Neural Network<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<section id="id6">
+<h2>Neural Network<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#  Deep Neural Network</span>
@@ -1406,22 +1404,7 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 <h2>Visualize the data<a class="headerlink" href="#visualize-the-data" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib.request</span>
-<span class="kn">import</span> <span class="nn">scipy.io</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/kks32-courses/sciml/raw/main/lectures/06-burgers/Burgers.mat&quot;</span>
-
-<span class="c1"># Download the file</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-<span class="n">matdata</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="c1"># Write to local file </span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;burgers.mat&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-  <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">matdata</span><span class="p">)</span>
-
-<span class="c1"># Load Burger&#39;s mat file into dict</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="s1">&#39;burgers.mat&#39;</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>                                   <span class="c1"># 256 points between -1 and 1 [256x1]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>                                   <span class="c1"># 256 points between -1 and 1 [256x1]</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span>                                   <span class="c1"># 100 time points between 0 and 1 [100x1]</span>
 <span class="n">usol</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;usol&#39;</span><span class="p">]</span>                             <span class="c1"># solution of 256x100 grid points</span>
 
@@ -1450,8 +1433,8 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 </div>
 </div>
 </section>
-<section id="id8">
-<h2>Prepare Data<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
+<section id="id7">
+<h2>Prepare Data<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:,</span><span class="kc">None</span><span class="p">],</span> <span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:,</span><span class="kc">None</span><span class="p">]))</span>
@@ -1477,8 +1460,8 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 </div>
 </div>
 </section>
-<section id="id9">
-<h2>Training data<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
+<section id="id8">
+<h2>Training data<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">total_points</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -1504,8 +1487,8 @@ Final training data: (10000, 2) (10000, 1)
 </div>
 </div>
 </section>
-<section id="id10">
-<h2>Train Neural Network<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
+<section id="id9">
+<h2>Train Neural Network<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># &#39;Convert our arrays to tensors and send them to our GPU&#39;</span>
@@ -1528,8 +1511,6 @@ Final training data: (10000, 2) (10000, 1)
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">PINN</span> <span class="o">=</span> <span class="n">FCN</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span>
-
-<span class="n">PINN</span>
 
 <span class="c1"># Neural Network Summary</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">PINN</span><span class="p">)</span>
@@ -1564,65 +1545,69 @@ Final training data: (10000, 2) (10000, 1)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;__main__.FCN object at 0x7c36cc7c6080&gt;
-Relative Error(Test): 0.40063 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.16484,  0.00258]
-Relative Error(Test): 0.27862 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.08204,  0.00140]
-Relative Error(Test): 0.24125 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.24607,  0.00209]
-Relative Error(Test): 0.22931 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.34574,  0.00421]
-Relative Error(Test): 0.20935 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.43998,  0.00534]
-Relative Error(Test): 0.18564 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.54180,  0.00601]
-Relative Error(Test): 0.17174 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.52297,  0.00424]
-Relative Error(Test): 0.15370 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.61658,  0.00428]
-Relative Error(Test): 0.13481 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.66566,  0.00531]
-Relative Error(Test): 0.11617 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.71670,  0.00673]
-Relative Error(Test): 0.09920 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.78271,  0.00651]
-Relative Error(Test): 0.10101 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.81718,  0.00583]
-Relative Error(Test): 0.07669 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.83228,  0.00579]
-Relative Error(Test): 0.06542 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.86384,  0.00567]
-Relative Error(Test): 0.06432 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.85543,  0.00565]
-Relative Error(Test): 0.05492 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.91067,  0.00593]
-Relative Error(Test): 0.04716 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94299,  0.00579]
-Relative Error(Test): 0.04533 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.93913,  0.00565]
-Relative Error(Test): 0.04145 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94178,  0.00523]
-Relative Error(Test): 0.03831 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.93962,  0.00489]
-Relative Error(Test): 0.03735 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94560,  0.00483]
-Relative Error(Test): 0.03565 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.95376,  0.00481]
-Relative Error(Test): 0.03355 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96531,  0.00482]
-Relative Error(Test): 0.03244 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96134,  0.00474]
-Relative Error(Test): 0.03072 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96707,  0.00469]
-Relative Error(Test): 0.02802 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96741,  0.00447]
-Relative Error(Test): 0.02814 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96452,  0.00445]
-Relative Error(Test): 0.02693 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96560,  0.00427]
-Relative Error(Test): 0.02514 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96900,  0.00421]
-Relative Error(Test): 0.02387 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97601,  0.00414]
-Relative Error(Test): 0.02325 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97859,  0.00416]
-Relative Error(Test): 0.02257 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98385,  0.00415]
-Relative Error(Test): 0.02257 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98274,  0.00413]
-Relative Error(Test): 0.02182 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98355,  0.00413]
-Relative Error(Test): 0.02118 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98806,  0.00409]
-Relative Error(Test): 0.02030 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98545,  0.00403]
-Relative Error(Test): 0.02049 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98568,  0.00403]
-Relative Error(Test): 0.02053 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98690,  0.00402]
-Relative Error(Test): 0.02032 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98562,  0.00399]
-Relative Error(Test): 0.01993 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98480,  0.00397]
-Relative Error(Test): 0.01885 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98633,  0.00395]
-Relative Error(Test): 0.01860 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98200,  0.00389]
-Relative Error(Test): 0.01850 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98294,  0.00386]
-Relative Error(Test): 0.01801 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98664,  0.00386]
-Relative Error(Test): 0.01764 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98782,  0.00383]
-Relative Error(Test): 0.01747 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98737,  0.00382]
-Relative Error(Test): 0.01751 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98640,  0.00382]
-Relative Error(Test): 0.01750 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98597,  0.00382]
-Relative Error(Test): 0.01747 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.98641,  0.00383]
-Training time: 140.50
-Test Error: 0.01740
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;__main__.FCN object at 0x28f414910&gt;
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Relative Error(Test): 0.44295 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [1.49775,  0.11306]
+Relative Error(Test): 0.25372 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.44212,  0.00753]
+Relative Error(Test): 0.22287 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.39770,  0.00654]
+Relative Error(Test): 0.18655 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.48637,  0.00484]
+Relative Error(Test): 0.16718 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.59808,  0.00643]
+Relative Error(Test): 0.15538 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.63584,  0.00662]
+Relative Error(Test): 0.13024 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.76241,  0.00758]
+Relative Error(Test): 0.11696 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.80833,  0.00698]
+Relative Error(Test): 0.11013 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.79486,  0.00769]
+Relative Error(Test): 0.10208 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.81663,  0.00893]
+Relative Error(Test): 0.08756 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.86894,  0.00803]
+Relative Error(Test): 0.07833 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.88040,  0.00754]
+Relative Error(Test): 0.06850 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.87600,  0.00657]
+Relative Error(Test): 0.06512 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.87118,  0.00605]
+Relative Error(Test): 0.05733 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.88411,  0.00553]
+Relative Error(Test): 0.05315 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.90638,  0.00551]
+Relative Error(Test): 0.04634 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.93545,  0.00553]
+Relative Error(Test): 0.04213 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94059,  0.00535]
+Relative Error(Test): 0.04175 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94792,  0.00540]
+Relative Error(Test): 0.04046 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94197,  0.00518]
+Relative Error(Test): 0.03778 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.93887,  0.00488]
+Relative Error(Test): 0.03512 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.95411,  0.00484]
+Relative Error(Test): 0.03433 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96262,  0.00477]
+Relative Error(Test): 0.02887 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96885,  0.00438]
+Relative Error(Test): 0.02753 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96838,  0.00428]
+Relative Error(Test): 0.02678 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97101,  0.00422]
+Relative Error(Test): 0.02650 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97045,  0.00420]
+Relative Error(Test): 0.02596 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96590,  0.00413]
+Relative Error(Test): 0.02510 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96874,  0.00413]
+Relative Error(Test): 0.02479 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96424,  0.00404]
+Relative Error(Test): 0.02408 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96851,  0.00398]
+Relative Error(Test): 0.02422 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97129,  0.00400]
+Relative Error(Test): 0.02295 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97510,  0.00396]
+Relative Error(Test): 0.02273 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97912,  0.00397]
+Relative Error(Test): 0.02224 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97685,  0.00395]
+Relative Error(Test): 0.02151 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97482,  0.00392]
+Relative Error(Test): 0.02043 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97663,  0.00385]
+Relative Error(Test): 0.02042 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97660,  0.00384]
+Relative Error(Test): 0.01996 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97917,  0.00386]
+Relative Error(Test): 0.01862 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97980,  0.00380]
+Relative Error(Test): 0.01871 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97864,  0.00380]
+Relative Error(Test): 0.01813 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97910,  0.00377]
+Relative Error(Test): 0.01784 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97932,  0.00375]
+Relative Error(Test): 0.01783 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97967,  0.00376]
+Relative Error(Test): 0.01789 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97770,  0.00374]
+Relative Error(Test): 0.01738 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97771,  0.00371]
+Relative Error(Test): 0.01714 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97741,  0.00371]
+Relative Error(Test): 0.01691 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97621,  0.00372]
+Relative Error(Test): 0.01647 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97740,  0.00368]
+Relative Error(Test): 0.01681 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97390,  0.00365]
+Relative Error(Test): 0.01699 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97337,  0.00364]
+Training time: 259.18
+Test Error: 0.01699
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="id11">
-<h2>Plots<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
+<section id="id10">
+<h2>Plots<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solutionplot</span><span class="p">(</span><span class="n">u_pred</span><span class="p">,</span><span class="n">X_train_Nu</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="n">U_train_Nu</span><span class="p">)</span>
@@ -1630,11 +1615,11 @@ Test Error: 0.01740
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ipython-input-6-50a19b9bceb9&gt;:9: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42557/2764407204.py:9: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
   ax = plt.subplot(gs0[:, :])
 </pre></div>
 </div>
-<img alt="../../_images/17eaf8f84586cb98b2b8bce66a2f2e615deeec809cc819800d22be9ebcc196ef.png" src="../../_images/17eaf8f84586cb98b2b8bce66a2f2e615deeec809cc819800d22be9ebcc196ef.png" />
+<img alt="../../_images/f4267538a38bdc9ae0b92fd39a69697ec705b7a5f3e59f02b3186b67e8517326.png" src="../../_images/f4267538a38bdc9ae0b92fd39a69697ec705b7a5f3e59f02b3186b67e8517326.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1648,8 +1633,8 @@ Test Error: 0.01740
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/a7dece24944c9888d87e6677df6bd0f6a19177fe7e69b80278221f40baa9738e.png" src="../../_images/a7dece24944c9888d87e6677df6bd0f6a19177fe7e69b80278221f40baa9738e.png" />
-<img alt="../../_images/38aef8f80ff20d4508233b4e46456396aaefb3791c205f1accb83791e30852e3.png" src="../../_images/38aef8f80ff20d4508233b4e46456396aaefb3791c205f1accb83791e30852e3.png" />
+<img alt="../../_images/d98daf8b92c50e62bb3680a492fc50c96b930a7321125007785abf35eabf54a0.png" src="../../_images/d98daf8b92c50e62bb3680a492fc50c96b930a7321125007785abf35eabf54a0.png" />
+<img alt="../../_images/58a313b78348f79e2c093d452abd1db3becb0ec14ddde4b50954d04e0662ea95.png" src="../../_images/58a313b78348f79e2c093d452abd1db3becb0ec14ddde4b50954d04e0662ea95.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1659,8 +1644,8 @@ Test Error: 0.01740
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/2ca5940c2b5dc37519cbf287b7193395fd9ffbd0b63b3af1c2da28fbc96828bc.png" src="../../_images/2ca5940c2b5dc37519cbf287b7193395fd9ffbd0b63b3af1c2da28fbc96828bc.png" />
-<img alt="../../_images/9ea5baaa4c7149949d74ed2844063b7d046944cd58b1802e03aca9f336b56b54.png" src="../../_images/9ea5baaa4c7149949d74ed2844063b7d046944cd58b1802e03aca9f336b56b54.png" />
+<img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
+<img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
 </div>
 </div>
 </section>
@@ -1730,9 +1715,6 @@ Test Error: 0.01740
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#foward-solution-to-burgers-equation">Foward solution to Burgers’ Equation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-and-boundary-conditions">Initial and Boundary Conditions:</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis">Analysis:</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pde">PDE</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network">Neural Network</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-neural-network-pde">PINNs=Neural Network + PDE</a><ul class="nav section-nav flex-column">
@@ -1743,9 +1725,7 @@ Test Error: 0.01740
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Neural Network</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-data">Generate data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-data">Generate data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-data">Prepare Data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-data">Training Data</a></li>
 </ul>
@@ -1757,22 +1737,21 @@ Test Error: 0.01740
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-solution-to-burger-s-equation">Inverse Solution to Burger’s Equation</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-problems">Inverse Problems</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pinns-for-inverse-problems-or-data-driven-discovery-of-nonlinear-partial-differential-equations">PINNs for Inverse Problems or “Data-driven Discovery of Nonlinear Partial Differential Equations”</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Analysis:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Neural Network</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">PINNs=Neural Network + PDE</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">PINNs’ Loss function</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Total Loss:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">PINNs=Neural Network + PDE</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">PINNs’ Loss function</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Total Loss:</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Neural Network</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initialize-our-parameters">Initialize our parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-data">Visualize the data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Prepare Data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Training data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Train Neural Network</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Plots</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Prepare Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Training data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Train Neural Network</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Plots</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References:</a></li>
 </ul>
 </li>
