@@ -64,7 +64,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/06-burgers/06-burgers';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/06-burgers/06-burgers-exercise';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -234,7 +234,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/06-burgers/06-burgers.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/06-burgers/06-burgers-exercise.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -282,7 +282,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/06-burgers/06-burgers.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/06-burgers/06-burgers-exercise.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -312,7 +312,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/06-burgers/06-burgers.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/06-burgers/06-burgers-exercise.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -513,11 +513,6 @@ document.write(`
 
 <span class="k">if</span> <span class="n">device</span> <span class="o">==</span> <span class="s1">&#39;cuda&#39;</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_name</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cpu
 </pre></div>
 </div>
 </div>
@@ -769,27 +764,12 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
         <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">is_tensor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-        <span class="n">u_b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">ub</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="n">l_b</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">lb</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+        <span class="c1">#feature scaling</span>
 
-        <span class="c1"># preprocessing input</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">l_b</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">u_b</span> <span class="o">-</span> <span class="n">l_b</span><span class="p">)</span> <span class="c1">#feature scaling</span>
-
-        <span class="c1"># convert to float</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linears</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">a</span><span class="p">)</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-
-        <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linears</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">](</span><span class="n">a</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">a</span>
-
+        
     <span class="k">def</span> <span class="nf">loss_BC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
-        <span class="n">loss_u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss_u</span>
-
+        
     <span class="k">def</span> <span class="nf">loss_PDE</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train_Nf</span><span class="p">):</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="n">X_train_Nf</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
@@ -802,17 +782,7 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
 
         <span class="n">u_xx_tt</span> <span class="o">=</span> <span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">u_x_t</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">X_train_Nf</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">u_x</span> <span class="o">=</span> <span class="n">u_x_t</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span>
-
-        <span class="n">u_t</span> <span class="o">=</span> <span class="n">u_x_t</span><span class="p">[:,[</span><span class="mi">1</span><span class="p">]]</span>
-
-        <span class="n">u_xx</span> <span class="o">=</span> <span class="n">u_xx_tt</span><span class="p">[:,[</span><span class="mi">0</span><span class="p">]]</span>
-
-        <span class="n">f</span> <span class="o">=</span> <span class="n">u_t</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">g</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="n">u_x</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">nu</span><span class="p">)</span><span class="o">*</span><span class="n">u_xx</span>
-
-        <span class="n">loss_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">f_hat</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">loss_f</span>
+        
 
     <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">X_train_Nf</span><span class="p">):</span>
 
@@ -884,21 +854,11 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
-<img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">usol</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(256, 1) (100, 1) (256, 100)
-(100, 256) (100, 256)
 </pre></div>
 </div>
 </div>
@@ -921,11 +881,6 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[-1.  0.] [1.   0.99]
 </pre></div>
 </div>
 </div>
@@ -993,15 +948,6 @@ $<span class="math notranslate nohighlight">\(NN(x,t)\approx u(x,t)\)</span>$</p
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original shapes for X and U: (100, 256) (256, 100)
-Boundary shapes for the edges: (256, 2) (100, 2) (100, 2)
-Available training data: (456, 2) (456, 1)
-Final training data: (100, 2) (100, 1)
-Total collocation points: (10100, 2)
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 </section>
@@ -1039,7 +985,6 @@ Total collocation points: (10100, 2)
 
 <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">PINN</span><span class="o">.</span><span class="n">closure</span><span class="p">)</span>
 
-
 <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Training time: </span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">elapsed</span><span class="p">))</span>
 
@@ -1051,81 +996,12 @@ Total collocation points: (10100, 2)
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>FCN(
-  (activation): Tanh()
-  (loss_function): MSELoss()
-  (linears): ModuleList(
-    (0): Linear(in_features=2, out_features=20, bias=True)
-    (1-7): 7 x Linear(in_features=20, out_features=20, bias=True)
-    (8): Linear(in_features=20, out_features=1, bias=True)
-  )
-)
-tensor(0.1166, grad_fn=&lt;AddBackward0&gt;) tensor(0.6768, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0496, grad_fn=&lt;AddBackward0&gt;) tensor(0.4842, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0323, grad_fn=&lt;AddBackward0&gt;) tensor(0.4623, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0238, grad_fn=&lt;AddBackward0&gt;) tensor(0.4262, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0149, grad_fn=&lt;AddBackward0&gt;) tensor(0.3887, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0075, grad_fn=&lt;AddBackward0&gt;) tensor(0.3375, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0039, grad_fn=&lt;AddBackward0&gt;) tensor(0.2753, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0020, grad_fn=&lt;AddBackward0&gt;) tensor(0.1771, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0011, grad_fn=&lt;AddBackward0&gt;) tensor(0.1224, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0007, grad_fn=&lt;AddBackward0&gt;) tensor(0.0584, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0004, grad_fn=&lt;AddBackward0&gt;) tensor(0.0244, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0003, grad_fn=&lt;AddBackward0&gt;) tensor(0.0284, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0002, grad_fn=&lt;AddBackward0&gt;) tensor(0.0282, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0002, grad_fn=&lt;AddBackward0&gt;) tensor(0.0278, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0001, grad_fn=&lt;AddBackward0&gt;) tensor(0.0325, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0001, grad_fn=&lt;AddBackward0&gt;) tensor(0.0332, grad_fn=&lt;DivBackward0&gt;)
-tensor(0.0001, grad_fn=&lt;AddBackward0&gt;) tensor(0.0345, grad_fn=&lt;DivBackward0&gt;)
-tensor(8.1510e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0332, grad_fn=&lt;DivBackward0&gt;)
-tensor(6.8506e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0360, grad_fn=&lt;DivBackward0&gt;)
-tensor(6.0551e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0369, grad_fn=&lt;DivBackward0&gt;)
-tensor(5.4207e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0382, grad_fn=&lt;DivBackward0&gt;)
-tensor(4.9783e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0350, grad_fn=&lt;DivBackward0&gt;)
-tensor(4.4510e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0332, grad_fn=&lt;DivBackward0&gt;)
-tensor(3.9261e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0326, grad_fn=&lt;DivBackward0&gt;)
-tensor(3.5546e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0298, grad_fn=&lt;DivBackward0&gt;)
-tensor(3.1453e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0266, grad_fn=&lt;DivBackward0&gt;)
-tensor(2.8191e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0257, grad_fn=&lt;DivBackward0&gt;)
-tensor(2.6016e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0251, grad_fn=&lt;DivBackward0&gt;)
-tensor(2.3360e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0255, grad_fn=&lt;DivBackward0&gt;)
-tensor(2.0078e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0228, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.8544e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0244, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.6839e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0235, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.5309e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0234, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.4373e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0223, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.3535e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0228, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.2260e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0235, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.1435e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0238, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.0757e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0242, grad_fn=&lt;DivBackward0&gt;)
-tensor(1.0028e-05, grad_fn=&lt;AddBackward0&gt;) tensor(0.0237, grad_fn=&lt;DivBackward0&gt;)
-tensor(9.4967e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0243, grad_fn=&lt;DivBackward0&gt;)
-tensor(9.1489e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0244, grad_fn=&lt;DivBackward0&gt;)
-tensor(8.7480e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0245, grad_fn=&lt;DivBackward0&gt;)
-tensor(8.4033e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0249, grad_fn=&lt;DivBackward0&gt;)
-tensor(8.1312e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0242, grad_fn=&lt;DivBackward0&gt;)
-tensor(7.9274e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0247, grad_fn=&lt;DivBackward0&gt;)
-tensor(7.6622e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0250, grad_fn=&lt;DivBackward0&gt;)
-tensor(7.4923e-06, grad_fn=&lt;AddBackward0&gt;) tensor(0.0244, grad_fn=&lt;DivBackward0&gt;)
-Training time: 207.31
-Test Error: 0.02438
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solutionplot</span><span class="p">(</span><span class="n">u_pred</span><span class="p">,</span><span class="n">X_train_Nu</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="n">U_train_Nu</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42557/2764407204.py:9: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
-  ax = plt.subplot(gs0[:, :])
-</pre></div>
-</div>
-<img alt="../../_images/01392d4853c5a7cab3864a5c2eb8fe0951ddba4aadc0de93e7a8bc9dd8386d95.png" src="../../_images/01392d4853c5a7cab3864a5c2eb8fe0951ddba4aadc0de93e7a8bc9dd8386d95.png" />
 </div>
 </div>
 <section id="plots">
@@ -1154,20 +1030,12 @@ Test Error: 0.02438
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/4480da6ccdbcc9070177f3d61151a597d491eda994d3c79e2a5010b0ae15ee93.png" src="../../_images/4480da6ccdbcc9070177f3d61151a597d491eda994d3c79e2a5010b0ae15ee93.png" />
-<img alt="../../_images/29794e748989a95a6846ed3d87c2500416ad153280889b7d6f515989afff70b0.png" src="../../_images/29794e748989a95a6846ed3d87c2500416ad153280889b7d6f515989afff70b0.png" />
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot3D</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">usol</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
-<img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
 </div>
 </div>
 </section>
@@ -1335,31 +1203,13 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Te real 𝜆 = [ 1.0 0.003183098861837907 ]. Our initial guess will be 𝜆 _PINN= [ 2.0 0.2 ]
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#  PINN</span>
 <span class="k">class</span> <span class="nc">FCN</span><span class="p">():</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layers</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loss_function</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span> <span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
-        <span class="c1"># Initialize iterator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c1"># Initialize our new parameters i.e. 𝜆 (Inverse problem)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lambda1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">lambda1</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">lambda2</span><span class="p">],</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="c1"># Register lambda to optimize</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lambda1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span><span class="p">)</span>
-        <span class="c1"># Call our DNN</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dnn</span> <span class="o">=</span> <span class="n">DNN</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
-        <span class="c1"># Register our new parameter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dnn</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;lambda1&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dnn</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s1">&#39;lambda2&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span><span class="p">)</span>
+
         
 
     <span class="k">def</span> <span class="nf">loss_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
@@ -1442,21 +1292,11 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
-<img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">usol</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">T</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(256, 1) (100, 1) (256, 100)
-(100, 256) (100, 256)
 </pre></div>
 </div>
 </div>
@@ -1482,11 +1322,6 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[-1.  0.] [1.   0.99]
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="id8">
@@ -1504,13 +1339,6 @@ $<span class="math notranslate nohighlight">\(N(x,t)\approx u(x,t)\)</span>$</p>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original shapes for X and U:&quot;</span><span class="p">,</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">usol</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final training data:&quot;</span><span class="p">,</span><span class="n">X_train_Nu</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">U_train_Nu</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>We have 25600 points. We will select 10000 points to train our model.
-Original shapes for X and U: (100, 256) (256, 100)
-Final training data: (10000, 2) (10000, 1)
 </pre></div>
 </div>
 </div>
@@ -1573,66 +1401,6 @@ Final training data: (10000, 2) (10000, 1)
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;__main__.FCN object at 0x28f414910&gt;
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Relative Error(Test): 0.44295 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [1.49775,  0.11306]
-Relative Error(Test): 0.25372 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.44212,  0.00753]
-Relative Error(Test): 0.22287 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.39770,  0.00654]
-Relative Error(Test): 0.18655 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.48637,  0.00484]
-Relative Error(Test): 0.16718 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.59808,  0.00643]
-Relative Error(Test): 0.15538 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.63584,  0.00662]
-Relative Error(Test): 0.13024 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.76241,  0.00758]
-Relative Error(Test): 0.11696 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.80833,  0.00698]
-Relative Error(Test): 0.11013 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.79486,  0.00769]
-Relative Error(Test): 0.10208 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.81663,  0.00893]
-Relative Error(Test): 0.08756 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.86894,  0.00803]
-Relative Error(Test): 0.07833 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.88040,  0.00754]
-Relative Error(Test): 0.06850 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.87600,  0.00657]
-Relative Error(Test): 0.06512 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.87118,  0.00605]
-Relative Error(Test): 0.05733 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.88411,  0.00553]
-Relative Error(Test): 0.05315 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.90638,  0.00551]
-Relative Error(Test): 0.04634 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.93545,  0.00553]
-Relative Error(Test): 0.04213 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94059,  0.00535]
-Relative Error(Test): 0.04175 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94792,  0.00540]
-Relative Error(Test): 0.04046 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.94197,  0.00518]
-Relative Error(Test): 0.03778 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.93887,  0.00488]
-Relative Error(Test): 0.03512 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.95411,  0.00484]
-Relative Error(Test): 0.03433 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96262,  0.00477]
-Relative Error(Test): 0.02887 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96885,  0.00438]
-Relative Error(Test): 0.02753 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96838,  0.00428]
-Relative Error(Test): 0.02678 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97101,  0.00422]
-Relative Error(Test): 0.02650 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97045,  0.00420]
-Relative Error(Test): 0.02596 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96590,  0.00413]
-Relative Error(Test): 0.02510 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96874,  0.00413]
-Relative Error(Test): 0.02479 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96424,  0.00404]
-Relative Error(Test): 0.02408 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.96851,  0.00398]
-Relative Error(Test): 0.02422 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97129,  0.00400]
-Relative Error(Test): 0.02295 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97510,  0.00396]
-Relative Error(Test): 0.02273 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97912,  0.00397]
-Relative Error(Test): 0.02224 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97685,  0.00395]
-Relative Error(Test): 0.02151 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97482,  0.00392]
-Relative Error(Test): 0.02043 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97663,  0.00385]
-Relative Error(Test): 0.02042 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97660,  0.00384]
-Relative Error(Test): 0.01996 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97917,  0.00386]
-Relative Error(Test): 0.01862 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97980,  0.00380]
-Relative Error(Test): 0.01871 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97864,  0.00380]
-Relative Error(Test): 0.01813 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97910,  0.00377]
-Relative Error(Test): 0.01784 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97932,  0.00375]
-Relative Error(Test): 0.01783 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97967,  0.00376]
-Relative Error(Test): 0.01789 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97770,  0.00374]
-Relative Error(Test): 0.01738 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97771,  0.00371]
-Relative Error(Test): 0.01714 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97741,  0.00371]
-Relative Error(Test): 0.01691 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97621,  0.00372]
-Relative Error(Test): 0.01647 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97740,  0.00368]
-Relative Error(Test): 0.01681 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97390,  0.00365]
-Relative Error(Test): 0.01699 , 𝜆_real = [1.0,  0.00318], 𝜆_PINN = [0.97337,  0.00364]
-Training time: 259.18
-Test Error: 0.01699
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="id10">
@@ -1642,13 +1410,6 @@ Test Error: 0.01699
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">solutionplot</span><span class="p">(</span><span class="n">u_pred</span><span class="p">,</span><span class="n">X_train_Nu</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span><span class="n">U_train_Nu</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42557/2764407204.py:9: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
-  ax = plt.subplot(gs0[:, :])
-</pre></div>
-</div>
-<img alt="../../_images/f4267538a38bdc9ae0b92fd39a69697ec705b7a5f3e59f02b3186b67e8517326.png" src="../../_images/f4267538a38bdc9ae0b92fd39a69697ec705b7a5f3e59f02b3186b67e8517326.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1661,20 +1422,12 @@ Test Error: 0.01699
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/d98daf8b92c50e62bb3680a492fc50c96b930a7321125007785abf35eabf54a0.png" src="../../_images/d98daf8b92c50e62bb3680a492fc50c96b930a7321125007785abf35eabf54a0.png" />
-<img alt="../../_images/58a313b78348f79e2c093d452abd1db3becb0ec14ddde4b50954d04e0662ea95.png" src="../../_images/58a313b78348f79e2c093d452abd1db3becb0ec14ddde4b50954d04e0662ea95.png" />
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot3D</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">usol</span><span class="p">))</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" src="../../_images/7fc2e22cbc895469bfba5779f3cf3fb2f3951d2ab47819fa2253863d9501acde.png" />
-<img alt="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" src="../../_images/f4fc380642fd0a8a79dd6a6bab5aec753370cc16608303ffc29ffc7ab3d7b19a.png" />
 </div>
 </div>
 </section>
