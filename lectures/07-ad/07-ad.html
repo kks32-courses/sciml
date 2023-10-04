@@ -1,0 +1,1606 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>07: Automatic Differentiation &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/07-ad/07-ad';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="06: Forward and inverse modeling of Burger’s Equation" href="../06-burgers/06-burgers.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/07-ad/07-ad.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/07-ad/07-ad.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/07-ad/07-ad.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>07: Automatic Differentiation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">07: Automatic Differentiation</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#modes-of-differentiation">Modes of Differentiation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#symbolic-differentiation">1. Symbolic Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-differentiation-ad">2. Automatic Differentiation (AD)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-ad">Types of AD:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-differentiation">3. Numerical Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-differentiation">4. Manual Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-automatic-differentiation">Introduction to Automatic Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dual-numbers">Dual Numbers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-based-differentiation">Graph-based Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#differences-between-dual-numbers-and-graph-based-differentiation">Differences between Dual Numbers and Graph-based Differentiation:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-and-reverse-mode-automatic-differentiation-ad">Forward and Reverse Mode Automatic Differentiation (AD)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-mode-ad">1. Forward Mode AD</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-with-respect-to-x-1">Derivative with respect to <span class="math notranslate nohighlight">\(x_1\)</span>:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-with-respect-to-x-2">Derivative with respect to <span class="math notranslate nohighlight">\(x_2\)</span>:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reverse-mode-ad">2. Reverse Mode AD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-implementation">PyTorch implementation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-and-inverse-problems">Forward and inverse problems</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-numerical-modeling">Forward Numerical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-conceptual">Equations (conceptual):</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-or-reverse-numerical-modeling">Inverse (or Reverse) Numerical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Example:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Equations (conceptual):</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-modeling-of-projectile-motion-using-explicit-euler">Inverse Modeling of Projectile Motion using Explicit Euler</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-of-motion">Equations of Motion:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-modeling-using-explicit-euler">Inverse Modeling using Explicit Euler:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#jax-autograd-and-xla-library">JAX: Autograd and XLA Library</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Automatic Differentiation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-acceleration">Hardware Acceleration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functional-programming-paradigm">Functional Programming Paradigm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jit-compilation">JIT Compilation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorization">Vectorization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#value-and-gradient-computation">Value and Gradient Computation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#random-number-generation">Random Number Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-gradients">Custom Gradients</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-interoperability">NumPy Interoperability</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformation-combination">Transformation Combination</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#jax-projectile-inverse-modeling">JAX Projectile inverse modeling</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#projectile-motion">Projectile Motion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function">Loss Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-using-explicit-euler">Gradient Descent using Explicit Euler</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-model-of-1d-acoustic-wave">Forward model of 1D acoustic wave</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-acoustic-wave-equation">1D Acoustic Wave Equation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finite-difference-solver">Finite Difference Solver</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discretization">Discretization:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finite-difference-approximation">Finite Difference Approximation:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions">Boundary Conditions:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#d-full-waveform-inversion-fwi">1D Full Waveform Inversion (FWI)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concept">Concept:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective-function">Objective Function:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient Descent:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adjoint-method">Adjoint Method:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-update">Model Update:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat">Repeat:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-challenge">Regularization and Challenge:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-inverse-modeling">FWI inverse modeling</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="automatic-differentiation">
+<h1>07: Automatic Differentiation<a class="headerlink" href="#automatic-differentiation" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/07-ad/07-ad-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/07-ad/07-ad.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="modes-of-differentiation">
+<h1>Modes of Differentiation<a class="headerlink" href="#modes-of-differentiation" title="Permalink to this heading">#</a></h1>
+<p>Differentiation is a fundamental operation in calculus, with various applications in the fields of science, engineering, and beyond. Depending on the context and requirements, different methods or “modes” of differentiation can be employed. Below are the primary modes of differentiation:</p>
+<p><img alt="Modes of differentiation" src="../../_images/differentiation.png" /></p>
+<section id="symbolic-differentiation">
+<h2>1. Symbolic Differentiation<a class="headerlink" href="#symbolic-differentiation" title="Permalink to this heading">#</a></h2>
+<p>Symbolic differentiation is the process of finding the derivative of an expression using the rules of calculus, exactly as one might do by hand. It works on symbolic representations of functions, employing rules like the power rule, chain rule, and product rule, among others.</p>
+<p><strong>Pros</strong>:</p>
+<ul class="simple">
+<li><p>Provides exact, closed-form expressions for derivatives.</p></li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul class="simple">
+<li><p>Can lead to expression swell, where the resulting expressions become very large.</p></li>
+<li><p>Not always feasible for complex functions or when the symbolic form isn’t known.</p></li>
+</ul>
+</section>
+<section id="automatic-differentiation-ad">
+<h2>2. Automatic Differentiation (AD)<a class="headerlink" href="#automatic-differentiation-ad" title="Permalink to this heading">#</a></h2>
+<p>Automatic differentiation computes the derivative of a function as it is being evaluated. AD is neither symbolic nor numerical differentiation but utilizes the underlying computational graph and dual numbers to obtain exact derivatives.</p>
+<p><strong>Pros</strong>:</p>
+<ul class="simple">
+<li><p>Provides exact derivatives.</p></li>
+<li><p>Well-suited for complex functions where symbolic differentiation would be cumbersome.</p></li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul class="simple">
+<li><p>Requires specialized software or libraries.</p></li>
+<li><p>Can be computationally intensive for large functions or systems.</p></li>
+</ul>
+<section id="types-of-ad">
+<h3>Types of AD:<a class="headerlink" href="#types-of-ad" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Forward Mode</strong>: Efficient when the number of inputs is smaller than the number of outputs.</p></li>
+<li><p><strong>Reverse Mode</strong>: Efficient when the number of outputs is smaller than the number of inputs.</p></li>
+</ul>
+</section>
+</section>
+<section id="numerical-differentiation">
+<h2>3. Numerical Differentiation<a class="headerlink" href="#numerical-differentiation" title="Permalink to this heading">#</a></h2>
+<p>Numerical differentiation estimates derivatives using finite differences. For example, the central difference method approximates the derivative as:
+$<span class="math notranslate nohighlight">\( f'(x) \approx \frac{f(x + h) - f(x - h)}{2h} \)</span>$</p>
+<p><strong>Pros</strong>:</p>
+<ul class="simple">
+<li><p>Simple to implement.</p></li>
+<li><p>Doesn’t require the symbolic form of the function.</p></li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul class="simple">
+<li><p>Prone to rounding errors, especially for small <span class="math notranslate nohighlight">\(h\)</span>.</p></li>
+<li><p>Less accurate compared to symbolic or AD methods.</p></li>
+</ul>
+</section>
+<section id="manual-differentiation">
+<h2>4. Manual Differentiation<a class="headerlink" href="#manual-differentiation" title="Permalink to this heading">#</a></h2>
+<p>This is the process of computing the derivative by hand, using one’s understanding of calculus rules. Once derived, the resulting expression can be coded directly into software.</p>
+<p><strong>Pros</strong>:</p>
+<ul class="simple">
+<li><p>Allows for optimization and simplification while deriving.</p></li>
+<li><p>No need for external libraries or tools.</p></li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul class="simple">
+<li><p>Error-prone and time-consuming.</p></li>
+<li><p>Not scalable for complex or large functions.</p></li>
+</ul>
+</section>
+<section id="introduction-to-automatic-differentiation">
+<h2>Introduction to Automatic Differentiation<a class="headerlink" href="#introduction-to-automatic-differentiation" title="Permalink to this heading">#</a></h2>
+<p>Automatic differentiation, often abbreviated as AD, is a set of techniques to compute derivatives of functions specified by computer programs. Unlike symbolic differentiation, which operates on symbolic representations of functions, and numerical differentiation, which uses finite difference methods, AD computes exact derivatives by executing the given program and is not plagued by numerical instability.</p>
+</section>
+<section id="dual-numbers">
+<h2>Dual Numbers<a class="headerlink" href="#dual-numbers" title="Permalink to this heading">#</a></h2>
+<p>Dual numbers form the foundation for forward mode automatic differentiation. A dual number is expressed as:
+$<span class="math notranslate nohighlight">\( z = a + b \epsilon \)</span>$
+Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( a \)</span> is the real part.</p></li>
+<li><p><span class="math notranslate nohighlight">\( b \)</span> is the dual part.</p></li>
+<li><p><span class="math notranslate nohighlight">\( \epsilon \)</span> is the dual unit with the property <span class="math notranslate nohighlight">\( \epsilon^2 = 0 \)</span>.</p></li>
+</ul>
+<p>With dual numbers, for a function <span class="math notranslate nohighlight">\( f(x) \)</span>, evaluating <span class="math notranslate nohighlight">\( f(x + \epsilon) \)</span> provides:
+$<span class="math notranslate nohighlight">\( f(x) + f'(x)\epsilon \)</span>$
+This encapsulates both the function’s value and its derivative.</p>
+<p>For instance, to differentiate <span class="math notranslate nohighlight">\( f(x) = x^2 \)</span> using dual numbers:
+$<span class="math notranslate nohighlight">\( f(x + \epsilon) = (x + \epsilon)^2 = x^2 + 2x\epsilon + \epsilon^2 = x^2 + 2x\epsilon \)</span><span class="math notranslate nohighlight">\(
+The coefficient of \)</span> \epsilon <span class="math notranslate nohighlight">\( represents the derivative, \)</span> 2x $.</p>
+</section>
+<section id="graph-based-differentiation">
+<h2>Graph-based Differentiation<a class="headerlink" href="#graph-based-differentiation" title="Permalink to this heading">#</a></h2>
+<p>Graph-based differentiation, often linked to reverse-mode automatic differentiation, is popularized by deep learning frameworks like TensorFlow and PyTorch.</p>
+<ol class="arabic simple">
+<li><p><strong>Computation Graphs</strong>: Functions, made up of basic operations, can be visualized as a directed acyclic graph (DAG). In this graph, nodes denote variables or operations, and edges highlight dependencies.</p></li>
+<li><p><strong>Forward Pass</strong>: This phase involves computing the function from input to output, populating the graph’s nodes with intermediate values.</p></li>
+<li><p><strong>Backward Pass</strong>: Using the chain rule of calculus, derivatives are computed in reverse, from output to input. This ‘reverse’ phase computes gradients for each node, accumulating gradients as it traverses.</p></li>
+</ol>
+</section>
+<section id="differences-between-dual-numbers-and-graph-based-differentiation">
+<h2>Differences between Dual Numbers and Graph-based Differentiation:<a class="headerlink" href="#differences-between-dual-numbers-and-graph-based-differentiation" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Mode</strong>: Dual numbers are suited for forward mode AD, where derivatives with respect to each input variable are calculated sequentially. Graph-based differentiation, prominent in deep learning, generally employs reverse mode AD, determining the derivative with respect to all input variables simultaneously.</p></li>
+<li><p><strong>Efficiency for Different Functions</strong>: Forward mode (dual numbers) excels in functions where the number of inputs is dwarfed by the number of outputs (like parameter estimation). Conversely, reverse mode (graph-based) shines when there are fewer outputs than inputs, a scenario familiar in deep learning with numerous parameters and a scalar loss function.</p></li>
+<li><p><strong>Implementation</strong>: Dual numbers expand on number concepts and arithmetic operations, whereas graph-based differentiation often demands a more intricate framework to assemble and navigate the computation graph.</p></li>
+</ol>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="forward-and-reverse-mode-automatic-differentiation-ad">
+<h1>Forward and Reverse Mode Automatic Differentiation (AD)<a class="headerlink" href="#forward-and-reverse-mode-automatic-differentiation-ad" title="Permalink to this heading">#</a></h1>
+<p>Automatic differentiation (AD) is a powerful technique for obtaining exact derivatives of functions, without the challenges associated with symbolic or numerical differentiation. AD can be broken down into two primary modes: forward mode and reverse mode. Using the function
+$<span class="math notranslate nohighlight">\( y = x_1^2 + x_2 \)</span>$
+as an example, let’s delve into these two modes.</p>
+<section id="forward-mode-ad">
+<h2>1. Forward Mode AD<a class="headerlink" href="#forward-mode-ad" title="Permalink to this heading">#</a></h2>
+<p>In forward mode AD, we differentiate with respect to one input variable at a time. This means that for a function with <code class="docutils literal notranslate"><span class="pre">n</span></code> inputs, we’d perform <code class="docutils literal notranslate"><span class="pre">n</span></code> forward passes to obtain all the partial derivatives.</p>
+<p>Let’s compute the derivatives with respect to <span class="math notranslate nohighlight">\(x_1\)</span> and <span class="math notranslate nohighlight">\(x_2\)</span> for our function.</p>
+<p><img alt="AD graph" src="../../_images/ad1.png" /></p>
+<blockquote>
+<div><p>Break the function into elementary operations</p>
+</div></blockquote>
+<p><img alt="AD graph variables" src="../../_images/ad2.png" /></p>
+<blockquote>
+<div><p>Assign names to nodes</p>
+</div></blockquote>
+<p><img alt="AD forward evaluation" src="../../_images/ad3.png" /></p>
+<blockquote>
+<div><p>Break the function into elementary operations</p>
+</div></blockquote>
+<section id="derivative-with-respect-to-x-1">
+<h3>Derivative with respect to <span class="math notranslate nohighlight">\(x_1\)</span>:<a class="headerlink" href="#derivative-with-respect-to-x-1" title="Permalink to this heading">#</a></h3>
+<p>Starting with a seed value <span class="math notranslate nohighlight">\(\dot{x}_1 = 1\)</span> and <span class="math notranslate nohighlight">\(\dot{x}_2 = 0\)</span> (indicating we’re differentiating with respect to <span class="math notranslate nohighlight">\(x_1\)</span>):</p>
+<ol class="arabic simple">
+<li><p>Compute <span class="math notranslate nohighlight">\(\dot{x}_1^2\)</span>: Using the rule <span class="math notranslate nohighlight">\((x^2)' = 2x\)</span>, we get
+$<span class="math notranslate nohighlight">\( \dot{x}_1^2 = 2x_1 \cdot \dot{x}_1 = 2x_1 \)</span>$</p></li>
+<li><p>As there’s no <span class="math notranslate nohighlight">\(x_2\)</span> term dependent on <span class="math notranslate nohighlight">\(x_1\)</span>, its contribution is 0.</p></li>
+</ol>
+<p>Combining these, the derivative
+$<span class="math notranslate nohighlight">\( \frac{\partial y}{\partial x_1} = 2x_1 \)</span>$</p>
+</section>
+<section id="derivative-with-respect-to-x-2">
+<h3>Derivative with respect to <span class="math notranslate nohighlight">\(x_2\)</span>:<a class="headerlink" href="#derivative-with-respect-to-x-2" title="Permalink to this heading">#</a></h3>
+<p>Now, seeding with <span class="math notranslate nohighlight">\(\dot{x}_1 = 0\)</span> and <span class="math notranslate nohighlight">\(\dot{x}_2 = 1\)</span>:</p>
+<ol class="arabic simple">
+<li><p>The <span class="math notranslate nohighlight">\(x_1^2\)</span> term doesn’t contribute since it’s independent of <span class="math notranslate nohighlight">\(x_2\)</span>.</p></li>
+<li><p>For the term <span class="math notranslate nohighlight">\(x_2\)</span>, the derivative is simply
+$<span class="math notranslate nohighlight">\( \dot{x}_2 = 1 \)</span>$</p></li>
+</ol>
+<p>Thus,
+$<span class="math notranslate nohighlight">\( \frac{\partial y}{\partial x_2} = 1 \)</span>$</p>
+</section>
+</section>
+<section id="reverse-mode-ad">
+<h2>2. Reverse Mode AD<a class="headerlink" href="#reverse-mode-ad" title="Permalink to this heading">#</a></h2>
+<p>In reverse mode AD, the calculations propagate from the output backwards to the inputs. This means that for a function with <code class="docutils literal notranslate"><span class="pre">n</span></code> outputs, we’d perform <code class="docutils literal notranslate"><span class="pre">n</span></code> backward passes to get all the derivatives. It’s particularly efficient when <code class="docutils literal notranslate"><span class="pre">n</span></code> is small, which is why it’s popular in deep learning where we usually compute derivatives of a scalar loss.</p>
+<p>Using our function, here’s how reverse mode AD would work:</p>
+<p><img alt="Reverse mode AD" src="../../_images/ad4.png" /></p>
+<blockquote>
+<div><p>Backward pass to compute partial derivatives</p>
+</div></blockquote>
+<p><img alt="Chain rule AD" src="../../_images/ad5.png" /></p>
+<blockquote>
+<div><p>Use chain rule to calculate gradient</p>
+</div></blockquote>
+<p><img alt="Chain rule AD" src="../../_images/ad6.png" /></p>
+<blockquote>
+<div><p>Use chain rule to calculate gradient</p>
+</div></blockquote>
+<p><img alt="Chain rule AD" src="../../_images/ad7.png" /></p>
+<blockquote>
+<div><p>Use chain rule to calculate gradient</p>
+</div></blockquote>
+<ol class="arabic simple">
+<li><p>Do a forward pass to compute the function value:
+$<span class="math notranslate nohighlight">\( y = x_1^2 + x_2 \)</span>$</p></li>
+<li><p>Start the backward pass with a seed <span class="math notranslate nohighlight">\(\dot{y} = 1\)</span>.</p></li>
+<li><p>For the term <span class="math notranslate nohighlight">\(x_1^2\)</span>:
+Using the chain rule,
+$<span class="math notranslate nohighlight">\( \frac{\partial y}{\partial x_1} = 2x_1 \cdot \dot{y} = 2x_1 \)</span>$</p></li>
+<li><p>For the term <span class="math notranslate nohighlight">\(x_2\)</span>:
+Again, using the chain rule,
+$<span class="math notranslate nohighlight">\( \frac{\partial y}{\partial x_2} = \dot{y} = 1 \)</span>$</p></li>
+</ol>
+<p>Both forward and reverse mode AD have their strengths. The choice between them depends on the relationship between the number of inputs and outputs for a function. For our simple example, both methods yield the same results, but their computational efficiency would differ for functions with many more inputs or outputs.</p>
+</section>
+<section id="pytorch-implementation">
+<h2>PyTorch implementation<a class="headerlink" href="#pytorch-implementation" title="Permalink to this heading">#</a></h2>
+<p>PyTorch’s <code class="docutils literal notranslate"><span class="pre">autograd</span></code> module provides automatic differentiation capabilities, enabling us to compute gradients for tensor operations. Every tensor in PyTorch has an attribute <code class="docutils literal notranslate"><span class="pre">requires_grad</span></code>. Setting this attribute to <code class="docutils literal notranslate"><span class="pre">True</span></code> indicates to PyTorch that gradients should be computed for this tensor during backpropagation.</p>
+<p>To calculate the derivatives of the function <span class="math notranslate nohighlight">\(y = x_1^2 + x_2\)</span> at <span class="math notranslate nohighlight">\(x_1 = 2\)</span> and <span class="math notranslate nohighlight">\(x_2 = 3\)</span> using PyTorch, follow the code below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="c1"># Define the variables and indicate that they require gradients</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Define the function</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">x1</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x2</span>
+
+<span class="c1"># Calculate the gradients</span>
+<span class="n">y</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+<span class="c1"># Print the gradients</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dy/dx1: </span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dy/dx2: </span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>dy/dx1: 4.0
+dy/dx2: 1.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="forward-and-inverse-problems">
+<h1>Forward and inverse problems<a class="headerlink" href="#forward-and-inverse-problems" title="Permalink to this heading">#</a></h1>
+<p>Numerical modeling provides a framework to simulate and understand complex systems. Depending on the available information and objectives, one might approach modeling from a forward or inverse perspective.</p>
+<p><img alt="forward-inverse" src="../../_images/forward-inverse.png" /></p>
+<section id="forward-numerical-modeling">
+<h2>Forward Numerical Modeling<a class="headerlink" href="#forward-numerical-modeling" title="Permalink to this heading">#</a></h2>
+<p>Forward modeling refers to predicting the outcome (or output) of a model given a set of known input parameters. It’s about solving the direct problem: starting with known parameters and then computing the resulting observation or response.</p>
+<section id="example">
+<h3>Example:<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
+<p>Imagine a groundwater flow system. In forward modeling, you might know:</p>
+<ul class="simple">
+<li><p>Initial conditions (e.g., initial water table height)</p></li>
+<li><p>Boundary conditions (e.g., rate of water inflow or outflow)</p></li>
+<li><p>System properties (e.g., soil permeability)</p></li>
+</ul>
+<p>Using these inputs, your numerical model predicts how the water table changes over time.</p>
+</section>
+<section id="equations-conceptual">
+<h3>Equations (conceptual):<a class="headerlink" href="#equations-conceptual" title="Permalink to this heading">#</a></h3>
+<p>Given a system governed by a function <span class="math notranslate nohighlight">\(F\)</span> and input parameters <span class="math notranslate nohighlight">\(P\)</span>:
+$<span class="math notranslate nohighlight">\( Observations = F(P) \)</span>$</p>
+</section>
+</section>
+<section id="inverse-or-reverse-numerical-modeling">
+<h2>Inverse (or Reverse) Numerical Modeling<a class="headerlink" href="#inverse-or-reverse-numerical-modeling" title="Permalink to this heading">#</a></h2>
+<p>Inverse modeling, sometimes termed “reverse,” is the opposite approach. Starting with observations or data, one tries to infer the input parameters or system properties that might have led to this data. This is typically more challenging due to potential non-uniqueness in solutions. Regularization or constraints might be needed to ensure meaningful results.</p>
+<section id="id1">
+<h3>Example:<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>Using the groundwater scenario, suppose you have data on water table heights over time. Inverse modeling attempts to deduce properties like soil permeability or boundary conditions based on this data.</p>
+</section>
+<section id="id2">
+<h3>Equations (conceptual):<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>Given a system governed by a function <span class="math notranslate nohighlight">\(F\)</span> and observations <span class="math notranslate nohighlight">\(O\)</span>:
+$<span class="math notranslate nohighlight">\( Estimated\_Parameters = F^{-1}(O) \)</span>$</p>
+<p>This “inversion” doesn’t imply the mathematical inversion of a function but often uses optimization techniques to minimize discrepancies between model predictions and actual observations.</p>
+<p>In essence:</p>
+<ul class="simple">
+<li><p><strong>Forward Modeling</strong>: Given parameters, predict outcomes.</p></li>
+<li><p><strong>Inverse Modeling</strong>: Given outcomes, estimate parameters.</p></li>
+</ul>
+<p>Choosing between these approaches depends on the problem, available data, and analysis goals.</p>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="inverse-modeling-of-projectile-motion-using-explicit-euler">
+<h1>Inverse Modeling of Projectile Motion using Explicit Euler<a class="headerlink" href="#inverse-modeling-of-projectile-motion-using-explicit-euler" title="Permalink to this heading">#</a></h1>
+<p>Inverse modeling for a projectile’s motion aims to determine the initial conditions or parameters of a projectile based on observed outcomes. In this context, we’ll infer the initial velocity and launch angle of a projectile using its range (horizontal distance traveled) and the explicit Euler method.</p>
+<video width="720" controls>
+  <source src="projectile.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+<section id="problem-statement">
+<h2>Problem Statement<a class="headerlink" href="#problem-statement" title="Permalink to this heading">#</a></h2>
+<p>Given a projectile’s range (distance <span class="math notranslate nohighlight">\(R\)</span>), our goal is to determine its initial velocity <span class="math notranslate nohighlight">\(v_0\)</span> and launch angle <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+</section>
+<section id="equations-of-motion">
+<h2>Equations of Motion:<a class="headerlink" href="#equations-of-motion" title="Permalink to this heading">#</a></h2>
+<p>The horizontal and vertical equations of motion for a projectile without air resistance are:
+$<span class="math notranslate nohighlight">\( 
+x(t) = v_0 \cos(\theta) t 
+\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(
+y(t) = v_0 \sin(\theta) t - \frac{1}{2} g t^2
+\)</span>$</p>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x(t)\)</span> and <span class="math notranslate nohighlight">\(y(t)\)</span> represent the horizontal and vertical positions at time <span class="math notranslate nohighlight">\(t\)</span>, respectively.</p></li>
+<li><p><span class="math notranslate nohighlight">\(g\)</span> denotes the acceleration due to gravity.</p></li>
+</ul>
+</section>
+<section id="inverse-modeling-using-explicit-euler">
+<h2>Inverse Modeling using Explicit Euler:<a class="headerlink" href="#inverse-modeling-using-explicit-euler" title="Permalink to this heading">#</a></h2>
+<p>To apply the explicit Euler method in our inverse modeling:</p>
+<ol class="arabic">
+<li><p><strong>Discretization</strong>: Break the flight of the projectile into small time intervals, <span class="math notranslate nohighlight">\(\Delta t\)</span>.</p></li>
+<li><p><strong>Iterative Process</strong>: Starting with a guess for <span class="math notranslate nohighlight">\(v_0\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<p>a. Calculate the next position with Euler’s method:
+$<span class="math notranslate nohighlight">\(
+ x_{i+1} = x_i + \Delta t \cdot v_0 \cos(\theta)
+ \)</span><span class="math notranslate nohighlight">\(
+ \)</span><span class="math notranslate nohighlight">\(
+ y_{i+1} = y_i + \Delta t \cdot (v_0 \sin(\theta) - g t_i)
+ \)</span>$</p>
+<p>b. Continue until <span class="math notranslate nohighlight">\(y_{i+1}\)</span> approaches 0 (indicating the projectile has landed).</p>
+<p>c. If the final <span class="math notranslate nohighlight">\(x_{i+1}\)</span> aligns closely with the given range <span class="math notranslate nohighlight">\(R\)</span>, our guessed parameters are accurate. If not, adjust <span class="math notranslate nohighlight">\(v_0\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> and repeat.</p>
+</li>
+<li><p><strong>Optimization</strong>: The objective is to minimize the difference between the computed range (via Euler’s method) and the provided range <span class="math notranslate nohighlight">\(R\)</span>. Employ optimization techniques such as gradient descent or genetic algorithms to fine-tune our guesses for <span class="math notranslate nohighlight">\(v_0\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+</ol>
+<p>Inverse modeling of projectile motion with explicit Euler can help deduce the launch parameters based on observed data. While we considered range as our observed metric, other data like max height or flight time can be utilized. The efficacy of this method depends on the chosen <span class="math notranslate nohighlight">\(\Delta t\)</span> and the optimization algorithm’s robustness.</p>
+<p><img alt="Inverse projectile" src="../../_images/inverse-projectile.png" /></p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="jax-autograd-and-xla-library">
+<h1>JAX: Autograd and XLA Library<a class="headerlink" href="#jax-autograd-and-xla-library" title="Permalink to this heading">#</a></h1>
+<p>JAX is an extensible library for numerical computing, developed by researchers at Google. It’s renowned for its capabilities in automatic differentiation and is equipped to utilize hardware accelerators like GPUs and TPUs through XLA (Accelerated Linear Algebra).</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Permalink to this heading">#</a></h2>
+<section id="id3">
+<h3>Automatic Differentiation<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p>JAX can compute gradients of functions, simplifying the development of optimization and machine learning algorithms.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span><span class="s2">&quot;jax[cpu]&quot;</span><span class="w"> </span>--quiet
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>  <span class="c1"># Outputs the cosine of 1.0</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.5403023
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1696376199.170758       1 tfrt_cpu_pjrt_client.cc:349] TfrtCpuClient created.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="hardware-acceleration">
+<h3>Hardware Acceleration<a class="headerlink" href="#hardware-acceleration" title="Permalink to this heading">#</a></h3>
+<p>JAX supports running on different hardware accelerators, offering optimized performance on GPUs and TPUs by compiling Python functions to XLA code.</p>
+</section>
+<section id="functional-programming-paradigm">
+<h3>Functional Programming Paradigm<a class="headerlink" href="#functional-programming-paradigm" title="Permalink to this heading">#</a></h3>
+<p>JAX encourages a functional approach to programming, implying that functions are pure and free from side effects, facilitating accurate transformations.</p>
+</section>
+<section id="jit-compilation">
+<h3>JIT Compilation<a class="headerlink" href="#jit-compilation" title="Permalink to this heading">#</a></h3>
+<p>JAX can JIT (Just-In-Time) compile Python functions to enhance execution speed, particularly in loop-heavy computations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">jit</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.841471
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="vectorization">
+<h3>Vectorization<a class="headerlink" href="#vectorization" title="Permalink to this heading">#</a></h3>
+<p>Using vmap (vectorizing map), JAX can automatically vectorize functions, removing the need for explicit loops and allowing batch processing.</p>
+</section>
+<section id="value-and-gradient-computation">
+<h3>Value and Gradient Computation<a class="headerlink" href="#value-and-gradient-computation" title="Permalink to this heading">#</a></h3>
+<p>JAX’s value_and_grad utility returns both a function’s value and its gradient, making it a useful tool in optimization.</p>
+</section>
+<section id="random-number-generation">
+<h3>Random Number Generation<a class="headerlink" href="#random-number-generation" title="Permalink to this heading">#</a></h3>
+<p>JAX employs explicit random number generator (RNG) keys, which facilitate correct functioning with transformations like grad and jit.</p>
+</section>
+<section id="custom-gradients">
+<h3>Custom Gradients<a class="headerlink" href="#custom-gradients" title="Permalink to this heading">#</a></h3>
+<p>Users can define custom gradients in instances where default gradients are unsuitable or inefficient.</p>
+</section>
+<section id="numpy-interoperability">
+<h3>NumPy Interoperability<a class="headerlink" href="#numpy-interoperability" title="Permalink to this heading">#</a></h3>
+<p>JAX extends, and is largely compatible with, NumPy. Therefore, those familiar with NumPy can transition to JAX with relative ease.</p>
+</section>
+<section id="transformation-combination">
+<h3>Transformation Combination<a class="headerlink" href="#transformation-combination" title="Permalink to this heading">#</a></h3>
+<p>JAX allows users to combine multiple transformations (e.g., grad, jit, vmap) effectively and seamlessly.</p>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="jax-projectile-inverse-modeling">
+<h1>JAX Projectile inverse modeling<a class="headerlink" href="#jax-projectile-inverse-modeling" title="Permalink to this heading">#</a></h1>
+<section id="projectile-motion">
+<h2>Projectile Motion<a class="headerlink" href="#projectile-motion" title="Permalink to this heading">#</a></h2>
+<p>The equation for the horizontal distance <span class="math notranslate nohighlight">\(d\)</span> of a projectile launched at an angle <span class="math notranslate nohighlight">\(\theta\)</span> with an initial velocity <span class="math notranslate nohighlight">\(v_0\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[ d = \frac{v_0^2 \sin(2\theta)}{g} \]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(d\)</span> is the horizontal distance.</p></li>
+<li><p><span class="math notranslate nohighlight">\(v_0\)</span> is the initial velocity.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\theta\)</span> is the launch angle.</p></li>
+<li><p><span class="math notranslate nohighlight">\(g\)</span> is the acceleration due to gravity, approximately <span class="math notranslate nohighlight">\(9.81 \, \text{m/s}^2\)</span>.</p></li>
+</ul>
+</section>
+<section id="loss-function">
+<h2>Loss Function<a class="headerlink" href="#loss-function" title="Permalink to this heading">#</a></h2>
+<p>Given a target distance <span class="math notranslate nohighlight">\(d_{\text{target}}\)</span>, our loss function <span class="math notranslate nohighlight">\(L\)</span> can be defined as:</p>
+<div class="math notranslate nohighlight">
+\[ L(\theta, v_0) = \left( d_{\text{target}} - d_{\text{prediction}} \right) \]</div>
+<p>This squared difference ensures a positive loss and penalizes deviations from the target distance.</p>
+</section>
+<section id="gradient-descent-using-explicit-euler">
+<h2>Gradient Descent using Explicit Euler<a class="headerlink" href="#gradient-descent-using-explicit-euler" title="Permalink to this heading">#</a></h2>
+<p>To minimize our loss function, we’ll employ gradient descent. The gradient descent update rules for our parameters are:</p>
+<div class="math notranslate nohighlight">
+\[ v_0 \leftarrow v_0 - \alpha \frac{\partial L}{\partial v_0} \]</div>
+<div class="math notranslate nohighlight">
+\[ \theta \leftarrow \theta - \alpha \frac{\partial L}{\partial \theta} \]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> represents the learning rate.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\frac{\partial L}{\partial v_0}\)</span> and <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial \theta}\)</span> are the partial derivatives of <span class="math notranslate nohighlight">\(L\)</span> with respect to <span class="math notranslate nohighlight">\(v_0\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> respectively.</p></li>
+</ul>
+<p>Iterating with these update rules, our values for <span class="math notranslate nohighlight">\(v_0\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> adjust in a manner that reduces the loss, gradually optimizing them to achieve the desired projectile distance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span>
+<span class="kn">from</span> <span class="nn">jax.numpy</span> <span class="kn">import</span> <span class="n">linalg</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="k">as</span> <span class="nn">animation</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">import</span> <span class="nn">math</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">init_v</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes the position, velocity and acceleration of a particle based on its initial velocity.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        init_v (array): initial velocity of the particle in the x and y-axis.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        x, v, a (tuple): initial position, velocity and acceleration of the particle.</span>
+<span class="sd">        </span>
+<span class="sd">    Internal Variables:</span>
+<span class="sd">        x (array): initial position of the particle.</span>
+<span class="sd">        a (array): initial acceleration of the particle.</span>
+<span class="sd">        v (array): initial velocity of the particle.</span>
+<span class="sd">        </span>
+<span class="sd">    Functionality:</span>
+<span class="sd">        1. Set initial position of the particle to (0, 0)</span>
+<span class="sd">        2. Set initial acceleration of the particle to (0, -9.81)</span>
+<span class="sd">        3. Set initial velocity of the particle to the provided init_v</span>
+<span class="sd">        4. Return the initial position, velocity and acceleration as a tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1">#[ti.random(), ti.random()]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">9.81</span><span class="p">])</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">init_v</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span>
+
+<span class="n">initialize_jit</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">initialize</span><span class="p">)</span>
+
+<span class="c1"># Compute loss</span>
+<span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">goal</span><span class="p">):</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">goal</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">goal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loss is: &quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss</span>
+
+<span class="n">compute_loss_jit</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">compute_loss</span><span class="p">)</span>
+
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">init_v</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the loss of a particle based on its initial velocity and the target position.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        init_v (array): initial velocity of the particle in the x and y-axis.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        loss (float): the computed loss based on the difference between the final position of the particle and the target position.</span>
+<span class="sd">    </span>
+<span class="sd">    Internal Variables:</span>
+<span class="sd">        dt (float): time step for the simulation.</span>
+<span class="sd">        g (float): acceleration due to gravity.</span>
+<span class="sd">        goal (array): target position for the particle.</span>
+<span class="sd">        x, v, a (arrays): initial position, velocity and acceleration for the particle.</span>
+<span class="sd">        steps (int): the number of steps taken in the simulation.</span>
+<span class="sd">    </span>
+<span class="sd">    Functionality:</span>
+<span class="sd">        1. Initializes the position, velocity and acceleration of the particle using the &#39;initialize&#39; function and the provided initial velocity.</span>
+<span class="sd">        2. Runs a loop for the number of steps specified in the &#39;steps&#39; variable.</span>
+<span class="sd">        3. At each step of the loop, the position of the particle is updated by adding the product of the velocity and the time step. The velocity is also updated by adding the product of the acceleration and the time step.</span>
+<span class="sd">        4. The final loss is computed by calling the &#39;compute_loss&#39; function and passing the final position of the particle and the target position as arguments.</span>
+<span class="sd">        5. Returns the loss</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">1e-2</span>
+    <span class="c1"># Target position</span>
+    <span class="n">goal</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">initialize</span><span class="p">(</span><span class="n">init_v</span><span class="p">)</span>
+    <span class="c1"># Steps = time of flight / dt</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="mi">78</span> <span class="c1">#int(2 * init_v[1] / g / dt)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">v</span>  <span class="c1">#  pos update</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">a</span>  <span class="c1">#  velocity update</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">goal</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">loss</span>
+
+<span class="c1"># Optimization</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">init_v</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)])</span>
+
+<span class="c1"># Gradients</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">forward</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">init_v</span> <span class="o">=</span> <span class="n">init_v</span> <span class="o">-</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">df</span><span class="p">(</span><span class="n">init_v</span><span class="p">)</span>
+
+<span class="c1"># Final solution</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">1e-2</span>
+<span class="n">g</span> <span class="o">=</span> <span class="mf">9.81</span>
+<span class="c1"># Target position</span>
+<span class="n">goal</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">40.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">initialize</span><span class="p">(</span><span class="n">init_v</span><span class="p">)</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">init_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">g</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span>  <span class="n">dt</span> <span class="o">*</span> <span class="n">v</span>  <span class="c1">#  pos update</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">a</span>  <span class="c1">#  velocity update</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="n">loss</span> <span class="o">=</span> <span class="n">compute_loss_jit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">goal</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Init v: </span><span class="si">{}</span><span class="s2"> magnitude: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">init_v</span><span class="p">,</span> <span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">init_v</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Target: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">init_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">init_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">9.81</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loss: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loss</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Steps: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">steps</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Loss is:  Traced&lt;ShapedArray(float32[])&gt;with&lt;DynamicJaxprTrace(level=3/0)&gt;
+Loss is:  Traced&lt;ShapedArray(float32[])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;
+Init v: [51.281956   3.7768526] magnitude: 51.42084884643555
+Target: 39.48713302612305
+Loss: 0.26447880268096924
+Steps: 77
+</pre></div>
+</div>
+<img alt="../../_images/275245c3cd179820aac06c9bf7c82280611a384395478f0ba21550314d9e3a49.png" src="../../_images/275245c3cd179820aac06c9bf7c82280611a384395478f0ba21550314d9e3a49.png" />
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="forward-model-of-1d-acoustic-wave">
+<h1>Forward model of 1D acoustic wave<a class="headerlink" href="#forward-model-of-1d-acoustic-wave" title="Permalink to this heading">#</a></h1>
+<p>We will delve into the 1D acoustic wave equation and outline how a finite difference scheme can be employed to solve it.</p>
+<section id="d-acoustic-wave-equation">
+<h2>1D Acoustic Wave Equation<a class="headerlink" href="#d-acoustic-wave-equation" title="Permalink to this heading">#</a></h2>
+<p>The 1D acoustic wave equation describes how pressure variations or acoustic waves propagate over time. In one spatial dimension, it is given by:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{\partial^2 u(x, t)}{\partial t^2} = c^2 \frac{\partial^2 u(x, t)}{\partial x^2} \]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( u(x, t) \)</span> is the velocity as a function of position <span class="math notranslate nohighlight">\( x \)</span> and time <span class="math notranslate nohighlight">\( t \)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\( c \)</span> is the speed of sound in the medium.</p></li>
+</ul>
+</section>
+<section id="finite-difference-solver">
+<h2>Finite Difference Solver<a class="headerlink" href="#finite-difference-solver" title="Permalink to this heading">#</a></h2>
+<section id="discretization">
+<h3>Discretization:<a class="headerlink" href="#discretization" title="Permalink to this heading">#</a></h3>
+<p>To solve the equation numerically, we discretize both time and space. Let:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\( \Delta x \)</span> be the spatial step.</p></li>
+<li><p><span class="math notranslate nohighlight">\( \Delta t \)</span> be the time step.</p></li>
+<li><p><span class="math notranslate nohighlight">\( u_i^n \)</span> be the pressure at spatial point <span class="math notranslate nohighlight">\( i \)</span> and time step <span class="math notranslate nohighlight">\( n \)</span>.</p></li>
+</ul>
+</section>
+<section id="finite-difference-approximation">
+<h3>Finite Difference Approximation:<a class="headerlink" href="#finite-difference-approximation" title="Permalink to this heading">#</a></h3>
+<p>Using a second-order central difference scheme for both time and space, we can approximate the wave equation as:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{u_i^{n+1} - 2u_i^n + u_i^{n-1}}{\Delta t^2} = c^2 \frac{u_{i+1}^n - 2u_i^n + u_{i-1}^n}{\Delta x^2} \]</div>
+<p>From this equation, the pressure at the next time step <span class="math notranslate nohighlight">\( u_i^{n+1} \)</span> can be isolated:</p>
+<div class="math notranslate nohighlight">
+\[ u_i^{n+1} = c^2 \frac{\Delta t^2}{\Delta x^2} (u_{i+1}^n - 2u_i^n + u_{i-1}^n) + 2u_i^n - u_i^{n-1} \]</div>
+</section>
+<section id="boundary-conditions">
+<h3>Boundary Conditions:<a class="headerlink" href="#boundary-conditions" title="Permalink to this heading">#</a></h3>
+<p>To implement this scheme, appropriate boundary conditions need to be applied at the spatial extents of the domain.</p>
+<ul class="simple">
+<li><p><strong>Dirichlet Boundary Condition</strong>: Fixes the value at the boundary. For example: <span class="math notranslate nohighlight">\( u_0^n = u_N^n = 0 \)</span>.</p></li>
+<li><p><strong>Neumann Boundary Condition</strong>: Fixes the spatial derivative at the boundary.</p></li>
+</ul>
+</section>
+<section id="implementation">
+<h3>Implementation:<a class="headerlink" href="#implementation" title="Permalink to this heading">#</a></h3>
+<p>Iterating through time, we can use the finite difference approximation to update the pressure at each spatial point, ensuring to apply boundary conditions at each time step.</p>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="d-full-waveform-inversion-fwi">
+<h1>1D Full Waveform Inversion (FWI)<a class="headerlink" href="#d-full-waveform-inversion-fwi" title="Permalink to this heading">#</a></h1>
+<p>Full Waveform Inversion (FWI) is an advanced seismic inversion method used to estimate subsurface parameters by minimizing the difference between observed and modeled data. In this document, we’ll explore the basics of 1D FWI.</p>
+<section id="concept">
+<h2>Concept:<a class="headerlink" href="#concept" title="Permalink to this heading">#</a></h2>
+<p>FWI aims to iteratively refine a model of the subsurface until synthetic seismograms generated from the model closely match the observed field data.</p>
+</section>
+<section id="objective-function">
+<h2>Objective Function:<a class="headerlink" href="#objective-function" title="Permalink to this heading">#</a></h2>
+<p>To measure the difference between observed <span class="math notranslate nohighlight">\(d_{obs}\)</span> and modeled <span class="math notranslate nohighlight">\(d_{cal}\)</span> data, an objective function <span class="math notranslate nohighlight">\(J\)</span> is employed, which is usually the L2 norm of their difference:</p>
+<div class="math notranslate nohighlight">
+\[J(m) = \frac{1}{2} \int (d_{obs}(t) - d_{cal}(m, t))^2 dt\]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(m\)</span> represents the subsurface model parameters (like velocity).</p></li>
+<li><p><span class="math notranslate nohighlight">\(t\)</span> is the time.</p></li>
+</ul>
+<p>The goal of FWI is to minimize this objective function.</p>
+</section>
+<section id="gradient-descent">
+<h2>Gradient Descent:<a class="headerlink" href="#gradient-descent" title="Permalink to this heading">#</a></h2>
+<p>To minimize <span class="math notranslate nohighlight">\(J\)</span>, we typically use a gradient-based optimization method. The gradient of <span class="math notranslate nohighlight">\(J\)</span> with respect to the model parameters is computed, which indicates the direction in which <span class="math notranslate nohighlight">\(m\)</span> should be updated to decrease <span class="math notranslate nohighlight">\(J\)</span>.</p>
+</section>
+<section id="adjoint-method">
+<h2>Adjoint Method:<a class="headerlink" href="#adjoint-method" title="Permalink to this heading">#</a></h2>
+<p>One efficient method for computing the gradient involves the adjoint state technique. Here’s a basic outline:</p>
+<ol class="arabic simple">
+<li><p><strong>Forward modeling</strong>: Solve the wave equation using the current model <span class="math notranslate nohighlight">\(m\)</span> to get <span class="math notranslate nohighlight">\(d_{cal}\)</span>.</p></li>
+<li><p><strong>Data residual</strong>: Compute the difference between <span class="math notranslate nohighlight">\(d_{cal}\)</span> and <span class="math notranslate nohighlight">\(d_{obs}\)</span>.</p></li>
+<li><p><strong>Adjoint modeling</strong>: Using the data residual as a source, solve the wave equation backward in time.</p></li>
+<li><p><strong>Compute the gradient</strong>: The gradient is then computed using the forward and adjoint wavefields.</p></li>
+</ol>
+</section>
+<section id="model-update">
+<h2>Model Update:<a class="headerlink" href="#model-update" title="Permalink to this heading">#</a></h2>
+<p>Once the gradient is known, the model is updated using:</p>
+<div class="math notranslate nohighlight">
+\[m_{new} = m_{old} - \alpha \times \nabla J\]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> is a step length or learning rate.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\nabla J\)</span> is the gradient of the objective function.</p></li>
+</ul>
+</section>
+<section id="repeat">
+<h2>Repeat:<a class="headerlink" href="#repeat" title="Permalink to this heading">#</a></h2>
+<p>This process is iteratively repeated until the objective function converges to a minimum value or other stopping criteria are met.</p>
+</section>
+<section id="regularization-and-challenge">
+<h2>Regularization and Challenge:<a class="headerlink" href="#regularization-and-challenge" title="Permalink to this heading">#</a></h2>
+<p>FWI is highly non-linear and can be sensitive to noise, initial model inaccuracies, and local minima. Regularization techniques, multi-scale inversions (starting with low frequencies), and good initial models can help in achieving robust and reliable inversions.</p>
+<p>1D FWI provides an avenue for estimating subsurface properties by iteratively updating a model to best match observed data. Though powerful, it requires careful setup and handling to ensure accurate and meaningful results.</p>
+<p><img alt="1D FWI" src="../../_images/1dfwi.png" /></p>
+<blockquote>
+<div><p>Forward and inverse modeling of waveform - Identifying the soil profile based on the velocity measurements</p>
+</div></blockquote>
+<p><img alt="1D FWI AD" src="../../_images/fwi.gif" /></p>
+<blockquote>
+<div><p>How AD FWI works</p>
+</div></blockquote>
+</section>
+<section id="fwi-forward-model">
+<h2>FWI Forward model<a class="headerlink" href="#fwi-forward-model" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip3<span class="w"> </span>install<span class="w"> </span>optax
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting optax
+  Obtaining dependency information for optax from https://files.pythonhosted.org/packages/13/71/787cc24c4b606f3bb9f1d14957ebd7cb9e4234f6d59081721230b2032196/optax-0.1.7-py3-none-any.whl.metadata
+  Downloading optax-0.1.7-py3-none-any.whl.metadata (13 kB)
+Requirement already satisfied: absl-py&gt;=0.7.1 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from optax) (2.0.0)
+Collecting chex&gt;=0.1.5 (from optax)
+  Obtaining dependency information for chex&gt;=0.1.5 from https://files.pythonhosted.org/packages/8b/c5/ab99c61d1384f89fe0d89b4b105c1ad22dab98cfe8c78136fb8c3f75f75b/chex-0.1.83-py3-none-any.whl.metadata
+  Downloading chex-0.1.83-py3-none-any.whl.metadata (17 kB)
+Requirement already satisfied: jax&gt;=0.1.55 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from optax) (0.4.16)
+Requirement already satisfied: jaxlib&gt;=0.1.37 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from optax) (0.4.16)
+Requirement already satisfied: numpy&gt;=1.18.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from optax) (1.24.3)
+Requirement already satisfied: typing-extensions&gt;=4.2.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from chex&gt;=0.1.5-&gt;optax) (4.5.0)
+Collecting toolz&gt;=0.9.0 (from chex&gt;=0.1.5-&gt;optax)
+  Using cached toolz-0.12.0-py3-none-any.whl (55 kB)
+Requirement already satisfied: ml-dtypes&gt;=0.2.0 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from jax&gt;=0.1.55-&gt;optax) (0.3.1)
+Requirement already satisfied: opt-einsum in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from jax&gt;=0.1.55-&gt;optax) (3.3.0)
+Requirement already satisfied: scipy&gt;=1.7 in /opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages (from jax&gt;=0.1.55-&gt;optax) (1.11.1)
+Downloading optax-0.1.7-py3-none-any.whl (154 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">154.1/154.1 kB</span> <span class=" -Color -Color-Red">1.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>00:010:01
+?25hDownloading chex-0.1.83-py3-none-any.whl (94 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">94.7/94.7 kB</span> <span class=" -Color -Color-Red">5.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25hInstalling collected packages: toolz, chex, optax
+Successfully installed chex-0.1.83 optax-0.1.7 toolz-0.12.0
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
+<span class="kn">import</span> <span class="nn">jax.scipy</span> <span class="k">as</span> <span class="nn">jsp</span>
+<span class="kn">import</span> <span class="nn">jax.scipy.optimize</span> <span class="k">as</span> <span class="nn">jsp_opt</span>
+<span class="kn">import</span> <span class="nn">optax</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<span class="c1"># Set up an n-point uniform mesh</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">5e-4</span>
+    <span class="c1"># Sanity check the physical constants</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">dx</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="n">C</span><span class="o">*</span><span class="n">C</span>
+    <span class="c1"># C should be &lt; 1 for stability</span>
+
+    <span class="c1"># Set up initial conditions</span>
+    <span class="n">u0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+        <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">carry</span>
+        <span class="c1"># Shift right to get j - 1 and set the first value to 0</span>
+        <span class="n">u1p</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">u1p</span> <span class="o">=</span> <span class="n">u1p</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Shift left to get j + 1 and set the last value to 0</span>
+        <span class="n">u1n</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">u1n</span> <span class="o">=</span> <span class="n">u1n</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Central difference in space and finite difference in time</span>
+        <span class="c1">#  u2[j] = 2*u1[j] -u0[j] + C2*(u1[j-1]-2*u1[j]+u1[j+1])</span>
+        <span class="n">u2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u1</span> <span class="o">-</span> <span class="n">u0</span> <span class="o">+</span> <span class="n">C2</span><span class="o">*</span><span class="p">(</span><span class="n">u1p</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">u1</span> <span class="o">+</span><span class="n">u1n</span><span class="p">)</span>
+        <span class="n">u0</span> <span class="o">=</span> <span class="n">u1</span>
+        <span class="n">u1</span> <span class="o">=</span> <span class="n">u2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">)</span>
+    <span class="c1"># Space for time steps</span>
+    <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">u2</span>
+
+<span class="c1"># Assign target</span>
+<span class="n">ctarget</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># constant model</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">ctarget</span><span class="p">)</span>
+
+<span class="c1"># Velocity profile</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctarget</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Target velocity profile&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;b:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;waves.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/4232da2bf40943bbfc9bfcd43cec1dab62a9f232319f7f97aaf12e039fb955dd.png" src="../../_images/4232da2bf40943bbfc9bfcd43cec1dab62a9f232319f7f97aaf12e039fb955dd.png" />
+</div>
+</div>
+</section>
+<section id="fwi-inverse-modeling">
+<h2>FWI inverse modeling<a class="headerlink" href="#fwi-inverse-modeling" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
+<span class="kn">import</span> <span class="nn">jax.scipy</span> <span class="k">as</span> <span class="nn">jsp</span>
+<span class="kn">import</span> <span class="nn">jax.scipy.optimize</span> <span class="k">as</span> <span class="nn">jsp_opt</span>
+<span class="kn">import</span> <span class="nn">optax</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<span class="c1"># Set up an n-point uniform mesh</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">5e-4</span>
+    <span class="c1"># Sanity check the physical constants</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">dx</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="n">C</span><span class="o">*</span><span class="n">C</span>
+    <span class="c1"># C should be &lt; 1 for stability</span>
+
+    <span class="c1"># Set up initial conditions</span>
+    <span class="n">u0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+        <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">carry</span>
+        <span class="c1"># Shift right to get j - 1 and set the first value to 0</span>
+        <span class="n">u1p</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">u1p</span> <span class="o">=</span> <span class="n">u1p</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Shift left to get j + 1 and set the last value to 0</span>
+        <span class="n">u1n</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">u1n</span> <span class="o">=</span> <span class="n">u1n</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Central difference in space and finite difference in time</span>
+        <span class="c1">#  u2[j] = 2*u1[j] -u0[j] + C2*(u1[j-1]-2*u1[j]+u1[j+1])</span>
+        <span class="n">u2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u1</span> <span class="o">-</span> <span class="n">u0</span> <span class="o">+</span> <span class="n">C2</span><span class="o">*</span><span class="p">(</span><span class="n">u1p</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">u1</span> <span class="o">+</span><span class="n">u1n</span><span class="p">)</span>
+        <span class="n">u0</span> <span class="o">=</span> <span class="n">u1</span>
+        <span class="n">u1</span> <span class="o">=</span> <span class="n">u2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">)</span>
+    <span class="c1"># Space for time steps</span>
+    <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">u2</span>
+
+<span class="c1"># Assign target</span>
+<span class="n">ctarget</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># constant model</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">ctarget</span><span class="p">)</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u2</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span>
+
+<span class="c1"># Gradient of forward problem</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">compute_loss</span><span class="p">)</span>
+
+<span class="n">start_learning_rate</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">adam</span><span class="p">(</span><span class="n">start_learning_rate</span><span class="p">)</span>
+
+<span class="c1"># Initialize parameters of the model + optimizer.</span>
+<span class="n">params</span> <span class="o">=</span>  <span class="mf">0.85</span> <span class="c1"># Constant model</span>
+<span class="n">opt_state</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="c1"># A simple update loop.</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+  <span class="n">grads</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">compute_loss</span><span class="p">)(</span><span class="n">params</span><span class="p">)</span>
+  <span class="n">updates</span><span class="p">,</span> <span class="n">opt_state</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">grads</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">)</span>
+  <span class="n">params</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">apply_updates</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">updates</span><span class="p">)</span>
+
+
+<span class="c1"># Velocity profile</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">params</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;velocity profile&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctarget</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Target velocity profile&#39;</span><span class="p">)</span>
+
+<span class="c1"># Waves</span>
+<span class="n">wave</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="s1">&#39;g-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;solution&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;b:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;waves.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/7e2b92edeb0d29290c38452d42f883b6f756a21b7b05469d29452a715bfc52e7.png" src="../../_images/7e2b92edeb0d29290c38452d42f883b6f756a21b7b05469d29452a715bfc52e7.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/07-ad"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../06-burgers/06-burgers.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">06: Forward and inverse modeling of Burger’s Equation</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">07: Automatic Differentiation</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#modes-of-differentiation">Modes of Differentiation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#symbolic-differentiation">1. Symbolic Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-differentiation-ad">2. Automatic Differentiation (AD)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-ad">Types of AD:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-differentiation">3. Numerical Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-differentiation">4. Manual Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction-to-automatic-differentiation">Introduction to Automatic Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dual-numbers">Dual Numbers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-based-differentiation">Graph-based Differentiation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#differences-between-dual-numbers-and-graph-based-differentiation">Differences between Dual Numbers and Graph-based Differentiation:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-and-reverse-mode-automatic-differentiation-ad">Forward and Reverse Mode Automatic Differentiation (AD)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-mode-ad">1. Forward Mode AD</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-with-respect-to-x-1">Derivative with respect to <span class="math notranslate nohighlight">\(x_1\)</span>:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-with-respect-to-x-2">Derivative with respect to <span class="math notranslate nohighlight">\(x_2\)</span>:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reverse-mode-ad">2. Reverse Mode AD</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pytorch-implementation">PyTorch implementation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-and-inverse-problems">Forward and inverse problems</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-numerical-modeling">Forward Numerical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-conceptual">Equations (conceptual):</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-or-reverse-numerical-modeling">Inverse (or Reverse) Numerical Modeling</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Example:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Equations (conceptual):</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-modeling-of-projectile-motion-using-explicit-euler">Inverse Modeling of Projectile Motion using Explicit Euler</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#equations-of-motion">Equations of Motion:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-modeling-using-explicit-euler">Inverse Modeling using Explicit Euler:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#jax-autograd-and-xla-library">JAX: Autograd and XLA Library</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features">Key Features</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Automatic Differentiation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hardware-acceleration">Hardware Acceleration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functional-programming-paradigm">Functional Programming Paradigm</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#jit-compilation">JIT Compilation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorization">Vectorization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#value-and-gradient-computation">Value and Gradient Computation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#random-number-generation">Random Number Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-gradients">Custom Gradients</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numpy-interoperability">NumPy Interoperability</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformation-combination">Transformation Combination</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#jax-projectile-inverse-modeling">JAX Projectile inverse modeling</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#projectile-motion">Projectile Motion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loss-function">Loss Function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent-using-explicit-euler">Gradient Descent using Explicit Euler</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-model-of-1d-acoustic-wave">Forward model of 1D acoustic wave</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-acoustic-wave-equation">1D Acoustic Wave Equation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finite-difference-solver">Finite Difference Solver</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#discretization">Discretization:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finite-difference-approximation">Finite Difference Approximation:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions">Boundary Conditions:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#d-full-waveform-inversion-fwi">1D Full Waveform Inversion (FWI)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concept">Concept:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective-function">Objective Function:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient Descent:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adjoint-method">Adjoint Method:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-update">Model Update:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat">Repeat:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-challenge">Regularization and Challenge:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-inverse-modeling">FWI inverse modeling</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
