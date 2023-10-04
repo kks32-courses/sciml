@@ -11,3 +11,4 @@ chapters:
   - file: lectures/04-pde-fdm/04-pde-fdm
   - file: lectures/05-pinn-heat-transfer/05-pinn-heat-transfer
   - file: lectures/06-burgers/06-burgers
+  - file: lectures/07-ad/07-ad
