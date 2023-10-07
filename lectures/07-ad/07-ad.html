@@ -196,6 +196,10 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+
+
+
+
 </ul>
 
     </div>
@@ -505,8 +509,25 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-update">Model Update:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat">Repeat:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-challenge">Regularization and Challenge:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference">Central difference</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-inverse-modeling">FWI inverse modeling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-velocity-profile">Linear velocity profile</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-s-method-for-optimization">Newton’s Method for Optimization</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#bfgs-broyden-fletcher-goldfarb-shanno-algorithm">BFGS (Broyden-Fletcher-Goldfarb-Shanno algorithm)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-bfgs">Benefits of BFGS:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#l-bfgs-limited-memory-bfgs">L-BFGS (Limited-memory BFGS)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-l-bfgs">Benefits of L-BFGS:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-with-adam">Comparison with Adam</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bfgs-vs-adam">BFGS vs Adam:</a></li>
 </ul>
 </li>
 </ul>
@@ -1245,6 +1266,11 @@ Successfully installed chex-0.1.83 optax-0.1.7 toolz-0.12.0
 </div>
 </div>
 </div>
+<p>Wave equation: <span class="math notranslate nohighlight">\(u_0 = \exp\left(-5(x_0 - 0.5)^2\right)\)</span></p>
+<section id="central-difference">
+<h3>Central difference<a class="headerlink" href="#central-difference" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[u2[j] = 2*u1[j] -u0[j] + C2*(u1[j-1]-2*u1[j]+u1[j+1])\]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -1301,7 +1327,8 @@ Successfully installed chex-0.1.83 optax-0.1.7 toolz-0.12.0
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;b:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;waves.png&quot;</span><span class="p">)</span>
+<span class="c1">#plt.savefig(&quot;waves.png&quot;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1309,6 +1336,7 @@ Successfully installed chex-0.1.83 optax-0.1.7 toolz-0.12.0
 <img alt="../../_images/4232da2bf40943bbfc9bfcd43cec1dab62a9f232319f7f97aaf12e039fb955dd.png" src="../../_images/4232da2bf40943bbfc9bfcd43cec1dab62a9f232319f7f97aaf12e039fb955dd.png" />
 </div>
 </div>
+</section>
 </section>
 <section id="fwi-inverse-modeling">
 <h2>FWI inverse modeling<a class="headerlink" href="#fwi-inverse-modeling" title="Permalink to this heading">#</a></h2>
@@ -1401,6 +1429,217 @@ Successfully installed chex-0.1.83 optax-0.1.7 toolz-0.12.0
 </div>
 <div class="cell_output docutils container">
 <img alt="../../_images/7e2b92edeb0d29290c38452d42f883b6f756a21b7b05469d29452a715bfc52e7.png" src="../../_images/7e2b92edeb0d29290c38452d42f883b6f756a21b7b05469d29452a715bfc52e7.png" />
+</div>
+</div>
+</section>
+<section id="linear-velocity-profile">
+<h2>Linear velocity profile<a class="headerlink" href="#linear-velocity-profile" title="Permalink to this heading">#</a></h2>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="newton-s-method-for-optimization">
+<h1>Newton’s Method for Optimization<a class="headerlink" href="#newton-s-method-for-optimization" title="Permalink to this heading">#</a></h1>
+<p>Newton’s method aims to find the roots of a function by approximating the function using a second-order Taylor series expansion. In optimization, we’re trying to find where the gradient (first derivative) is zero.</p>
+<p>The update rule in Newton’s method is given by:
+$<span class="math notranslate nohighlight">\(x_{k+1} = x_k - [\nabla^2 f(x_k)]^{-1} \nabla f(x_k)\)</span>$</p>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_k\)</span> is the current estimate.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\nabla^2 f(x_k)\)</span> is the Hessian matrix at <span class="math notranslate nohighlight">\(x_k\)</span> (matrix of second derivatives).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\nabla f(x_k)\)</span> is the gradient vector at <span class="math notranslate nohighlight">\(x_k\)</span>.</p></li>
+</ul>
+<p>The primary challenge with Newton’s method is that the Hessian might be expensive to compute and could be ill-conditioned or non-positive definite.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="bfgs-broyden-fletcher-goldfarb-shanno-algorithm">
+<h1>BFGS (Broyden-Fletcher-Goldfarb-Shanno algorithm)<a class="headerlink" href="#bfgs-broyden-fletcher-goldfarb-shanno-algorithm" title="Permalink to this heading">#</a></h1>
+<p>BFGS is a quasi-Newton method. Newton’s method is a popular iterative algorithm to find the roots of a real-valued function (or to minimize/maximize a function). The idea is to approximate the function using its Taylor series and then iteratively refine the guess to get closer to the optimal solution.</p>
+<p>BFGS approximates the inverse Hessian rather than computing it directly. The approximation is updated iteratively. Given a difference in gradients <span class="math notranslate nohighlight">\(s_k = \nabla f(x_{k+1}) - \nabla f(x_k)\)</span> and a difference in steps <span class="math notranslate nohighlight">\(y_k = x_{k+1} - x_k\)</span>, the BFGS update for the inverse Hessian approximation <span class="math notranslate nohighlight">\(H_{k+1}\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[H_{k+1} = (I - \rho_k s_k y_k^T) H_k (I - \rho_k y_k s_k^T) + \rho_k s_k s_k^T\]</div>
+<p>Where:
+$<span class="math notranslate nohighlight">\(\rho_k = \frac{1}{y_k^T s_k}\)</span>$</p>
+<p>This ensures that the Hessian approximation remains positive definite, avoiding one of the pitfalls of Newton’s method.</p>
+<section id="benefits-of-bfgs">
+<h2>Benefits of BFGS:<a class="headerlink" href="#benefits-of-bfgs" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Doesn’t require computation of the Hessian, only the gradient.</p></li>
+<li><p>Typically converges faster than the gradient descent.</p></li>
+<li><p>Hessian approximation ensures descent direction.</p></li>
+</ul>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="l-bfgs-limited-memory-bfgs">
+<h1>L-BFGS (Limited-memory BFGS)<a class="headerlink" href="#l-bfgs-limited-memory-bfgs" title="Permalink to this heading">#</a></h1>
+<p>While BFGS works great for many optimization problems, when the number of parameters is very large (as is often the case in machine learning and particularly in deep learning), storing and manipulating the Hessian approximation becomes computationally expensive.</p>
+<p>L-BFGS is a variation of BFGS that addresses this. Instead of storing the full Hessian approximation, L-BFGS stores only a few vectors that implicitly represent the approximation. This drastically reduces the memory requirement and makes the method scalable to large problems.</p>
+<section id="benefits-of-l-bfgs">
+<h2>Benefits of L-BFGS:<a class="headerlink" href="#benefits-of-l-bfgs" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Suitable for large-scale optimization problems due to reduced memory usage.</p></li>
+<li><p>Still retains many of the desirable properties of BFGS.</p></li>
+<li><p>Often used in machine learning for training models when the problem size is large.</p></li>
+</ul>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="comparison-with-adam">
+<h1>Comparison with Adam<a class="headerlink" href="#comparison-with-adam" title="Permalink to this heading">#</a></h1>
+<p>Adam (Adaptive Moment Estimation) is a popular optimization algorithm used in deep learning. It combines the ideas of Momentum and RMSprop.</p>
+<p>Adam’s update rule is:
+$<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1) \nabla f(x_t)\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(v_t = \beta_2 v_{t-1} + (1-\beta_2) (\nabla f(x_t))^2\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(x_{t+1} = x_t - \alpha \frac{m_t}{\sqrt{v_t} + \epsilon}\)</span>$</p>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(m_t\)</span> is the moving average of the gradient.</p></li>
+<li><p><span class="math notranslate nohighlight">\(v_t\)</span> is the moving average of the squared gradient.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> is the learning rate.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta_1, \beta_2\)</span> are exponential decay rates for the moving averages.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon\)</span> is a small number to prevent division by zero.</p></li>
+</ul>
+<section id="bfgs-vs-adam">
+<h2>BFGS vs Adam:<a class="headerlink" href="#bfgs-vs-adam" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Nature of Algorithm</strong>:</p>
+<ul class="simple">
+<li><p>BFGS is a quasi-Newton method that builds an approximation of the inverse Hessian to guide its search.</p></li>
+<li><p>Adam is a first-order method with adaptive learning rates for each parameter, based on moving averages of the gradient and squared gradient.</p></li>
+</ul>
+</li>
+<li><p><strong>Memory Usage</strong>:</p>
+<ul class="simple">
+<li><p>BFGS requires storing the inverse Hessian approximation, which can be memory-intensive for large problems (though L-BFGS mitigates this).</p></li>
+<li><p>Adam’s memory usage is relatively low since it only maintains moving averages of the gradients.</p></li>
+</ul>
+</li>
+<li><p><strong>Convergence</strong>:</p>
+<ul class="simple">
+<li><p>BFGS generally has superlinear convergence, meaning it can converge faster than gradient-based methods on some problems.</p></li>
+<li><p>Adam is known for its robustness and often works well even when hyperparameters are not finely tuned. However, its convergence properties are not as strong theoretically as BFGS.</p></li>
+</ul>
+</li>
+<li><p><strong>Usage</strong>:</p>
+<ul class="simple">
+<li><p>BFGS is often preferred for medium-sized optimization problems, especially when function evaluations are expensive or the function landscape is complex.</p></li>
+<li><p>Adam is predominantly used in deep learning due to its efficiency and robustness on large-scale problems.</p></li>
+</ul>
+</li>
+</ol>
+<p>In summary, while both BFGS and Adam are powerful optimization algorithms, they come from different families of methods and are often chosen based on the problem size, complexity, and specific characteristics of the function being optimized.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
+<span class="kn">import</span> <span class="nn">jax.scipy</span> <span class="k">as</span> <span class="nn">jsp</span>
+<span class="kn">import</span> <span class="nn">jax.scipy.optimize</span> <span class="k">as</span> <span class="nn">jsp_opt</span>
+<span class="kn">import</span> <span class="nn">optax</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">tensorflow_probability.substrates</span> <span class="kn">import</span> <span class="n">jax</span> <span class="k">as</span> <span class="n">tfp</span>
+
+<span class="c1"># Set up an n-point uniform mesh</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">dx</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
+
+<span class="nd">@jit</span>
+<span class="k">def</span> <span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">5e-4</span>
+    <span class="c1"># Sanity check the physical constants</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="o">/</span><span class="n">dx</span>
+    <span class="n">C2</span> <span class="o">=</span> <span class="n">C</span><span class="o">*</span><span class="n">C</span>
+    <span class="c1"># C should be &lt; 1 for stability</span>
+
+    <span class="c1"># Set up initial conditions</span>
+    <span class="n">u0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+        <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">carry</span>
+        <span class="c1"># Shift right to get j - 1 and set the first value to 0</span>
+        <span class="n">u1p</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">u1p</span> <span class="o">=</span> <span class="n">u1p</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Shift left to get j + 1 and set the last value to 0</span>
+        <span class="n">u1n</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">u1n</span> <span class="o">=</span> <span class="n">u1n</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Central difference in space and finite difference in time</span>
+        <span class="c1">#  u2[j] = 2*u1[j] -u0[j] + C2*(u1[j-1]-2*u1[j]+u1[j+1])</span>
+        <span class="n">u2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u1</span> <span class="o">-</span> <span class="n">u0</span> <span class="o">+</span> <span class="n">C2</span><span class="o">*</span><span class="p">(</span><span class="n">u1p</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">u1</span> <span class="o">+</span><span class="n">u1n</span><span class="p">)</span>
+        <span class="n">u0</span> <span class="o">=</span> <span class="n">u1</span>
+        <span class="n">u1</span> <span class="o">=</span> <span class="n">u2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">)</span>
+    <span class="c1"># Space for time steps</span>
+    <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">u2</span>
+
+<span class="c1"># Assign target</span>
+<span class="c1"># ctarget = 1.0 # constant model</span>
+<span class="n">ctarget</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="c1"># Linear model</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">ctarget</span><span class="p">)</span>
+
+<span class="c1"># For TFP set jaxopt value_and_grad = True</span>
+<span class="c1"># @jax.value_and_grad</span>
+<span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="n">u2</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u2</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span>
+
+<span class="c1"># Gradient of forward problem</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">compute_loss</span><span class="p">)</span>
+
+<span class="n">start_learning_rate</span> <span class="o">=</span> <span class="mf">1e-3</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">adam</span><span class="p">(</span><span class="n">start_learning_rate</span><span class="p">)</span>
+
+<span class="c1"># Initialize parameters of the model + optimizer.</span>
+<span class="c1"># params =  0.85 # Constant model</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+<span class="c1"># Optimizers</span>
+<span class="k">def</span> <span class="nf">optax_adam</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">niter</span><span class="p">):</span>
+  <span class="c1"># Initialize parameters of the model + optimizer.</span>
+  <span class="n">start_learning_rate</span> <span class="o">=</span> <span class="mf">1e-3</span>
+  <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">adam</span><span class="p">(</span><span class="n">start_learning_rate</span><span class="p">)</span>
+  <span class="n">opt_state</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+  <span class="c1"># A simple update loop.</span>
+  <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">niter</span><span class="p">):</span>
+    <span class="n">grads</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="n">compute_loss</span><span class="p">)(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">updates</span><span class="p">,</span> <span class="n">opt_state</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">grads</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">apply_updates</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">updates</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="c1"># Tensor Flow Probability Optimization library</span>
+<span class="k">def</span> <span class="nf">tfp_lbfgs</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+  <span class="n">results</span> <span class="o">=</span> <span class="n">tfp</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lbfgs_minimize</span><span class="p">(</span>
+        <span class="n">jit</span><span class="p">(</span><span class="n">compute_loss</span><span class="p">),</span> <span class="n">initial_position</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">results</span><span class="o">.</span><span class="n">position</span>
+
+<span class="c1"># ADAM optimizer</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">optax_adam</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>     
+<span class="c1"># L-BFGS optimizer</span>
+<span class="c1"># result = tfp_lbfgs(params)</span>
+
+<span class="c1"># Velocity profile</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">params</span><span class="p">,</span> <span class="s1">&#39;b-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;initial profile&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">result</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;velocity profile&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctarget</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Target velocity profile&#39;</span><span class="p">)</span>
+
+<span class="c1"># Waves</span>
+<span class="n">wave</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="c1"># Initial wave</span>
+<span class="n">init_wave</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">init_wave</span><span class="p">,</span> <span class="s1">&#39;b:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;init_wave&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">wave</span><span class="p">,</span> <span class="s1">&#39;r-.&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;solution&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">&#39;c:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="c1"># plt.savefig(&quot;waves.png&quot;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/50ce98d7f05f0c7ef28e5d23b9daeea115c37feaa185cbff75c87fc0f502c7dd.png" src="../../_images/50ce98d7f05f0c7ef28e5d23b9daeea115c37feaa185cbff75c87fc0f502c7dd.png" />
 </div>
 </div>
 </section>
@@ -1545,8 +1784,25 @@ Successfully installed chex-0.1.83 optax-0.1.7 toolz-0.12.0
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-update">Model Update:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat">Repeat:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-challenge">Regularization and Challenge:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference">Central difference</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-inverse-modeling">FWI inverse modeling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-velocity-profile">Linear velocity profile</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#newton-s-method-for-optimization">Newton’s Method for Optimization</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#bfgs-broyden-fletcher-goldfarb-shanno-algorithm">BFGS (Broyden-Fletcher-Goldfarb-Shanno algorithm)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-bfgs">Benefits of BFGS:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#l-bfgs-limited-memory-bfgs">L-BFGS (Limited-memory BFGS)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-l-bfgs">Benefits of L-BFGS:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-with-adam">Comparison with Adam</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bfgs-vs-adam">BFGS vs Adam:</a></li>
 </ul>
 </li>
 </ul>
