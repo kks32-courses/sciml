@@ -199,6 +199,8 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+
+
 </ul>
 
     </div>
@@ -508,6 +510,17 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-update">Model Update:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat">Repeat:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-challenge">Regularization and Challenge:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#adjoing-method">Adjoing Method</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-example">Simple Example</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-reverse-mode-ad-vs-adjoint-method">Comparison: Reverse Mode AD vs. Adjoint Method</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setup">Problem Setup:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Reverse Mode AD:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Adjoint Method:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-differences">Key Differences:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference">Central difference</a></li>
 </ul>
@@ -1165,6 +1178,104 @@ $<span class="math notranslate nohighlight">\(
 <h2>Regularization and Challenge:<a class="headerlink" href="#regularization-and-challenge" title="Permalink to this heading">#</a></h2>
 <p>FWI is highly non-linear and can be sensitive to noise, initial model inaccuracies, and local minima. Regularization techniques, multi-scale inversions (starting with low frequencies), and good initial models can help in achieving robust and reliable inversions.</p>
 <p>1D FWI provides an avenue for estimating subsurface properties by iteratively updating a model to best match observed data. Though powerful, it requires careful setup and handling to ensure accurate and meaningful results.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="adjoing-method">
+<h1>Adjoing Method<a class="headerlink" href="#adjoing-method" title="Permalink to this heading">#</a></h1>
+<p>The adjoint method is a mathematical technique commonly used in optimization problems, particularly in the context of inverse problems and optimal control. The adjoint method enables the efficient computation of gradients, which are crucial for many optimization algorithms. The essence of the method is to transform the problem such that the cost of gradient computation is relatively independent of the number of parameters.</p>
+<p>Let’s begin with the basics and then illustrate with a simple example:</p>
+<p>Consider a function</p>
+<div class="math notranslate nohighlight">
+\[ y = f(u) \]</div>
+<p>where <span class="math notranslate nohighlight">\( y \)</span> is the output and <span class="math notranslate nohighlight">\( u \)</span> is the input. Now, assume we have a cost (or objective) function</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned} J(y) $$. \\The goal might be to minimize $ J $ by adjusting $ u $. If we're interested in the sensitivity of $ J $ with respect to $u $, we'd like to compute \\$$ \frac{dJ}{du} $$.\\Chain rule tells us that:
+$$ \frac{dJ}{du} = \frac{dJ}{dy} \frac{dy}{du} \end{aligned}\end{align} \]</div>
+<p>Computing this directly can be costly if <span class="math notranslate nohighlight">\( y \)</span> is high dimensional, which is often the case in complex problems.</p>
+<p>The adjoint method tackles this by introducing an adjoint variable <span class="math notranslate nohighlight">\( p \)</span>, such that:</p>
+<div class="math notranslate nohighlight">
+\[ p = \frac{dJ}{dy} \]</div>
+<p>With this, our gradient becomes:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{dJ}{du} = p \frac{dy}{du} \]</div>
+<p>The computation of <span class="math notranslate nohighlight">\( p \)</span> is typically done by solving the adjoint equation, which is derived from the differential equation governing <span class="math notranslate nohighlight">\( y \)</span>.</p>
+<section id="simple-example">
+<h2>Simple Example<a class="headerlink" href="#simple-example" title="Permalink to this heading">#</a></h2>
+<p>Let’s consider a very simple example to illustrate the concept.</p>
+<p>Consider:
+$<span class="math notranslate nohighlight">\(y = u^2\)</span>$</p>
+<div class="math notranslate nohighlight">
+\[ J(y) = (y - d)^2 \]</div>
+<p>where <span class="math notranslate nohighlight">\( d \)</span> is a given reference value.</p>
+<p>Given</p>
+<div class="math notranslate nohighlight">
+\[ y = u^2 \]</div>
+<div class="math notranslate nohighlight">
+\[ \frac{dy}{du} = 2u \]</div>
+<p>To compute the gradient of <span class="math notranslate nohighlight">\( J \)</span> with respect to <span class="math notranslate nohighlight">\( u \)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{dJ}{du} = \frac{dJ}{dy} \frac{dy}{du} \]</div>
+<p>From our cost function,</p>
+<div class="math notranslate nohighlight">
+\[ \frac{dJ}{dy} = 2(y - d) \]</div>
+<p>This is our adjoint variable <span class="math notranslate nohighlight">\( p \)</span>.</p>
+<p>So,
+$<span class="math notranslate nohighlight">\( p = 2(y - d) \)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\( \frac{dJ}{du} = p \times 2u = 2u(2(y - d)) = 4u(y - d) \)</span>$</p>
+<p>The adjoint method helped us decompose the gradient computation into manageable parts. In more complex problems, especially involving differential equations, the adjoint method proves to be very efficient compared to direct sensitivity analyses.</p>
+<p>Reverse Mode AD and Adjoint method are conceptually similar. Reverse Mode AD can be thought of as a way to algorithmically implement the adjoint method for arbitrary functions represented in computer programs.</p>
+<p>For the simple example <span class="math notranslate nohighlight">\(y=u^2\)</span>, both methods will give you the same result (<span class="math notranslate nohighlight">\(dy/du=2u\)</span>) since it’s a straightforward function. The distinction becomes clearer and more significant in more complex problems, especially those involving differential equations or large computational graphs.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="comparison-reverse-mode-ad-vs-adjoint-method">
+<h1>Comparison: Reverse Mode AD vs. Adjoint Method<a class="headerlink" href="#comparison-reverse-mode-ad-vs-adjoint-method" title="Permalink to this heading">#</a></h1>
+<p>Consider a simple ordinary differential equation (ODE) and an associated cost function:</p>
+<section id="problem-setup">
+<h2>Problem Setup:<a class="headerlink" href="#problem-setup" title="Permalink to this heading">#</a></h2>
+<p>Suppose we have an ODE:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{dy}{dt} = -ky, \quad y(0) = y_0 \]</div>
+<p>Where <span class="math notranslate nohighlight">\( k\)</span> is a constant. We aim to minimize the cost function:</p>
+<div class="math notranslate nohighlight">
+\[ J(y, k) = \int_0^T (y(t) - d(t))^2 dt \]</div>
+<p>Where <span class="math notranslate nohighlight">\( d(t)\)</span> is some desired trajectory.</p>
+</section>
+<section id="id4">
+<h2>Reverse Mode AD:<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
+<p>For reverse mode AD, the process would be:</p>
+<ol class="arabic simple">
+<li><p>Discretize the ODE and solve it to get a trajectory <span class="math notranslate nohighlight">\( y(t)\)</span> for a given <span class="math notranslate nohighlight">\( k\)</span>.</p></li>
+<li><p>Evaluate the cost <span class="math notranslate nohighlight">\( J\)</span> using this trajectory.</p></li>
+<li><p>Compute the derivative of <span class="math notranslate nohighlight">\( J\)</span> by backpropagating the gradient from the final time step to the initial time step.</p></li>
+</ol>
+<p>This approach can be memory intensive.</p>
+</section>
+<section id="id5">
+<h2>Adjoint Method:<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<p>The adjoint method introduces an adjoint variable <span class="math notranslate nohighlight">\( p(t)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[ p(t) = \frac{\partial J}{\partial y(t)} \]</div>
+<ol class="arabic simple">
+<li><p>Solve the original ODE forward in time to get <span class="math notranslate nohighlight">\( y(t)\)</span>.</p></li>
+<li><p>Set up the adjoint equation:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[ -\frac{dp}{dt} = k p - 2(y(t) - d(t)) \]</div>
+<p>With terminal condition: <span class="math notranslate nohighlight">\( p(T) = 0\)</span>.</p>
+<ol class="arabic simple" start="3">
+<li><p>Solve the adjoint equation backward in time to get <span class="math notranslate nohighlight">\( p(t)\)</span>.</p></li>
+<li><p>The gradient of <span class="math notranslate nohighlight">\( J\)</span> with respect to <span class="math notranslate nohighlight">\( y_0\)</span> is given by <span class="math notranslate nohighlight">\( p(0)\)</span>. The gradient with respect to <span class="math notranslate nohighlight">\( k\)</span> is:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[ \frac{\partial J}{\partial k} = \int_0^T p(t) \cdot y(t) dt \]</div>
+</section>
+<section id="key-differences">
+<h2>Key Differences:<a class="headerlink" href="#key-differences" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Computation</strong>: Reverse mode AD is algorithmic and can be applied directly. The adjoint method requires manual derivation of the adjoint equations.</p></li>
+<li><p><strong>Memory</strong>: Reverse mode AD can be memory-intensive, especially for long trajectories. The adjoint method can be less so.</p></li>
+<li><p><strong>Use Cases</strong>: Reverse mode AD is versatile and can handle various computational graphs, while the adjoint method is more specific to differential equations and optimization.</p></li>
+</ul>
 <p><img alt="1D FWI" src="../../_images/1dfwi.png" /></p>
 <blockquote>
 <div><p>Forward and inverse modeling of waveform - Identifying the soil profile based on the velocity measurements</p>
@@ -1647,6 +1758,17 @@ $<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-update">Model Update:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#repeat">Repeat:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#regularization-and-challenge">Regularization and Challenge:</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#adjoing-method">Adjoing Method</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-example">Simple Example</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#comparison-reverse-mode-ad-vs-adjoint-method">Comparison: Reverse Mode AD vs. Adjoint Method</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setup">Problem Setup:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Reverse Mode AD:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Adjoint Method:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-differences">Key Differences:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fwi-forward-model">FWI Forward model</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#central-difference">Central difference</a></li>
 </ul>
