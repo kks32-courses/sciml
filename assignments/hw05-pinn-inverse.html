@@ -451,17 +451,17 @@ document.write(`
 \[\lambda_2=\nu=\frac{1}{100\pi}=0.003183\]</div>
 <ol class="arabic simple">
 <li><p>Vary the number of colocation points <span class="math notranslate nohighlight">\(N_u\)</span> as 500, 1000, 1500, and 2000.</p></li>
-<li><p>For each of these cases, corrupt the data point by different noise level for <span class="math notranslate nohighlight">\(\lambda_1\)</span> and <span class="math notranslate nohighlight">\(\lambda_2\)</span> as 0%, 1%, 5% and 10% and complete the following table:</p></li>
+<li><p>For each of these cases, corrupt the data point by different noise level for <span class="math notranslate nohighlight">\(\lambda_1\)</span> and <span class="math notranslate nohighlight">\(\lambda_2\)</span> as 0%, 1%, 5% and 10% and complete the following tables:</p></li>
 </ol>
-<p>Percentage error in the identified parameters λ1 and λ2 for different number of training data N corrupted by different noise levels</p>
+<p>Percentage error in the identified parameters λ1 and λ2 for different number of training data N corrupted by different noise levels:</p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Nu</p></th>
-<th class="head"><p>lambda 1</p></th>
+<th class="head"><p>% error in λ 1</p></th>
 <th class="head"><p></p></th>
 <th class="head"><p></p></th>
 <th class="head"><p></p></th>
-<th class="head"><p>lambda 2</p></th>
+<th class="head"><p>% error in λ 2</p></th>
 <th class="head"><p></p></th>
 <th class="head"><p></p></th>
 <th class="head"><p></p></th>
@@ -509,6 +509,75 @@ document.write(`
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p>2000</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<ol class="arabic simple" start="3">
+<li><p>Effect of network size on error in λ</p></li>
+</ol>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Hidden Layers</p></th>
+<th class="head"><p>% error in λ 1</p></th>
+<th class="head"><p></p></th>
+<th class="head"><p></p></th>
+<th class="head"><p></p></th>
+<th class="head"><p>% error in λ 2</p></th>
+<th class="head"><p></p></th>
+<th class="head"><p></p></th>
+<th class="head"><p></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Neurons</p></td>
+<td><p>10</p></td>
+<td><p>20</p></td>
+<td><p>40</p></td>
+<td><p>80</p></td>
+<td><p>10</p></td>
+<td><p>20</p></td>
+<td><p>40</p></td>
+<td><p>80</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>10</p></td>
 <td><p></p></td>
 <td><p></p></td>
 <td><p></p></td>
