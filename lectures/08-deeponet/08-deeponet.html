@@ -1,0 +1,1509 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>07: DeepONet &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/08-deeponet/08-deeponet';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="07: Automatic Differentiation" href="../07-ad/07-ad.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">07: DeepONet</a></li>
+
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/08-deeponet/08-deeponet.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/08-deeponet/08-deeponet.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/08-deeponet/08-deeponet.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>07: DeepONet</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">07: DeepONet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-pinns">Problems with PINNs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameterized-pde">Parameterized PDE</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-and-operators">Functions and Operators:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function">Function:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#operator">Operator:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parametric-pdes-and-operators">Parametric PDEs and Operators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universal-approximation-theorem-for-operator">Universal Approximation Theorem for Operator</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">DeepONet</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">DeepONet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-deeponets">Training DeepONets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Universal Approximation Theorem for Operator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network">Neural Network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">DeepOnet</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setup">Problem Setup</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anti-derivative-operator">Anti-derivative Operator</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation">Data Generation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-a-random-function">Generate a random function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rbf-radial-basis-function-kernel">RBF (Radial Basis Function) Kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Data Generation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">DeepOnet</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-our-operator">Evaluate our Operator</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-results-for-the-first-function-in-our-testing-dataset">Visualize the results for the first function in our Testing Dataset</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="deeponet">
+<h1>07: DeepONet<a class="headerlink" href="#deeponet" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/08-deeponet/08-deeponet-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/08-deeponet/08-deeponet.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="problems-with-pinns">
+<h2>Problems with PINNs<a class="headerlink" href="#problems-with-pinns" title="Permalink to this heading">#</a></h2>
+<p>We represent a multi-layer perceptron (MLP) <span class="math notranslate nohighlight">\(y = \bm{\mathcal{F}}(x;\theta)\)</span> as a function that takes an input <span class="math notranslate nohighlight">\(x \in Ro^d\)</span> and gives an output <span class="math notranslate nohighlight">\(y \in Ro^d\)</span> with trainable weights <span class="math notranslate nohighlight">\(\theta\)</span>. A Physics Informed Neural Network (PINN) can be described as  <span class="math notranslate nohighlight">\(\bm{u}(x) = \bm{\mathcal{F}}(x;\theta)\)</span> taking as input the independent variable <span class="math notranslate nohighlight">\(x\)</span> of the underlying Partial Differential Equation (PDE) and outputs its solution, <span class="math notranslate nohighlight">\(\bm{u}(x)\)</span>.  The training process for a PINN involves minimizing the combined residual of the PDE and its boundary conditions.</p>
+<p>To illustrate, consider the PDE</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\nabla \cdot (\kappa \nabla u) &amp;= f(x), \quad x \in \Omega = [0,1] \times [0,1]\\
+  u(x) &amp; = g(x), \quad x \in \partial \Omega
+\end{align*}
+\end{split}\]</div>
+<p>and train a PINN <span class="math notranslate nohighlight">\(\mathcal{F}(x;\theta)\)</span> to minimize the loss function
+$<span class="math notranslate nohighlight">\(
+\Pi(\theta) = \frac{1}{N_v} \sum_{i=1}^{N_v} | \nabla \cdot (\kappa \nabla \mathcal{F}(x_i;\theta)) - f(x_i) |^2 + \frac{\lambda_b}{N_b} \sum_{i=1}^{N_b} | \mathcal{F}(x_i;\theta) - g(x_i) |^2
+\)</span>$</p>
+<p>The optimal weights are given by <span class="math notranslate nohighlight">\(\theta^* = \argmin{\theta} \Pi(\theta)\)</span>  and the corresponding PINN solution for the above PDE becomes <span class="math notranslate nohighlight">\(u(x) =\mathcal{F}(x;\theta^*)\)</span>.</p>
+<p>However, if we alter either <span class="math notranslate nohighlight">\(f\)</span> or <span class="math notranslate nohighlight">\(g\)</span> in the PDE, the previously trained network may no longer be applicable. Essentially, we would need to retrain the network (potentially with the same structure) for the updated <span class="math notranslate nohighlight">\(f\)</span> and <span class="math notranslate nohighlight">\(g\)</span> values. This repeated training can be inefficient and is something we’d prefer to bypass. In the subsequent sections, we’ll explore strategies to address this challenge.</p>
+</section>
+<section id="parameterized-pde">
+<h2>Parameterized PDE<a class="headerlink" href="#parameterized-pde" title="Permalink to this heading">#</a></h2>
+<p>Consider the source term <span class="math notranslate nohighlight">\(f\)</span> in the above PDE is given as a parametric function <span class="math notranslate nohighlight">\(f(x;\alpha)\)</span>. For instance, we could have
+$<span class="math notranslate nohighlight">\(
+f(x_1,x_2;\alpha) = 4 \alpha x_1 (1-x_1) (1-x_2) 
+\)</span><span class="math notranslate nohighlight">\(
+Then we could train a PINN that accommodates for the parametrization by considering a network that takes as input both \)</span>x<span class="math notranslate nohighlight">\( and \)</span>\alpha<span class="math notranslate nohighlight">\(, i.e., \)</span>\mathcal{F}(x, \alpha;\theta)$.</p>
+<p>This network can be trained by minimizing the loss function
+$<span class="math notranslate nohighlight">\(
+\Pi(\theta) = \frac{1}{N_a} \sum_{j=1}^{N_a}\left[\frac{1}{N_v} \sum_{i=1}^{N_v} | \nabla \cdot (\kappa \nabla \mathcal{F}(x_i,\alpha_j;\theta)) - f(x_i,\alpha_j) |^2 + \frac{\lambda_b}{N_b} \sum_{i=1}^{N_b} | \mathcal{F}(x_i,\alpha_j;\theta) - g(x_i) |^2 \right]
+\)</span>$</p>
+<p>We have to also consider collocation points for the parameter <span class="math notranslate nohighlight">\(\alpha\)</span> while constructing the loss function. If <span class="math notranslate nohighlight">\(\theta^* = \argmin{\theta} \Pi(\theta)\)</span>, then the solution to the parameterized PDE would be <span class="math notranslate nohighlight">\(u(x,\alpha) = \mathcal{F}(x, \alpha;\theta^*) \)</span>. Further, for any new value of <span class="math notranslate nohighlight">\(\alpha = \hat{\alpha}\)</span> we could find the solution by evaluating <span class="math notranslate nohighlight">\(\mathcal{F}(x,\hat{\alpha};\theta^*)\)</span>. We could use the same approach if there was a way of parameterizing the functions <span class="math notranslate nohighlight">\(\kappa(x)\)</span> and <span class="math notranslate nohighlight">\(g(x)\)</span>.</p>
+<p><img alt="Parameterized PINNs" src="../../_images/parameterized-pinn.png" /></p>
+<blockquote>
+<div><p>Schematic of a PINN with a parameterized input</p>
+</div></blockquote>
+<p>However, what if we wanted the solution for an arbitrary, non-parametric <span class="math notranslate nohighlight">\(f\)</span>?  In order to do this, we need to find a way to approximate <strong>operators that map functions to functions</strong>.</p>
+</section>
+<section id="functions-and-operators">
+<h2>Functions and Operators:<a class="headerlink" href="#functions-and-operators" title="Permalink to this heading">#</a></h2>
+<section id="function">
+<h3>Function:<a class="headerlink" href="#function" title="Permalink to this heading">#</a></h3>
+<p>Maps between vector spaces:</p>
+<p><em>Example:</em></p>
+<p>Let <span class="math notranslate nohighlight">\(f_1(x)=sin(x)\)</span>; for  <span class="math notranslate nohighlight">\(x\in\mathbf{R}\)</span></p>
+<div class="math notranslate nohighlight">
+\[z=f_1(x)=sin(x)\in[0:1]\]</div>
+<p>In other words <span class="math notranslate nohighlight">\(f_1\)</span> maps <span class="math notranslate nohighlight">\(\mathbf{R}→[0,1]\)</span></p>
+</section>
+<section id="operator">
+<h3>Operator:<a class="headerlink" href="#operator" title="Permalink to this heading">#</a></h3>
+<p>Maps between infite-dimensional function spaces:
+$<span class="math notranslate nohighlight">\(G(f_1(x))=f_2(x)\)</span>$</p>
+<p><em>Example:</em></p>
+<p>Derivative Operator →<span class="math notranslate nohighlight">\(\frac{d}{d x}\)</span></p>
+<p>It transforms a funcion <span class="math notranslate nohighlight">\(f_1\)</span> into a function <span class="math notranslate nohighlight">\(f_2\)</span>:</p>
+<p>Let <span class="math notranslate nohighlight">\(f_1(x)=sin(x)\)</span></p>
+<p>Then when we apply our operator:</p>
+<div class="math notranslate nohighlight">
+\[f_2=\frac{df_1(x)}{d x}=\frac{d}{d x}sin(x)=cos(x)\]</div>
+</section>
+<section id="parametric-pdes-and-operators">
+<h3>Parametric PDEs and Operators<a class="headerlink" href="#parametric-pdes-and-operators" title="Permalink to this heading">#</a></h3>
+<p>Parametric PDEs <span class="math notranslate nohighlight">\(\rightarrow\)</span> Some parameters (e.g., shape, IC/BC, coefficients, etc.) of a given PDE system are allowed to change.</p>
+<p>Let  <span class="math notranslate nohighlight">\(\mathcal{N}\)</span> be a nonlinear operator. Let’s consider a parametric PDEs of the form:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{N}(u,s)=0\]</div>
+<p>Where <span class="math notranslate nohighlight">\(u\)</span> is the input function and <span class="math notranslate nohighlight">\(s\)</span> is the unknown PDE’s solution (also a function).</p>
+<p>Our PDE solution operator would be:</p>
+<div class="math notranslate nohighlight">
+\[G(u)=s\]</div>
+<p><strong>Note 1:</strong> In other words, we can express the general solution of our PDE as an operator <span class="math notranslate nohighlight">\(G\)</span></p>
+<p><strong>Note 2:</strong> Remember <span class="math notranslate nohighlight">\(s\)</span> is itself a function, so if we evaluate it at any point <span class="math notranslate nohighlight">\(y\)</span>, the answer would be a real number:</p>
+<div class="math notranslate nohighlight">
+\[G(u)(y)=s(y)\in \mathbf{R}\]</div>
+<p>The universal approximation theorem states that neural networks can be used to approximate any continuous function to arbitrary accuracy if no constraint is placed on the width and depth of the hidden layers. However, another approximation result, which is yet more surprising and has not been appreciated so far, states that a neural network with
+a single hidden layer can approximate accurately any nonlinear continuous <strong>functional</strong> (a mapping from a space of functions into the real numbers) or (nonlinear) operator (a mapping from a space of functions into another space of functions).</p>
+<p>Before reviewing the approximation theorem for operators, we introduce some notation, which will be used through this paper. Let <span class="math notranslate nohighlight">\(G\)</span> be an operator taking an input function <span class="math notranslate nohighlight">\(u\)</span>, and then <span class="math notranslate nohighlight">\(G(u)\)</span> is the corresponding output function. For any point <span class="math notranslate nohighlight">\(y\)</span> in the domain of <span class="math notranslate nohighlight">\(G(u)\)</span>,  the output <span class="math notranslate nohighlight">\(G(u)(y)\)</span> is a real number. Hence, the network takes inputs composed of two parts: <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, and outputs <span class="math notranslate nohighlight">\(G(u)(y)\)</span>. Although our goal is to learn operators, which take a function as the input, we have to represent the input functions discretely, so that network approximations can be applied. A straightforward and simple way, in practice, is to employ the function values at sufficient but finite many locations <span class="math notranslate nohighlight">\(\{x_1, x_2, \dots, x_m\}\)</span>; we call these locations as ``sensors’’.</p>
+</section>
+</section>
+<section id="universal-approximation-theorem-for-operator">
+<h2>Universal Approximation Theorem for Operator<a class="headerlink" href="#universal-approximation-theorem-for-operator" title="Permalink to this heading">#</a></h2>
+<p>Suppose that <span class="math notranslate nohighlight">\(\sigma\)</span> is a continuous non-polynomial function, <span class="math notranslate nohighlight">\(X\)</span> is a Banach Space, <span class="math notranslate nohighlight">\(K_1 \subset X\)</span>, <span class="math notranslate nohighlight">\(K_2 \subset \mathbb{R}^d\)</span> are two compact sets in <span class="math notranslate nohighlight">\(X\)</span> and <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, respectively, <span class="math notranslate nohighlight">\(V\)</span> is a compact set in <span class="math notranslate nohighlight">\(C(K_1)\)</span>, <span class="math notranslate nohighlight">\(G\)</span> is a nonlinear continuous operator, which maps <span class="math notranslate nohighlight">\(V\)</span> into <span class="math notranslate nohighlight">\(C(K_2)\)</span>. Then for any <span class="math notranslate nohighlight">\(\epsilon&gt;0\)</span>, there are positive integers <span class="math notranslate nohighlight">\(n\)</span>, <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\(m\)</span>, constants <span class="math notranslate nohighlight">\(c_i^k, \xi_{ij}^k, \theta_i^k, \zeta_k \in \mathbb{R}\)</span>, <span class="math notranslate nohighlight">\(w_k \in \mathbb{R}^d\)</span>, <span class="math notranslate nohighlight">\(x_j \in K_1\)</span>, <span class="math notranslate nohighlight">\(i=1,\dots,n\)</span>, <span class="math notranslate nohighlight">\(k=1,\dots,p\)</span>, <span class="math notranslate nohighlight">\(j=1,\dots,m\)</span>, such that
+$<span class="math notranslate nohighlight">\(
+\left|G(u)(y) - \sum_{k=1}^p
+\underbrace{\sum_{i=1}^n c_i^k \sigma\left(\sum_{j=1}^m \xi_{ij}^ku(x_j)+\theta_i^k\right)}_{branch}
+\underbrace{\sigma(w_k \cdot y+\zeta_k)}_{trunk}
+\right|&lt;\epsilon  
+\)</span><span class="math notranslate nohighlight">\(
+holds for all \)</span>u \in V<span class="math notranslate nohighlight">\( and \)</span>y \in K_2$.</p>
+<p><img alt="DeepONet" src="../../_images/sensors-deeponet.png" /></p>
+<blockquote>
+<div><p>Illustrations of the problem setup and architectures of DeepONets.} (\textbf{A}) The network to learn an operator <span class="math notranslate nohighlight">\(G: u \mapsto G(u)\)</span> takes two inputs <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m)]\)</span> and <span class="math notranslate nohighlight">\(y\)</span>. (\textbf{B}) Illustration of the training data. For each input function <span class="math notranslate nohighlight">\(u\)</span>, we require that we have the same number of evaluations at the same scattered sensors <span class="math notranslate nohighlight">\(x_1, x_2, \dots, x_m\)</span>. However, we do not enforce any constraints on the number or locations for the evaluation of output functions. (\textbf{C}) The stacked DeepONet in Theorem~\ref{thm:main} has one trunk network and <span class="math notranslate nohighlight">\(p\)</span> stacked branch networks. (\textbf{D}) The unstacked DeepONet has one trunk network and one branch network.</p>
+</div></blockquote>
+<p>The universal approximation theorem suggests that neural networks have the potential to learn nonlinear operators from data, much like current deep learning techniques. However, while the theorem indicates that fully-connected neural networks (FNNs) can theoretically approximate functions, they often underperform when compared to specialized architectures like convolutional neural networks (CNNs) in practical scenarios. This is primarily because the theorem only addresses approximation errors and neglects the equally critical optimization and generalization errors. For a neural network to be effective, it must not only approximate well but also train efficiently and generalize to new data.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>DeepONet<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h1>
+<p>We focus on learning operators in a more general setting, where the only requirement for the training dataset is the consistency of the sensors <span class="math notranslate nohighlight">\(\{x_1, x_2, \dots, x_m\}\)</span> for input functions. In this general setting, the network inputs consist of two separate components:  <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m)]^T\)</span> and <span class="math notranslate nohighlight">\(y\)</span> (see above Fig A), and the goal is to achieve good performance by designing the network architecture. One straightforward solution is to directly employ a classical network, such as FNN, CNN or RNN, and concatenate two inputs together as the network input, i.e., <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m), y]^T\)</span>. However, the input does not have any specific structure, and thus it is not meaningful to choose networks like CNN or RNN. Here we use FNN as the baseline model.</p>
+<p>In high dimensional problems, <span class="math notranslate nohighlight">\(y\)</span> is a vector with <span class="math notranslate nohighlight">\(d\)</span> components, so the dimension of <span class="math notranslate nohighlight">\(y\)</span> does not match the dimension of <span class="math notranslate nohighlight">\(u(x_i)\)</span> for <span class="math notranslate nohighlight">\(i=1,2,\dots,m\)</span> any more. This also prevents us from treating <span class="math notranslate nohighlight">\(u(x_i)\)</span> and <span class="math notranslate nohighlight">\(y\)</span> equally, and thus at least two sub-networks are needed to handle <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m)]^T\)</span> and <span class="math notranslate nohighlight">\(y\)</span> separately. Although the universal approximation theorem does not have any guarantee on the total error, it still provides us a network structure. The theorem only considers a shallow network with one hidden layer, so we extend it to deep networks, which have more expressivity than shallow ones. The architecture we propose is shown in Fig. C, and the details are as follows. First there is a “trunk” network, which takes <span class="math notranslate nohighlight">\(y\)</span> as the input and outputs <span class="math notranslate nohighlight">\([t_1, t_2, \dots, t_p]^T \in \mathbb{R}^p\)</span>. In addition to the trunk network, there are <span class="math notranslate nohighlight">\(p\)</span> “branch” networks, and each of them takes <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m)]^T\)</span> as the input and outputs a scalar <span class="math notranslate nohighlight">\(b_k \in \mathbb{R}\)</span> for <span class="math notranslate nohighlight">\(k=1,2,\dots,p\)</span>. We merge them together as:</p>
+<div class="math notranslate nohighlight">
+\[ G(u)(y) \approx \sum_{k=1}^p b_k t_k. \]</div>
+<p>We note that the trunk network also applies activation functions in the last layer, i.e., <span class="math notranslate nohighlight">\(t_k = \sigma(\cdot)\)</span> for <span class="math notranslate nohighlight">\(k=1,2,\dots,p\)</span>, and thus this trunk-branch network can also be seen as a trunk network with each weight in the last layer parameterized by another branch network instead of the classical single variable. We also note that in Eq. \ref{eq:thm} the last layer of each <span class="math notranslate nohighlight">\(b_k\)</span> branch network does not have bias. Although bias is not necessary in Theorem \ref{thm:main}, adding bias may increase the performance by reducing the generalization error. In addition to adding bias to the branch networks, we may also add a bias <span class="math notranslate nohighlight">\(b_0 \in \mathbb{R}\)</span> in the last stage:</p>
+<div class="math notranslate nohighlight">
+\[
+G(u)(y) \approx \sum_{k=1}^p b_k t_k + b_0.
+\]</div>
+<p>In practice, <span class="math notranslate nohighlight">\(p\)</span> is at least of the order of 10, and using lots of branch networks is computationally and memory expensive. Hence, we merge all the branch networks into one single branch network (Fig. D), i.e., a single branch network outputs a vector <span class="math notranslate nohighlight">\([b_1, b_2, \dots, b_p]^T \in \mathbb{R}^p\)</span>. When <span class="math notranslate nohighlight">\(p\)</span> branch networks stacked parallel it is <code class="docutils literal notranslate"><span class="pre">stacked</span> <span class="pre">DeepONet</span></code>, while the other is termed <code class="docutils literal notranslate"><span class="pre">unstacked</span> <span class="pre">DeepONet</span></code>.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id2">
+<h1>DeepONet<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h1>
+<p>A standard DeepONet comprises two neural networks. We describe below its construction to approximate an operator <span class="math notranslate nohighlight">\(\mathcal{N} : A \rightarrow U\)</span>, where <span class="math notranslate nohighlight">\(A\)</span> is a set of functions of the form <span class="math notranslate nohighlight">\(a: \Omega_Y \subset Ro^d \rightarrow Ro\)</span> while <span class="math notranslate nohighlight">\(U\)</span> consists of functions of the form <span class="math notranslate nohighlight">\(u: \Omega_X \subset Ro^D \rightarrow Ro\)</span>. Furthermore, we assume that point-wise evaluations of both class of functions is possible. The architecture for the DeepONet is explained below:</p>
+<ul class="simple">
+<li><p>Fix <span class="math notranslate nohighlight">\(M\)</span> distinct sensor points <span class="math notranslate nohighlight">\(y^{(1)},..., y^{(M)}\)</span> in <span class="math notranslate nohighlight">\(\Omega_Y\)</span>.</p></li>
+<li><p>Sample a function <span class="math notranslate nohighlight">\(a \in A\)</span> at these sensor points to get the vector <span class="math notranslate nohighlight">\(\bm{a} =  [a(y^{(1)}), ... , \ a(y^{(M)})]^\top \in Ro^M\)</span>.</p></li>
+<li><p>Supply <span class="math notranslate nohighlight">\(\bm{a}\)</span> as the input to a sub-network, called the \textit{branch net} <span class="math notranslate nohighlight">\(\mathcal{B}(.;\bm{\theta}_B):Ro^M \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\bm{\beta} = [\beta_1(\bm{a}), ..., \ \beta_p(\bm{a})]^\top\in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\bm{\theta}_B\)</span> are the trainable parameters of the branch net. The dimension of the output of the branch is relatively small, say <span class="math notranslate nohighlight">\(p \approx 100\)</span>.</p></li>
+<li><p>Supply <span class="math notranslate nohighlight">\(x\)</span> as an input to a second sub-network, called the \text{trunk net} <span class="math notranslate nohighlight">\(\mathcal{T}(.;\bm{\theta}_T): Ro^D \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\bm{\tau} = [\tau_1(x), ..., \ \tau_p(x)]^\top \in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\bm{\theta}_T\)</span> are the trainable parameters of the trunk net.</p></li>
+<li><p>Take a dot product of the outputs of the branch and trunk nets to get the final output of the DeepONet <span class="math notranslate nohighlight">\(\widetilde{\mathcal{N}}(.,.;\bm{\theta}):Ro^D \times Ro^M \rightarrow Ro\)</span> which will approximate the value of <span class="math notranslate nohighlight">\(u(x)\)</span></p></li>
+</ul>
+<p><span class="math notranslate nohighlight">\(u(x) \approx \widetilde{\mathcal{N}}(x,\bm{a};\bm{\theta}) = \sum_{k=1}^p \beta_k(\bm{a}) \tau_k(x).\)</span></p>
+<p>where the trainable parameters of the DeepONet will be the combined parameters of the branch and trunk nets, i.e., <span class="math notranslate nohighlight">\(\bm{\theta} = [\theta_T, \theta_M]\)</span>.</p>
+<p><img alt="DeepONet" src="../../_images/DeepONet.png" /></p>
+<blockquote>
+<div><p>Schematic of a DeepONet</p>
+</div></blockquote>
+<p>In the above construction, once the DeepONet is trained (we will discuss the training in the following section), it will approximate the underlying operator <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>, and allow us to approximate the value of any <span class="math notranslate nohighlight">\(\mathcal{N}(a)(x)\)</span> for any <span class="math notranslate nohighlight">\(a \in A\)</span> and any <span class="math notranslate nohighlight">\(x \in \Omega_X\)</span>. Note that in the construction of the DeepONet, the <span class="math notranslate nohighlight">\(M\)</span> sensor points need to be pre-defined and cannot change during the training and evaluation phases.</p>
+<p>We can make the following observations regarding the DeepONet architecture:</p>
+<ul class="simple">
+<li><p>The expression in (\ref{eq:deeponet}) has the form of representing the solution as the sum of a series of coefficients and functions. The coefficients are determined by the branch network, while the functions are determined by the trunk network. In that sense the DeepONet construction is similar to that of what is used in the spectral method or the finite element method. There is a critical difference though. In these methods, the basis functions are pre-determined and selected by the user. However, in the DeepONet these functions are determined by the trunk network and their final form depends on the data used to train the DeepONet.</p></li>
+<li><p>Architecture of the branch sub-network: When points for sampling the input function are chosen randomly, the appropriate architecture for the branch network comprises fully connected layers. Further recognizing that the dimension of the input to this network can be rather large <span class="math notranslate nohighlight">\(N_1 \approx 10^4\)</span>, while the output is typically small <span class="math notranslate nohighlight">\(p \approx 10^2\)</span>, this network can be thought of as an encoder.</p></li>
+<li><p>When points for sampling the input function are chosen on a uniform grid, the appropriate architecture for the branch network comprises convolutional layer layers. In that case this network maps an image of large dimension (<span class="math notranslate nohighlight">\(N_1 \approx 10^4\)</span>) to a latent vector of small dimension, <span class="math notranslate nohighlight">\(p \approx 10^2\)</span>. Thus it is best represented by a convolutional neural network.</p></li>
+<li><p>Broadly speaking, there are two ways of improving the experssivity of the DeepONet. These involve increase the number of network parameters in the branch and trunk sub-networks, and increasing the dimension <span class="math notranslate nohighlight">\(p\)</span> of the latent vectors formed by these sub-networks.</p></li>
+</ul>
+<section id="training-deeponets">
+<h2>Training DeepONets<a class="headerlink" href="#training-deeponets" title="Permalink to this heading">#</a></h2>
+<p>Training a DeepONet is typically supervised, and requires pairwise data. The following are the main steps involved:</p>
+<ul class="simple">
+<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(y^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\bm{a}^{(i)} = [a^{(i)}(y^{(1)}),...,a^{(i)}(y^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
+<li><p>For each <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, determine (numerically or analytically) the corresponding functions <span class="math notranslate nohighlight">\(u^{(i)}\)</span> given by the operator <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>.</p></li>
+<li><p>Sample the function <span class="math notranslate nohighlight">\(u^{(i)}\)</span> at <span class="math notranslate nohighlight">\(N_2\)</span> points in <span class="math notranslate nohighlight">\(\Omega_X\)</span>, i.e., <span class="math notranslate nohighlight">\(u^{(i)}(x^{(k)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq k \leq N_2\)</span>.</p></li>
+<li><p>Construct the training set
+$<span class="math notranslate nohighlight">\(
+\mathcal{S} = \left \{\Big(\bm{a}^{(i)}, x^{(k)}, u^{(i)}(x^{(k)})\Big) : 1 \leq i \leq N_1, \ 1 \leq k \leq N_2 \right\}
+\)</span><span class="math notranslate nohighlight">\(
+which will have \)</span>N_1 \times N_2$ samples.</p></li>
+<li><p>Define the loss function
+$<span class="math notranslate nohighlight">\(
+\Pi(\theta) = \frac{1}{N_1 N_2} \sum_{i=1}^{N_1} \sum_{k=1}^{N_2} | \widetilde{N}(x^{(k)}, \bm{a}^{(i)};\theta) - u^{(i)}(x^{(k)})|^2.
+\)</span>$</p></li>
+<li><p>Training the DeepONet corresponds to finding <span class="math notranslate nohighlight">\(\theta^* = \argmin{\theta} \Pi(\theta)\)</span>.</p></li>
+<li><p>Once trained, then given any new <span class="math notranslate nohighlight">\(a \in A\)</span> samples at the <span class="math notranslate nohighlight">\(M\)</span> sensor points (which gives the vector <span class="math notranslate nohighlight">\(\bm{a} \in Ro^M\)</span>), and a new point <span class="math notranslate nohighlight">\(x \in \Omega_X\)</span>, we can evaluate the corresponding prediction <span class="math notranslate nohighlight">\(u^*(x) = \widetilde{N}(x, \bm{a};\theta^*)\)</span>.</p></li>
+</ul>
+<blockquote>
+<div><p>Note:
+We need not choose the same <span class="math notranslate nohighlight">\(N_2\)</span> points across all <span class="math notranslate nohighlight">\(i\)</span> in the training set. In fact, these can be chosen randomly leading to a more diverse dataset.</p>
+</div></blockquote>
+<blockquote>
+<div><p>Note:
+The DeepONet can be easily extended to the case where the input comprises multiple functions. In this case, the trunk network remains the same, however the branch network now has multiple vectors as input. The case corresponding to two input functions, <span class="math notranslate nohighlight">\(a(y)\)</span> and <span class="math notranslate nohighlight">\(b(y)\)</span>, which when sampled yield the vectors, <span class="math notranslate nohighlight">\(\bm{a}\)</span> and <span class="math notranslate nohighlight">\(\bm{b}\)</span>.</p>
+</div></blockquote>
+<blockquote>
+<div><p>Note:
+The DeepONet can be easily extended to the case where the output comprises multiple functions (say <span class="math notranslate nohighlight">\(D\)</span> such functions). In this case, the output of the branch and trunk network leads to <span class="math notranslate nohighlight">\(D\)</span> vectors each with dimension <span class="math notranslate nohighlight">\(p\)</span>. The solution is then obtained by taking the dot product of each one of these vectors.  The case corresponding to two output functions <span class="math notranslate nohighlight">\(u_1(x)\)</span> and <span class="math notranslate nohighlight">\(u_2(x)\)</span></p>
+</div></blockquote>
+<section id="id3">
+<h3>Universal Approximation Theorem for Operator<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h3>
+<p><span class="math notranslate nohighlight">\(\forall \epsilon &gt;0\)</span>, there are positive integers <span class="math notranslate nohighlight">\(n,p,m\)</span>, constants <span class="math notranslate nohighlight">\(c_i^k,W_{bij}^k,b_{bij}^k,W_{tk},b_{tk}\)</span> such that:</p>
+<div class="math notranslate nohighlight">
+\[\left|G(u)(y)-\sum_{k=1}^{p}\sum_{i=1}^{n}c_i^k\sigma\left(\sum_{j=1}^{m}W_{bij}^{k}u(x_j)+b_{bi}^k\right).\sigma(W_{tk}.y+b_{tk})\right|&lt;\epsilon \]</div>
+</section>
+<section id="neural-network">
+<h3>Neural Network<a class="headerlink" href="#neural-network" title="Permalink to this heading">#</a></h3>
+<p>A Neural Network is a function that takes the form:</p>
+<div class="math notranslate nohighlight">
+\[NN(X)=W_n\sigma_{n-1}(W_{n-1}\sigma_{n-2}(...(W_2\sigma_1(W_1X+b_1)+b_2)+..)+b_{n-1})+b_n\]</div>
+<p>So we can use 2 NNs to implement the Universal Approximation Theorem for Operator i.e.:</p>
+<p>Branch:</p>
+<div class="math notranslate nohighlight">
+\[NN_b(u(\textbf{x}))=b(u(\textbf{x}))=\textbf{c}.\sigma\left(W_{b}u(\textbf{x})+\textbf{b}_{b}\right)\]</div>
+<p>Trunk:</p>
+<div class="math notranslate nohighlight">
+\[NN_t(\textbf{y})=t(\textbf{y})=\sigma(W_{t}.\textbf{y}+\textbf{b}_{t})\]</div>
+</section>
+<section id="id4">
+<h3>DeepOnet<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h3>
+<p>Learn the solution operators of parametric PDEs → We will try to approximate <span class="math notranslate nohighlight">\(G\)</span>  (the solution of our PDE operator) by two neural networks:</p>
+<div class="math notranslate nohighlight">
+\[G_\theta(u)(y)=\sum_{k=1}^q\underset{Branch}{\underbrace{b_k\left(u(x_1),u(x_2),...,u(x_m)\right)}}.\underset{Trunk}{\underbrace{t_k(\textbf{y})}}\]</div>
+<p>We want to obtain G, so our goal would be:</p>
+<div class="math notranslate nohighlight">
+\[G_\theta(u)(y)\approx G(u)(y)\]</div>
+<p>So we will enforce that condition into a loss function:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}(\theta)=\frac{1}{NP}\sum_{i=1}^N\sum_{j=1}^P\left|G_{\theta}(u^{(i)})y_j^{(i)}-G(u^{(i)})y_j^{(i)}\right|^2\]</div>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}(\theta)=\frac{1}{NP}\sum_{i=1}^N\sum_{j=1}^P\left|\sum_{k=1}^q{b_k\left(u(x_1),u(x_2),...,u(x_m)\right)}.t_k(y_j^{(i)})-G(u^{(i)})y_j^{(i)}\right|^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(N\)</span> is the number of functions <span class="math notranslate nohighlight">\(u(x)\)</span> in our training dataset, <span class="math notranslate nohighlight">\(P\)</span>, is the number of points inside the domain at which we will evaluate <span class="math notranslate nohighlight">\(G(u)\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(m:\)</span> Number of points at which we evaluated our input functions.</p>
+<p><span class="math notranslate nohighlight">\(N:\)</span> Number of input functions.</p>
+<p><span class="math notranslate nohighlight">\(P:\)</span> Number of points at which we evaluate the output function <span class="math notranslate nohighlight">\(\rightarrow\)</span> output sensors.</p>
+<p><strong>In summary:</strong></p>
+<p>To train a DeepOnet, we would:</p>
+<ol class="arabic simple">
+<li><p>We select <span class="math notranslate nohighlight">\(N\)</span> functions →<span class="math notranslate nohighlight">\(u(x)\)</span>.</p></li>
+<li><p>We evaluate our <span class="math notranslate nohighlight">\(N\)</span> functions at <span class="math notranslate nohighlight">\(m\)</span> points (i.e., input sensors) →<span class="math notranslate nohighlight">\(u(x_1),u(x_2),...,u(x_m)\)</span></p></li>
+<li><p>We send the <span class="math notranslate nohighlight">\(m\)</span> outputs of our <span class="math notranslate nohighlight">\(N\)</span> functions to our <strong>branch network</strong> → <span class="math notranslate nohighlight">\(b_k(u(x_1),u(x_2),...,u(x_m))\)</span></p></li>
+<li><p>We select <span class="math notranslate nohighlight">\(P\)</span> points (i.e., output sensors) inside our domain → <span class="math notranslate nohighlight">\(y_1,y_2,...,y_P\)</span></p></li>
+<li><p>We send our output sensors to our <strong>trunk network</strong>→<span class="math notranslate nohighlight">\(t_k(y_1,y_2,...,y_P)\)</span></p></li>
+<li><p>We approximate our operator by computing the dot product between the outpur of our <strong>branch network</strong> and the output of our <strong>trunk network</strong>→ <span class="math notranslate nohighlight">\(G_\theta(u)(y)=\sum_{k=1}^q\underset{Branch}{\underbrace{b_k\left(u(x_1),u(x_2),...,u(x_m)\right)}}.\underset{Trunk}{\underbrace{t_k(\textbf{y})}}\)</span></p></li>
+<li><p>Ideally <span class="math notranslate nohighlight">\(G_\theta(u)(y)\approx G(u)(y)\)</span>, so we compute the error → <span class="math notranslate nohighlight">\(\mathcal{L}(\theta)=\frac{1}{NP}\sum_{i=1}^N\sum_{j=1}^P\left|G_{\theta}(u^{(i)})y_j^{(i)}-G(u^{(i)})y_j^{(i)}\right|^2\)</span></p></li>
+<li><p>We update our NN parameters (i.e., branch and trunk) to minimize  <span class="math notranslate nohighlight">\(\mathcal{L}(\theta)\)</span>.</p></li>
+<li><p>We repeat the process.</p></li>
+</ol>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="problem-setup">
+<h1>Problem Setup<a class="headerlink" href="#problem-setup" title="Permalink to this heading">#</a></h1>
+<section id="anti-derivative-operator">
+<h2>Anti-derivative Operator<a class="headerlink" href="#anti-derivative-operator" title="Permalink to this heading">#</a></h2>
+<p>Our PDE would be:</p>
+<div class="math notranslate nohighlight">
+\[\frac{ds(x)}{dx}-u(x)=0\]</div>
+<p>The solution of our PDE is:</p>
+<div class="math notranslate nohighlight">
+\[G:u(x)→s(x)=s(0)+\int_{0}^{x}u(t)dt\]</div>
+<div class="math notranslate nohighlight">
+\[x\in[0,1]\]</div>
+<div class="math notranslate nohighlight">
+\[s(0)=0\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">onp</span>
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
+<span class="kn">from</span> <span class="nn">jax.experimental</span> <span class="kn">import</span> <span class="n">optimizers</span>
+<span class="kn">from</span> <span class="nn">jax.experimental.ode</span> <span class="kn">import</span> <span class="n">odeint</span>
+<span class="kn">from</span> <span class="nn">jax.nn</span> <span class="kn">import</span> <span class="n">relu</span>
+<span class="kn">from</span> <span class="nn">jax.config</span> <span class="kn">import</span> <span class="n">config</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">torch.utils</span> <span class="kn">import</span> <span class="n">data</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">krishna</span><span class="o">/</span><span class="n">courses</span><span class="o">/</span><span class="n">CE397</span><span class="o">-</span><span class="n">Scientific</span><span class="o">-</span><span class="n">MachineLearning</span><span class="o">/</span><span class="n">sciml</span><span class="o">/</span><span class="n">lectures</span><span class="o">/</span><span class="mi">08</span><span class="o">-</span><span class="n">deeponet</span><span class="o">/</span><span class="mi">08</span><span class="o">-</span><span class="n">deeponet</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">Cell</span> <span class="mi">13</span> <span class="n">line</span> <span class="mi">4</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=1&#39;</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
+<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=3&#39;</span><span class="o">&gt;</span><span class="mi">4</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax.experimental</span> <span class="kn">import</span> <span class="n">optimizers</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=4&#39;</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax.experimental.ode</span> <span class="kn">import</span> <span class="n">odeint</span>
+      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=5&#39;</span><span class="o">&gt;</span><span class="mi">6</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax.nn</span> <span class="kn">import</span> <span class="n">relu</span>
+
+<span class="ne">ImportError</span>: cannot import name &#39;optimizers&#39; from &#39;jax.experimental&#39; (/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/jax/experimental/__init__.py)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="data-generation">
+<h1>Data Generation<a class="headerlink" href="#data-generation" title="Permalink to this heading">#</a></h1>
+<p>We will randomly sample 10000 different functions <span class="math notranslate nohighlight">\(u\)</span> from a zero-mean Gaussian process with an exponential quadratic kernel with a length scale: <span class="math notranslate nohighlight">\(l=0.2\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_train</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># number of input sensors</span>
+<span class="n">P_train</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># number of output sensors</span>
+<span class="n">length_scale</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c1">#lenght_scale for the exponential quadratic kernel</span>
+<span class="n">key_train</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># use different key for generating training data and test data </span>
+<span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;jax_enable_x64&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># Enable double precision</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="generate-a-random-function">
+<h2>Generate a random function<a class="headerlink" href="#generate-a-random-function" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="rbf-radial-basis-function-kernel">
+<h2>RBF (Radial Basis Function) Kernel<a class="headerlink" href="#rbf-radial-basis-function-kernel" title="Permalink to this heading">#</a></h2>
+<p>An RBF kernel, often termed the Gaussian kernel, is a widely-used kernel function in the realms of machine learning and statistics. It finds predominant applications in support vector machines (SVMs) and kernel principal component analysis (PCA).</p>
+<p>The mathematical expression for the RBF kernel is:</p>
+<div class="math notranslate nohighlight">
+\[K(\mathbf{x}, \mathbf{y}) = \exp\left(-\frac{||\mathbf{x} - \mathbf{y}||^2}{2\sigma^2}\right)\]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(K(\mathbf{x}, \mathbf{y})\)</span> represents the kernel value between data points <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(||\mathbf{x} - \mathbf{y}||\)</span> denotes the Euclidean distance separating the two data points.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma\)</span> is a freely adjustable parameter, often referred to as the bandwidth or spread of the kernel. The magnitude of <span class="math notranslate nohighlight">\(\sigma\)</span> dictates the reach or influence of individual data points when assessing similarity. A diminutive <span class="math notranslate nohighlight">\(\sigma\)</span> yields a constricted kernel, implying each point has a restricted zone of influence. Conversely, an enlarged <span class="math notranslate nohighlight">\(\sigma\)</span> produces a more expansive kernel, with data points influencing a broader region.</p></li>
+</ul>
+<p>The intrinsic concept behind the RBF kernel is to gauge the similarity between two points in the input space. The function’s value peaks (i.e., 1) when both points overlap and diminishes (approaching 0) as the points diverge. The decrement rate is modulated by the <span class="math notranslate nohighlight">\(\sigma\)</span> parameter.</p>
+<p>The term “radial basis” originates from the kernel’s value being contingent solely on the distance (i.e., radially symmetric) between the two points, rather than their absolute coordinates.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define RBF kernel</span>
+<span class="k">def</span> <span class="nf">RBF</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="n">output_scale</span><span class="p">,</span> <span class="n">lengthscales</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x1</span> <span class="o">/</span> <span class="n">lengthscales</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x2</span> <span class="o">/</span> <span class="n">lengthscales</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">diffs</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_scale</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">r2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample GP prior at a fine grid</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">gp_params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">)</span>
+<span class="n">jitter</span> <span class="o">=</span> <span class="mf">1e-10</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">RBF</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">gp_params</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="n">jitter</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+<span class="n">gp_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key_train</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,)))</span>
+
+<span class="c1"># Create a callable interpolation function  </span>
+<span class="n">u_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">gp_sample</span><span class="p">)</span>
+<span class="c1"># Input sensor locations and measurements</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">u_fn</span><span class="p">,</span> <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">))(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="c1">#vectorize our code to run it in multiple batches simultaneusly (or to evaluate a function simultaneusly)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We obtain the corresponding 10000 ODE solutions by solving:</p>
+<div class="math notranslate nohighlight">
+\[\frac{ds(x)}{dx}=u(x)\]</div>
+<p>Using an explicit Runge-Kutta method(RK45)→ JAX’s odeint functiom.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Output sensor locations and measurements</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key_train</span><span class="p">,</span> <span class="p">(</span><span class="n">P_train</span><span class="o">*</span><span class="mi">100</span><span class="p">,))</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span> 
+<span class="n">s_train</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">u_fn</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span> <span class="c1"># Obtain the ODE solution</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_us</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span><span class="n">s_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/47c2f3e657ee204aa352513d669ccbaeac7e91cb85b63f5efd80c8ba06cdc5e1.png" src="../../_images/47c2f3e657ee204aa352513d669ccbaeac7e91cb85b63f5efd80c8ba06cdc5e1.png" />
+</div>
+</div>
+<p>Now, we will have to create many functions for our testing and training dataset, so let’s create a pair of programing-functions to generate one random function at a time.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geneate training data corresponding to one input sample</span>
+<span class="k">def</span> <span class="nf">generate_one_training_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="c1"># Sample GP prior at a fine grid</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">gp_params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">)</span>
+    <span class="n">jitter</span> <span class="o">=</span> <span class="mf">1e-10</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">RBF</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">gp_params</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="n">jitter</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+    <span class="n">gp_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,)))</span>
+
+    <span class="c1"># Create a callable interpolation function  </span>
+    <span class="n">u_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">gp_sample</span><span class="p">)</span>
+
+    <span class="c1"># Input sensor locations and measurements</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">u_fn</span><span class="p">,</span> <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">))(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Output sensor locations and measurements</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">P</span><span class="p">,))</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span> 
+    <span class="n">s_train</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">u_fn</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)))[</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># JAX has a bug and always returns s(0), so add a dummy entry to y and return s[1:]</span>
+
+    <span class="c1"># Tile inputs</span>
+    <span class="n">u_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="p">(</span><span class="n">P</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">u_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">s_train</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geneate test data corresponding to one input sample</span>
+<span class="k">def</span> <span class="nf">generate_one_test_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="c1"># Sample GP prior at a fine grid</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">512</span>
+    <span class="n">gp_params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">)</span>
+    <span class="n">jitter</span> <span class="o">=</span> <span class="mf">1e-10</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">RBF</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">gp_params</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="n">jitter</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+    <span class="n">gp_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,)))</span>
+
+    <span class="c1"># Create a callable interpolation function  </span>
+    <span class="n">u_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">gp_sample</span><span class="p">)</span>
+
+    <span class="c1"># Input sensor locations and measurements</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">u_fn</span><span class="p">,</span> <span class="n">in_axes</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="mi">0</span><span class="p">))(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Output sensor locations and measurements</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">u_fn</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># Tile inputs</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="p">(</span><span class="n">P</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span> 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id5">
+<h2>Data Generation<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Training Data</span>
+<span class="n">N_train</span> <span class="o">=</span> <span class="mi">10000</span> <span class="c1">#Number of functions</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># number of input sensors</span>
+<span class="n">P_train</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># number of output sensors</span>
+<span class="n">key_train</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># use different key for generating training data and test data </span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;jax_enable_x64&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># Enable double precision</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key_train</span><span class="p">,</span> <span class="n">N_train</span><span class="p">)</span> <span class="c1"># Obtain 10000 random numbers</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gen_fn</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">generate_one_training_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">P_train</span><span class="p">))</span> <span class="c1">#lets call our function</span>
+<span class="n">u_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">gen_fn</span><span class="p">)(</span><span class="n">keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Reshape the data</span>
+<span class="n">u_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">u_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_train</span> <span class="o">*</span> <span class="n">P_train</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_train</span> <span class="o">*</span> <span class="n">P_train</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">s_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">s_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_train</span> <span class="o">*</span> <span class="n">P_train</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Testing Data</span>
+<span class="n">N_test</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># number of input samples </span>
+<span class="n">P_test</span> <span class="o">=</span> <span class="n">m</span>   <span class="c1"># number of sensors </span>
+<span class="n">key_test</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span> <span class="c1"># A different key </span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keys</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key_test</span><span class="p">,</span> <span class="n">N_test</span><span class="p">)</span>
+<span class="n">gen_fn</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">generate_one_test_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">P_test</span><span class="p">))</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="n">gen_fn</span><span class="p">)(</span><span class="n">keys</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Reshape the data</span>
+<span class="n">u_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_test</span> <span class="o">*</span> <span class="n">P_test</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_test</span> <span class="o">*</span> <span class="n">P_test</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">s_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_test</span> <span class="o">*</span> <span class="n">P_test</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data generator</span>
+<span class="k">class</span> <span class="nc">DataGenerator</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> 
+                 <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">rng_key</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">1234</span><span class="p">)):</span>
+        <span class="s1">&#39;Initialization&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="c1"># input sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="c1"># location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="c1"># labeled data evulated at y (solution measurements, BC/IC conditions, etc.)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">rng_key</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="s1">&#39;Generate one batch of data&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_generation</span><span class="p">(</span><span class="n">subkey</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span>
+
+    <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="k">def</span> <span class="nf">__data_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="s1">&#39;Generates data containing batch_size samples&#39;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span>
+        <span class="c1"># Construct batch</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="id6">
+<h1>DeepOnet<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the neural net</span>
+<span class="k">def</span> <span class="nf">MLP</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">):</span>
+<span class="w">  </span><span class="sd">&#39;&#39;&#39; Vanilla MLP&#39;&#39;&#39;</span>
+  <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">rng_key</span><span class="p">):</span>
+      <span class="k">def</span> <span class="nf">init_layer</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">):</span>
+          <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+          <span class="n">glorot_stddev</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">d_in</span> <span class="o">+</span> <span class="n">d_out</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+          <span class="n">W</span> <span class="o">=</span> <span class="n">glorot_stddev</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">))</span>
+          <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">d_out</span><span class="p">)</span>
+          <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span>
+      <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">))</span>
+      <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">init_layer</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">layers</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+      <span class="k">return</span> <span class="n">params</span>
+  <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+      <span class="k">for</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+          <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+          <span class="n">inputs</span> <span class="o">=</span> <span class="n">activation</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+      <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+      <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+      <span class="k">return</span> <span class="n">outputs</span>
+  <span class="k">return</span> <span class="n">init</span><span class="p">,</span> <span class="n">apply</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the model</span>
+<span class="k">class</span> <span class="nc">DeepONet</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_layers</span><span class="p">,</span> <span class="n">trunk_layers</span><span class="p">):</span>    
+        <span class="c1"># Network initialization and evaluation functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">branch_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_apply</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">branch_layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trunk_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trunk_apply</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">trunk_layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">)</span>
+
+        <span class="c1"># Initialize</span>
+        <span class="n">branch_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_init</span><span class="p">(</span><span class="n">rng_key</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">1234</span><span class="p">))</span>
+        <span class="n">trunk_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trunk_init</span><span class="p">(</span><span class="n">rng_key</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">4321</span><span class="p">))</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">(</span><span class="n">branch_params</span><span class="p">,</span> <span class="n">trunk_params</span><span class="p">)</span>
+
+        <span class="c1"># Use optimizers to set optimizer initialization and update functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opt_init</span><span class="p">,</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">opt_update</span><span class="p">,</span> \
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span> <span class="o">=</span> <span class="n">optimizers</span><span class="o">.</span><span class="n">adam</span><span class="p">(</span><span class="n">optimizers</span><span class="o">.</span><span class="n">exponential_decay</span><span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> 
+                                                                      <span class="n">decay_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> 
+                                                                      <span class="n">decay_rate</span><span class="o">=</span><span class="mf">0.9</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opt_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_init</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">itercount</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="c1"># Logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss_log</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Define opeartor net</span>
+    <span class="k">def</span> <span class="nf">operator_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">branch_params</span><span class="p">,</span> <span class="n">trunk_params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_apply</span><span class="p">(</span><span class="n">branch_params</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trunk_apply</span><span class="p">(</span><span class="n">trunk_params</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">B</span> <span class="o">*</span> <span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">outputs</span>
+      
+    <span class="c1"># Define ODE/PDE residual</span>
+    <span class="k">def</span> <span class="nf">residual_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">s_y</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_net</span><span class="p">,</span> <span class="n">argnums</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)(</span><span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s_y</span>
+
+    <span class="c1"># Define loss</span>
+    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="c1"># Fetch data</span>
+        <span class="c1"># inputs: (u, y), shape = (N, m), (N,1)</span>
+        <span class="c1"># outputs: s, shape = (N,1)</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="c1"># Compute forward pass</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_net</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="c1"># Compute loss</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">outputs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">pred</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+    <span class="c1"># Define a compiled update step</span>
+    <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="n">opt_state</span><span class="p">)</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">)(</span><span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_update</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">)</span>
+
+    <span class="c1"># Optimize parameters in a loop</span>
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">nIter</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="n">pbar</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="n">nIter</span><span class="p">)</span>
+        <span class="c1"># Main training loop</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">opt_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">itercount</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_state</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">it</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opt_state</span><span class="p">)</span>
+
+                <span class="c1"># Compute loss</span>
+                <span class="n">loss_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+
+                <span class="c1"># Store loss</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">loss_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss_value</span><span class="p">)</span>
+
+                <span class="c1"># Print loss during training</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">({</span><span class="s1">&#39;Loss&#39;</span><span class="p">:</span> <span class="n">loss_value</span><span class="p">})</span>
+       
+    <span class="c1"># Evaluates predictions at test points  </span>
+    <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="k">def</span> <span class="nf">predict_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">):</span>
+        <span class="n">s_pred</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_net</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s_pred</span>
+
+    <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="k">def</span> <span class="nf">predict_s_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">):</span>
+        <span class="n">s_y_pred</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_net</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s_y_pred</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="evaluate-our-operator">
+<h1>Evaluate our Operator<a class="headerlink" href="#evaluate-our-operator" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model</span>
+<span class="c1"># For vanilla DeepONet, shallower network yields better accuarcy.</span>
+<span class="n">branch_layers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span> 
+<span class="n">trunk_layers</span> <span class="o">=</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">DeepONet</span><span class="p">(</span><span class="n">branch_layers</span><span class="p">,</span> <span class="n">trunk_layers</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create data set</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">DataGenerator</span><span class="p">(</span><span class="n">u_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">s_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">nIter</span><span class="o">=</span><span class="mi">40000</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 40000/40000 [01:23&lt;00:00, 479.27it/s, Loss=4.895145844785917e-07]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Predict</span>
+<span class="n">params</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">opt_state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_s</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">u_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s_y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_s_y</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">u_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="c1"># remember that s_y=ds/dy=u</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute relative l2 error</span>
+<span class="n">error_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s_test</span> <span class="o">-</span> <span class="n">s_pred</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s_test</span><span class="p">)</span> 
+<span class="n">error_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u_test</span><span class="p">[::</span><span class="n">P_test</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:,</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_y_pred</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u_test</span><span class="p">[::</span><span class="n">P_test</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:,</span><span class="kc">None</span><span class="p">])</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">error_s</span><span class="p">,</span><span class="n">error_u</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0019666823801816335 0.093285374
+</pre></div>
+</div>
+</div>
+</div>
+<section id="visualize-the-results-for-the-first-function-in-our-testing-dataset">
+<h2>Visualize the results for the first function in our Testing Dataset<a class="headerlink" href="#visualize-the-results-for-the-first-function-in-our-testing-dataset" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">idx</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">idx</span> <span class="o">*</span> <span class="n">P_test</span><span class="p">,(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">P_test</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute the relative l2 error for one input sample </span>
+<span class="n">error_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">s_pred</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">s_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">2</span><span class="p">)</span> 
+<span class="n">error_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u_test</span><span class="p">[::</span><span class="n">P_test</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:,</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_y_pred</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u_test</span><span class="p">[::</span><span class="n">P_test</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[:,</span><span class="kc">None</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span> 
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error_u: </span><span class="si">{:.3e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error_u</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error_s: </span><span class="si">{:.3e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">error_s</span><span class="p">))</span>
+
+<span class="c1"># Visualizations</span>
+<span class="c1"># Predicted solution s(y)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">s_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Exact s&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">s_pred</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Predicted s&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;s(y)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">s_pred</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">s_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Predicted residual u(x)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">u_test</span><span class="p">[::</span><span class="n">P_test</span><span class="p">][</span><span class="n">idx</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Exact u&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">s_y_pred</span><span class="p">[</span><span class="n">index</span><span class="p">,:],</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Predicted u&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">s_y_pred</span><span class="p">[</span><span class="n">index</span><span class="p">,:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">u_test</span><span class="p">[::</span><span class="n">P_test</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_u: 1.967e-03
+error_s: 9.329e-02
+</pre></div>
+</div>
+<img alt="../../_images/a473223923b7723ac686fbd037be9756afc927a9dc2d0e7d80b6ae97a2d73bfd.png" src="../../_images/a473223923b7723ac686fbd037be9756afc927a9dc2d0e7d80b6ae97a2d73bfd.png" />
+<img alt="../../_images/d7f865115543e76cd690e769f9283dfb520b70479665081e3f38362d6c397b10.png" src="../../_images/d7f865115543e76cd690e769f9283dfb520b70479665081e3f38362d6c397b10.png" />
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="example">
+<h1>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h1>
+<p>Lets obtain the anti-derivative of a trigonometric function. <strong>However</strong>, remember that this neural operator works for <span class="math notranslate nohighlight">\(x\in[0,1]\)</span> when the antiderivative’s initial value (<span class="math notranslate nohighlight">\(s(0)=0\)</span>). To fulfill that conditions, we will use <span class="math notranslate nohighlight">\(u(x)=cos(2\pi x),∀x\in[0,1]\)</span>.</p>
+<p>So, we will evaluate our operator (<span class="math notranslate nohighlight">\(G\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[G:u(x)→s(x)=s(0)+\int_{0}^{x}u(t)dt\]</div>
+<p>to <span class="math notranslate nohighlight">\(u(t)=cos(2\pi t)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[s(x)=s(0)+\int_{0}^{x}cos(2\pi t)dt\]</div>
+<p>Since <span class="math notranslate nohighlight">\(s(0)=0\)</span>, the answer would be (the integral of u):</p>
+<div class="math notranslate nohighlight">
+\[s(x)=\frac{1}{2\pi}sin(2\pi x)\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_us</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+  <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;18&#39;</span>
+  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span>
+  <span class="n">wdt</span><span class="o">=</span><span class="mf">1.5</span>
+  <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="s1">&#39;k--&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$u(x)=ds/dx$&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="n">wdt</span><span class="p">)</span>
+  <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="s1">&#39;o-&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$s(x)=s(0)+\int u(t)dt|_{t=y}$&#39;</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="n">wdt</span><span class="p">)</span>
+  <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+  <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">)</span>
+  <span class="n">ax1</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+  <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#u_fn = lambda x, t: np.interp(t, X.flatten(), gp_sample)</span>
+<span class="n">u_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>
+<span class="c1"># Input sensor locations and measurements</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">u_fn</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+<span class="c1"># Output sensor locations and measurements</span>
+<span class="n">y</span> <span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key_train</span><span class="p">,</span> <span class="p">(</span><span class="n">m</span><span class="p">,))</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># reshapte the data to be processed by our DeepOnet</span>
+<span class="n">u2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">u2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">u2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N_test</span> <span class="o">*</span> <span class="n">P_test</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">predict_s</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">u2</span><span class="p">,</span> <span class="n">y</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_us</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/736bd917a881ca7eb84cb4a7e06115b2ef028ddefbf6f684789d3eeeba81494b.png" src="../../_images/736bd917a881ca7eb84cb4a7e06115b2ef028ddefbf6f684789d3eeeba81494b.png" />
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
+<p>[1] Lu, L., Jin, P., &amp; Karniadakis, G. E. (2019). Deeponet: Learning nonlinear operators for identifying differential equations based on the universal approximation theorem of operators. arXiv preprint arXiv:1910.03193.</p>
+<p>[2] Wang, S., Wang, H., &amp; Perdikaris, P. (2021). Learning the solution operator of parametric partial differential equations with physics-informed DeepONets. Science advances, 7(40), eabi8605.</p>
+<p>[3] Ray, D., Pinti, O., &amp; Oberai, A. A. (2023). Deep Learning and Computational Physics (Lecture Notes). arXiv preprint arXiv:2301.00942.</p>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/08-deeponet"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../07-ad/07-ad.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">07: Automatic Differentiation</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">07: DeepONet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-pinns">Problems with PINNs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameterized-pde">Parameterized PDE</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-and-operators">Functions and Operators:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function">Function:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#operator">Operator:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parametric-pdes-and-operators">Parametric PDEs and Operators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#universal-approximation-theorem-for-operator">Universal Approximation Theorem for Operator</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">DeepONet</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">DeepONet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-deeponets">Training DeepONets</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Universal Approximation Theorem for Operator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-network">Neural Network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">DeepOnet</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setup">Problem Setup</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anti-derivative-operator">Anti-derivative Operator</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation">Data Generation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-a-random-function">Generate a random function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rbf-radial-basis-function-kernel">RBF (Radial Basis Function) Kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Data Generation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">DeepOnet</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-our-operator">Evaluate our Operator</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-results-for-the-first-function-in-our-testing-dataset">Visualize the results for the first function in our Testing Dataset</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
