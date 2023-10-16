@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>07: DeepONet &#8212; Scientific Machine Learning (SciML)</title>
+    <title>08: DeepONet &#8212; Scientific Machine Learning (SciML)</title>
   
   
   
@@ -202,7 +202,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">07: DeepONet</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">08: DeepONet</a></li>
 
 
 
@@ -425,7 +425,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>07: DeepONet</h1>
+    <h1>08: DeepONet</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -435,7 +435,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">07: DeepONet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">08: DeepONet</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-pinns">Problems with PINNs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameterized-pde">Parameterized PDE</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-and-operators">Functions and Operators:</a><ul class="nav section-nav flex-column">
@@ -487,12 +487,13 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="deeponet">
-<h1>07: DeepONet<a class="headerlink" href="#deeponet" title="Permalink to this heading">#</a></h1>
+<h1>08: DeepONet<a class="headerlink" href="#deeponet" title="Permalink to this heading">#</a></h1>
 <p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/08-deeponet/08-deeponet-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
 <strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/08-deeponet/08-deeponet.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p><a class="reference external" href="https://jupyter.designsafe-ci.org/hub/user-redirect/lab/tree/CommunityData/Jupyter%20Notebooks%20for%20Civil%20Engineering%20Courses/University_of_Washington/freeFieldJupyterPM4Sand/freeFieldJupyterPM4Sand_Community.ipynb"><img alt="Open In DesignSafe" src="https://raw.githubusercontent.com/geoelements/LearnMPM/main/DesignSafe-Badge.svg" /></a></p>
 <section id="problems-with-pinns">
 <h2>Problems with PINNs<a class="headerlink" href="#problems-with-pinns" title="Permalink to this heading">#</a></h2>
-<p>We represent a multi-layer perceptron (MLP) <span class="math notranslate nohighlight">\(y = \bm{\mathcal{F}}(x;\theta)\)</span> as a function that takes an input <span class="math notranslate nohighlight">\(x \in Ro^d\)</span> and gives an output <span class="math notranslate nohighlight">\(y \in Ro^d\)</span> with trainable weights <span class="math notranslate nohighlight">\(\theta\)</span>. A Physics Informed Neural Network (PINN) can be described as  <span class="math notranslate nohighlight">\(\bm{u}(x) = \bm{\mathcal{F}}(x;\theta)\)</span> taking as input the independent variable <span class="math notranslate nohighlight">\(x\)</span> of the underlying Partial Differential Equation (PDE) and outputs its solution, <span class="math notranslate nohighlight">\(\bm{u}(x)\)</span>.  The training process for a PINN involves minimizing the combined residual of the PDE and its boundary conditions.</p>
+<p>We represent a multi-layer perceptron (MLP) <span class="math notranslate nohighlight">\(y = \mathbf{\mathcal{F}}(x;\theta)\)</span> as a function that takes an input <span class="math notranslate nohighlight">\(x \in Ro^d\)</span> and gives an output <span class="math notranslate nohighlight">\(y \in Ro^d\)</span> with trainable weights <span class="math notranslate nohighlight">\(\theta\)</span>. A Physics Informed Neural Network (PINN) can be described as  <span class="math notranslate nohighlight">\(\mathbf{u}(x) = \mathbf{\mathcal{F}}(x;\theta)\)</span> taking as input the independent variable <span class="math notranslate nohighlight">\(x\)</span> of the underlying Partial Differential Equation (PDE) and outputs its solution, <span class="math notranslate nohighlight">\(\mathbf{u}(x)\)</span>.  The training process for a PINN involves minimizing the combined residual of the PDE and its boundary conditions.</p>
 <p>To illustrate, consider the PDE</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -580,7 +581,7 @@ $<span class="math notranslate nohighlight">\(
 holds for all \)</span>u \in V<span class="math notranslate nohighlight">\( and \)</span>y \in K_2$.</p>
 <p><img alt="DeepONet" src="../../_images/sensors-deeponet.png" /></p>
 <blockquote>
-<div><p>Illustrations of the problem setup and architectures of DeepONets.} (\textbf{A}) The network to learn an operator <span class="math notranslate nohighlight">\(G: u \mapsto G(u)\)</span> takes two inputs <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m)]\)</span> and <span class="math notranslate nohighlight">\(y\)</span>. (\textbf{B}) Illustration of the training data. For each input function <span class="math notranslate nohighlight">\(u\)</span>, we require that we have the same number of evaluations at the same scattered sensors <span class="math notranslate nohighlight">\(x_1, x_2, \dots, x_m\)</span>. However, we do not enforce any constraints on the number or locations for the evaluation of output functions. (\textbf{C}) The stacked DeepONet in Theorem~\ref{thm:main} has one trunk network and <span class="math notranslate nohighlight">\(p\)</span> stacked branch networks. (\textbf{D}) The unstacked DeepONet has one trunk network and one branch network.</p>
+<div><p>Illustrations of the problem setup and architectures of DeepONets.} (<strong>A</strong>) The network to learn an operator <span class="math notranslate nohighlight">\(G: u \mapsto G(u)\)</span> takes two inputs <span class="math notranslate nohighlight">\([u(x_1), u(x_2), \dots, u(x_m)]\)</span> and <span class="math notranslate nohighlight">\(y\)</span>. (<strong>B</strong>) Illustration of the training data. For each input function <span class="math notranslate nohighlight">\(u\)</span>, we require that we have the same number of evaluations at the same scattered sensors <span class="math notranslate nohighlight">\(x_1, x_2, \dots, x_m\)</span>. However, we do not enforce any constraints on the number or locations for the evaluation of output functions. (<strong>C</strong>) The stacked DeepONet in Theorem~\ref{thm:main} has one trunk network and <span class="math notranslate nohighlight">\(p\)</span> stacked branch networks. (<strong>D</strong>) The unstacked DeepONet has one trunk network and one branch network.</p>
 </div></blockquote>
 <p>The universal approximation theorem suggests that neural networks have the potential to learn nonlinear operators from data, much like current deep learning techniques. However, while the theorem indicates that fully-connected neural networks (FNNs) can theoretically approximate functions, they often underperform when compared to specialized architectures like convolutional neural networks (CNNs) in practical scenarios. This is primarily because the theorem only addresses approximation errors and neglects the equally critical optimization and generalization errors. For a neural network to be effective, it must not only approximate well but also train efficiently and generalize to new data.</p>
 </section>
@@ -603,13 +604,13 @@ G(u)(y) \approx \sum_{k=1}^p b_k t_k + b_0.
 <p>A standard DeepONet comprises two neural networks. We describe below its construction to approximate an operator <span class="math notranslate nohighlight">\(\mathcal{N} : A \rightarrow U\)</span>, where <span class="math notranslate nohighlight">\(A\)</span> is a set of functions of the form <span class="math notranslate nohighlight">\(a: \Omega_Y \subset Ro^d \rightarrow Ro\)</span> while <span class="math notranslate nohighlight">\(U\)</span> consists of functions of the form <span class="math notranslate nohighlight">\(u: \Omega_X \subset Ro^D \rightarrow Ro\)</span>. Furthermore, we assume that point-wise evaluations of both class of functions is possible. The architecture for the DeepONet is explained below:</p>
 <ul class="simple">
 <li><p>Fix <span class="math notranslate nohighlight">\(M\)</span> distinct sensor points <span class="math notranslate nohighlight">\(y^{(1)},..., y^{(M)}\)</span> in <span class="math notranslate nohighlight">\(\Omega_Y\)</span>.</p></li>
-<li><p>Sample a function <span class="math notranslate nohighlight">\(a \in A\)</span> at these sensor points to get the vector <span class="math notranslate nohighlight">\(\bm{a} =  [a(y^{(1)}), ... , \ a(y^{(M)})]^\top \in Ro^M\)</span>.</p></li>
-<li><p>Supply <span class="math notranslate nohighlight">\(\bm{a}\)</span> as the input to a sub-network, called the \textit{branch net} <span class="math notranslate nohighlight">\(\mathcal{B}(.;\bm{\theta}_B):Ro^M \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\bm{\beta} = [\beta_1(\bm{a}), ..., \ \beta_p(\bm{a})]^\top\in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\bm{\theta}_B\)</span> are the trainable parameters of the branch net. The dimension of the output of the branch is relatively small, say <span class="math notranslate nohighlight">\(p \approx 100\)</span>.</p></li>
-<li><p>Supply <span class="math notranslate nohighlight">\(x\)</span> as an input to a second sub-network, called the \text{trunk net} <span class="math notranslate nohighlight">\(\mathcal{T}(.;\bm{\theta}_T): Ro^D \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\bm{\tau} = [\tau_1(x), ..., \ \tau_p(x)]^\top \in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\bm{\theta}_T\)</span> are the trainable parameters of the trunk net.</p></li>
-<li><p>Take a dot product of the outputs of the branch and trunk nets to get the final output of the DeepONet <span class="math notranslate nohighlight">\(\widetilde{\mathcal{N}}(.,.;\bm{\theta}):Ro^D \times Ro^M \rightarrow Ro\)</span> which will approximate the value of <span class="math notranslate nohighlight">\(u(x)\)</span></p></li>
+<li><p>Sample a function <span class="math notranslate nohighlight">\(a \in A\)</span> at these sensor points to get the vector <span class="math notranslate nohighlight">\(\mathbf{a} =  [a(y^{(1)}), ... , \ a(y^{(M)})]^\top \in Ro^M\)</span>.</p></li>
+<li><p>Supply <span class="math notranslate nohighlight">\(\mathbf{a}\)</span> as the input to a sub-network, called the \textit{branch net} <span class="math notranslate nohighlight">\(\mathcal{B}(.;\mathbf{\theta}_B):Ro^M \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\mathbf{\beta} = [\beta_1(\mathbf{a}), ..., \ \beta_p(\mathbf{a})]^\top\in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\mathbf{\theta}_B\)</span> are the trainable parameters of the branch net. The dimension of the output of the branch is relatively small, say <span class="math notranslate nohighlight">\(p \approx 100\)</span>.</p></li>
+<li><p>Supply <span class="math notranslate nohighlight">\(x\)</span> as an input to a second sub-network, called the \text{trunk net} <span class="math notranslate nohighlight">\(\mathcal{T}(.;\mathbf{\theta}_T): Ro^D \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\mathbf{\tau} = [\tau_1(x), ..., \ \tau_p(x)]^\top \in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\mathbf{\theta}_T\)</span> are the trainable parameters of the trunk net.</p></li>
+<li><p>Take a dot product of the outputs of the branch and trunk nets to get the final output of the DeepONet <span class="math notranslate nohighlight">\(\widetilde{\mathcal{N}}(.,.;\mathbf{\theta}):Ro^D \times Ro^M \rightarrow Ro\)</span> which will approximate the value of <span class="math notranslate nohighlight">\(u(x)\)</span></p></li>
 </ul>
-<p><span class="math notranslate nohighlight">\(u(x) \approx \widetilde{\mathcal{N}}(x,\bm{a};\bm{\theta}) = \sum_{k=1}^p \beta_k(\bm{a}) \tau_k(x).\)</span></p>
-<p>where the trainable parameters of the DeepONet will be the combined parameters of the branch and trunk nets, i.e., <span class="math notranslate nohighlight">\(\bm{\theta} = [\theta_T, \theta_M]\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(u(x) \approx \widetilde{\mathcal{N}}(x,\mathbf{a};\mathbf{\theta}) = \sum_{k=1}^p \beta_k(\mathbf{a}) \tau_k(x).\)</span></p>
+<p>where the trainable parameters of the DeepONet will be the combined parameters of the branch and trunk nets, i.e., <span class="math notranslate nohighlight">\(\mathbf{\theta} = [\theta_T, \theta_M]\)</span>.</p>
 <p><img alt="DeepONet" src="../../_images/DeepONet.png" /></p>
 <blockquote>
 <div><p>Schematic of a DeepONet</p>
@@ -626,20 +627,20 @@ G(u)(y) \approx \sum_{k=1}^p b_k t_k + b_0.
 <h2>Training DeepONets<a class="headerlink" href="#training-deeponets" title="Permalink to this heading">#</a></h2>
 <p>Training a DeepONet is typically supervised, and requires pairwise data. The following are the main steps involved:</p>
 <ul class="simple">
-<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(y^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\bm{a}^{(i)} = [a^{(i)}(y^{(1)}),...,a^{(i)}(y^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
+<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(y^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\mathbf{a}^{(i)} = [a^{(i)}(y^{(1)}),...,a^{(i)}(y^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
 <li><p>For each <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, determine (numerically or analytically) the corresponding functions <span class="math notranslate nohighlight">\(u^{(i)}\)</span> given by the operator <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>.</p></li>
 <li><p>Sample the function <span class="math notranslate nohighlight">\(u^{(i)}\)</span> at <span class="math notranslate nohighlight">\(N_2\)</span> points in <span class="math notranslate nohighlight">\(\Omega_X\)</span>, i.e., <span class="math notranslate nohighlight">\(u^{(i)}(x^{(k)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq k \leq N_2\)</span>.</p></li>
 <li><p>Construct the training set
 $<span class="math notranslate nohighlight">\(
-\mathcal{S} = \left \{\Big(\bm{a}^{(i)}, x^{(k)}, u^{(i)}(x^{(k)})\Big) : 1 \leq i \leq N_1, \ 1 \leq k \leq N_2 \right\}
+\mathcal{S} = \left \{\Big(\mathbf{a}^{(i)}, x^{(k)}, u^{(i)}(x^{(k)})\Big) : 1 \leq i \leq N_1, \ 1 \leq k \leq N_2 \right\}
 \)</span><span class="math notranslate nohighlight">\(
 which will have \)</span>N_1 \times N_2$ samples.</p></li>
 <li><p>Define the loss function
 $<span class="math notranslate nohighlight">\(
-\Pi(\theta) = \frac{1}{N_1 N_2} \sum_{i=1}^{N_1} \sum_{k=1}^{N_2} | \widetilde{N}(x^{(k)}, \bm{a}^{(i)};\theta) - u^{(i)}(x^{(k)})|^2.
+\Pi(\theta) = \frac{1}{N_1 N_2} \sum_{i=1}^{N_1} \sum_{k=1}^{N_2} | \widetilde{N}(x^{(k)}, \mathbf{a}^{(i)};\theta) - u^{(i)}(x^{(k)})|^2.
 \)</span>$</p></li>
 <li><p>Training the DeepONet corresponds to finding <span class="math notranslate nohighlight">\(\theta^* = \argmin{\theta} \Pi(\theta)\)</span>.</p></li>
-<li><p>Once trained, then given any new <span class="math notranslate nohighlight">\(a \in A\)</span> samples at the <span class="math notranslate nohighlight">\(M\)</span> sensor points (which gives the vector <span class="math notranslate nohighlight">\(\bm{a} \in Ro^M\)</span>), and a new point <span class="math notranslate nohighlight">\(x \in \Omega_X\)</span>, we can evaluate the corresponding prediction <span class="math notranslate nohighlight">\(u^*(x) = \widetilde{N}(x, \bm{a};\theta^*)\)</span>.</p></li>
+<li><p>Once trained, then given any new <span class="math notranslate nohighlight">\(a \in A\)</span> samples at the <span class="math notranslate nohighlight">\(M\)</span> sensor points (which gives the vector <span class="math notranslate nohighlight">\(\mathbf{a} \in Ro^M\)</span>), and a new point <span class="math notranslate nohighlight">\(x \in \Omega_X\)</span>, we can evaluate the corresponding prediction <span class="math notranslate nohighlight">\(u^*(x) = \widetilde{N}(x, \mathbf{a};\theta^*)\)</span>.</p></li>
 </ul>
 <blockquote>
 <div><p>Note:
@@ -647,7 +648,7 @@ We need not choose the same <span class="math notranslate nohighlight">\(N_2\)</
 </div></blockquote>
 <blockquote>
 <div><p>Note:
-The DeepONet can be easily extended to the case where the input comprises multiple functions. In this case, the trunk network remains the same, however the branch network now has multiple vectors as input. The case corresponding to two input functions, <span class="math notranslate nohighlight">\(a(y)\)</span> and <span class="math notranslate nohighlight">\(b(y)\)</span>, which when sampled yield the vectors, <span class="math notranslate nohighlight">\(\bm{a}\)</span> and <span class="math notranslate nohighlight">\(\bm{b}\)</span>.</p>
+The DeepONet can be easily extended to the case where the input comprises multiple functions. In this case, the trunk network remains the same, however the branch network now has multiple vectors as input. The case corresponding to two input functions, <span class="math notranslate nohighlight">\(a(y)\)</span> and <span class="math notranslate nohighlight">\(b(y)\)</span>, which when sampled yield the vectors, <span class="math notranslate nohighlight">\(\mathbf{a}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{b}\)</span>.</p>
 </div></blockquote>
 <blockquote>
 <div><p>Note:
@@ -724,7 +725,7 @@ The DeepONet can be easily extended to the case where the output comprises multi
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">onp</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
-<span class="kn">from</span> <span class="nn">jax.experimental</span> <span class="kn">import</span> <span class="n">optimizers</span>
+<span class="kn">from</span> <span class="nn">jax.example_libraries</span> <span class="kn">import</span> <span class="n">optimizers</span>
 <span class="kn">from</span> <span class="nn">jax.experimental.ode</span> <span class="kn">import</span> <span class="n">odeint</span>
 <span class="kn">from</span> <span class="nn">jax.nn</span> <span class="kn">import</span> <span class="n">relu</span>
 <span class="kn">from</span> <span class="nn">jax.config</span> <span class="kn">import</span> <span class="n">config</span>
@@ -736,20 +737,6 @@ The DeepONet can be easily extended to the case where the output comprises multi
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="o">%</span><span class="k">matplotlib</span> inline
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">krishna</span><span class="o">/</span><span class="n">courses</span><span class="o">/</span><span class="n">CE397</span><span class="o">-</span><span class="n">Scientific</span><span class="o">-</span><span class="n">MachineLearning</span><span class="o">/</span><span class="n">sciml</span><span class="o">/</span><span class="n">lectures</span><span class="o">/</span><span class="mi">08</span><span class="o">-</span><span class="n">deeponet</span><span class="o">/</span><span class="mi">08</span><span class="o">-</span><span class="n">deeponet</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">Cell</span> <span class="mi">13</span> <span class="n">line</span> <span class="mi">4</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=1&#39;</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=2&#39;</span><span class="o">&gt;</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
-<span class="o">----&gt;</span> <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=3&#39;</span><span class="o">&gt;</span><span class="mi">4</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax.experimental</span> <span class="kn">import</span> <span class="n">optimizers</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=4&#39;</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax.experimental.ode</span> <span class="kn">import</span> <span class="n">odeint</span>
-      <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;vscode-notebook-cell:/Users/krishna/courses/CE397-Scientific-MachineLearning/sciml/lectures/08-deeponet/08-deeponet.ipynb#W4sZmlsZQ%3D%3D?line=5&#39;</span><span class="o">&gt;</span><span class="mi">6</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span> <span class="kn">from</span> <span class="nn">jax.nn</span> <span class="kn">import</span> <span class="n">relu</span>
-
-<span class="ne">ImportError</span>: cannot import name &#39;optimizers&#39; from &#39;jax.experimental&#39; (/opt/homebrew/Caskroom/miniforge/base/envs/gns/lib/python3.11/site-packages/jax/experimental/__init__.py)
 </pre></div>
 </div>
 </div>
@@ -767,6 +754,12 @@ The DeepONet can be easily extended to the case where the output comprises multi
 <span class="n">length_scale</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c1">#lenght_scale for the exponential quadratic kernel</span>
 <span class="n">key_train</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># use different key for generating training data and test data </span>
 <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;jax_enable_x64&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># Enable double precision</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1697459542.060556       1 tfrt_cpu_pjrt_client.cc:349] TfrtCpuClient created.
 </pre></div>
 </div>
 </div>
@@ -858,7 +851,7 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/47c2f3e657ee204aa352513d669ccbaeac7e91cb85b63f5efd80c8ba06cdc5e1.png" src="../../_images/47c2f3e657ee204aa352513d669ccbaeac7e91cb85b63f5efd80c8ba06cdc5e1.png" />
+<img alt="../../_images/e478d3510770ae4a537536fa6fb457a682c23b100d8eb5c7473cd0303181fdd7.png" src="../../_images/e478d3510770ae4a537536fa6fb457a682c23b100d8eb5c7473cd0303181fdd7.png" />
 </div>
 </div>
 <p>Now, we will have to create many functions for our testing and training dataset, so let’s create a pair of programing-functions to generate one random function at a time.</p>
@@ -1188,7 +1181,7 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 40000/40000 [01:23&lt;00:00, 479.27it/s, Loss=4.895145844785917e-07]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 40000/40000 [19:46&lt;00:00, 33.71it/s, Loss=4.915084494012098e-07] 
 </pre></div>
 </div>
 </div>
@@ -1231,7 +1224,7 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0019666823801816335 0.093285374
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.0021329330534194317 0.084637
 </pre></div>
 </div>
 </div>
@@ -1289,12 +1282,20 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_u: 1.967e-03
-error_s: 9.329e-02
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>error_u: 2.133e-03
+error_s: 8.464e-02
 </pre></div>
 </div>
-<img alt="../../_images/a473223923b7723ac686fbd037be9756afc927a9dc2d0e7d80b6ae97a2d73bfd.png" src="../../_images/a473223923b7723ac686fbd037be9756afc927a9dc2d0e7d80b6ae97a2d73bfd.png" />
-<img alt="../../_images/d7f865115543e76cd690e769f9283dfb520b70479665081e3f38362d6c397b10.png" src="../../_images/d7f865115543e76cd690e769f9283dfb520b70479665081e3f38362d6c397b10.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_9180/93944556.py:21: UserWarning: The figure layout has changed to tight
+  plt.tight_layout()
+</pre></div>
+</div>
+<img alt="../../_images/036df58ab6f54a8055c897e5ca9e5b2fb2433328b03a64ba66e9863353144343.png" src="../../_images/036df58ab6f54a8055c897e5ca9e5b2fb2433328b03a64ba66e9863353144343.png" />
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_9180/93944556.py:36: UserWarning: The figure layout has changed to tight
+  plt.tight_layout()
+</pre></div>
+</div>
+<img alt="../../_images/ff9d11dfdf4fc950e3df6f10b19f2f0ceef519ccbaf297c6b807e85ff5637070.png" src="../../_images/ff9d11dfdf4fc950e3df6f10b19f2f0ceef519ccbaf297c6b807e85ff5637070.png" />
 </div>
 </div>
 </section>
@@ -1348,7 +1349,7 @@ error_s: 9.329e-02
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../../_images/736bd917a881ca7eb84cb4a7e06115b2ef028ddefbf6f684789d3eeeba81494b.png" src="../../_images/736bd917a881ca7eb84cb4a7e06115b2ef028ddefbf6f684789d3eeeba81494b.png" />
+<img alt="../../_images/6ca06cb695e7480bb89049868fe5fa33264f3e607ebd66082774e36eca2eceb1.png" src="../../_images/6ca06cb695e7480bb89049868fe5fa33264f3e607ebd66082774e36eca2eceb1.png" />
 </div>
 </div>
 </section>
@@ -1413,7 +1414,7 @@ error_s: 9.329e-02
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">07: DeepONet</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">08: DeepONet</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-pinns">Problems with PINNs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameterized-pde">Parameterized PDE</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-and-operators">Functions and Operators:</a><ul class="nav section-nav flex-column">

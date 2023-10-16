@@ -201,7 +201,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="08-deeponet.html">07: DeepONet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08-deeponet.html">08: DeepONet</a></li>
 
 
 
@@ -491,7 +491,7 @@ document.write(`
 <strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/08-deeponet/08-deeponet.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <section id="problems-with-pinns">
 <h2>Problems with PINNs<a class="headerlink" href="#problems-with-pinns" title="Permalink to this heading">#</a></h2>
-<p>We represent a multi-layer perceptron (MLP) <span class="math notranslate nohighlight">\(y = \bm{\mathcal{F}}(x;\theta)\)</span> as a function that takes an input <span class="math notranslate nohighlight">\(x \in Ro^d\)</span> and gives an output <span class="math notranslate nohighlight">\(y \in Ro^d\)</span> with trainable weights <span class="math notranslate nohighlight">\(\theta\)</span>. A Physics Informed Neural Network (PINN) can be described as  <span class="math notranslate nohighlight">\(\bm{u}(x) = \bm{\mathcal{F}}(x;\theta)\)</span> taking as input the independent variable <span class="math notranslate nohighlight">\(x\)</span> of the underlying Partial Differential Equation (PDE) and outputs its solution, <span class="math notranslate nohighlight">\(\bm{u}(x)\)</span>.  The training process for a PINN involves minimizing the combined residual of the PDE and its boundary conditions.</p>
+<p>We represent a multi-layer perceptron (MLP) <span class="math notranslate nohighlight">\(y = \mathbf{\mathcal{F}}(x;\theta)\)</span> as a function that takes an input <span class="math notranslate nohighlight">\(x \in Ro^d\)</span> and gives an output <span class="math notranslate nohighlight">\(y \in Ro^d\)</span> with trainable weights <span class="math notranslate nohighlight">\(\theta\)</span>. A Physics Informed Neural Network (PINN) can be described as  <span class="math notranslate nohighlight">\(\mathbf{u}(x) = \mathbf{\mathcal{F}}(x;\theta)\)</span> taking as input the independent variable <span class="math notranslate nohighlight">\(x\)</span> of the underlying Partial Differential Equation (PDE) and outputs its solution, <span class="math notranslate nohighlight">\(\mathbf{u}(x)\)</span>.  The training process for a PINN involves minimizing the combined residual of the PDE and its boundary conditions.</p>
 <p>To illustrate, consider the PDE</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
@@ -602,13 +602,13 @@ G(u)(y) \approx \sum_{k=1}^p b_k t_k + b_0.
 <p>A standard DeepONet comprises two neural networks. We describe below its construction to approximate an operator <span class="math notranslate nohighlight">\(\mathcal{N} : A \rightarrow U\)</span>, where <span class="math notranslate nohighlight">\(A\)</span> is a set of functions of the form <span class="math notranslate nohighlight">\(a: \Omega_Y \subset Ro^d \rightarrow Ro\)</span> while <span class="math notranslate nohighlight">\(U\)</span> consists of functions of the form <span class="math notranslate nohighlight">\(u: \Omega_X \subset Ro^D \rightarrow Ro\)</span>. Furthermore, we assume that point-wise evaluations of both class of functions is possible. The architecture for the DeepONet is explained below:</p>
 <ul class="simple">
 <li><p>Fix <span class="math notranslate nohighlight">\(M\)</span> distinct sensor points <span class="math notranslate nohighlight">\(y^{(1)},..., y^{(M)}\)</span> in <span class="math notranslate nohighlight">\(\Omega_Y\)</span>.</p></li>
-<li><p>Sample a function <span class="math notranslate nohighlight">\(a \in A\)</span> at these sensor points to get the vector <span class="math notranslate nohighlight">\(\bm{a} =  [a(y^{(1)}), ... , \ a(y^{(M)})]^\top \in Ro^M\)</span>.</p></li>
-<li><p>Supply <span class="math notranslate nohighlight">\(\bm{a}\)</span> as the input to a sub-network, called the \textit{branch net} <span class="math notranslate nohighlight">\(\mathcal{B}(.;\bm{\theta}_B):Ro^M \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\bm{\beta} = [\beta_1(\bm{a}), ..., \ \beta_p(\bm{a})]^\top\in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\bm{\theta}_B\)</span> are the trainable parameters of the branch net. The dimension of the output of the branch is relatively small, say <span class="math notranslate nohighlight">\(p \approx 100\)</span>.</p></li>
-<li><p>Supply <span class="math notranslate nohighlight">\(x\)</span> as an input to a second sub-network, called the \text{trunk net} <span class="math notranslate nohighlight">\(\mathcal{T}(.;\bm{\theta}_T): Ro^D \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\bm{\tau} = [\tau_1(x), ..., \ \tau_p(x)]^\top \in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\bm{\theta}_T\)</span> are the trainable parameters of the trunk net.</p></li>
-<li><p>Take a dot product of the outputs of the branch and trunk nets to get the final output of the DeepONet <span class="math notranslate nohighlight">\(\widetilde{\mathcal{N}}(.,.;\bm{\theta}):Ro^D \times Ro^M \rightarrow Ro\)</span> which will approximate the value of <span class="math notranslate nohighlight">\(u(x)\)</span></p></li>
+<li><p>Sample a function <span class="math notranslate nohighlight">\(a \in A\)</span> at these sensor points to get the vector <span class="math notranslate nohighlight">\(\mathbf{a} =  [a(y^{(1)}), ... , \ a(y^{(M)})]^\top \in Ro^M\)</span>.</p></li>
+<li><p>Supply <span class="math notranslate nohighlight">\(\mathbf{a}\)</span> as the input to a sub-network, called the \textit{branch net} <span class="math notranslate nohighlight">\(\mathcal{B}(.;\mathbf{\theta}_B):Ro^M \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\mathbf{\beta} = [\beta_1(\mathbf{a}), ..., \ \beta_p(\mathbf{a})]^\top\in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\mathbf{\theta}_B\)</span> are the trainable parameters of the branch net. The dimension of the output of the branch is relatively small, say <span class="math notranslate nohighlight">\(p \approx 100\)</span>.</p></li>
+<li><p>Supply <span class="math notranslate nohighlight">\(x\)</span> as an input to a second sub-network, called the \text{trunk net} <span class="math notranslate nohighlight">\(\mathcal{T}(.;\mathbf{\theta}_T): Ro^D \rightarrow Ro^p\)</span>, whose output would be the vector <span class="math notranslate nohighlight">\(\mathbf{\tau} = [\tau_1(x), ..., \ \tau_p(x)]^\top \in Ro^p\)</span>. Here <span class="math notranslate nohighlight">\(\mathbf{\theta}_T\)</span> are the trainable parameters of the trunk net.</p></li>
+<li><p>Take a dot product of the outputs of the branch and trunk nets to get the final output of the DeepONet <span class="math notranslate nohighlight">\(\widetilde{\mathcal{N}}(.,.;\mathbf{\theta}):Ro^D \times Ro^M \rightarrow Ro\)</span> which will approximate the value of <span class="math notranslate nohighlight">\(u(x)\)</span></p></li>
 </ul>
-<p><span class="math notranslate nohighlight">\(u(x) \approx \widetilde{\mathcal{N}}(x,\bm{a};\bm{\theta}) = \sum_{k=1}^p \beta_k(\bm{a}) \tau_k(x).\)</span></p>
-<p>where the trainable parameters of the DeepONet will be the combined parameters of the branch and trunk nets, i.e., <span class="math notranslate nohighlight">\(\bm{\theta} = [\theta_T, \theta_M]\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(u(x) \approx \widetilde{\mathcal{N}}(x,\mathbf{a};\mathbf{\theta}) = \sum_{k=1}^p \beta_k(\mathbf{a}) \tau_k(x).\)</span></p>
+<p>where the trainable parameters of the DeepONet will be the combined parameters of the branch and trunk nets, i.e., <span class="math notranslate nohighlight">\(\mathbf{\theta} = [\theta_T, \theta_M]\)</span>.</p>
 <p><img alt="DeepONet" src="../../_images/DeepONet.png" /></p>
 <blockquote>
 <div><p>Schematic of a DeepONet</p>
@@ -625,20 +625,20 @@ G(u)(y) \approx \sum_{k=1}^p b_k t_k + b_0.
 <h2>Training DeepONets<a class="headerlink" href="#training-deeponets" title="Permalink to this heading">#</a></h2>
 <p>Training a DeepONet is typically supervised, and requires pairwise data. The following are the main steps involved:</p>
 <ul class="simple">
-<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(y^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\bm{a}^{(i)} = [a^{(i)}(y^{(1)}),...,a^{(i)}(y^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
+<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(y^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\mathbf{a}^{(i)} = [a^{(i)}(y^{(1)}),...,a^{(i)}(y^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
 <li><p>For each <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, determine (numerically or analytically) the corresponding functions <span class="math notranslate nohighlight">\(u^{(i)}\)</span> given by the operator <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>.</p></li>
 <li><p>Sample the function <span class="math notranslate nohighlight">\(u^{(i)}\)</span> at <span class="math notranslate nohighlight">\(N_2\)</span> points in <span class="math notranslate nohighlight">\(\Omega_X\)</span>, i.e., <span class="math notranslate nohighlight">\(u^{(i)}(x^{(k)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq k \leq N_2\)</span>.</p></li>
 <li><p>Construct the training set
 $<span class="math notranslate nohighlight">\(
-\mathcal{S} = \left \{\Big(\bm{a}^{(i)}, x^{(k)}, u^{(i)}(x^{(k)})\Big) : 1 \leq i \leq N_1, \ 1 \leq k \leq N_2 \right\}
+\mathcal{S} = \left \{\Big(\mathbf{a}^{(i)}, x^{(k)}, u^{(i)}(x^{(k)})\Big) : 1 \leq i \leq N_1, \ 1 \leq k \leq N_2 \right\}
 \)</span><span class="math notranslate nohighlight">\(
 which will have \)</span>N_1 \times N_2$ samples.</p></li>
 <li><p>Define the loss function
 $<span class="math notranslate nohighlight">\(
-\Pi(\theta) = \frac{1}{N_1 N_2} \sum_{i=1}^{N_1} \sum_{k=1}^{N_2} | \widetilde{N}(x^{(k)}, \bm{a}^{(i)};\theta) - u^{(i)}(x^{(k)})|^2.
+\Pi(\theta) = \frac{1}{N_1 N_2} \sum_{i=1}^{N_1} \sum_{k=1}^{N_2} | \widetilde{N}(x^{(k)}, \mathbf{a}^{(i)};\theta) - u^{(i)}(x^{(k)})|^2.
 \)</span>$</p></li>
 <li><p>Training the DeepONet corresponds to finding <span class="math notranslate nohighlight">\(\theta^* = \argmin{\theta} \Pi(\theta)\)</span>.</p></li>
-<li><p>Once trained, then given any new <span class="math notranslate nohighlight">\(a \in A\)</span> samples at the <span class="math notranslate nohighlight">\(M\)</span> sensor points (which gives the vector <span class="math notranslate nohighlight">\(\bm{a} \in Ro^M\)</span>), and a new point <span class="math notranslate nohighlight">\(x \in \Omega_X\)</span>, we can evaluate the corresponding prediction <span class="math notranslate nohighlight">\(u^*(x) = \widetilde{N}(x, \bm{a};\theta^*)\)</span>.</p></li>
+<li><p>Once trained, then given any new <span class="math notranslate nohighlight">\(a \in A\)</span> samples at the <span class="math notranslate nohighlight">\(M\)</span> sensor points (which gives the vector <span class="math notranslate nohighlight">\(\mathbf{a} \in Ro^M\)</span>), and a new point <span class="math notranslate nohighlight">\(x \in \Omega_X\)</span>, we can evaluate the corresponding prediction <span class="math notranslate nohighlight">\(u^*(x) = \widetilde{N}(x, \mathbf{a};\theta^*)\)</span>.</p></li>
 </ul>
 <blockquote>
 <div><p>Note:
@@ -646,7 +646,7 @@ We need not choose the same <span class="math notranslate nohighlight">\(N_2\)</
 </div></blockquote>
 <blockquote>
 <div><p>Note:
-The DeepONet can be easily extended to the case where the input comprises multiple functions. In this case, the trunk network remains the same, however the branch network now has multiple vectors as input. The case corresponding to two input functions, <span class="math notranslate nohighlight">\(a(y)\)</span> and <span class="math notranslate nohighlight">\(b(y)\)</span>, which when sampled yield the vectors, <span class="math notranslate nohighlight">\(\bm{a}\)</span> and <span class="math notranslate nohighlight">\(\bm{b}\)</span>.</p>
+The DeepONet can be easily extended to the case where the input comprises multiple functions. In this case, the trunk network remains the same, however the branch network now has multiple vectors as input. The case corresponding to two input functions, <span class="math notranslate nohighlight">\(a(y)\)</span> and <span class="math notranslate nohighlight">\(b(y)\)</span>, which when sampled yield the vectors, <span class="math notranslate nohighlight">\(\mathbf{a}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{b}\)</span>.</p>
 </div></blockquote>
 <blockquote>
 <div><p>Note:
