@@ -620,18 +620,24 @@ G(u)(y) \approx \sum_{k=1}^p b_k t_k + b_0.
 <h2>Training DeepONets<a class="headerlink" href="#training-deeponets" title="Permalink to this heading">#</a></h2>
 <p>Training a DeepONet is typically supervised, and requires pairwise data. The following are the main steps involved:</p>
 <ul class="simple">
-<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(y^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\mathbf{a}^{(i)} = [a^{(i)}(x^{(1)}),...,a^{(i)}(x^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
+<li><p>Select <span class="math notranslate nohighlight">\(N_1\)</span> representative function <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span> from the set <span class="math notranslate nohighlight">\(A\)</span>. Evaluate the values of these functions at the <span class="math notranslate nohighlight">\(M\)</span> sensor points, i.e., <span class="math notranslate nohighlight">\(a^{(i)}_j = a^{(i)}(x^{(j)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq j \leq M\)</span>. This gives us the vectors <span class="math notranslate nohighlight">\(\mathbf{a}^{(i)} = [a^{(i)}(x^{(1)}),...,a^{(i)}(x^{(M)})]^\top \in Ro^M\)</span> for each <span class="math notranslate nohighlight">\(1 \leq i \leq N_1\)</span>.</p></li>
 <li><p>For each <span class="math notranslate nohighlight">\(a^{(i)}\)</span>, determine (numerically or analytically) the corresponding functions <span class="math notranslate nohighlight">\(u^{(i)}\)</span> given by the operator <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>.</p></li>
 <li><p>Sample the function <span class="math notranslate nohighlight">\(u^{(i)}\)</span> at <span class="math notranslate nohighlight">\(N_2\)</span> points in <span class="math notranslate nohighlight">\(\Omega_Y\)</span>, i.e., <span class="math notranslate nohighlight">\(u^{(i)}(y^{(k)})\)</span> for <span class="math notranslate nohighlight">\(1 \leq k \leq N_2\)</span>.</p></li>
-<li><p>Construct the training set
-$<span class="math notranslate nohighlight">\(
+<li><p>Construct the training set</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
 \mathcal{S} = \left \{\Big(\mathbf{a}^{(i)}, y^{(k)}, u^{(i)}(y^{(k)})\Big) : 1 \leq i \leq N_1, \ 1 \leq k \leq N_2 \right\}
-\)</span><span class="math notranslate nohighlight">\(
-which will have \)</span>N_1 \times N_2$ samples.</p></li>
-<li><p>Define the loss function
-$<span class="math notranslate nohighlight">\(
+\]</div>
+<p>which will have <span class="math notranslate nohighlight">\(N_1 \times N_2\)</span> samples.</p>
+<ul class="simple">
+<li><p>Define the loss function</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
 \Pi(\theta) = \frac{1}{N_1 N_2} \sum_{i=1}^{N_1} \sum_{k=1}^{N_2} | \widetilde{N}(y^{(k)}, \mathbf{a}^{(i)};\theta) - u^{(i)}(y^{(k)})|^2.
-\)</span>$</p></li>
+\]</div>
+<ul class="simple">
 <li><p>Training the DeepONet corresponds to finding <span class="math notranslate nohighlight">\(\theta^* = \argmin{\theta} \Pi(\theta)\)</span>.</p></li>
 <li><p>Once trained, then given any new <span class="math notranslate nohighlight">\(a \in A\)</span> samples at the <span class="math notranslate nohighlight">\(M\)</span> sensor points (which gives the vector <span class="math notranslate nohighlight">\(\mathbf{a} \in Ro^M\)</span>), and a new point <span class="math notranslate nohighlight">\(y \in \Omega_Y\)</span>, we can evaluate the corresponding prediction <span class="math notranslate nohighlight">\(u^*(y) = \widetilde{N}(y, \mathbf{a};\theta^*)\)</span>.</p></li>
 </ul>
