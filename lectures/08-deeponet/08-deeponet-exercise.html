@@ -461,6 +461,25 @@ document.write(`
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation">Data Generation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-a-random-function">Generate a random function</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rbf-radial-basis-function-kernel">RBF (Radial Basis Function) Kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-from-a-gaussian-process">Sampling from a Gaussian Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-mean-and-kernel-function">1. Define the Mean and Kernel Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#select-points-for-sampling">2. Select Points for Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-the-covariance-matrix">3. Compute the Covariance Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-from-the-multivariate-gaussian">4. Sample from the Multivariate Gaussian</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation-for-deeponet">Data Generation for DeepONet</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-gaussian-process-gp">1. Sampling Gaussian Process (GP)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-grid-sampling">2. Fine Grid Sampling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation">3. Interpolation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-sensors">4. Input Sensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ode-solutions">5. ODE Solutions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-sensors">6. Output Sensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation-function">7. Data Generation Function</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Data Generation</a></li>
 </ul>
 </li>
@@ -804,18 +823,52 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 </div>
+</section>
+<section id="sampling-from-a-gaussian-process">
+<h2>Sampling from a Gaussian Process<a class="headerlink" href="#sampling-from-a-gaussian-process" title="Permalink to this heading">#</a></h2>
+<p>A Gaussian process (GP) provides a distribution over functions. Using a GP, one can draw function samples, make predictions for unseen data, and more. The behavior of the GP is governed by its mean function and covariance (kernel) function.</p>
+<section id="define-the-mean-and-kernel-function">
+<h3>1. Define the Mean and Kernel Function<a class="headerlink" href="#define-the-mean-and-kernel-function" title="Permalink to this heading">#</a></h3>
+<p>Given your requirements, the mean function is zero everywhere, and the kernel is the exponential quadratic kernel.</p>
+<p><strong>Mean function</strong>:
+$<span class="math notranslate nohighlight">\( m(x) = 0 \)</span>$</p>
+<p><strong>Exponential quadratic kernel</strong>:
+$<span class="math notranslate nohighlight">\( k(x, x') = \exp\left(-\frac{(x - x')^2}{2l^2}\right) \)</span><span class="math notranslate nohighlight">\(
+where \)</span>l<span class="math notranslate nohighlight">\( is the length scale and, in this case, \)</span>l=0.2$.</p>
+</section>
+<section id="select-points-for-sampling">
+<h3>2. Select Points for Sampling<a class="headerlink" href="#select-points-for-sampling" title="Permalink to this heading">#</a></h3>
+<p>Before drawing samples from the GP, decide on which input points <span class="math notranslate nohighlight">\(x\)</span> you want to evaluate your sampled functions. This could be a grid of points or any other set of interest.</p>
+</section>
+<section id="compute-the-covariance-matrix">
+<h3>3. Compute the Covariance Matrix<a class="headerlink" href="#compute-the-covariance-matrix" title="Permalink to this heading">#</a></h3>
+<p>For these selected points, compute the covariance matrix <span class="math notranslate nohighlight">\(K\)</span> using your kernel function. If you have <span class="math notranslate nohighlight">\(n\)</span> points, this matrix will be <span class="math notranslate nohighlight">\(n \times n\)</span>. Each element <span class="math notranslate nohighlight">\(K_{ij}\)</span> of the matrix is computed as:
+$<span class="math notranslate nohighlight">\( K_{ij} = k(x_i, x_j) \)</span>$</p>
+</section>
+<section id="sample-from-the-multivariate-gaussian">
+<h3>4. Sample from the Multivariate Gaussian<a class="headerlink" href="#sample-from-the-multivariate-gaussian" title="Permalink to this heading">#</a></h3>
+<p>With a mean of zero and the covariance matrix <span class="math notranslate nohighlight">\(K\)</span> you’ve computed, you can now draw samples from a multivariate Gaussian distribution. Each sample will give you a realization of the function <span class="math notranslate nohighlight">\(u\)</span> over your selected input points.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sample GP prior at a fine grid</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">512</span>
 <span class="n">gp_params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">)</span>
 <span class="n">jitter</span> <span class="o">=</span> <span class="mf">1e-10</span>
+<span class="c1"># X are the input points ranging between 0 and 1, reshaped to be a column vector.</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+<span class="c1">#  computes the covariance matrix K for the input points X using the Radial Basis Function (RBF) kernel, </span>
+<span class="c1"># which is another name for the squared exponential or Gaussian kernel.</span>
 <span class="n">K</span> <span class="o">=</span> <span class="n">RBF</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">gp_params</span><span class="p">)</span>
+<span class="c1"># The Cholesky decomposition is used here to decompose the covariance matrix K. </span>
+<span class="c1"># The addition of the jitter term ensures that K is positive definite, which is a requirement for Cholesky decomposition.</span>
 <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">cholesky</span><span class="p">(</span><span class="n">K</span> <span class="o">+</span> <span class="n">jitter</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">N</span><span class="p">))</span>
+<span class="c1"># Using the Cholesky factor L and a vector of random normal numbers, </span>
+<span class="c1"># this line produces a sample from the Gaussian Process. The shape of this sample is (N,).</span>
 <span class="n">gp_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key_train</span><span class="p">,</span> <span class="p">(</span><span class="n">N</span><span class="p">,)))</span>
 
 <span class="c1"># Create a callable interpolation function  </span>
+<span class="c1"># This lambda function u_fn is a simple 1D interpolation function. Given a value t, </span>
+<span class="c1"># it returns the interpolated value of gp_sample at that point using the values in X as reference.</span>
 <span class="n">u_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">gp_sample</span><span class="p">)</span>
 <span class="c1"># Input sensor locations and measurements</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
@@ -845,6 +898,68 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 <p>Now, we will have to create many functions for our testing and training dataset, so let’s create a pair of programing-functions to generate one random function at a time.</p>
+</section>
+</section>
+<section id="data-generation-for-deeponet">
+<h2>Data Generation for DeepONet<a class="headerlink" href="#data-generation-for-deeponet" title="Permalink to this heading">#</a></h2>
+<p>DeepONet is a deep learning model tailored for operator regression tasks. This document summarizes the process for generating training data for DeepONet.</p>
+<section id="sampling-gaussian-process-gp">
+<h3>1. Sampling Gaussian Process (GP)<a class="headerlink" href="#sampling-gaussian-process-gp" title="Permalink to this heading">#</a></h3>
+<p>We begin by generating function samples:</p>
+<ul class="simple">
+<li><p><strong>Function Samples</strong>: 10,000 functions, <span class="math notranslate nohighlight">\(u\)</span>, are drawn from a zero-mean Gaussian process.</p></li>
+<li><p><strong>Kernel Specification</strong>: The kernel of the GP is an exponential quadratic kernel with a length scale given by:
+<span class="math notranslate nohighlight">\( l = 0.2 \)</span></p></li>
+</ul>
+</section>
+<section id="fine-grid-sampling">
+<h3>2. Fine Grid Sampling<a class="headerlink" href="#fine-grid-sampling" title="Permalink to this heading">#</a></h3>
+<p>A more detailed sampling procedure is applied:</p>
+<ul class="simple">
+<li><p><strong>Grid Points</strong>: A set of 512 points is chosen, uniformly spaced between 0 and 1.</p></li>
+<li><p><strong>Kernel Calculation</strong>: Using the Radial Basis Function (RBF) kernel (equivalent to the squared exponential kernel), we compute the covariance matrix, <span class="math notranslate nohighlight">\(K\)</span>, for these grid points.</p></li>
+<li><p><strong>Cholesky Decomposition</strong>: This method is applied to the matrix <span class="math notranslate nohighlight">\(K\)</span> to yield samples from the GP.</p></li>
+</ul>
+</section>
+</section>
+<section id="interpolation">
+<h2>3. Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this heading">#</a></h2>
+<p>An interpolation mechanism is constructed:</p>
+<ul class="simple">
+<li><p><strong>Interpolation Function</strong>: An interpolation function, <code class="docutils literal notranslate"><span class="pre">u_fn</span></code>, is formed. Given an input <span class="math notranslate nohighlight">\(t\)</span>, it provides the interpolated value from the GP sample at that position.</p></li>
+</ul>
+<section id="input-sensors">
+<h3>4. Input Sensors<a class="headerlink" href="#input-sensors" title="Permalink to this heading">#</a></h3>
+<p>Details about the input sensors:</p>
+<ul class="simple">
+<li><p><strong>Sensor Count</strong>: We utilize 100 evenly distributed sensors, ranging from 0 to 1.</p></li>
+<li><p><strong>GP Values</strong>: These function values at the sensor locations act as our inputs, denoted by <code class="docutils literal notranslate"><span class="pre">u</span></code>.</p></li>
+</ul>
+</section>
+<section id="ode-solutions">
+<h3>5. ODE Solutions<a class="headerlink" href="#ode-solutions" title="Permalink to this heading">#</a></h3>
+<p>The differential equation to be solved is:</p>
+<div class="math notranslate nohighlight">
+\[ \frac{ds(x)}{dx} = u(x) \]</div>
+<ul class="simple">
+<li><p><strong>Methodology</strong>: The equation is resolved with JAX’s <code class="docutils literal notranslate"><span class="pre">odeint</span></code> function, leveraging the explicit Runge-Kutta method (RK45).</p></li>
+</ul>
+</section>
+<section id="output-sensors">
+<h3>6. Output Sensors<a class="headerlink" href="#output-sensors" title="Permalink to this heading">#</a></h3>
+<p>Details about the output sensors:</p>
+<ul class="simple">
+<li><p><strong>Output Locations</strong>: <code class="docutils literal notranslate"><span class="pre">y_train</span></code> indicates the output sensor locations, which are ascertained at random. The number of these sensors is <code class="docutils literal notranslate"><span class="pre">P_train</span></code>, which is set to 1.</p></li>
+<li><p><strong>ODE Solution</strong>: The ODE’s solution is determined at these specific sensor locations.</p></li>
+</ul>
+</section>
+<section id="data-generation-function">
+<h3>7. Data Generation Function<a class="headerlink" href="#data-generation-function" title="Permalink to this heading">#</a></h3>
+<p>To optimize the data generation:</p>
+<ul class="simple">
+<li><p><strong>Function Creation</strong>: The <code class="docutils literal notranslate"><span class="pre">generate_one_training_data</span></code> function is defined, producing training data for one single input sample.</p></li>
+<li><p><strong>Purpose</strong>: This function encapsulates the GP sampling, interpolation, sensor placements, and ODE solutions, facilitating reproducibility and scalability for generating multiple training samples.</p></li>
+</ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geneate training data corresponding to one input sample</span>
@@ -909,6 +1024,7 @@ The DeepONet can be easily extended to the case where the output comprises multi
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="id4">
 <h2>Data Generation<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
@@ -1380,6 +1496,25 @@ The DeepONet can be easily extended to the case where the output comprises multi
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation">Data Generation</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-a-random-function">Generate a random function</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rbf-radial-basis-function-kernel">RBF (Radial Basis Function) Kernel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-from-a-gaussian-process">Sampling from a Gaussian Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-mean-and-kernel-function">1. Define the Mean and Kernel Function</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#select-points-for-sampling">2. Select Points for Sampling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-the-covariance-matrix">3. Compute the Covariance Matrix</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sample-from-the-multivariate-gaussian">4. Sample from the Multivariate Gaussian</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation-for-deeponet">Data Generation for DeepONet</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sampling-gaussian-process-gp">1. Sampling Gaussian Process (GP)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fine-grid-sampling">2. Fine Grid Sampling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation">3. Interpolation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#input-sensors">4. Input Sensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ode-solutions">5. ODE Solutions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-sensors">6. Output Sensors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-generation-function">7. Data Generation Function</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Data Generation</a></li>
 </ul>
 </li>
