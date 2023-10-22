@@ -209,6 +209,14 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
 </ul>
 
     </div>
@@ -743,7 +751,7 @@ The DeepONet can be easily extended to the case where the output comprises multi
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">onp</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
-<span class="kn">from</span> <span class="nn">jax.experimental</span> <span class="kn">import</span> <span class="n">optimizers</span>
+<span class="kn">from</span> <span class="nn">jax.example_libraries</span> <span class="kn">import</span> <span class="n">optimizers</span>
 <span class="kn">from</span> <span class="nn">jax.experimental.ode</span> <span class="kn">import</span> <span class="n">odeint</span>
 <span class="kn">from</span> <span class="nn">jax.nn</span> <span class="kn">import</span> <span class="n">relu</span>
 <span class="kn">from</span> <span class="nn">jax.config</span> <span class="kn">import</span> <span class="n">config</span>

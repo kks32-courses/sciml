@@ -1,0 +1,1051 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>08a: Gaussian Process &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/08-deeponet/08a_gp';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/08-deeponet/08a_gp.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/08-deeponet/08a_gp.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/08-deeponet/08a_gp.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>08a: Gaussian Process</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-process-prior">Gaussian Process Prior</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-radial-basis-function-rbf-kernel">The Radial Basis Function (RBF) Kernel</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-process-inference-posterior">Gaussian Process Inference/Posterior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rbf-kernel-parametric-study">RBF Kernel Parametric study:</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="a-gaussian-process">
+<h1>08a: Gaussian Process<a class="headerlink" href="#a-gaussian-process" title="Permalink to this heading">#</a></h1>
+<p><strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/08-deeponet/08a-gp.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>Let’s delve into understanding Gaussian processes through practical examples.</p>
+<p>Consider a dataset where regression targets (outputs) <span class="math notranslate nohighlight">\(y\)</span> are indexed by inputs <span class="math notranslate nohighlight">\(x\)</span>. For instance, these targets might represent vibration levels of a machine, while the inputs correspond to the times when these measurements were taken. Observing the data, we should ask several questions:</p>
+<ul class="simple">
+<li><p>What distinct characteristics does the data exhibit?</p></li>
+<li><p>How rapidly does the data seem to change?</p></li>
+<li><p>Are data points gathered at consistent intervals, or are there gaps in the input?</p></li>
+<li><p>How would you predict or interpolate values in areas where data is absent, or project future values up to <span class="math notranslate nohighlight">\(x=25\)</span>?</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># Generating the x and y data arrays with floats</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">4.7</span><span class="p">,</span> <span class="mf">5.8</span><span class="p">,</span> <span class="mf">7.3</span><span class="p">,</span> <span class="mf">9.6</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">,</span> <span class="mf">12.1</span><span class="p">,</span> <span class="mf">14.9</span><span class="p">,</span> <span class="mf">17.7</span><span class="p">,</span> <span class="mf">19.6</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.1</span><span class="p">])</span>
+
+<span class="c1"># Plotting the data</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Inputs x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Observations y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Scatter Plot of Observations vs. Inputs&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/ecaaaf930a8988ed13a7276c76d0a07daddc941ae8a6c865c8dc4dc1a6e24fa3.png" src="../../_images/ecaaaf930a8988ed13a7276c76d0a07daddc941ae8a6c865c8dc4dc1a6e24fa3.png" />
+</div>
+</div>
+<p>To fit the data using a Gaussian process, we first define a prior distribution based on potential functions that seem plausible. We present various sample functions derived from this Gaussian process. Does the prior appear suitable? It’s important to note that we’re not seeking functions that precisely match our dataset. Instead, we aim to determine general characteristics of the solutions, like the rate at which they change in response to different inputs.</p>
+<p>A Gaussian process is defined as <em>a collection of random variables, any finite number of which have a joint Gaussian distribution</em>. If a function <span class="math notranslate nohighlight">\(f(x)\)</span> is a Gaussian process, with <em>mean function</em> <span class="math notranslate nohighlight">\(m(x)\)</span> and <em>covariance function</em> or <em>kernel</em> <span class="math notranslate nohighlight">\(k(x,x')\)</span>, <span class="math notranslate nohighlight">\(f(x) \sim \mathcal{GP}(m, k)\)</span>, then any collection of function values queried at any collection of input points <span class="math notranslate nohighlight">\(x\)</span> (times, spatial locations, image pixels, etc.), has a joint multivariate Gaussian distribution with mean vector <span class="math notranslate nohighlight">\(\mu\)</span> and covariance matrix <span class="math notranslate nohighlight">\(K\)</span>: <span class="math notranslate nohighlight">\(f(x_1),\dots,f(x_n) \sim \mathcal{N}(\mu, K)\)</span>, where <span class="math notranslate nohighlight">\(\mu_i = E[f(x_i)] = m(x_i)\)</span> and <span class="math notranslate nohighlight">\(K_{ij} = \textrm{Cov}(f(x_i),f(x_j)) = k(x_i,x_j)\)</span>.</p>
+<p>This definition may seem abstract and inaccessible, but Gaussian processes are in fact very simple objects. Any function</p>
+<div class="math notranslate nohighlight">
+\[f(x) = w^{\top} \phi(x) = \langle w, \phi(x) \rangle,\]</div>
+<p>with <span class="math notranslate nohighlight">\(w\)</span> drawn from a Gaussian (normal) distribution, and <span class="math notranslate nohighlight">\(\phi\)</span> being any vector of basis functions, for example <span class="math notranslate nohighlight">\(\phi(x) = (1, x, x^2, ..., x^d)^{\top}\)</span>,
+is a Gaussian process. Moreover, any Gaussian process f(x) can be expressed in the form of equation. Let’s consider a few concrete examples, to begin getting acquainted with Gaussian processes, after which we can appreciate how simple and useful they really are.</p>
+<section id="gaussian-process-prior">
+<h2>Gaussian Process Prior<a class="headerlink" href="#gaussian-process-prior" title="Permalink to this heading">#</a></h2>
+<section id="the-radial-basis-function-rbf-kernel">
+<h3>The Radial Basis Function (RBF) Kernel<a class="headerlink" href="#the-radial-basis-function-rbf-kernel" title="Permalink to this heading">#</a></h3>
+<p>The <em>radial basis function</em> (RBF) kernel is the most popular covariance function for Gaussian processes, and kernel machines in general.
+This kernel has the form <span class="math notranslate nohighlight">\(k_{\textrm{RBF}}(x,x') = a^2\exp\left(-\frac{1}{2\ell^2}||x-x'||^2\right)\)</span>, where <span class="math notranslate nohighlight">\(a\)</span> is an amplitude parameter, and <span class="math notranslate nohighlight">\(\ell\)</span> is a <em>lengthscale</em> hyperparameter.</p>
+<p>Let’s derive this kernel starting from weight space. Consider the function</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \sum_{i=1}^J w_i \phi_i(x), w_i  \sim \mathcal{N}\left(0,\frac{\sigma^2}{J}\right), \phi_i(x) = \exp\left(-\frac{(x-c_i)^2}{2\ell^2 }\right).\]</div>
+<p><span class="math notranslate nohighlight">\(f(x)\)</span> is a sum of radial basis functions, with width <span class="math notranslate nohighlight">\(\ell\)</span>, centred at the points <span class="math notranslate nohighlight">\(c_i\)</span>, as shown in the following figure.</p>
+<p>We can recognize <span class="math notranslate nohighlight">\(f(x)\)</span> as having the form <span class="math notranslate nohighlight">\(w^{\top} \phi(x)\)</span>, where <span class="math notranslate nohighlight">\(w = (w_1,\dots,w_J)^{\top}\)</span> and <span class="math notranslate nohighlight">\(\phi(x)\)</span> is a vector containing each of the radial basis functions. The covariance function of this Gaussian process is then</p>
+<div class="math notranslate nohighlight">
+\[k(x,x') = \frac{\sigma^2}{J} \sum_{i=1}^{J} \phi_i(x)\phi_i(x').\]</div>
+<p>Now let’s consider what happens as we take the number of parameters (and basis functions) to infinity. Let <span class="math notranslate nohighlight">\(c_J = \log J\)</span>, <span class="math notranslate nohighlight">\(c_1 = -\log J\)</span>, and <span class="math notranslate nohighlight">\(c_{i+1}-c_{i} = \Delta c = 2\frac{\log J}{J}\)</span>, and <span class="math notranslate nohighlight">\(J \to \infty\)</span>. The covariance function becomes the Riemann sum:</p>
+<div class="math notranslate nohighlight">
+\[k(x,x') = \lim_{J \to \infty} \frac{\sigma^2}{J} \sum_{i=1}^{J} \phi_i(x)\phi_i(x') = \int_{c_0}^{c_\infty} \phi_c(x)\phi_c(x') dc.\]</div>
+<p>By setting <span class="math notranslate nohighlight">\(c_0 = -\infty\)</span> and <span class="math notranslate nohighlight">\(c_\infty = \infty\)</span>, we spread the infinitely many basis functions across the whole real line, each
+a distance <span class="math notranslate nohighlight">\(\Delta c \to 0\)</span> apart:</p>
+<div class="math notranslate nohighlight">
+\[k(x,x') = \int_{-\infty}^{\infty} \exp(-\frac{(x-c)^2}{2\ell^2}) \exp(-\frac{(x'-c)^2}{2\ell^2 }) dc = \sqrt{\pi}\ell \sigma^2 \exp(-\frac{(x-x')^2}{2(\sqrt{2} \ell)^2}) \propto k_{\textrm{RBF}}(x,x').\]</div>
+<p>It is worth taking a moment to absorb what we have done here. By moving into the function space representation, we have derived how to represent a model with an <em>infinite</em> number of parameters, using a finite amount of computation. A Gaussian process with an RBF kernel is a <em>universal approximator</em>, capable of representing any continuous function to arbitrary precision. We can intuitively see why from the above derivation. We can collapse each radial basis function to a point mass taking <span class="math notranslate nohighlight">\(\ell \to 0\)</span>, and give each point mass any height we wish.</p>
+<p>So a Gaussian process with an RBF kernel is a model with an infinite number of parameters and much more flexibility than any finite neural network. Perhaps all the fuss about <em>overparametrized</em> neural networks is misplaced. As we will see, GPs with RBF kernels do not overfit, and in fact provide especially compelling generalization performance on small datasets. Moreover, the examples in :cite:<code class="docutils literal notranslate"><span class="pre">zhang2021understanding</span></code>, such as the ability to fit images with random labels perfectly, but still generalize well on structured problems, (can be perfectly reproduced using Gaussian processes) :cite:<code class="docutils literal notranslate"><span class="pre">wilson2020bayesian</span></code>. Neural networks are not as distinct as we make them out to be.</p>
+<p>We can build further intuition about Gaussian processes with RBF kernels, and hyperparameters such as <em>length-scale</em>, by sampling directly from the distribution over functions. As before, this involves a simple procedure:</p>
+<ol class="arabic simple">
+<li><p>Choose the input <span class="math notranslate nohighlight">\(x\)</span> points we want to query the GP: <span class="math notranslate nohighlight">\(x_1,\dots,x_n\)</span>.</p></li>
+<li><p>Evaluate <span class="math notranslate nohighlight">\(m(x_i)\)</span>, <span class="math notranslate nohighlight">\(i = 1,\dots,n\)</span>, and <span class="math notranslate nohighlight">\(k(x_i,x_j)\)</span> for <span class="math notranslate nohighlight">\(i,j = 1,\dots,n\)</span> to respectively form the mean vector and covariance matrix <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(K\)</span>, where <span class="math notranslate nohighlight">\((f(x_1),\dots,f(x_n)) \sim \mathcal{N}(\mu, K)\)</span>.</p></li>
+<li><p>Sample from this multivariate Gaussian distribution to obtain the sample function values.</p></li>
+<li><p>Sample more times to visualize more sample functions queried at those points.</p></li>
+</ol>
+<p>We illustrate this process in the figure below.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1"># Define the Radial Basis Function kernel</span>
+<span class="k">def</span> <span class="nf">rbf_kernel</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sigma_f</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="n">sqdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x1</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x2</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sigma_f</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">l</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sqdist</span><span class="p">)</span>
+
+<span class="c1"># Generate x values</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Compute the covariance matrix using the RBF kernel</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
+
+<span class="c1"># Draw three samples from the zero-mean multivariate Gaussian prior</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">f_prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">400</span><span class="p">),</span> <span class="n">cov</span><span class="o">=</span><span class="n">K</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">f_prior</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Fives samples from the GP prior&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;f(x)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/9a6a928823761136bafc3f7735a7b1e7fe83c5881b2bc314f68f30969edb99bd.png" src="../../_images/9a6a928823761136bafc3f7735a7b1e7fe83c5881b2bc314f68f30969edb99bd.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="gaussian-process-inference-posterior">
+<h2>Gaussian Process Inference/Posterior<a class="headerlink" href="#gaussian-process-inference-posterior" title="Permalink to this heading">#</a></h2>
+<p>we will show how to perform posterior inference and make predictions using the GP priors we introduced in the last section.</p>
+<p>Once we condition on data, we can use this prior to infer a posterior distribution over functions that could fit the data. Here, we show sample posterior functions.</p>
+<p>We see that each function is consistent with our data, perfectly running through each observation. In order to use these posterior samples to make predictions, we can average the values of every possible sample function from the posterior to create the curve below in thick blue. Note that we do not have to take an infinite number of samples to compute this expectation, we can compute the expectation in closed form.</p>
+<p>When we discuss the Gaussian process posterior, we aim to predict the function values ( f^* ) at new input points ( X^* ) given some training data ( X ) and ( y ). The joint distribution of the observed data and the predictions is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix}
+f \\
+f^* \\
+\end{bmatrix}
+\sim
+\mathcal{N} \left( 0,
+\begin{bmatrix}
+K &amp; K^* \\
+K^{*T} &amp; K^{**} \\
+\end{bmatrix}
+\right)
+\end{split}\]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p>( K ) is the covariance matrix of the training data.</p></li>
+<li><p>( K^* ) is the covariance matrix between the training data and the new input points.</p></li>
+<li><p>( K^{**} ) is the covariance matrix of the new input points.</p></li>
+</ul>
+<p>From the above joint distribution, we can obtain the conditional distribution of ( f^* ) given ( f ) (i.e., the GP posterior) directly. The mean and covariance of this distribution are:</p>
+<div class="math notranslate nohighlight">
+\[
+f^* | X^*, X, y \sim \mathcal{N}(\mu, \Sigma)
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\mu = K^{*T} K^{-1} y
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\Sigma = K^{**} - K^{*T} K^{-1} K^*
+\]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics.pairwise</span> <span class="kn">import</span> <span class="n">rbf_kernel</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">y</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Extended x values for plotting purposes</span>
+
+<span class="c1"># Compute the posterior mean and covariance</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_train</span><span class="p">)</span>
+<span class="n">K_s</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span>
+<span class="n">K_ss</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span>
+<span class="n">K_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+
+<span class="c1"># Computation for mu_s and cov_s:</span>
+<span class="n">mu_s</span> <span class="o">=</span> <span class="n">K_s</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_inv</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">cov_s</span> <span class="o">=</span> <span class="n">K_ss</span> <span class="o">-</span> <span class="n">K_s</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_inv</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_s</span><span class="p">)</span>
+
+<span class="c1"># Sampling several functions from the posterior</span>
+<span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">f_post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_s</span><span class="p">,</span> <span class="n">cov_s</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+
+<span class="c1"># Plot the data and the sampled functions</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">f_post</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d6307525b142b9e66b2b40b1d566a8ebc252a52af908fb43d4fed61a2f522fa2.png" src="../../_images/d6307525b142b9e66b2b40b1d566a8ebc252a52af908fb43d4fed61a2f522fa2.png" />
+</div>
+</div>
+<p>We may also want a representation of uncertainty to know how confident we should be in our predictions. Intuitively, we should have more uncertainty where there is more variability in the sample posterior functions, as this tells us there are many more possible values the true function could take. This type of uncertainty is called epistemic uncertainty, which is the reducible uncertainty associated with a lack of information. As we acquire more data, this type of uncertainty disappears, as there will be increasingly fewer solutions consistent with what we observe. Like with the posterior mean, we can compute the posterior variance (the variability of these functions in the posterior) in closed form. With shade, we show two times the posterior standard deviation on either side of the mean, creating a credible interval with a 95% probability of containing the true value of the function for any input <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generating the x and y data arrays with floats</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">y</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Extended x values for plotting purposes</span>
+
+<span class="c1"># Compute the posterior mean and covariance</span>
+<span class="n">K</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_train</span><span class="p">)</span>
+<span class="n">K_s</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span>
+<span class="n">K_ss</span> <span class="o">=</span> <span class="n">rbf_kernel</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span>
+<span class="n">K_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+
+<span class="c1"># Computation for mu_s and cov_s:</span>
+<span class="n">mu_s</span> <span class="o">=</span> <span class="n">K_s</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_inv</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">cov_s</span> <span class="o">=</span> <span class="n">K_ss</span> <span class="o">-</span> <span class="n">K_s</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_inv</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_s</span><span class="p">)</span>
+
+<span class="c1"># Plot the data, the mean, and 95% confidence interval of the posterior</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">mu_s</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">mu_s</span> <span class="o">-</span> <span class="mf">1.96</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cov_s</span><span class="p">)),</span> <span class="n">mu_s</span> <span class="o">+</span> <span class="mf">1.96</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cov_s</span><span class="p">)),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/f530a99e922e9d2ec7e4d18d54bdfff81b85f2921d31f56834c1799de9f8599a.png" src="../../_images/f530a99e922e9d2ec7e4d18d54bdfff81b85f2921d31f56834c1799de9f8599a.png" />
+</div>
+</div>
+</section>
+<section id="rbf-kernel-parametric-study">
+<h2>RBF Kernel Parametric study:<a class="headerlink" href="#rbf-kernel-parametric-study" title="Permalink to this heading">#</a></h2>
+<p>The properties of the Gaussian process that we used to fit the data are strongly controlled by what’s called a <em>covariance function</em>, also known as a <em>kernel</em>. The covariance function we used is called the <em>RBF (Radial Basis Function) kernel</em>, which has the form
+$<span class="math notranslate nohighlight">\( k_{\textrm{RBF}}(x,x') = \textrm{Cov}(f(x),f(x')) = a^2 \exp\left(-\frac{1}{2\ell^2}||x-x'||^2\right) \)</span>$</p>
+<p>The <em>hyperparameters</em> of this kernel are interpretable. The <em>amplitude</em> parameter <span class="math notranslate nohighlight">\(a\)</span> controls the vertical scale over which the function is varying, and the <em>length-scale</em> parameter
+<span class="math notranslate nohighlight">\(\ell\)</span>
+controls the rate of variation (the wiggliness) of the function. Larger <span class="math notranslate nohighlight">\(a\)</span> means larger function values, and larger
+<span class="math notranslate nohighlight">\(\ell\)</span>
+means more slowly varying functions. Let’s see what happens to our sample prior and posterior functions as we vary <span class="math notranslate nohighlight">\(a\)</span> and
+<span class="math notranslate nohighlight">\(\ell\)</span>.</p>
+<p>The <em>length-scale</em> has a particularly pronounced effect on the predictions and uncertainty of a GP. At
+<span class="math notranslate nohighlight">\(||x-x'|| = \ell\)</span>
+, the covariance between a pair of function values is <span class="math notranslate nohighlight">\(a^2\exp(-0.5)\)</span>. At larger distances than
+<span class="math notranslate nohighlight">\(\ell\)</span>
+, the values of the function values becomes nearly uncorrelated. This means that if we want to make a prediction at a point <span class="math notranslate nohighlight">\(x_*\)</span>, then function values with inputs <span class="math notranslate nohighlight">\(x\)</span> such that
+<span class="math notranslate nohighlight">\(||x-x'||&gt;\ell\)</span>
+will not have a strong effect on our predictions.</p>
+<p>Let’s see how changing the lengthscale affects sample prior and posterior functions, and credible sets. The above fits use a length-scale of <span class="math notranslate nohighlight">\(2\)</span>. Let’s now consider
+<span class="math notranslate nohighlight">\(\ell = 0.1, 0.5, 2, 5, 10\)</span>
+. A length-scale of <span class="math notranslate nohighlight">\(0.1\)</span> is very small relative to the range of the input domain we are considering, <span class="math notranslate nohighlight">\(25\)</span>. For example, the values of the function at <span class="math notranslate nohighlight">\(x=5\)</span> and <span class="math notranslate nohighlight">\(x=10\)</span> will have essentially no correlation at such a length-scale. On the other hand, for a length-scale of <span class="math notranslate nohighlight">\(10\)</span>, the function values at these inputs will be highly correlated. Note that the vertical scale changes in the following figures.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="k">def</span> <span class="nf">rbf_kernel_custom</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_prime</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the RBF kernel for input vectors x and x_prime.&quot;&quot;&quot;</span>
+    <span class="n">sqdist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x_prime</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_prime</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">amplitude</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">/</span> <span class="n">length_scale</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sqdist</span><span class="p">)</span>
+
+<span class="c1"># Generating the x and y data</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">y</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gp_rbf</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">):</span>
+    <span class="c1"># Compute the posterior mean and covariance using custom RBF kernel</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">rbf_kernel_custom</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_s</span> <span class="o">=</span> <span class="n">rbf_kernel_custom</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_ss</span> <span class="o">=</span> <span class="n">rbf_kernel_custom</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">K_inv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">K</span><span class="p">)</span>
+
+    <span class="n">mu_s</span> <span class="o">=</span> <span class="n">K_s</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_inv</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+    <span class="n">cov_s</span> <span class="o">=</span> <span class="n">K_ss</span> <span class="o">-</span> <span class="n">K_s</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_inv</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K_s</span><span class="p">)</span>
+
+    <span class="c1"># Sampling several functions from the posterior</span>
+    <span class="n">num_samples</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">f_post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu_s</span><span class="p">,</span> <span class="n">cov_s</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">)</span>
+
+    <span class="c1"># Plot the data and the sampled functions</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">f_post</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;GP with RBF Kernel (length_scale=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">length_scale</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, amplitude=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">amplitude</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">lscale</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]:</span>
+  <span class="n">gp_rbf</span><span class="p">(</span><span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="n">lscale</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/6243eb85d02244b1c5e0c47a517c1a0cdb7fe46dd0b29a831e32eb2ebf1bc272.png" src="../../_images/6243eb85d02244b1c5e0c47a517c1a0cdb7fe46dd0b29a831e32eb2ebf1bc272.png" />
+<img alt="../../_images/38ea0349cee0b38dcce1e7f90b3f1d4ed5ccacbf87f615e0b94c4bf1766c2bde.png" src="../../_images/38ea0349cee0b38dcce1e7f90b3f1d4ed5ccacbf87f615e0b94c4bf1766c2bde.png" />
+<img alt="../../_images/7c1bf9720c09b78ade95fe7dae4f853636257297952b84ce5d8ccdb28fcc6a31.png" src="../../_images/7c1bf9720c09b78ade95fe7dae4f853636257297952b84ce5d8ccdb28fcc6a31.png" />
+<img alt="../../_images/5d97a380930c4bcff5e95382adf4bc68d2c76fce139cfbca8e3bceda4de35e26.png" src="../../_images/5d97a380930c4bcff5e95382adf4bc68d2c76fce139cfbca8e3bceda4de35e26.png" />
+</div>
+</div>
+<p>Notice as the length-scale increases the ‘wiggliness’ of the functions decrease, and our uncertainty decreases. If the length-scale is small, the uncertainty will quickly increase as we move away from the data, as the datapoints become less informative about the function values.</p>
+<p>Now, let’s vary the amplitude parameter, holding the length-scale fixed at <span class="math notranslate nohighlight">\(2\)</span>. Note the vertical scale is held fixed for the prior samples, and varies for the posterior samples, so you can clearly see both the increasing scale of the function, and the fits to the data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">amplitude</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]:</span>
+  <span class="n">gp_rbf</span><span class="p">(</span><span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">length_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/89db6f82084ccc85897aeaaf97b107a084089c5346308de8d03b67bbdbb8f784.png" src="../../_images/89db6f82084ccc85897aeaaf97b107a084089c5346308de8d03b67bbdbb8f784.png" />
+<img alt="../../_images/84b93c0c44ddeaeb4d89f34f27e6d0dfc405a0b72d428b16967fc334a494e851.png" src="../../_images/84b93c0c44ddeaeb4d89f34f27e6d0dfc405a0b72d428b16967fc334a494e851.png" />
+<img alt="../../_images/c5021de554b438ce4a265250f6f6936807a4366a479610a0dba5436870aca314.png" src="../../_images/c5021de554b438ce4a265250f6f6936807a4366a479610a0dba5436870aca314.png" />
+<img alt="../../_images/839f6c09f92858f8429a546483b76f15dc3213554ce2d02ae062f0f06c8b325d.png" src="../../_images/839f6c09f92858f8429a546483b76f15dc3213554ce2d02ae062f0f06c8b325d.png" />
+</div>
+</div>
+<p>We see the amplitude parameter affects the scale of the function, but not the rate of variation. At this point, we also have the sense that the generalization performance of our procedure will depend on having reasonable values for these hyperparameters. Values of <span class="math notranslate nohighlight">\(\ell=2\)</span> and <span class="math notranslate nohighlight">\(a=1\)</span> appeared to provide reasonable fits, while some of the other values did not. Fortunately, there is a robust and automatic way to specify these hyperparameters, using what is called the <em>marginal likelihood</em>, which we will return to in the notebook on inference.</p>
+<p>So what is a GP, really? As we started, a GP simply says that any collection of function values
+<span class="math notranslate nohighlight">\(f(x_1),\dots,f(x_n)\)</span>,
+indexed by any collection of inputs
+<span class="math notranslate nohighlight">\(x_1,\dots,x_n\)</span>
+has a joint multivariate Gaussian distribution. The mean vector <span class="math notranslate nohighlight">\(\mu\)</span> of this distribution is given by a <em>mean function</em>, which is typically taken to be a constant or zero. The covariance matrix of this distribution is given by the <em>kernel</em> evaluated at all pairs of the inputs <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix}f(x) \\f(x_1) \\ \vdots \\ f(x_n) \end{bmatrix}\sim \mathcal{N}\left(\mu, \begin{bmatrix}k(x,x) &amp; k(x, x_1) &amp; \dots &amp; k(x,x_n) \\ k(x_1,x) &amp; k(x_1,x_1) &amp; \dots &amp; k(x_1,x_n) \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ k(x_n, x) &amp; k(x_n, x_1) &amp; \dots &amp; k(x_n,x_n) \end{bmatrix}\right)\end{split}\]</div>
+<p>:eqlabel:<code class="docutils literal notranslate"><span class="pre">eq_gp_prior</span></code></p>
+<p>Equation :eqref:<code class="docutils literal notranslate"><span class="pre">eq_gp_prior</span></code> specifies a GP prior. We can compute the conditional distribution of <span class="math notranslate nohighlight">\(f(x)\)</span> for any <span class="math notranslate nohighlight">\(x\)</span> given <span class="math notranslate nohighlight">\(f(x_1), \dots, f(x_n)\)</span>, the function values we have observed. This conditional distribution is called the <em>posterior</em>, and it is what we use to make predictions.</p>
+<p>In particular,</p>
+<div class="math notranslate nohighlight">
+\[f(x) | f(x_1), \dots, f(x_n) \sim \mathcal{N}(m,s^2)\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[m = k(x,x_{1:n}) k(x_{1:n},x_{1:n})^{-1} f(x_{1:n})\]</div>
+<div class="math notranslate nohighlight">
+\[s^2 = k(x,x) - k(x,x_{1:n})k(x_{1:n},x_{1:n})^{-1}k(x,x_{1:n})\]</div>
+<p>where <span class="math notranslate nohighlight">\(k(x,x_{1:n})\)</span> is a <span class="math notranslate nohighlight">\(1 \times n\)</span> vector formed by evaluating <span class="math notranslate nohighlight">\(k(x,x_{i})\)</span> for <span class="math notranslate nohighlight">\(i=1,\dots,n\)</span> and <span class="math notranslate nohighlight">\(k(x_{1:n},x_{1:n})\)</span> is an <span class="math notranslate nohighlight">\(n \times n\)</span> matrix formed by evaluating <span class="math notranslate nohighlight">\(k(x_i,x_j)\)</span> for <span class="math notranslate nohighlight">\(i,j = 1,\dots,n\)</span>. <span class="math notranslate nohighlight">\(m\)</span> is what we can use as a point predictor for any <span class="math notranslate nohighlight">\(x\)</span>, and <span class="math notranslate nohighlight">\(s^2\)</span> is what we use for uncertainty: if we want to create an interval with a 95% probability that <span class="math notranslate nohighlight">\(f(x)\)</span> is in the interval, we would use <span class="math notranslate nohighlight">\(m \pm 2s\)</span>. The predictive means and uncertainties for all the above figures were created using these equations. The observed data points were given by
+<span class="math notranslate nohighlight">\(f(x_1), \dots, f(x_n)\)</span>
+and chose a fine grained set of <span class="math notranslate nohighlight">\(x\)</span> points to make predictions.</p>
+<p>Let’s suppose we observe a single datapoint, <span class="math notranslate nohighlight">\(f(x_1)\)</span>, and we want to determine the value of <span class="math notranslate nohighlight">\(f(x)\)</span> at some <span class="math notranslate nohighlight">\(x\)</span>. Because <span class="math notranslate nohighlight">\(f(x)\)</span> is described by a Gaussian process, we know the joint distribution over
+<span class="math notranslate nohighlight">\((f(x), f(x_1))\)</span>
+is Gaussian:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{bmatrix}
+f(x) \\
+f(x_1) \\
+\end{bmatrix}
+\sim
+\mathcal{N}\left(\mu,
+\begin{bmatrix}
+k(x,x) &amp; k(x, x_1) \\
+k(x_1,x) &amp; k(x_1,x_1)
+\end{bmatrix}
+\right)
+\end{split}\]</div>
+<p>The off-diagonal expression <span class="math notranslate nohighlight">\(k(x,x_1) = k(x_1,x)\)</span>
+tells us how correlated the function values will be — how strongly determined <span class="math notranslate nohighlight">\(f(x)\)</span>
+will be from <span class="math notranslate nohighlight">\(f(x_1)\)</span>.
+We have seen already that if we use a large length-scale, relative to the distance between <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(x_1\)</span>,
+<span class="math notranslate nohighlight">\(||x-x_1||\)</span>, then the function values will be highly correlated. We can visualize the process of determining <span class="math notranslate nohighlight">\(f(x)\)</span> from <span class="math notranslate nohighlight">\(f(x_1)\)</span> both in the space of functions, and in the joint distribution over <span class="math notranslate nohighlight">\(f(x_1), f(x)\)</span>. Let’s initially consider an <span class="math notranslate nohighlight">\(x\)</span> such that <span class="math notranslate nohighlight">\(k(x,x_1) = 0.9\)</span>, and <span class="math notranslate nohighlight">\(k(x,x)=1\)</span>, meaning that the value of <span class="math notranslate nohighlight">\(f(x)\)</span> is moderately correlated with the value of <span class="math notranslate nohighlight">\(f(x_1)\)</span>. In the joint distribution, the contours of constant probability will be relatively narrow ellipses.</p>
+<p>Suppose we observe <span class="math notranslate nohighlight">\(f(x_1) = 1.2\)</span>.
+To condition on this value of <span class="math notranslate nohighlight">\(f(x_1)\)</span>,
+we can draw a horizontal line at <span class="math notranslate nohighlight">\(1.2\)</span> on our plot of the density, and see that the value of <span class="math notranslate nohighlight">\(f(x)\)</span>
+is mostly constrained to <span class="math notranslate nohighlight">\([0.64,1.52]\)</span>. We have also drawn this plot in function space, showing the observed
+point <span class="math notranslate nohighlight">\(f(x_1)\)</span> in orange, and 1 standard deviation of the Gaussian process predictive distribution for <span class="math notranslate nohighlight">\(f(x)\)</span>
+in blue, about the mean value of <span class="math notranslate nohighlight">\(1.08\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">multivariate_normal</span>
+
+<span class="c1"># Define the mean and covariance for the joint Gaussian of f(x1) and f(x)</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.08</span><span class="p">])</span> <span class="c1"># mean values for f(x1) and f(x)</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span> <span class="c1"># covariance matrix with k(x,x1) = 0.9</span>
+
+<span class="c1"># Generate the grid for the contour plot</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
+
+<span class="c1"># Compute the bivariate Gaussian density</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">cov</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">rv</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+<span class="c1"># Plotting</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="c1"># Contour plot</span>
+<span class="n">contour</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$f(x_1)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$f(x)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Condition on $f(x_1) = 1.2$&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Contours of constant probability&#39;</span><span class="p">)</span>
+
+<span class="c1"># Gaussian process in function space</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">errorbar</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.08</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f(x_1)$ and $f(x)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.78</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.38</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Input Space&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Function Space&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Gaussian process predictive distribution&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/d010bcbcb0764d8e767787a9df1a5bbb77f104f8c34a576302e41fa8b5217482.png" src="../../_images/d010bcbcb0764d8e767787a9df1a5bbb77f104f8c34a576302e41fa8b5217482.png" />
+</div>
+</div>
+<blockquote>
+<div><p>The left plot shows contours of constant probability for the bivariate Gaussian density over <span class="math notranslate nohighlight">\(f(x1)\)</span> and <span class="math notranslate nohighlight">\(f(x)\)</span> with a red line indicating <span class="math notranslate nohighlight">\(f(x1)=1.2\)</span>. The right plot shows the Gaussian process predictive distribution in function space with the observed point <span class="math notranslate nohighlight">\(f(x1)\)</span> in orange and 1 standard deviation of the Gaussian process predictive distribution for <span class="math notranslate nohighlight">\(f(x)\)</span> in blue.</p>
+</div></blockquote>
+<p>Now suppose we have a stronger correlation, <span class="math notranslate nohighlight">\(k(x,x_1) = 0.95\)</span>.
+Now the ellipses have narrowed further, and the value of <span class="math notranslate nohighlight">\(f(x)\)</span>
+is even more strongly determined by <span class="math notranslate nohighlight">\(f(x_1)\)</span>. Drawing a horizontal line at <span class="math notranslate nohighlight">\(1.2\)</span>, we see the contours for <span class="math notranslate nohighlight">\(f(x)\)</span>
+support values mostly within <span class="math notranslate nohighlight">\([0.83, 1.45]\)</span>. Again, we also show the plot in function space, with one standard
+deviation about the mean predictive value of <span class="math notranslate nohighlight">\(1.14\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">multivariate_normal</span>
+
+<span class="c1"># Define the mean and covariance for the joint Gaussian of f(x1) and f(x)</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.14</span><span class="p">])</span> <span class="c1"># updated mean values for f(x1) and f(x)</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span> <span class="c1"># updated covariance matrix with k(x,x1) = 0.95</span>
+
+<span class="c1"># Generate the grid for the contour plot</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
+
+<span class="c1"># Compute the bivariate Gaussian density</span>
+<span class="n">rv</span> <span class="o">=</span> <span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">cov</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">rv</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+<span class="c1"># Plotting</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="c1"># Contour plot</span>
+<span class="n">contour</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$f(x_1)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$f(x)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Condition on $f(x_1) = 1.2$&quot;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Contours of constant probability&#39;</span><span class="p">)</span>
+
+<span class="c1"># Gaussian process in function space</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">errorbar</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.14</span><span class="p">],</span> <span class="n">yerr</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$f(x_1)$ and $f(x)$&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.89</span><span class="p">,</span> <span class="mf">0.83</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Input Space&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Function Space&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Gaussian process predictive distribution&#39;</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/56daeba12c03d0ddc9dd6739a1754cae3e989c3b0ade28b00290233ddc026ec5.png" src="../../_images/56daeba12c03d0ddc9dd6739a1754cae3e989c3b0ade28b00290233ddc026ec5.png" />
+</div>
+</div>
+<p>We see that the posterior mean predictor of our Gaussian process is closer to <span class="math notranslate nohighlight">\(1.2\)</span>, because there is now a stronger correlation. We also see that our uncertainty (the error bars) have somewhat decreased. Despite the strong correlation between these function values, our uncertainty is still righly quite large, because we have only observed a single data point!</p>
+<p>This procedure can give us a posterior on <span class="math notranslate nohighlight">\(f(x)\)</span> for any <span class="math notranslate nohighlight">\(x\)</span>, for any number of points we have observed. Suppose we observe <span class="math notranslate nohighlight">\(f(x_1), f(x_2)\)</span>. We now visualize the posterior for <span class="math notranslate nohighlight">\(f(x)\)</span> at a particular <span class="math notranslate nohighlight">\(x=x'\)</span> in function space. The exact distribution for <span class="math notranslate nohighlight">\(f(x)\)</span> is given by the above equations. <span class="math notranslate nohighlight">\(f(x)\)</span> is Gaussian distributed, with mean</p>
+<div class="math notranslate nohighlight">
+\[m = k(x,x_{1:3}) k(x_{1:3},x_{1:3})^{-1} f(x_{1:3})\]</div>
+<p>and variance</p>
+<div class="math notranslate nohighlight">
+\[s^2 = k(x,x) - k(x,x_{1:3})k(x_{1:3},x_{1:3})^{-1}k(x,x_{1:3})\]</div>
+<p>We have been considering <em>noise free</em> observations. As we will see, it is easy to include observation noise. If we assume that the data are generated from a latent noise free function <span class="math notranslate nohighlight">\(f(x)\)</span> plus iid Gaussian noise
+<span class="math notranslate nohighlight">\(\epsilon(x) \sim \mathcal{N}(0,\sigma^2)\)</span>
+with variance <span class="math notranslate nohighlight">\(\sigma^2\)</span>, then our covariance function simply becomes
+<span class="math notranslate nohighlight">\(k(x_i,x_j) \to k(x_i,x_j) + \delta_{ij}\sigma^2\)</span>,
+where <span class="math notranslate nohighlight">\(\delta_{ij} = 1\)</span> if <span class="math notranslate nohighlight">\(i=j\)</span> and <span class="math notranslate nohighlight">\(0\)</span> otherwise.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/08-deeponet"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-process-prior">Gaussian Process Prior</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-radial-basis-function-rbf-kernel">The Radial Basis Function (RBF) Kernel</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-process-inference-posterior">Gaussian Process Inference/Posterior</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rbf-kernel-parametric-study">RBF Kernel Parametric study:</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
