@@ -13,5 +13,5 @@ chapters:
   - file: lectures/06-burgers/06-burgers
   - file: lectures/07-ad/07-ad
   - file: lectures/08-deeponet/08-deeponet
-  - file: lectures/08-deeponet/08a-gp
+  - file: lectures/08-deeponet/08a_gp
   - file: lectures/09-pi-deeponet/09-pi-deeponet
