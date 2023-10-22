@@ -513,7 +513,7 @@ document.write(`
 <p>In this example, lets concider <span class="math notranslate nohighlight">\(Q=m\)</span> and <span class="math notranslate nohighlight">\(\{y_j^{(i)}\}_{j=1}^Q\)</span>. Hence, the physics loss can be formulated as:</p>
 <div class="math notranslate nohighlight">
 \[
-\mathcal{L}_{Physics}(\theta)=\frac{1}{Nm}\sum_{i=1}^{N}\sum_{k=1}^{m}\left|\frac{dG_{\theta}(u^{(i)})(y)}{dy}\big{|}_{y=x_j}-u^{(i)}(x_j)\right|^2
+\mathcal{L}_{\text{Physics}}(\theta) = \frac{1}{Nm} \sum_{i=1}^{N} \sum_{k=1}^{m} \left| \left. \frac{dG_{\theta}(u^{(i)})(y)}{dy} \right|_{y=x_j} - u^{(i)}(x_j) \right|^2
 \]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
