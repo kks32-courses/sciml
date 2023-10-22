@@ -894,23 +894,11 @@ document.write(`
 
     <span class="c1"># Define physics loss</span>
     <span class="k">def</span> <span class="nf">loss_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
-        <span class="c1"># Fetch data</span>
-        <span class="c1"># inputs: (u_r, y_r), shape = (NxQ, m), (NxQ,1)</span>
-        <span class="c1"># outputs: s_r, shape = (NxQ, 1)</span>
-        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="n">batch</span>
-        <span class="n">u</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">inputs</span>
-        <span class="c1"># Compute forward pass</span>
-        <span class="n">pred</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_net</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="c1"># Compute loss</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">outputs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">-</span> <span class="n">pred</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss</span>
+        
 
     <span class="c1"># Define total loss</span>
     <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">):</span>
-        <span class="n">loss_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_operator</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">)</span>
-        <span class="n">loss_physics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_physics</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">)</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_operator</span> <span class="o">+</span> <span class="n">loss_physics</span>
-        <span class="k">return</span> <span class="n">loss</span>
+        
 
     <span class="c1"># Define a compiled update step</span>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
