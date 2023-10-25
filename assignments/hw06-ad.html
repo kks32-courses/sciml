@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>HW 03: Finite Difference solution to heat transfer &#8212; Scientific Machine Learning (SciML)</title>
+    <title>HW 06: Automatic Differentiation of 1D wave velocity &#8212; Scientific Machine Learning (SciML)</title>
   
   
   
@@ -62,7 +62,7 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'assignments/hw03-fd-heat';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'assignments/hw06-ad';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -271,7 +271,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/assignments/hw03-fd-heat.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/assignments/hw06-ad.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -319,7 +319,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Fassignments/hw03-fd-heat.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Fassignments/hw06-ad.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -349,7 +349,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/assignments/hw03-fd-heat.ipynb" target="_blank"
+      <li><a href="../_sources/assignments/hw06-ad.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -431,7 +431,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>HW 03: Finite Difference solution to heat transfer</h1>
+    <h1>HW 06: Automatic Differentiation of 1D wave velocity</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -442,9 +442,6 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective">Objective:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry">Geometry:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deliverables">Deliverables:</a></li>
 </ul>
             </nav>
         </div>
@@ -456,73 +453,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="hw-03-finite-difference-solution-to-heat-transfer">
-<h1>HW 03: Finite Difference solution to heat transfer<a class="headerlink" href="#hw-03-finite-difference-solution-to-heat-transfer" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="hw-06-automatic-differentiation-of-1d-wave-velocity">
+<h1>HW 06: Automatic Differentiation of 1D wave velocity<a class="headerlink" href="#hw-06-automatic-differentiation-of-1d-wave-velocity" title="Permalink to this heading">#</a></h1>
 <section id="objective">
 <h2>Objective:<a class="headerlink" href="#objective" title="Permalink to this heading">#</a></h2>
-<p>In this assignment, you will perform a Finite Difference (FD) simulation to study heat transfer in a given geometry. You will be provided with a figure outlining the geometry and the heat source. Your objective is to simulate heat transfer until a steady state is reached.</p>
-</section>
-<section id="geometry">
-<h2>Geometry:<a class="headerlink" href="#geometry" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>A 2D geometry of dimensions: 100 units x 100 units.</p></li>
-</ul>
-<p><img alt="2D Heat transfer" src="../_images/heat-transfer.png" /></p>
-</section>
-<section id="problem-statement">
-<h2>Problem Statement:<a class="headerlink" href="#problem-statement" title="Permalink to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p><strong>Discretization</strong>:</p>
-<ul class="simple">
-<li><p>Discretize the given 2D geometry using an appropriate grid spacing.</p></li>
-<li><p>Ensure that the grid is fine enough to capture the details of the heat source and any geometrical intricacies.</p></li>
-</ul>
-</li>
-<li><p><strong>Initial and Boundary Conditions</strong>:</p>
-<ul class="simple">
-<li><p>Assume an initial temperature of 0°C throughout the domain.</p></li>
-<li><p>Use Dirichlet boundary conditions on all four sides of the domain. Assume these values or modify based on the provided figure.</p></li>
-</ul>
-</li>
-<li><p><strong>Heat Source</strong>:</p>
-<ul class="simple">
-<li><p>Based on the provided figure, incorporate the heat source into your FD formulation. If the heat source varies spatially, ensure that this is captured accurately in your simulations.</p></li>
-</ul>
-</li>
-<li><p><strong>FD Formulation</strong>:</p>
-<ul class="simple">
-<li><p>Use a central difference scheme for the spatial derivatives.</p></li>
-<li><p>For time marching, you can employ an explicit Euler time marching scheme.</p></li>
-</ul>
-</li>
-<li><p><strong>Simulation</strong>:</p>
-<ul class="simple">
-<li><p>Simulate the heat transfer process until steady state is reached. The steady state can be considered reached when the maximum temperature difference between two consecutive time steps in the entire domain is less than a small threshold (e.g., 0.01°C).</p></li>
-</ul>
-</li>
-<li><p><strong>Analysis</strong>:</p>
-<ul class="simple">
-<li><p>Plot the temperature distribution at various time steps to show the evolution of temperature in the domain.</p></li>
-<li><p>Analyze the steady-state temperature distribution. Identify and explain any interesting features or patterns you observe.</p></li>
-<li><p>Compare the steady-state temperature distribution with any analytical solution or intuitive expectation based on the geometry and heat source.</p></li>
-</ul>
-</li>
-</ol>
-</section>
-<section id="deliverables">
-<h2>Deliverables:<a class="headerlink" href="#deliverables" title="Permalink to this heading">#</a></h2>
-<ol class="arabic simple">
-<li><p><strong>Code</strong>: A well-commented code in Python for the FD simulation.</p></li>
-<li><p><strong>Notebook</strong>:</p>
-<ul class="simple">
-<li><p>Introduction: Briefly describe the problem and your approach.</p></li>
-<li><p>Methodology: Explain your FD formulation and time marching scheme, and any other computational considerations.</p></li>
-<li><p>Results: Present the temperature distributions at various time steps and the final steady-state distribution.</p></li>
-<li><p>Analysis: Discuss the results, emphasizing any interesting observations, comparisons, and patterns.</p></li>
-<li><p>Conclusion: Sum up your findings and suggest any potential extensions or future work.</p></li>
-</ul>
-</li>
-</ol>
+<p>In this assignment, you will derive the target velocity profile as shown in the figure:</p>
+<p>Using the source: <code class="docutils literal notranslate"><span class="pre">u0</span> <span class="pre">=</span> <span class="pre">jnp.exp(-(5*(x0-0.5))**2)</span></code>. Compute the loss as the wave velocity at the end of 5,000 steps along the entire length of the bar.</p>
+<p>Compute the error in the velocity profile using ADAM and L-BFGS algorithms.</p>
+<p><img alt="Profile" src="../_images/profile.png" /></p>
 </section>
 </section>
 
@@ -572,9 +510,6 @@ document.write(`
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objective">Objective:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry">Geometry:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-statement">Problem Statement:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deliverables">Deliverables:</a></li>
 </ul>
   </nav></div>
 
