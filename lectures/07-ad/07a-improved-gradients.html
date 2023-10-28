@@ -1,0 +1,884 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>07a: Scale-Invariance and Inversion &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=c5ced968eda925caa686"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/07-ad/07a-improved-gradients';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="07b: Simple Example comparing Different Optimizers" href="07b-physgrad-comparison.html" />
+    <link rel="prev" title="07: Automatic Differentiation" href="07-ad.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Scientific Machine Learning (SciML) - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Scientific Machine Learning (SciML) - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">07a: Scale-Invariance and Inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07b-physgrad-comparison.html">07b: Simple Example comparing Different Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08a-gp.html">08a: Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/07-ad/07a-improved-gradients.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/07-ad/07a-improved-gradients.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>07a: Scale-Invariance and Inversion</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-crux-of-the-matter">The crux of the matter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#traditional-optimization-methods">Traditional optimization methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quasi-newton-methods">Quasi-Newton methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-gradients">Inverse gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-simulators">Inverse simulators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-dive-into-inverse-simulators">Deep Dive into Inverse simulators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorem-of-calculus">Fundamental theorem of calculus</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-and-local-inverse-simulators">Global and local inverse simulators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-reversal">Time reversal</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integrating-a-loss-function">Integrating a loss function</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="a-scale-invariance-and-inversion">
+<h1>07a: Scale-Invariance and Inversion<a class="headerlink" href="#a-scale-invariance-and-inversion" title="Permalink to this heading">#</a></h1>
+<p>In the following we will question some fundamental aspects of the formulations so far, namely the update step computed via gradients.
+To re-cap, the approaches explained in the previous chapters either dealt with purely <em>supervised</em> training, integrated the physical model as a <em>physical loss term</em> or included it via <em>differentiable physics</em> (DP) operators embedded into the training graph.
+The latter two methods are more relevant in the context of this book. They share similarities, but in the loss term case, the physics evaluations are only required at training time. For DP approaches, the solver itself is usually also employed at inference time, which enables an end-to-end training of NNs and numerical solvers. All three approaches employ <em>first-order</em> derivatives to drive optimizations and learning processes, and the latter two also using them for the physics terms.</p>
+<p>This is a natural choice from a deep learning perspective, but we haven’t questioned at all whether this is actually the best choice.</p>
+<p>Not too surprising after this introduction: A central insight of the following chapter will be that regular gradients can be a <em>sub-optimal choice</em> for learning problems involving physical quantities.
+It turns out that both supervised and DP gradients have their pros and cons, and leave room for custom methods that are aware of the physics operators.
+In particular, we’ll show how scaling problems of DP gradients affect NN training (as outlined in <a href="#id1"><span class="problematic" id="id2">holl2021pg</span></a>),
+and revisit the problems of multi-modal solutions.
+Finally, we’ll explain several alternatives to prevent these issues.</p>
+<p>It turns out that a key property that is missing in regular gradients is a proper <em>inversion</em> of the Jacobian matrix.</p>
+<section id="the-crux-of-the-matter">
+<h2>The crux of the matter<a class="headerlink" href="#the-crux-of-the-matter" title="Permalink to this heading">#</a></h2>
+<p>Before diving into the details of different optimizers, the following paragraphs should provide some intuition for why this inversion is important. As mentioned above, all methods discussed so far use gradients, which come with fundamental scaling issues: even for relatively simple linear cases, the direction of the gradient can be negatively distorted, thus preventing effective progress towards the minimum. (In non-linear settings, the length of the gradient anticorrelates with the distance from the minimum point, making it even more difficult to converge.)</p>
+<p>In 1D, this problem can alleviated by tweaking the learning rate, but it becomes very clear in higher dimensions. Let’s consider a very simple toy “physics” function in two dimensions that simply applies a factor <span class="math notranslate nohighlight">\(\alpha\)</span> to the second component, followed by an <span class="math notranslate nohighlight">\(L^2\)</span> loss:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split} \mathcal P(x_1,x_2) = 
+\begin{bmatrix} 
+  x_1 \\
+  \alpha ~ x_2
+\end{bmatrix}  \text{ with }  L(\mathcal P) = |\mathcal P|^2 
+\end{split}\]</div>
+<p>For <span class="math notranslate nohighlight">\(\alpha=1\)</span> everything is very simple: we’re faced with a radially symmetric loss landscape, and <span class="math notranslate nohighlight">\(x_1\)</span> and <span class="math notranslate nohighlight">\(x_2\)</span> behave in the same way. The gradient <span class="math notranslate nohighlight">\(\nabla_x = (\partial L / \partial x)^T\)</span> is perpendicular to the isolines of the loss landscape, and hence an update with <span class="math notranslate nohighlight">\(-\eta \nabla_x\)</span> points directly to the minimum at 0. This is a setting we’re dealing with for classical deep learning scenarios, like most supervised learning cases or classification problems. This example is visualized on the left of the following figure.</p>
+<figure class="align-default" id="physgrad-scaling">
+<a class="reference internal image-reference" href="lectures/07-ad/resources/physgrad-scaling.jpg"><img alt="lectures/07-ad/resources/physgrad-scaling.jpg" src="lectures/07-ad/resources/physgrad-scaling.jpg" style="height: 200px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Loss landscapes in <span class="math notranslate nohighlight">\(x\)</span> for different <span class="math notranslate nohighlight">\(\alpha\)</span> of the 2D example problem. The green arrows visualize an example update step <span class="math notranslate nohighlight">\(- \nabla_x\)</span> (not exactly to scale) for each case.</span><a class="headerlink" href="#physgrad-scaling" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>However, within this book we’re targeting <em>physical</em> learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for <span class="math notranslate nohighlight">\(\alpha\)</span>, as shown in the middle and right graphs of the figure above.</p>
+<p>For larger <span class="math notranslate nohighlight">\(\alpha\)</span>, the loss landscape away from the minimum steepens along <span class="math notranslate nohighlight">\(x_2\)</span>. <span class="math notranslate nohighlight">\(x_1\)</span> will have an increasingly different scale than <span class="math notranslate nohighlight">\(x_2\)</span>. As a consequence, the gradients grow along this <span class="math notranslate nohighlight">\(x_2\)</span>. If we don’t want our optimization to blow up, we’ll need to choose a smaller learning rate <span class="math notranslate nohighlight">\(\eta\)</span>, reducing progress along <span class="math notranslate nohighlight">\(x_1\)</span>. The gradient of course stays perpendicular to the loss. In this example we’ll move quickly along <span class="math notranslate nohighlight">\(x_2\)</span> until we’re close to the x axis, and then only very slowly creep left towards the minimum. Even worse, as we’ll show below, regular updates actually apply the square of the scaling!
+And in settings with many dimensions, it will be extremely difficult to find a good learning rate.
+Thus, to make proper progress, we somehow need to account for the different scaling of the components of multi-dimensional functions. This requires some form of <em>inversion</em>, as we’ll outline in detail below.</p>
+<p>Note that inversion, naturally, does not mean negation (<span class="math notranslate nohighlight">\(g^{-1} \ne -g\)</span> 🙄). A negated gradient would definitely move in the wrong direction. We need an update that still points towards a decreasing loss, but accounts for differently scaled dimensions. Hence, a central aim in the following will be <em>scale-invariance</em>.</p>
+<div class="tip admonition">
+<p class="admonition-title">Definition of <em>scale-invariance</em></p>
+<p>A scale-invariant optimization for a given function yields the same result for different parametrizations (i.e. scalings) of the function.</p>
+</div>
+<p>E.g., for our toy problem above this means that optimization trajectories are identical no matter what value we choose for <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
+</section>
+<section id="traditional-optimization-methods">
+<h2>Traditional optimization methods<a class="headerlink" href="#traditional-optimization-methods" title="Permalink to this heading">#</a></h2>
+<p>We’ll now evaluate and discuss how different optimizers perform in comparison. As before, let <span class="math notranslate nohighlight">\(L(x)\)</span> be a scalar loss function, subject to minimization. The goal is to compute a step in terms of the input parameters <span class="math notranslate nohighlight">\(x\)</span> , denoted by <span class="math notranslate nohighlight">\(\Delta x\)</span>. Below, we’ll compute different versions of <span class="math notranslate nohighlight">\(\Delta x\)</span> that will be distinguished by a subscript.</p>
+<p>All NNs of the previous chapters were trained with gradient descent (GD) via backpropagation. GD with backprop was also employed for the PDE solver (<em>simulator</em>) <span class="math notranslate nohighlight">\(\mathcal P\)</span>, resulting in the DP training approach.
+When we simplify the setting, and leave out the NN for a moment, this gives the minimization problem
+<span class="math notranslate nohighlight">\(\text{arg min}_{x} ~ L(x)\)</span> with <span class="math notranslate nohighlight">\(L(x) = 1/2 ~ \| \mathcal P(x) - y^* \|_2^2\)</span>.
+As a central quantity, we have the composite gradient
+<span class="math notranslate nohighlight">\((\partial L / \partial x)^T\)</span> of the loss function <span class="math notranslate nohighlight">\(L\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-loss-deriv">
+<span class="eqno">(1)<a class="headerlink" href="#equation-loss-deriv" title="Permalink to this equation">#</a></span>\[
+\Big( \frac{\partial L}{\partial x} \Big)^T = 
+    \Big( \frac{\partial \mathcal P}{\partial x} \Big)^T
+    \Big( \frac{\partial L}{\partial \mathcal P} \Big)^T
+\]</div>
+<p>As the <span class="math notranslate nohighlight">\((\cdots)^T\)</span> notation makes things difficult to read, and we’re effectively only dealing with transposed Jacobians, we’ll omit the <span class="math notranslate nohighlight">\(^T\)</span> in the following.</p>
+<p>We’ve shown in previous chapters that using <span class="math notranslate nohighlight">\(\partial L/\partial x\)</span> works, but
+in the field of classical optimization, other algorithms are more widely used than GD: popular are so-called Quasi-Newton methods, which use fundamentally different updates.
+Hence, in the following we’ll revisit GD along with Quasi-Newton methods and Inverse Jacobians as a third alternative. We’ll focus on the pros and cons of the different methods on a theoretical level. Among others, it’s interesting to discuss why classical optimization algorithms aren’t widely used for NN training despite having some obvious advantages.</p>
+<p>Note that we exclusively consider multivariate functions, and hence all symbols represent vector-valued expressions unless noted otherwise.</p>
+</section>
+<section id="gradient-descent">
+<h2>Gradient descent<a class="headerlink" href="#gradient-descent" title="Permalink to this heading">#</a></h2>
+<p>The optimization updates <span class="math notranslate nohighlight">\(\Delta x_{\text{GD}}\)</span> of GD scale with the derivative of the objective w.r.t. the inputs,</p>
+<div class="math notranslate nohighlight" id="equation-gd-update">
+<span class="eqno">(2)<a class="headerlink" href="#equation-gd-update" title="Permalink to this equation">#</a></span>\[
+    \Delta x_{\text{GD}} = -\eta \cdot \frac{\partial L}{\partial x}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\eta\)</span> is the scalar learning rate.
+The Jacobian <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial x}\)</span> describes how the loss reacts to small changes of the input.
+Surprisingly, this very widely used update has a number of undesirable properties that we’ll highlight in the following. Note that we’ve naturally applied this update in supervised settings such as <span class="xref std std-doc">supervised-airfoils</span>, but we’ve also used it in the differentiable physics approaches. E.g., in <span class="xref std std-doc">diffphys-code-sol</span> we’ve computed the derivative of the fluid solver. In the latter case, we’ve still only updated the NN parameters, but the fluid solver Jacobian was part of equation <a class="reference internal" href="#equation-gd-update">(2)</a>, as shown in <a class="reference internal" href="#equation-loss-deriv">(1)</a>.</p>
+<p>We’ll jointly evaluate GD and several other methods with respect to a range of categories: their handling of units, function sensitivity, and behavior near optima. While these topics are related, they illustrate differences and similarities of the approaches.</p>
+<p><strong>Units</strong> 📏</p>
+<p>A first indicator that something is amiss with GD is that it inherently misrepresents dimensions.
+Assume two parameters <span class="math notranslate nohighlight">\(x_1\)</span> and <span class="math notranslate nohighlight">\(x_2\)</span> have different physical units.
+Then the GD parameter updates scale with the inverse of these units because the parameters appear in the denominator for the GD update above (<span class="math notranslate nohighlight">\(\cdots / \partial x\)</span>).
+The learning rate <span class="math notranslate nohighlight">\(\eta\)</span> could compensate for this discrepancy but since <span class="math notranslate nohighlight">\(x_1\)</span> and <span class="math notranslate nohighlight">\(x_2\)</span> have different units, there exists no single <span class="math notranslate nohighlight">\(\eta\)</span> to produce the correct units for both parameters.</p>
+<p>One could argue that units aren’t very important for the parameters of NNs, but nonetheless it’s unnerving from a physics perspective that they’re wrong, and it hints at some more fundamental problems.</p>
+<p><strong>Function sensitivity</strong> 🔍</p>
+<p>As illustrated above, GD has also inherent problems when functions are not <em>normalized</em>.
+Consider a simplified version of the toy example above, consisting only of the function <span class="math notranslate nohighlight">\(L(x) = \alpha \cdot x\)</span>.
+Then the parameter updates of GD scale with <span class="math notranslate nohighlight">\(\alpha\)</span>, i.e. <span class="math notranslate nohighlight">\(\Delta x_{\text{GD}} = -\eta \cdot \alpha\)</span>, and
+<span class="math notranslate nohighlight">\(L(x+\Delta x_{\text{GD}})\)</span> will even have terms on the order of <span class="math notranslate nohighlight">\(\alpha^2\)</span>.
+If <span class="math notranslate nohighlight">\(L\)</span> is normalized via <span class="math notranslate nohighlight">\(\alpha=1\)</span>, everything’s fine. But in practice, we’ll often
+have <span class="math notranslate nohighlight">\(\alpha \ll 1\)</span>, or even worse <span class="math notranslate nohighlight">\(\alpha \gg 1\)</span>, and then our optimization will be in trouble.</p>
+<p>More specifically, if we look at how the loss changes, the expansion around <span class="math notranslate nohighlight">\(x\)</span> for
+the update step of GD gives:
+<span class="math notranslate nohighlight">\(L(x+\Delta x_{\text{GD}}) = L(x)  + \Delta x_{\text{GD}} \frac{\partial L}{\partial x}  + \cdots \)</span>.
+This first-order step causes a change in the loss of
+<span class="math notranslate nohighlight">\(\big( L(x) - L(x+\Delta x_{\text{GD}}) \big) = -\eta \cdot (\frac{\partial L}{\partial x})^2 + \mathcal O(\Delta x^2)\)</span>. Hence the loss changes by the squared derivative, which leads to the <span class="math notranslate nohighlight">\(\alpha^2\)</span> factor mentioned above. Even worse, in practice we’d like to have a normalized quantity here. For a scaling of the gradients by <span class="math notranslate nohighlight">\(\alpha\)</span>, we’d like our optimizer to compute a quantity like <span class="math notranslate nohighlight">\(1/\alpha^2\)</span>, in order to get a reliable update from the gradient.</p>
+<p>This demonstrates that
+for sensitive functions, i.e. functions where <em>small changes</em> in <span class="math notranslate nohighlight">\(x\)</span> cause <em>large</em> changes in <span class="math notranslate nohighlight">\(L\)</span>, GD counter-intuitively produces large <span class="math notranslate nohighlight">\(\Delta x_{\text{GD}}\)</span>. This causes even larger steps in <span class="math notranslate nohighlight">\(L\)</span>, and leads to exploding gradients.
+For insensitive functions where <em>large changes</em> in the input don’t change the output <span class="math notranslate nohighlight">\(L\)</span> much, GD produces <em>small</em> updates, which can lead to the optimization coming to a halt. That’s the classic <em>vanishing gradients</em> problem.</p>
+<p>Such sensitivity problems can occur easily in complex functions such as deep neural networks where the layers are typically not fully normalized.
+Normalization in combination with correct setting of the learning rate <span class="math notranslate nohighlight">\(\eta\)</span> can be used to counteract this behavior in NNs to some extent, but these tools are not available when optimizing physics simulations.
+Applying normalization to a simulation anywhere but after the last solver step would destroy the state of the simulation.
+Adjusting the learning rate is also difficult in practice, e.g., when simulation parameters at different time steps are optimized simultaneously or when the magnitude of the simulation output varies w.r.t. the initial state.</p>
+<p><strong>Convergence near optimum</strong> 💎</p>
+<p>Finally, the loss landscape of any differentiable function necessarily becomes flat close to an optimum,
+as the gradient approaches zero upon convergence.
+Therefore <span class="math notranslate nohighlight">\(\Delta x_{\text{GD}} \rightarrow 0\)</span> as the optimum is approached, resulting in slow convergence.</p>
+<p>This is an important point, and we will revisit it below. It’s also somewhat surprising at first, but it can actually
+stabilize the training. On the other hand, it makes the learning process difficult to control.</p>
+</section>
+<section id="quasi-newton-methods">
+<h2>Quasi-Newton methods<a class="headerlink" href="#quasi-newton-methods" title="Permalink to this heading">#</a></h2>
+<p>Newton’s method employs the gradient <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial x}\)</span> and the inverse of the Hessian <span class="math notranslate nohighlight">\(\frac{\partial^2 L}{\partial x^2}\)</span> for the update</p>
+<div class="math notranslate nohighlight" id="equation-quasi-newton-update">
+<span class="eqno">(3)<a class="headerlink" href="#equation-quasi-newton-update" title="Permalink to this equation">#</a></span>\[
+\Delta x_{\text{QN}} = -\eta \cdot \left( \frac{\partial^2 L}{\partial x^2} \right)^{-1} \frac{\partial L}{\partial x} .
+\]</div>
+<p>More widely used in practice are Quasi-Newton methods, such as BFGS and its variants, which approximate the Hessian matrix.
+However, the resulting update <span class="math notranslate nohighlight">\(\Delta x_{\text{QN}}\)</span> stays the same.
+As a further improvement, the step size <span class="math notranslate nohighlight">\(\eta\)</span> is often determined via a line search (we’ll leave out this step for now).
+This construction solves some of the problems of gradient descent from above, but has other drawbacks.</p>
+<p><strong>Units and Sensitivity</strong> 📏</p>
+<p>Quasi-Newton methods definitely provide a much better handling of physical units than GD.
+The quasi-Newton update from equation <a class="reference internal" href="#equation-quasi-newton-update">(3)</a>
+produces the correct units for all parameters to be optimized.
+As a consequence, <span class="math notranslate nohighlight">\(\eta\)</span> can stay dimensionless.</p>
+<p>If we now consider how the loss changes via
+<span class="math notranslate nohighlight">\(L(x+\Delta x_{\text{QN}}) = L(x) + -\eta \cdot \left( \frac{\partial^2 L}{\partial x^2} \right)^{-1} \frac{\partial L}{\partial x} \frac{\partial L}{\partial x}  + \cdots \)</span> , the second term correctly cancels out the <span class="math notranslate nohighlight">\(x\)</span> quantities, and leaves us with a scalar update in terms of <span class="math notranslate nohighlight">\(L\)</span>. Thinking back to the example with a scaling factor <span class="math notranslate nohighlight">\(\alpha\)</span> from the GD section, the inverse Hessian in Newton’s methods successfully gives us a factor of <span class="math notranslate nohighlight">\(1/\alpha^2\)</span> to counteract the undesirable scaling of our updates.</p>
+<p><strong>Convergence near optimum</strong> 💎</p>
+<p>Quasi-Newton methods also exhibit much faster convergence when the loss landscape is relatively flat.
+Instead of slowing down, they take larger steps, even when <span class="math notranslate nohighlight">\(\eta\)</span> is fixed.
+This is thanks to the eigenvalues of the inverse Hessian, which scale inversely with the eigenvalues of the Hessian, and hence increase with the flatness of the loss landscape.</p>
+<p><strong>Consistency in function compositions</strong></p>
+<p>So far, quasi-Newton methods address both shortcomings of GD.
+However, similar to GD, the update of an intermediate space still depends on all functions before that.
+This behavior stems from the fact that the Hessian of a composite function carries non-linear terms of the gradient.</p>
+<p>Consider a function composition <span class="math notranslate nohighlight">\(L(y(x))\)</span>, with <span class="math notranslate nohighlight">\(L\)</span> as above, and an additional function <span class="math notranslate nohighlight">\(y(x)\)</span>.
+Then the Hessian <span class="math notranslate nohighlight">\(\frac{d^2L}{dx^2} = \frac{\partial^2L}{\partial y^2} \left( \frac{\partial y}{\partial x} \right)^2 + \frac{\partial L}{\partial y} \cdot \frac{\partial^2 y}{\partial x^2}\)</span> depends on the square of the inner Jacobian <span class="math notranslate nohighlight">\(\frac{\partial y}{\partial x}\)</span>.
+This means that if we’d use this update in a backpropagation step, the Hessian is influenced by the <em>later</em> functions of the backprop chain.
+As a consequence, the update of any intermediate latent space is unknown during the computation of the gradients.</p>
+<p><strong>Dependence on Hessian</strong> 🎩</p>
+<p>In addition, a fundamental disadvantage of quasi-Newton methods that becomes apparent from the discussion above is their dependence on the Hessian. It plays a crucial role for all the improvements discussed so far.</p>
+<p>The first obvious drawback is the <em>computational cost</em>.
+While evaluating the exact Hessian only adds one extra pass to every optimization step, this pass involves higher-dimensional tensors than the computation of the gradient.
+As <span class="math notranslate nohighlight">\(\frac{\partial^2 L}{\partial x^2}\)</span> grows with the square of the parameter count, both its evaluation and its inversion become very expensive for large systems. This is where Quasi-Newton methods spend significant efforts to compute approximations with a reasonable amount of resources, but it’s nonetheless a central problem.</p>
+<p>The quasi-Newton update above additionally requires the <em>inverse</em> Hessian matrix. Thus, a Hessian that is close to being non-invertible typically causes numerical stability problems, while inherently non-invertible Hessians require a fallback to a first order GD update.</p>
+<p>Another related limitation of quasi-Newton methods is that the objective function needs to be <em>twice-differentiable</em>.
+While this may not seem like a big restriction, note that many common neural network architectures use ReLU activation functions of which the second-order derivative is zero.</p>
+<p>Related to this is the problem that higher-order derivatives tend to change more quickly when traversing the parameter space, making them more prone to high-frequency noise in the loss landscape.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><em>Quasi-Newton Methods</em>
+are still a very active research topic, and hence many extensions have been proposed that can alleviate some of these problems in certain settings. E.g., the memory requirement problem can be sidestepped by storing only lower-dimensional vectors that can be used to approximate the Hessian. However, these difficulties illustrate the problems that often arise when applying methods like BFGS.</p>
+</div>
+</section>
+<section id="inverse-gradients">
+<h2>Inverse gradients<a class="headerlink" href="#inverse-gradients" title="Permalink to this heading">#</a></h2>
+<p>As a first step towards fixing the aforementioned issues,
+we’ll consider what we’ll call <em>inverse</em> gradients (IGs). These methods actually use an inverse of the Jacobian, but as we always have a scalar loss at the end of the computational chain, this results in a gradient vector.
+Unfortunately, they come with their own set of problems, which is why they only represent an intermediate step (we’ll revisit them in a more practical form later on).</p>
+<p>Instead of <span class="math notranslate nohighlight">\(L\)</span> (which is scalar), let’s consider optimization problems for a generic, potentially non-scalar function <span class="math notranslate nohighlight">\(y(x)\)</span>.
+This will typically be the physical simulator <span class="math notranslate nohighlight">\(\mathcal P\)</span> later on, but to keep things general and readable, we’ll call it <span class="math notranslate nohighlight">\(y\)</span> for now. This setup implies an inverse problem: for <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span> we want to find an <span class="math notranslate nohighlight">\(x\)</span> given a target <span class="math notranslate nohighlight">\(y^*\)</span>.
+We define the update</p>
+<div class="math notranslate nohighlight" id="equation-ig-def">
+<span class="eqno">(4)<a class="headerlink" href="#equation-ig-def" title="Permalink to this equation">#</a></span>\[
+    \Delta x_{\text{IG}} = \frac{\partial x}{\partial y} \cdot \Delta y.
+\]</div>
+<p>to be the IG update.
+Here, the Jacobian <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span>, which is similar to the inverse of the GD update above, encodes with first-order accuracy how the inputs must change in order to obtain a small change <span class="math notranslate nohighlight">\(\Delta y\)</span> in the output.
+The crucial step is the inversion, which of course requires the Jacobian matrix to be invertible. This is a problem somewhat similar to the inversion of the Hessian, and we’ll revisit this issue below. However, if we can invert the Jacobian, this has some very nice properties.</p>
+<p>Note that instead of using a learning rate, here the step size is determined by the desired increase or decrease of the value of the output, <span class="math notranslate nohighlight">\(\Delta y\)</span>. Thus, we need to choose a <span class="math notranslate nohighlight">\(\Delta y\)</span> instead of an <span class="math notranslate nohighlight">\(\eta\)</span>, but effectively has the same role: it controls the step size of the optimization.
+It the simplest case, we can compute it as a step towards the ground truth via <span class="math notranslate nohighlight">\(\Delta y = \eta ~ (y^* - y)\)</span>.
+This <span class="math notranslate nohighlight">\(\Delta y\)</span> will show up frequently in the following equations, and make them look quite different to the ones above at first sight.</p>
+<p><strong>Units</strong> 📏</p>
+<p>IGs scale with the inverse derivative. Hence the updates are automatically of the same units as the parameters without requiring an arbitrary learning rate: <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span> times <span class="math notranslate nohighlight">\(\Delta y\)</span> has the units of <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<p><strong>Function sensitivity</strong> 🔍</p>
+<p>They also don’t have problems with normalization as the parameter updates from the example <span class="math notranslate nohighlight">\(L(x) = \alpha \cdot x\)</span> above now scale with <span class="math notranslate nohighlight">\(\alpha^{-1}\)</span>.
+Sensitive functions thus receive small updates while insensitive functions get large (or exploding) updates.</p>
+<p><strong>Convergence near optimum and function compositions</strong> 💎</p>
+<p>Like Newton’s method, IGs show the opposite behavior of GD close to an optimum: they produce updates that still progress the optimization, which usually improves  convergence.</p>
+<p>Additionally, IGs are consistent in function composition.
+The change in <span class="math notranslate nohighlight">\(x\)</span> is <span class="math notranslate nohighlight">\(\Delta x_{\text{IG}} = \Delta L \cdot \frac{\partial x}{\partial y} \frac{\partial y}{\partial L}\)</span> and the approximate change in <span class="math notranslate nohighlight">\(y\)</span> is <span class="math notranslate nohighlight">\(\Delta y = \Delta L  \cdot \frac{\partial y}{\partial x} \frac{\partial x}{\partial y} \frac{\partial y}{\partial L} = \Delta L \frac{\partial y}{\partial L}\)</span>.
+The change in intermediate spaces is independent of their respective dependencies, at least up to first order.
+Consequently, the change to these spaces can be estimated during backprop, before all gradients have been computed.</p>
+<p>Note that even Newton’s method with its inverse Hessian didn’t fully get this right. The key here is that if the Jacobian is invertible, we’ll directly get the correctly scaled direction at a given layer, without helper quantities such as the inverse Hessian.</p>
+<p><strong>Dependence on the inverse Jacobian</strong> 🎩</p>
+<p>So far so good. The above properties are clearly advantageous, but unfortunately IGs
+require the inverse of the Jacobian, <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span>.
+It is only well-defined for square Jacobians, meaning for functions <span class="math notranslate nohighlight">\(y\)</span> with the same inputs and output dimensions.
+In optimization, however, the input is typically high-dimensional while the output is a scalar objective function.
+And, somewhat similar to the Hessians of quasi-Newton methods,
+even when the <span class="math notranslate nohighlight">\(\frac{\partial y}{\partial x}\)</span> is square, it may not be invertible.</p>
+<p>Thus, we now consider the fact that inverse gradients are linearizations of inverse functions and show that using inverse functions provides additional advantages while retaining the same benefits.</p>
+</section>
+<section id="inverse-simulators">
+<h2>Inverse simulators<a class="headerlink" href="#inverse-simulators" title="Permalink to this heading">#</a></h2>
+<p>So far we’ve discussed the problems of existing methods, and a common theme among the methods that do better, Newton and IGs, is that the regular gradient is not sufficient. We somehow need to address it’s problems with some form of <em>inversion</em> to arrive at scale invariance. Before going into details of NN training and numerical methods to perform this inversion, we will consider one additional “special” case that will further illustrate the need for inversion: if we can make use of an <em>inverse simulator</em>, this likewise addresses many of the inherent issues of GD. It actually represents the ideal setting for computing update steps for the physics simulation part.</p>
+<p>Let <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span> be a forward simulation, and <span class="math notranslate nohighlight">\(\mathcal P(y)^{-1}=x\)</span> denote its inverse.
+In contrast to the inversion of Jacobian or Hessian matrices from before, <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> denotes a full inverse of all functions of <span class="math notranslate nohighlight">\(\mathcal P\)</span>.</p>
+<p>Trying to this employ inverse solver in the minimization problem from the top, somewhat surprisingly, makes the whole minimization obsolete (at least if we consider single cases with one <span class="math notranslate nohighlight">\(x,y^*\)</span> pair). We just need to evaluate <span class="math notranslate nohighlight">\(\mathcal P^{-1}(y^*)\)</span> to solve the inverse problem and obtain <span class="math notranslate nohighlight">\(x\)</span>. As we plan to bring back NNs and more complex scenarios soon, let’s assume that we are still dealing with a collection of <span class="math notranslate nohighlight">\(y^*\)</span> targets, and non-obvious solutions <span class="math notranslate nohighlight">\(x\)</span>. One example could be that we’re looking for an <span class="math notranslate nohighlight">\(x\)</span> that yields multiple <span class="math notranslate nohighlight">\(y^*\)</span> targets with minimal distortions in terms of <span class="math notranslate nohighlight">\(L^2\)</span>.</p>
+<p>Now, instead of evaluating <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> once to obtain the solution, we can iteratively update a current approximation of the solution <span class="math notranslate nohighlight">\(x_0\)</span> with an update that we’ll call <span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span> when employing the inverse physical simulator.</p>
+<p>It also turns out to be a good idea to employ a <em>local</em> inverse that is conditioned on an initial guess for the solution <span class="math notranslate nohighlight">\(x\)</span>. We’ll denote this local inverse with <span class="math notranslate nohighlight">\(\mathcal P^{-1}(y^*; x)\)</span>. As there are potentially very different <span class="math notranslate nohighlight">\(x\)</span>-space locations that result in very similar <span class="math notranslate nohighlight">\(y^*\)</span>, we’d like to find the one closest to the current guess. This is important to obtain well behaved solutions in multi-modal settings, where we’d like to avoid the solution manifold to consist of a set of very scattered points.</p>
+<p>Equipped with these changes, we can formulate an optimization problem where a current state of the optimization <span class="math notranslate nohighlight">\(x_0\)</span>, with <span class="math notranslate nohighlight">\(y_0 = \mathcal P(x_0)\)</span>, is updated with</p>
+<div class="math notranslate nohighlight" id="equation-pg-def">
+<span class="eqno">(5)<a class="headerlink" href="#equation-pg-def" title="Permalink to this equation">#</a></span>\[
+    \Delta x_{\text{PG}}  =  \frac{ \big( \mathcal P^{-1} (y_0 + \Delta y; x_0) - x_0  \big) }{\Delta y} \cdot \Delta y . 
+\]</div>
+<p>Here the step in <span class="math notranslate nohighlight">\(y\)</span>-space, <span class="math notranslate nohighlight">\(\Delta y\)</span>, is either the full distance <span class="math notranslate nohighlight">\(y^*-y_0\)</span> or a part of it, in line with the <span class="math notranslate nohighlight">\(y\)</span>-step used for IGs.
+When applying the update <span class="math notranslate nohighlight">\( \mathcal P^{-1}(y_0 + \Delta y; x_0) - x_0\)</span> it will produce <span class="math notranslate nohighlight">\(\mathcal P(x_0 + \Delta x) = y_0 + \Delta y\)</span> exactly, despite <span class="math notranslate nohighlight">\(\mathcal P\)</span> being a potentially highly nonlinear function.
+Note that the <span class="math notranslate nohighlight">\(\Delta y\)</span> in equation <a class="reference internal" href="#equation-pg-def">(5)</a> effectively cancels out to give a step in terms of <span class="math notranslate nohighlight">\(x\)</span>. However, this notation serves to show the similarities with the IG step from equation <a class="reference internal" href="#equation-ig-def">(4)</a>.
+The update <span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span> gives us a first iterative method that makes use of <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span>, and as such leverages all its information, such as higher-order terms.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
+<p>The update obtained with a regular gradient descent method has surprising shortcomings due to scaling issues.
+Classical, inversion-based methods like IGs and Newton’s method remove some of these shortcomings,
+with the somewhat theoretical construct of the update from inverse simulators (<span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span>)
+including the most higher-order terms.
+<span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span> can be seen as an “ideal” setting for improved (inverted) update steps.
+It gets all of the aspect above right: units 📏, function sensitivity 🔍, compositions, and convergence near optima 💎,
+and it provides a <em>scale-invariant</em> update.
+This comes at the cost of requiring an expression and discretization for a local inverse solver. 🎩</p>
+<p>In contrast to the second- and first-order approximations from Newton’s method and IGs, it can potentially take highly nonlinear effects into account. Due to the potentially difficult construct of the inverse simulator, the main goal of the following sections is to illustrate how much we can gain from including all the higher-order information. Note that all three methods successfully include a rescaling of the search direction via inversion, in contrast to the previously discussed GD training. All of these methods represent different forms of differentiable physics, though.</p>
+<p>Before moving on to including improved updates in NN training processes, we will discuss some additional theoretical aspects,
+and then illustrate the differences between these approaches with a practical example.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following sections will provide an in-depth look (“deep-dive”), into
+optimizations with inverse solvers. If you’re interested in practical examples
+and connections to NNs, feel free to skip ahead to <span class="xref std std-doc">physgrad-comparison</span> or
+<span class="xref std std-doc">physgrad-nn</span>, respectively.</p>
+</div>
+</section>
+<section id="deep-dive-into-inverse-simulators">
+<h2>Deep Dive into Inverse simulators<a class="headerlink" href="#deep-dive-into-inverse-simulators" title="Permalink to this heading">#</a></h2>
+<p>We’ll now derive and discuss the <span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span> update in more detail.
+Physical processes can be described as a trajectory in state space where each point represents one possible configuration of the system.
+A simulator typically takes one such state space vector and computes a new one at another time.
+The Jacobian of the simulator is, therefore, necessarily square.
+As long as the physical process does <em>not destroy</em> information, the Jacobian is non-singular.
+In fact, it is believed that information in our universe cannot be destroyed so any physical process could in theory be inverted as long as we have perfect knowledge of the state.
+Hence, it’s not unreasonable to expect that <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> can be formulated in many settings.</p>
+<p>Update steps computed as described above also have some nice theoretical properties, e.g., that the optimization converges given that <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> consistently a fixed target <span class="math notranslate nohighlight">\(x^*\)</span>. Details of the corresponding proofs can be found in <a href="#id3"><span class="problematic" id="id4">holl2021pg</span></a>.</p>
+<section id="fundamental-theorem-of-calculus">
+<h3>Fundamental theorem of calculus<a class="headerlink" href="#fundamental-theorem-of-calculus" title="Permalink to this heading">#</a></h3>
+<p>To more clearly illustrate the advantages in non-linear settings, we
+apply the fundamental theorem of calculus to rewrite the ratio <span class="math notranslate nohighlight">\(\Delta x_{\text{PG}} / \Delta y\)</span> from above. This gives,</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+    \frac{\Delta x_{\text{PG}}}{\Delta y} = \frac{\int_{y_0}^{y_0+\Delta y} \frac{\partial x}{\partial y} \, dy}{\Delta y}
+\end{aligned}\]</div>
+<p>Here the expressions inside the integral is the local gradient, and we assume it exists at all points between <span class="math notranslate nohighlight">\(y_0\)</span> and <span class="math notranslate nohighlight">\(y_0+\Delta y_0\)</span>.
+The local gradients are averaged along the path connecting the state before the update with the state after the update.
+The whole expression is therefore equal to the average gradient of <span class="math notranslate nohighlight">\(\mathcal P\)</span> between the current <span class="math notranslate nohighlight">\(x\)</span> and the estimate for the next optimization step <span class="math notranslate nohighlight">\(x_0 + \Delta x_{\text{PG}}\)</span>.
+This effectively amounts to <em>smoothing the objective landscape</em> of an optimization by computing updates that can take nonlinearities of <span class="math notranslate nohighlight">\(\mathcal P\)</span> into account.</p>
+<p>The equations naturally generalize to higher dimensions by replacing the integral with a path integral along any differentiable path connecting <span class="math notranslate nohighlight">\(x_0\)</span> and <span class="math notranslate nohighlight">\(x_0 + \Delta x_{\text{PG}}\)</span> and replacing the local gradient by the local gradient in the direction of the path.</p>
+</section>
+<section id="global-and-local-inverse-simulators">
+<h3>Global and local inverse simulators<a class="headerlink" href="#global-and-local-inverse-simulators" title="Permalink to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\mathcal P\)</span> be a function with a square Jacobian and <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span>.
+A global inverse function <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> is defined only for bijective <span class="math notranslate nohighlight">\(\mathcal P\)</span>.
+If the inverse exists, it can find <span class="math notranslate nohighlight">\(x\)</span> for any <span class="math notranslate nohighlight">\(y\)</span> such that <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span>.</p>
+<p>Instead of using this “perfect” inverse <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> directly, we’ll in practice often use a local inverse
+<span class="math notranslate nohighlight">\(\mathcal P^{-1}(y; x_0)\)</span>, which is conditioned for the point <span class="math notranslate nohighlight">\(x_0\)</span>, and correspondingly on
+<span class="math notranslate nohighlight">\(y_0=\mathcal P(x_0)\)</span>.
+This local inverse is easier to obtain, as it only needs to exist near a given <span class="math notranslate nohighlight">\(y_0\)</span>, and not for all <span class="math notranslate nohighlight">\(y\)</span>.
+For the generic <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> to exist <span class="math notranslate nohighlight">\(\mathcal P\)</span> would need to be globally invertible.</p>
+<p>By contrast, a <em>local inverse</em> only needs to exist and be accurate in the vicinity of <span class="math notranslate nohighlight">\((x_0, y_0)\)</span>.
+If a global inverse <span class="math notranslate nohighlight">\(\mathcal P^{-1}(y)\)</span> exists, the local inverse approximates it and matches it exactly as <span class="math notranslate nohighlight">\(y \rightarrow y_0\)</span>.
+More formally, <span class="math notranslate nohighlight">\(\lim_{y \rightarrow y_0} \frac{\mathcal P^{-1}(y; x_0) - P^{-1}(y)}{|y - y_0|} = 0\)</span>.
+Local inverse functions can exist, even when a global inverse does not.</p>
+<p>Non-injective functions can be inverted, for example, by choosing the closest <span class="math notranslate nohighlight">\(x\)</span> to <span class="math notranslate nohighlight">\(x_0\)</span> such that <span class="math notranslate nohighlight">\(\mathcal P(x) = y\)</span>.
+As an example, consider <span class="math notranslate nohighlight">\(\mathcal P(x) = x^2\)</span>. It doesn’t have a global inverse as two solutions (<span class="math notranslate nohighlight">\(\pm\)</span>) exist for each <span class="math notranslate nohighlight">\(y\)</span>. However, we can easily construct a local inverse by choosing the closest solution taking from an initial guess.</p>
+<p>For differentiable functions, a local inverse is guaranteed to exist by the inverse function theorem as long as the Jacobian is non-singular.
+That is because the inverse Jacobian <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span> itself is a local inverse function, albeit, with being first-order, not the most accurate one.
+Even when the Jacobian is singular (because the function is not injective, chaotic or noisy), we can usually find good local inverse functions.</p>
+</section>
+<section id="time-reversal">
+<h3>Time reversal<a class="headerlink" href="#time-reversal" title="Permalink to this heading">#</a></h3>
+<p>The inverse function of a simulator is typically the time-reversed physical process.
+In some cases, inverting the time axis of the forward simulator, <span class="math notranslate nohighlight">\(t \rightarrow -t\)</span>, can yield an adequate global inverse simulator.
+Unless the simulator destroys information in practice, e.g., due to accumulated numerical errors or stiff linear systems, this  approach can be a starting point for an inverse simulation, or to formulate a <em>local</em> inverse simulation.</p>
+<p>However, the simulator itself needs to be of sufficient accuracy to provide the correct estimate. For more complex settings, e.g., fluid simulations over the course of many time steps, the first- and second-order schemes as employed in <span class="xref std std-doc">overview-ns-forw</span> would not be sufficient.</p>
+</section>
+<section id="integrating-a-loss-function">
+<h3>Integrating a loss function<a class="headerlink" href="#integrating-a-loss-function" title="Permalink to this heading">#</a></h3>
+<p>Since introducing IGs, we’ve only considered a simulator with an output <span class="math notranslate nohighlight">\(y\)</span>. Now we can re-introduce the loss function <span class="math notranslate nohighlight">\(L\)</span>.
+As before, we consider minimization problems with a scalar objective function <span class="math notranslate nohighlight">\(L(y)\)</span> that depends on the result of an invertible simulator <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span>.
+In equation <a class="reference internal" href="#equation-ig-def">(4)</a> we’ve introduced the inverse gradient (IG) update, which gives <span class="math notranslate nohighlight">\(\Delta x = \frac{\partial x}{\partial L} \cdot \Delta L\)</span> when the loss function is included.
+Here, <span class="math notranslate nohighlight">\(\Delta L\)</span> denotes a step to take in terms of the loss.</p>
+<p>By applying the chain rule and substituting the IG <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial L}\)</span> for the update from the inverse physics simulator from equation <a class="reference internal" href="#equation-pg-def">(5)</a>, we obtain, up to first order:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+    \Delta x_{\text{PG}}
+    &amp;= \frac{\partial x}{\partial L} \cdot \Delta L
+    \\
+    &amp;= \frac{\partial x}{\partial y} \left( \frac{\partial y}{\partial L} \cdot \Delta L \right)
+    \\
+    &amp;= \frac{\partial x}{\partial y} \cdot \Delta y
+    \\
+    &amp;= \mathcal P^{-1}(y_0 + \Delta y; x_0) - x_0 + \mathcal O(\Delta y^2)
+\end{aligned}
+\end{split}\]</div>
+<p>These equations show that equation <a class="reference internal" href="#equation-pg-def">(5)</a> is equal to the IG from the section above up to first order, but contains nonlinear terms, i.e.
+<span class="math notranslate nohighlight">\( \Delta x_{\text{PG}} / \Delta y = \frac{\partial x}{\partial y} + \mathcal O(\Delta y^2) \)</span>.
+The accuracy of the update depends on the fidelity of the inverse function <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span>.
+We can define an upper limit to the error of the local inverse using the local gradient <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span>.
+In the worst case, we can therefore fall back to the regular gradient.</p>
+<p>Also, we have turned the step w.r.t. <span class="math notranslate nohighlight">\(L\)</span> into a step in <span class="math notranslate nohighlight">\(y\)</span> space: <span class="math notranslate nohighlight">\(\Delta y\)</span>.
+However, this does not prescribe a unique way to compute <span class="math notranslate nohighlight">\(\Delta y\)</span> since the derivative <span class="math notranslate nohighlight">\(\frac{\partial y}{\partial L}\)</span> as the right-inverse of the row-vector <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial y}\)</span> puts almost no restrictions on <span class="math notranslate nohighlight">\(\Delta y\)</span>.
+Instead, we use a Newton step from equation <a class="reference internal" href="#equation-quasi-newton-update">(3)</a> to determine <span class="math notranslate nohighlight">\(\Delta y\)</span> where <span class="math notranslate nohighlight">\(\eta\)</span> controls the step size of the optimization steps. We will explain this in more detail in connection with the introduction of NNs after the following code example.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/07-ad"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="07-ad.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">07: Automatic Differentiation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="07b-physgrad-comparison.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">07b: Simple Example comparing Different Optimizers</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-crux-of-the-matter">The crux of the matter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#traditional-optimization-methods">Traditional optimization methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quasi-newton-methods">Quasi-Newton methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-gradients">Inverse gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-simulators">Inverse simulators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-dive-into-inverse-simulators">Deep Dive into Inverse simulators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fundamental-theorem-of-calculus">Fundamental theorem of calculus</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-and-local-inverse-simulators">Global and local inverse simulators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#time-reversal">Time reversal</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integrating-a-loss-function">Integrating a loss function</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
