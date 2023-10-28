@@ -1,0 +1,1127 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>07b: Simple Example comparing Different Optimizers &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=c5ced968eda925caa686"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/07-ad/07b-physgrad-comparison-exercise';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Scientific Machine Learning (SciML) - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Scientific Machine Learning (SciML) - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="07a-improved-gradients.html">07a: Scale-Invariance and Inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07b-physgrad-comparison.html">07b: Simple Example comparing Different Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08a-gp.html">08a: Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/07-ad/07b-physgrad-comparison-exercise.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/07-ad/07b-physgrad-comparison-exercise.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/07-ad/07b-physgrad-comparison-exercise.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>07b: Simple Example comparing Different Optimizers</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-formulation">Problem formulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spaces">3 Spaces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#newton">Newton</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-simulators">Inverse simulators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#y-space">y Space</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusions">Conclusions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approximate-inversions">Approximate inversions</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="b-simple-example-comparing-different-optimizers">
+<h1>07b: Simple Example comparing Different Optimizers<a class="headerlink" href="#b-simple-example-comparing-different-optimizers" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/07-ad/07b-physgrad-comparison-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/07-ad/07b-physgrad-comparison.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="problem-formulation">
+<h2>Problem formulation<a class="headerlink" href="#problem-formulation" title="Permalink to this heading">#</a></h2>
+<p>We’ll consider a very simple setup to clearly illustrate what’s happening: we have a two-dimensional input space <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, a mock “physical model” likewise with two dimensions <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>, and a scalar loss <span class="math notranslate nohighlight">\(L\)</span>, i.e.
+<span class="math notranslate nohighlight">\(\mathbf{x} \in \mathbb{R}^2\)</span>,
+<span class="math notranslate nohighlight">\(\mathbf{y}:  \mathbb{R}^2 \rightarrow  \mathbb{R}^2 \)</span>, and
+<span class="math notranslate nohighlight">\(L:  \mathbb{R}^2 \rightarrow  \mathbb{R} \)</span>.
+The components of a vector like <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> are denoted with <span class="math notranslate nohighlight">\(x_i\)</span>, and to be in sync with python arrays the indices start at 0.</p>
+<p>Specifically, we’ll use the following  <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> and <span class="math notranslate nohighlight">\(L\)</span>:</p>
+<p><span class="math notranslate nohighlight">\(\quad \mathbf{y}(\mathbf{x}) = \mathbf{y}(x_0,x_1) = \begin{bmatrix} x_0 \\ x_1^2 \end{bmatrix}\)</span>,</p>
+<p>i.e. <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> only squares the second component of its input, and
+<span class="math notranslate nohighlight">\(L(\mathbf{y}) = |\mathbf{y}|^2 = y_0^2 + y_1^2  \  \)</span>
+represents a simple squared <span class="math notranslate nohighlight">\(L^2\)</span> loss.
+As starting point for some example optimizations we’ll use
+<span class="math notranslate nohighlight">\(\mathbf{x} = \begin{bmatrix} 
+  3 \\ 3
+\end{bmatrix}\)</span> as initial guess for solving the following simple minimization problem: <span class="math notranslate nohighlight">\(\text{arg min}_{\mathbf{x}} \ L(\mathbf{x}).\)</span></p>
+<p>For us as humans it’s quite obvious that <span class="math notranslate nohighlight">\([0 \ 0]^T\)</span> is the right answer, but let’s see how quickly the different optimization algorithms discussed in the previous section can find that solution. And while <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> is a very simple function, it is nonlinear due to its <span class="math notranslate nohighlight">\(x_1^2\)</span>.</p>
+</section>
+<section id="spaces">
+<h2>3 Spaces<a class="headerlink" href="#spaces" title="Permalink to this heading">#</a></h2>
+<p>In order to understand the following examples, it’s important to keep in mind that we’re dealing with mappings between the three <em>spaces</em> we’ve introduced here:
+<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> and <span class="math notranslate nohighlight">\(L\)</span>. A regular forward pass maps an
+<span class="math notranslate nohighlight">\(\mathbf{x}\)</span> via <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> to <span class="math notranslate nohighlight">\(L\)</span>, while for the optimization we’ll need to associate values
+and changes in <span class="math notranslate nohighlight">\(L\)</span> with positions in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>. While doing this, it will
+be interesting how this influences the positions in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> that develop while searching for
+the right position in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>.</p>
+<p><img alt="physgrad" src="../../_images/physgrad-3spaces.jpg" /></p>
+<p>We’re targeting inverse problems to retrieve an entry in <span class="math notranslate nohighlight">\(\mathbf x\)</span> from a loss computed in terms of output from a physics simulator <span class="math notranslate nohighlight">\(\mathbf y\)</span>. Hence in a forward pass, we transform from <span class="math notranslate nohighlight">\(\mathbf x\)</span> to <span class="math notranslate nohighlight">\(\mathbf y\)</span>, and then compute a loss <span class="math notranslate nohighlight">\(L\)</span>. The backwards pass transforms back to <span class="math notranslate nohighlight">\(\mathbf x\)</span>. Thus, the accuracy in terms of <span class="math notranslate nohighlight">\(\mathbf x\)</span> is the most crucial one, but we can likewise track progress of an optimization in terms of <span class="math notranslate nohighlight">\(\mathbf y\)</span> and <span class="math notranslate nohighlight">\(L\)</span>.</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this heading">#</a></h2>
+<p>For this example we’ll use the <a class="reference external" href="https://github.com/google/jax">JAX framework</a>, which represents a nice alternative for efficiently working with differentiable functions.
+JAX also has a nice numpy wrapper that implements most of numpy’s functions. Below we’ll use this wrapper as <code class="docutils literal notranslate"><span class="pre">np</span></code>, and the <em>original</em> numpy as <code class="docutils literal notranslate"><span class="pre">onp</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax</span>
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">onp</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We’ll start by defining the <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> and <span class="math notranslate nohighlight">\(L\)</span> functions, together with a single composite function <code class="docutils literal notranslate"><span class="pre">fun</span></code> which calls L and y. Having a single native python function is necessary for many of the JAX operations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># &quot;physics&quot; function y</span>
+
+<span class="c1"># simple L2 loss</span>
+
+<span class="c1"># composite function with L &amp; y , evaluating the loss for x</span>
+
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting point x = &quot;</span><span class="o">+</span><span class="nb">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Some test calls of the functions we defined so far, from top to bottom, y, manual L(y), L(y):&quot;</span><span class="p">)</span> 
+<span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">,</span> <span class="n">loss_y</span><span class="p">(</span> <span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">),</span> <span class="n">loss_x</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Starting point x = [3. 3.]
+
+Some test calls of the functions we defined so far, from top to bottom, y, manual L(y), L(y):
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(DeviceArray([3., 9.], dtype=float32),
+ DeviceArray(90., dtype=float32),
+ DeviceArray(90., dtype=float32))
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can evaluate the derivatives of our function via <code class="docutils literal notranslate"><span class="pre">jax.grad</span></code>. E.g., <code class="docutils literal notranslate"><span class="pre">jax.grad(loss_y)(physics_y(x))</span></code> evaluates the Jacobian <span class="math notranslate nohighlight">\(\partial L / \partial \mathbf{y}\)</span>. The cell below evaluates this and a few variants, together with a sanity check for the inverse of the Jacobian of <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># this works:</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jacobian L(y): &quot;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_y</span><span class="p">)(</span><span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># the following would give an error as y (and hence physics_y) is not scalar</span>
+<span class="c1">#jax.grad(physics_y)(x) </span>
+
+<span class="c1"># computing the jacobian of y is a valid operation:</span>
+
+<span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Jacobian y(x): </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">J</span><span class="p">)</span> <span class="p">)</span> 
+
+<span class="c1"># the code below also gives error, JAX grad needs a single function object</span>
+<span class="c1">#jax.grad( loss_y(physics_y) )(x) </span>
+
+<span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Sanity check with inverse Jacobian of y, this should give x again: &quot;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">J</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">J</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> <span class="p">))</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># instead use composite &#39;fun&#39; from above</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gradient for full L(x): &quot;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_x</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span>  <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jacobian L(y): [ 6. 18.]
+
+Jacobian y(x): 
+[[1. 0.]
+ [0. 6.]]
+
+Sanity check with inverse Jacobian of y, this should give x again: [3. 3.]
+
+Gradient for full L(x): [  6. 108.]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The last line is worth a closer look: here we print the gradient <span class="math notranslate nohighlight">\(\partial L / \partial \mathbf{x}\)</span> at our initial position. And while we know that we should just move diagonally towards the origin (with the zero vector being the minimizer), this gradient is not very diagonal - it has a strongly dominant component along <span class="math notranslate nohighlight">\(x_1\)</span> with an entry of 108.</p>
+<p>Let’s see how the different methods cope with this situation. We’ll compare</p>
+<ul class="simple">
+<li><p>the first order method <em>gradient descent</em> (i.e., regular, non-stochastic, “steepest gradient descent”),</p></li>
+<li><p><em>Newton’s method</em> as a representative of the second order methods,</p></li>
+<li><p>and scale-invariant updates from <em>inverse simulators</em>.</p></li>
+</ul>
+</section>
+<section id="gradient-descent">
+<h2>Gradient descent<a class="headerlink" href="#gradient-descent" title="Permalink to this heading">#</a></h2>
+<p>For gradient descent, the simple gradient based update from equation <a class="reference internal" href="07a-improved-gradients.html#equation-gd-update">(2)</a>
+in our setting gives the following update step in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\Delta \mathbf{x}_{\text{GD}}
+&amp;= 
+- \eta ( J_{L} J_{\mathbf{y}} )^T  \\
+&amp;=
+- \eta \big( \frac{\partial L }{ \partial \mathbf{y} } \frac{\partial \mathbf{y} }{ \partial \mathbf{x} }  \big)^T
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\eta\)</span> denotes the step size parameter .</p>
+<p>Let’s start the optimization via gradient descent at <span class="math notranslate nohighlight">\(x=[3,3]\)</span>, and update our solution ten times with
+<span class="math notranslate nohighlight">\(\eta = 0.01\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">3.</span><span class="p">,</span><span class="mf">3.</span><span class="p">])</span>
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">historyGD</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">];</span> <span class="n">updatesGD</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GD iter 0: [2.94      1.9200001]
+GD iter 1: [2.8812    1.6368846]
+GD iter 2: [2.823576  1.4614503]
+GD iter 3: [2.7671044 1.3365935]
+GD iter 4: [2.7117622 1.2410815]
+GD iter 5: [2.657527  1.1646168]
+GD iter 6: [2.6043763 1.1014326]
+GD iter 7: [2.5522888 1.0479842]
+GD iter 8: [2.501243  1.0019454]
+GD iter 9: [2.4512184  0.96171147]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we’ve already printed the resulting positions in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, and they seem to be going down, i.e. moving in the right direction. The last point, <span class="math notranslate nohighlight">\([2.451 \  0.962]\)</span> still has a fair distance of 2.63 to the origin.</p>
+<p>Let’s take a look at the progression over the course of the iterations (the evolution was stored in the <code class="docutils literal notranslate"><span class="pre">history</span></code> list above). The blue points denote the positions in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> from the GD iterations, with the target at the origin shown with a thin black cross.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">historyGD</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyGD</span><span class="p">)</span>
+<span class="n">updatesGD</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">updatesGD</span><span class="p">)</span> <span class="c1"># for later</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyGD</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyGD</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#1F77B4&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;GD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="c1"># target at 0,0</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x0&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc742a69430&gt;
+</pre></div>
+</div>
+<img alt="../../_images/78f6e73fe198446e19a2e28a5f01e1326ecb2603227c3c148d16158e9e18d55a.png" src="../../_images/78f6e73fe198446e19a2e28a5f01e1326ecb2603227c3c148d16158e9e18d55a.png" />
+</div>
+</div>
+<p>No surprise here: the initial step mostly moves downwards along <span class="math notranslate nohighlight">\(x_1\)</span> (in top right corner), and the updates afterwards curve towards the origin. But they don’t get very far. It’s still quite a distance to the solution in the bottom left corner.</p>
+</section>
+<section id="newton">
+<h2>Newton<a class="headerlink" href="#newton" title="Permalink to this heading">#</a></h2>
+<p>For Newton’s method, the update step is given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\Delta \mathbf{x}_{\text{QN}} &amp;= 
+- \eta \left( \frac{\partial^2 L }{ \partial \mathbf{x}^2 }  \right)^{-1}
+  \frac{\partial L }{ \partial \mathbf{x} }
+\\
+&amp;=
+- \eta \ H_L^{-1} \ ( J_{L} J_{\mathbf{y}} )^T
+\end{aligned}
+\end{split}\]</div>
+<p>Hence, in addition to the same gradient as for GD, we now need to evaluate and invert the Hessian of <span class="math notranslate nohighlight">\(\frac{\partial^2 L }{ \partial \mathbf{x}^2 }\)</span>.</p>
+<p>This is quite straightforward in JAX: we can call <code class="docutils literal notranslate"><span class="pre">jax.jacobian</span></code> two times, and then use the JAX version of <code class="docutils literal notranslate"><span class="pre">linalg.inv</span></code> to invert the resulting matrix.</p>
+<p>For the optimization with Newton’s method we’ll use a larger step size of <span class="math notranslate nohighlight">\(\eta =1/3\)</span>. For this example and the following one, we’ve chosen the step size such that the magnitude of the first update step is roughly the same as the one of GD. In this way, we can compare the trajectories of all three methods relative to each other. Note that this is by no means meant to illustrate or compare the stability of the methods here. Stability and upper limits for <span class="math notranslate nohighlight">\(\eta\)</span>  are separate topics. Here we’re focusing on convergence properties.</p>
+<p>In the next cell, we apply the Newton updates ten times starting from the same initial guess:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">3.</span><span class="p">,</span><span class="mf">3.</span><span class="p">])</span>
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="mf">3.</span>
+<span class="n">historyNt</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">];</span> <span class="n">updatesNt</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">Gx</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_x</span><span class="p">)</span>
+<span class="n">Hx</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">loss_x</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    
+
+
+
+    
+    <span class="n">historyNt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="n">updatesNt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span> <span class="n">hinv</span> <span class="p">,</span> <span class="n">g</span><span class="p">)</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Newton iter </span><span class="si">%d</span><span class="s2">: &quot;</span><span class="o">%</span><span class="k">i</span> + format(x) )
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Newton iter 0: [2.        2.6666667]
+Newton iter 1: [1.3333333 2.3703704]
+Newton iter 2: [0.88888884 2.1069958 ]
+Newton iter 3: [0.59259254 1.8728852 ]
+Newton iter 4: [0.39506167 1.6647868 ]
+Newton iter 5: [0.26337445 1.4798105 ]
+Newton iter 6: [0.17558296 1.315387  ]
+Newton iter 7: [0.1170553 1.1692328]
+Newton iter 8: [0.07803687 1.0393181 ]
+Newton iter 9: [0.05202458 0.92383826]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The last line already indicates: Newton’s method does quite a bit better. The last point <span class="math notranslate nohighlight">\([0.052 \ 0.924]\)</span> only has a distance of 0.925 to the origin (compared to 2.63 for GD)</p>
+<p>Below, we plot the Newton trajectory in orange next to the GD version in blue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">historyNt</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyNt</span><span class="p">)</span>
+<span class="n">updatesNt</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">updatesNt</span><span class="p">)</span> 
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyGD</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyGD</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#1F77B4&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;GD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyNt</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyNt</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#FF7F0E&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Newton&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="c1"># target at 0,0</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x0&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc7428c5bb0&gt;
+</pre></div>
+</div>
+<img alt="../../_images/c0f8d606f86e9124b566cb1fe40387ad443fc820a180ae9641f2221c7b61e598.png" src="../../_images/c0f8d606f86e9124b566cb1fe40387ad443fc820a180ae9641f2221c7b61e598.png" />
+</div>
+</div>
+<p>Not completely surprising: for this simple example we can reliably evaluate the Hessian, and Newtons’s method profits from the second order information. It’s trajectory is much more diagonal (that would be the ideal, shortest path to the solution), and does not slow down as much as GD.</p>
+</section>
+<section id="inverse-simulators">
+<h2>Inverse simulators<a class="headerlink" href="#inverse-simulators" title="Permalink to this heading">#</a></h2>
+<p>Now we also use an analytical inverse of <span class="math notranslate nohighlight">\(\mathbf y\)</span> for the optimization. It represents our inverse simulator <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> from the previous sections:
+<span class="math notranslate nohighlight">\(\mathbf{y}^{-1}(\mathbf{x}) = [x_0 \ x_1^{1/2}]^T\)</span>, to compute the scale-invariant update denoted by PG below. As a slight look-ahead to the next section, we’ll use a Newton’s step for <span class="math notranslate nohighlight">\(L\)</span>, and combine it with the inverse physics function to get an overall update. This gives an update step:</p>
+<div class="math notranslate nohighlight">
+\[\begin{aligned}
+\Delta \mathbf{x}_{\text{PG}} &amp;= 
+\mathbf{y}^{-1} \left( \mathbf{y}(\mathbf{x}) - \eta
+  \left( \frac{\partial^2 L }{ \partial \mathbf{y}^2 }  \right)^{-1}
+  \frac{\partial L }{ \partial \mathbf{y} }
+\right) - \mathbf{x}
+\end{aligned}\]</div>
+<p>Below, we define our inverse function <code class="docutils literal notranslate"><span class="pre">physics_y_inv_analytic</span></code>, and then evaluate an optimization with the PG update for ten steps:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">3.</span><span class="p">,</span><span class="mf">3.</span><span class="p">])</span>
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">historyPG</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">];</span> <span class="n">historyPGy</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">updatesPG</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">def</span> <span class="nf">physics_y_inv</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mf">0.5</span><span class="p">)]</span> <span class="p">)</span>
+
+<span class="n">Gy</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_y</span><span class="p">)</span>
+<span class="n">Hy</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">loss_y</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    
+    <span class="c1"># Newton step for L(y)</span>
+    <span class="n">zForw</span> <span class="o">=</span> <span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">Gy</span><span class="p">(</span><span class="n">zForw</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">Hy</span><span class="p">(</span><span class="n">zForw</span><span class="p">)</span>
+    <span class="n">hinv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    
+    <span class="c1"># step in y space</span>
+    
+    
+
+    <span class="c1"># &quot;inverse physics&quot; step via y-inverse</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">physics_y_inv</span><span class="p">(</span><span class="n">zBack</span><span class="p">)</span>
+    <span class="n">historyPG</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">updatesPG</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">historyPG</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">historyPG</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;PG iter </span><span class="si">%d</span><span class="s2">: &quot;</span><span class="o">%</span><span class="k">i</span> + format(x) )
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PG iter 0: [2.1       2.5099802]
+PG iter 1: [1.4699999 2.1000001]
+PG iter 2: [1.0289999 1.7569861]
+PG iter 3: [0.72029996 1.47      ]
+PG iter 4: [0.50421   1.2298902]
+PG iter 5: [0.352947 1.029   ]
+PG iter 6: [0.24706289 0.86092323]
+PG iter 7: [0.17294402 0.7203    ]
+PG iter 8: [0.12106082 0.60264623]
+PG iter 9: [0.08474258 0.50421   ]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we obtain <span class="math notranslate nohighlight">\([0.084 \  0.504]\)</span> as the final position, with a distance of only 0.51! This is clearly better than both Newton and GD.</p>
+<p>Let’s directly visualize how the PGs (in red) fare in comparison to Newton’s method (orange) and GD (blue).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">historyPG</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyPG</span><span class="p">)</span>
+<span class="n">updatesPG</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">updatesPG</span><span class="p">)</span> 
+
+<span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyGD</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyGD</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#1F77B4&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;GD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyNt</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyNt</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#FF7F0E&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Newton&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyPG</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyPG</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#D62728&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PG&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span> <span class="c1"># target at 0,0</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x0&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc742ddba60&gt;
+</pre></div>
+</div>
+<img alt="../../_images/97a21c502d34a378b3542dc7231ddd68c1895ebfa3b33f32d54537cab1fcd05d.png" src="../../_images/97a21c502d34a378b3542dc7231ddd68c1895ebfa3b33f32d54537cab1fcd05d.png" />
+</div>
+</div>
+<p>This illustrates that the inverse simulator variant, PG in red, does even better than Newton’s method in orange. It yields a trajectory that is better aligned with the ideal <em>diagonal</em> trajectory, and its final state is closer to the origin. A key ingredient here is the inverse function for <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>, which provided higher order terms than the second-order approximation for Newton’s method. This improves the scale-invariance of the optimization. Despite the simplicity of the problem, Newton’s method has problems finding the right search direction. For the inverse simulator update, on the other hand, the higher order information yields an improved direction for the optimization.</p>
+<p>This difference also shows in first update step for each method: below we measure how well it is aligned with the diagonal.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mag</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">one_len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">x</span><span class="o">/</span><span class="n">mag</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span> 
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diagonal lengths (larger is better): GD </span><span class="si">%f</span><span class="s2">, Nt </span><span class="si">%f</span><span class="s2">, PG </span><span class="si">%f</span><span class="s2"> &quot;</span> <span class="o">%</span> 
+      <span class="p">(</span><span class="n">one_len</span><span class="p">(</span><span class="n">updatesGD</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">,</span> <span class="n">one_len</span><span class="p">(</span><span class="n">updatesNt</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">,</span> <span class="n">one_len</span><span class="p">(</span><span class="n">updatesPG</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Diagonal lengths (larger is better): GD 1.053930, Nt 1.264911, PG 1.356443 
+</pre></div>
+</div>
+</div>
+</div>
+<p>The largest value of 1.356 for PG confirms what we’ve seen above: the PG gradient was the closest one to the diagonal direction from our starting point to the origin.</p>
+<hr class="docutils" />
+<br>
+</section>
+<section id="y-space">
+<h2>y Space<a class="headerlink" href="#y-space" title="Permalink to this heading">#</a></h2>
+<p>To understand the behavior and differences of the methods here, it’s important to keep in mind that we’re not dealing with a black box that maps between <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> and <span class="math notranslate nohighlight">\(L\)</span>, but rather there are spaces in between that matter. In our case, we only have a single <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space, but for DL settings, we might have a large number of latent spaces, over which we have a certain amount of control. We will return to NNs soon, but for now let’s focus on <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>.</p>
+<p>A first thing to note is that for PG, we explicitly map from <span class="math notranslate nohighlight">\(L\)</span> to <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>, and then continue with a mapping to <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>. Thus we already obtained the trajectory in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space, and not coincidentally, we already stored it in the <code class="docutils literal notranslate"><span class="pre">historyPGy</span></code> list above.</p>
+<p>Let’s directly take a look what the inverse simulator did in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">historyPGy</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyPGy</span><span class="p">)</span>
+
+<span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;y space&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyPGy</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyPGy</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#D62728&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PG&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span> 
+<span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;z0&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;z1&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc742e83a90&gt;
+</pre></div>
+</div>
+<img alt="../../_images/4eb4c65a8586d661570f082e7f51fe9686ca3c8f39519d8c631b11e38f30898f.png" src="../../_images/4eb4c65a8586d661570f082e7f51fe9686ca3c8f39519d8c631b11e38f30898f.png" />
+</div>
+</div>
+<p>With this variant, we’re making explicit steps in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space, which progress in a straight diagonal line to the origin  (which is likewise the solution in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space).</p>
+<p>Interestingly, neither GD nor Newton’s method give us information about progress in intermediate spaces (like the <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space).</p>
+<p>For GD we’re concatenating the Jacobians, so we’re moving in directions that locally should decrease the loss. However, the <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> position is influenced by <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, and hence we don’t know where we end up in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space until we have the definite point there. (For NNs in general we won’t know at which latent-space points we end up after a GD update until we’ve actually computed all updated weights.)</p>
+<p>More specifically, we have an update <span class="math notranslate nohighlight">\(-\eta \frac{\partial L}{\partial \mathbf{x}}\)</span> for GD, which means we arrive at <span class="math notranslate nohighlight">\(\mathbf{y}(\mathbf{x} -\eta \frac{\partial L}{\partial \mathbf{x}})\)</span> in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space. A Taylor expansion with
+<span class="math notranslate nohighlight">\(h = \eta \frac{\partial L}{\partial \mathbf{x}}\)</span> yields</p>
+<p><span class="math notranslate nohighlight">\(
+\quad
+\mathbf{y}(\mathbf{x} - h) = 
+\mathbf{y}(\mathbf{x}) - h \frac{\partial \mathbf{y}}{\partial \mathbf{x}} + \mathcal{O}( h^2 )
+= \mathbf{y}(x) - \eta \frac{\partial L}{\partial \mathbf{y}} (\frac{\partial \mathbf{y}}{\partial x})^2 + \mathcal{O}( h^2 )
+\)</span>.</p>
+<p>And <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial \mathbf{y}} (\frac{\partial \mathbf{y}}{\partial \mathbf{x}})^2\)</span> clearly differs from <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial \mathbf{y}}\)</span>, which we would apply with GD when optimizing for <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> directly.</p>
+<p><strong>Newton’s method</strong> does not fare much better: we compute first-order derivatives like for GD, and the second-order derivatives for the Hessian for the full process. But since both are approximations, the actual intermediate states resulting from an update step are unknown until the full chain is evaluated. In the <em>Consistency in function compositions</em> paragraph for Newton’s method in <span class="xref std std-doc">physgrad</span> the squared <span class="math notranslate nohighlight">\(\frac{\partial \mathbf{y}}{\partial \mathbf{x}}\)</span> term for the Hessian already indicated this dependency.</p>
+<p>With <strong>inverse simulators</strong> we do not have this problem: they can directly map points in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> to <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>. Hence we know eactly where we started in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space, as this position is crucial for evaluating the inverse.</p>
+<p>In the simple setting of this section, we only have a single latent space, and we already stored all values in  <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> space during the optimization (in the <code class="docutils literal notranslate"><span class="pre">history</span></code> lists). Hence, now we can go back and re-evaluate <code class="docutils literal notranslate"><span class="pre">physics_y</span></code> to obtain the positions in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> space.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">3.</span><span class="p">,</span><span class="mf">3.</span><span class="p">])</span>
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">historyGDy</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">historyNty</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">historyGDy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">physics_y</span><span class="p">(</span><span class="n">historyGD</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">historyNty</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">physics_y</span><span class="p">(</span><span class="n">historyNt</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+<span class="n">historyGDy</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyGDy</span><span class="p">)</span>
+<span class="n">historyNty</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyNty</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;y space&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyGDy</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyGDy</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#1F77B4&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;GD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyNty</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyNty</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#FF7F0E&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Newton&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">historyPGy</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">historyPGy</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#D62728&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;PG&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span> 
+<span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;z0&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;z1&#39;</span><span class="p">);</span> <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7fc7430c4b20&gt;
+</pre></div>
+</div>
+<img alt="../../_images/7850fa1df9052345a6a24f2040f034e6d0c39b7c8488c0f0b23ac805f501371e.png" src="../../_images/7850fa1df9052345a6a24f2040f034e6d0c39b7c8488c0f0b23ac805f501371e.png" />
+</div>
+</div>
+<p>These trajectories confirm the intuition outlined in the previous sections: GD in blue gives a very sub-optimal trajectory in <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>. Newton (in orange) does better, but is still clearly curved. It can’t approximate the higher order terms of this example well enough. This is in contrast to the straight, and diagonal red trajectory for the optimization using the inverse simulator.</p>
+<p>The behavior in intermediate spaces becomes especially important when they’re not only abstract latent spaces as in this example, but when they have actual physical meanings.</p>
+</section>
+<section id="conclusions">
+<h2>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this heading">#</a></h2>
+<p>Despite its simplicity, this example already shows surprisingly large differences between gradient descent, Newton’s method, and using the <em>inverse simulator</em>.</p>
+<p>The main takeaways of this section are the following.</p>
+<ul class="simple">
+<li><p>GD easily yields “unbalanced” updates, and gets stuck.</p></li>
+<li><p>Newtons method does better, but is far from optimal.</p></li>
+<li><p>the higher-order information of the inverse simulator  outperform both, even if it is applied only partially (we still used Newton’s method for <span class="math notranslate nohighlight">\(L\)</span> above).</p></li>
+<li><p>Also, the methods (and in general the choice of optimizer) strongly affects progress in latent spaces, as shown for <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> above.</p></li>
+</ul>
+<p>In the next sections we can build on these observations to use PGs for training NNs via invertible physical models.</p>
+</section>
+<hr class="docutils" />
+<section id="approximate-inversions">
+<h2>Approximate inversions<a class="headerlink" href="#approximate-inversions" title="Permalink to this heading">#</a></h2>
+<p>If an analytic inverse like the <code class="docutils literal notranslate"><span class="pre">physics_y_inv_analytic</span></code> above is not readily available, we can actually resort to optimization schemes like Newton’s method or BFGS to obtain a local inverse numerically. This is a topic that is orthogonal to the comparison of different optimization methods, but it can be easily illustrated based on the inverse simulator variant from above.</p>
+<p>Below, we’ll use the BFGS variant <code class="docutils literal notranslate"><span class="pre">fmin_l_bfgs_b</span></code> from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> to compute the inverse. It’s not very complicated, but we’ll use numpy and scipy directly here, which makes the code a bit messier than it should be.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">physics_y_inv_opt</span><span class="p">(</span><span class="n">target_y</span><span class="p">,</span> <span class="n">x_ini</span><span class="p">):</span>
+    <span class="c1"># a bit ugly, we switch to pure scipy here inside each iteration for BFGS</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fmin_l_bfgs_b</span>
+    <span class="n">target_y</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target_y</span><span class="p">)</span>
+    <span class="n">x_ini</span>    <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_ini</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">physics_y_opt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">target_y</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span> <span class="c1"># we cant use physics_y from JAX here</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">onp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">target_y</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">fmin_l_bfgs_b</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">physics_y_opt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">target_y</span><span class="p">),</span> <span class="n">x_ini</span><span class="p">,</span> <span class="n">approx_grad</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+    <span class="c1">#print( ret ) # return full BFGS details</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BFGS optimization test run, find x such that y=[2,2]:&quot;</span><span class="p">)</span>
+<span class="n">physics_y_inv_opt</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>BFGS optimization test run, find x such that y=[2,2]:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([2.00000003, 1.41421353])
+</pre></div>
+</div>
+</div>
+</div>
+<p>Nonetheless, we can now use this numerically inverted <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> function to perform the inverse simulator optimization. Apart from calling <code class="docutils literal notranslate"><span class="pre">physics_y_inv_opt</span></code>, the rest of the code is unchanged.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">3.</span><span class="p">,</span><span class="mf">3.</span><span class="p">])</span>
+<span class="n">eta</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">];</span> <span class="n">updates</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">Gy</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_y</span><span class="p">)</span>
+<span class="n">Hy</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">loss_y</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>    
+    <span class="c1"># same as before, Newton step for L(y)</span>
+    
+
+    
+
+    <span class="c1"># optimize for inverse physics, assuming we dont have access to an inverse for physics_y</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">physics_y_inv_opt</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">updates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;PG iter </span><span class="si">%d</span><span class="s2">: &quot;</span><span class="o">%</span><span class="k">i</span> + format(x) )
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PG iter 0: [2.09999967 2.50998022]
+PG iter 1: [1.46999859 2.10000011]
+PG iter 2: [1.02899871 1.75698602]
+PG iter 3: [0.72029824 1.4699998 ]
+PG iter 4: [0.50420733 1.22988982]
+PG iter 5: [0.35294448 1.02899957]
+PG iter 6: [0.24705997 0.86092355]
+PG iter 7: [0.17294205 0.72030026]
+PG iter 8: [0.12106103 0.60264817]
+PG iter 9: [0.08474171 0.50421247]
+</pre></div>
+</div>
+</div>
+</div>
+<p>This confirms that the approximate inversion works, in line with the regular PG version above. There’s not much point plotting this, as it’s basically the same, but let’s measure the difference. Below, we compute the MAE, which for this simple example turns out to be on the order of our floating point accuracy.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">historyPGa</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+<span class="n">updatesPGa</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span> 
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MAE difference between analytic PG and approximate inversion: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">historyPGa</span><span class="o">-</span><span class="n">historyPG</span><span class="p">)))</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>MAE difference between analytic PG and approximate inversion: 0.000001
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/07-ad"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-formulation">Problem formulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spaces">3 Spaces</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#newton">Newton</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-simulators">Inverse simulators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#y-space">y Space</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusions">Conclusions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approximate-inversions">Approximate inversions</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
