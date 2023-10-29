@@ -430,6 +430,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integrating-a-loss-function">Integrating a loss function</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference:</a></li>
 </ul>
             </nav>
         </div>
@@ -465,12 +466,10 @@ Finally, we’ll explain several alternatives to prevent these issues.</p>
 \end{bmatrix}  \text{ with }  L(\mathcal P) = |\mathcal P|^2 
 \end{split}\]</div>
 <p>For <span class="math notranslate nohighlight">\(\alpha=1\)</span> everything is very simple: we’re faced with a radially symmetric loss landscape, and <span class="math notranslate nohighlight">\(x_1\)</span> and <span class="math notranslate nohighlight">\(x_2\)</span> behave in the same way. The gradient <span class="math notranslate nohighlight">\(\nabla_x = (\partial L / \partial x)^T\)</span> is perpendicular to the isolines of the loss landscape, and hence an update with <span class="math notranslate nohighlight">\(-\eta \nabla_x\)</span> points directly to the minimum at 0. This is a setting we’re dealing with for classical deep learning scenarios, like most supervised learning cases or classification problems. This example is visualized on the left of the following figure.</p>
-<figure class="align-default" id="physgrad-scaling">
-<a class="reference internal image-reference" href="lectures/07-ad/resources/physgrad-scaling.jpg"><img alt="lectures/07-ad/resources/physgrad-scaling.jpg" src="lectures/07-ad/resources/physgrad-scaling.jpg" style="height: 200px;" /></a>
-<figcaption>
-<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Loss landscapes in <span class="math notranslate nohighlight">\(x\)</span> for different <span class="math notranslate nohighlight">\(\alpha\)</span> of the 2D example problem. The green arrows visualize an example update step <span class="math notranslate nohighlight">\(- \nabla_x\)</span> (not exactly to scale) for each case.</span><a class="headerlink" href="#physgrad-scaling" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<p><img alt="physgrad-scaling" src="../../_images/physgrad-scaling.jpg" /></p>
+<blockquote>
+<div><p>Loss landscapes in <span class="math notranslate nohighlight">\(x\)</span> for different <span class="math notranslate nohighlight">\(\alpha\)</span> of the 2D example problem. The green arrows visualize an example update step <span class="math notranslate nohighlight">\(- \nabla_x\)</span> (not exactly to scale) for each case.</p>
+</div></blockquote>
 <p>However, within this book we’re targeting <em>physical</em> learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for <span class="math notranslate nohighlight">\(\alpha\)</span>, as shown in the middle and right graphs of the figure above.</p>
 <p>For larger <span class="math notranslate nohighlight">\(\alpha\)</span>, the loss landscape away from the minimum steepens along <span class="math notranslate nohighlight">\(x_2\)</span>. <span class="math notranslate nohighlight">\(x_1\)</span> will have an increasingly different scale than <span class="math notranslate nohighlight">\(x_2\)</span>. As a consequence, the gradients grow along this <span class="math notranslate nohighlight">\(x_2\)</span>. If we don’t want our optimization to blow up, we’ll need to choose a smaller learning rate <span class="math notranslate nohighlight">\(\eta\)</span>, reducing progress along <span class="math notranslate nohighlight">\(x_1\)</span>. The gradient of course stays perpendicular to the loss. In this example we’ll move quickly along <span class="math notranslate nohighlight">\(x_2\)</span> until we’re close to the x axis, and then only very slowly creep left towards the minimum. Even worse, as we’ll show below, regular updates actually apply the square of the scaling!
 And in settings with many dimensions, it will be extremely difficult to find a good learning rate.
@@ -749,6 +748,10 @@ However, this does not prescribe a unique way to compute <span class="math notra
 Instead, we use a Newton step from equation <a class="reference internal" href="#equation-quasi-newton-update">(3)</a> to determine <span class="math notranslate nohighlight">\(\Delta y\)</span> where <span class="math notranslate nohighlight">\(\eta\)</span> controls the step size of the optimization steps. We will explain this in more detail in connection with the introduction of NNs after the following code example.</p>
 </section>
 </section>
+<section id="reference">
+<h2>Reference:<a class="headerlink" href="#reference" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://www.physicsbaseddeeplearning.org/physgrad.html">https://www.physicsbaseddeeplearning.org/physgrad.html</a></p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -828,6 +831,7 @@ Instead, we use a Newton step from equation <a class="reference internal" href="
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#integrating-a-loss-function">Integrating a loss function</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference:</a></li>
 </ul>
   </nav></div>
 
