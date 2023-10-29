@@ -31,13 +31,8 @@ $$
 
 For $\alpha=1$ everything is very simple: we're faced with a radially symmetric loss landscape, and $x_1$ and $x_2$ behave in the same way. The gradient $\nabla_x = (\partial L / \partial x)^T$ is perpendicular to the isolines of the loss landscape, and hence an update with $-\eta \nabla_x$ points directly to the minimum at 0. This is a setting we're dealing with for classical deep learning scenarios, like most supervised learning cases or classification problems. This example is visualized on the left of the following figure.
 
-```{figure} resources/physgrad-scaling.jpg
----
-height: 200px
-name: physgrad-scaling
----
-Loss landscapes in $x$ for different $\alpha$ of the 2D example problem. The green arrows visualize an example update step $- \nabla_x$ (not exactly to scale) for each case.
-```
+![physgrad-scaling](physgrad-scaling.jpg)
+> Loss landscapes in $x$ for different $\alpha$ of the 2D example problem. The green arrows visualize an example update step $- \nabla_x$ (not exactly to scale) for each case.
 
 However, within this book we're targeting _physical_ learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for $\alpha$, as shown in the middle and right graphs of the figure above.
 
@@ -431,3 +426,5 @@ Also, we have turned the step w.r.t. $L$ into a step in $y$ space: $\Delta y$.
 However, this does not prescribe a unique way to compute $\Delta y$ since the derivative $\frac{\partial y}{\partial L}$ as the right-inverse of the row-vector $\frac{\partial L}{\partial y}$ puts almost no restrictions on $\Delta y$.
 Instead, we use a Newton step from equation {eq}`quasi-newton-update` to determine $\Delta y$ where $\eta$ controls the step size of the optimization steps. We will explain this in more detail in connection with the introduction of NNs after the following code example.
 
+## Reference:
+https://www.physicsbaseddeeplearning.org/physgrad.html
