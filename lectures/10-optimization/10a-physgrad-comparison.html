@@ -64,9 +64,10 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/07-ad/07b-physgrad-comparison-exercise';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/10-optimization/10a-physgrad-comparison';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="09: Physics-Informed DeepONet" href="../09-pi-deeponet/09-pi-deeponet.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -167,7 +168,7 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
 
@@ -187,7 +188,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="07-ad.html">07: Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
 
 
 
@@ -202,8 +203,6 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
-<li class="toctree-l1"><a class="reference internal" href="07a-improved-gradients.html">07a: Scale-Invariance and Inversion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="07b-physgrad-comparison.html">07b: Simple Example comparing Different Optimizers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
 
 
@@ -221,6 +220,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">07b: Simple Example comparing Different Optimizers</a></li>
 </ul>
 
     </div>
@@ -275,7 +275,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/07-ad/07b-physgrad-comparison-exercise.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/10-optimization/10a-physgrad-comparison.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -323,7 +323,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/07-ad/07b-physgrad-comparison-exercise.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/10-optimization/10a-physgrad-comparison.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -353,7 +353,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/07-ad/07b-physgrad-comparison-exercise.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/10-optimization/10a-physgrad-comparison.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -515,10 +515,17 @@ JAX also has a nice numpy wrapper that implements most of numpy’s functions. B
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># &quot;physics&quot; function y</span>
+<span class="k">def</span> <span class="nf">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span>
 
 <span class="c1"># simple L2 loss</span>
+<span class="k">def</span> <span class="nf">loss_y</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+    <span class="c1">#return y[0]*y[0] + y[1]*y[1] # &quot;manual version&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="p">)</span>
 
 <span class="c1"># composite function with L &amp; y , evaluating the loss for x</span>
+<span class="k">def</span> <span class="nf">loss_x</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">loss_y</span><span class="p">(</span><span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -552,7 +559,7 @@ Some test calls of the functions we defined so far, from top to bottom, y, manua
 <span class="c1">#jax.grad(physics_y)(x) </span>
 
 <span class="c1"># computing the jacobian of y is a valid operation:</span>
-
+<span class="n">J</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">physics_y</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Jacobian y(x): </span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">J</span><span class="p">)</span> <span class="p">)</span> 
 
 <span class="c1"># the code below also gives error, JAX grad needs a single function object</span>
@@ -589,7 +596,7 @@ Gradient for full L(x): [  6. 108.]
 </section>
 <section id="gradient-descent">
 <h2>Gradient descent<a class="headerlink" href="#gradient-descent" title="Permalink to this heading">#</a></h2>
-<p>For gradient descent, the simple gradient based update from equation <a class="reference internal" href="07a-improved-gradients.html#equation-gd-update">(2)</a>
+<p>For gradient descent, the simple gradient based update from equation <a class="reference internal" href="10-improved-gradients.html#equation-gd-update">()</a>
 in our setting gives the following update step in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
@@ -609,7 +616,10 @@ in our setting gives the following update step in <span class="math notranslate 
 <span class="n">historyGD</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">];</span> <span class="n">updatesGD</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-    
+    <span class="n">G</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_x</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">+=</span> <span class="o">-</span><span class="n">eta</span> <span class="o">*</span> <span class="n">G</span>
+    <span class="n">historyGD</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="n">updatesGD</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;GD iter </span><span class="si">%d</span><span class="s2">: &quot;</span><span class="o">%</span><span class="k">i</span> + format(x) )
 </pre></div>
 </div>
 </div>
@@ -678,11 +688,11 @@ GD iter 9: [2.4512184  0.96171147]
 <span class="n">Gx</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_x</span><span class="p">)</span>
 <span class="n">Hx</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">loss_x</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">Gx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">Hx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">hinv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
     
-
-
-
-    
+    <span class="n">x</span> <span class="o">+=</span> <span class="o">-</span><span class="n">eta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span> <span class="n">hinv</span> <span class="p">,</span> <span class="n">g</span> <span class="p">)</span>
     <span class="n">historyNt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">);</span> <span class="n">updatesNt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span> <span class="n">hinv</span> <span class="p">,</span> <span class="n">g</span><span class="p">)</span> <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span> <span class="s2">&quot;Newton iter </span><span class="si">%d</span><span class="s2">: &quot;</span><span class="o">%</span><span class="k">i</span> + format(x) )
 </pre></div>
@@ -759,8 +769,8 @@ Newton iter 9: [0.05202458 0.92383826]
     <span class="n">hinv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
     
     <span class="c1"># step in y space</span>
-    
-    
+    <span class="n">zBack</span> <span class="o">=</span> <span class="n">zForw</span> <span class="o">-</span><span class="n">eta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span> <span class="n">hinv</span> <span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+    <span class="n">historyPGy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zBack</span><span class="p">)</span>
 
     <span class="c1"># &quot;inverse physics&quot; step via y-inverse</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">physics_y_inv</span><span class="p">(</span><span class="n">zBack</span><span class="p">)</span>
@@ -971,9 +981,9 @@ PG iter 9: [0.08474258 0.50421   ]
 <span class="n">Hy</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">loss_y</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>    
     <span class="c1"># same as before, Newton step for L(y)</span>
-    
-
-    
+    <span class="n">y</span> <span class="o">=</span> <span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">Gy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">+=</span> <span class="o">-</span><span class="n">eta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span> <span class="n">Hy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="p">)</span> <span class="p">,</span> <span class="n">g</span><span class="p">)</span>
 
     <span class="c1"># optimize for inverse physics, assuming we dont have access to an inverse for physics_y</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">physics_y_inv_opt</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
@@ -1030,7 +1040,7 @@ PG iter 9: [0.08474171 0.50421247]
         },
         kernelOptions: {
             name: "python3",
-            path: "./lectures/07-ad"
+            path: "./lectures/10-optimization"
         },
         predefinedOutput: true
     }
@@ -1047,6 +1057,15 @@ PG iter 9: [0.08474171 0.50421247]
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../09-pi-deeponet/09-pi-deeponet.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">09: Physics-Informed DeepONet</p>
+      </div>
+    </a>
 </div>
                 </footer>
               

@@ -2,15 +2,14 @@
 ===================================
 
 In the following we will question some fundamental aspects of the formulations so far, namely the update step computed via gradients.
-To re-cap, the approaches explained in the previous chapters either dealt with purely _supervised_ training, integrated the physical model as a _physical loss term_ or included it via _differentiable physics_ (DP) operators embedded into the training graph. 
-The latter two methods are more relevant in the context of this book. They share similarities, but in the loss term case, the physics evaluations are only required at training time. For DP approaches, the solver itself is usually also employed at inference time, which enables an end-to-end training of NNs and numerical solvers. All three approaches employ _first-order_ derivatives to drive optimizations and learning processes, and the latter two also using them for the physics terms.
+To re-cap, the approaches explained previously either dealt with purely _supervised_ training, integrated the physical model as a _physical loss term_ or included it via _differentiable physics_ (DP) operators embedded into the training graph. 
+They share similarities, but in the loss term case, the physics evaluations are only required at training time. For DP approaches, the solver itself is usually also employed at inference time, which enables an end-to-end training of NNs and numerical solvers. All three approaches employ _first-order_ derivatives to drive optimizations and learning processes, and the latter two also using them for the physics terms.
 
 This is a natural choice from a deep learning perspective, but we haven't questioned at all whether this is actually the best choice.
 
-Not too surprising after this introduction: A central insight of the following chapter will be that regular gradients can be a _sub-optimal choice_ for learning problems involving physical quantities.
+Not too surprising after this introduction: A central insight of the following section will be that regular gradients can be a _sub-optimal choice_ for learning problems involving physical quantities.
 It turns out that both supervised and DP gradients have their pros and cons, and leave room for custom methods that are aware of the physics operators. 
-In particular, we'll show how scaling problems of DP gradients affect NN training (as outlined in {cite}`holl2021pg`),
-and revisit the problems of multi-modal solutions.
+In particular, we'll show how scaling problems of DP gradients affect NN training (as outlined in [Holl et al. 2021](https://arxiv.org/abs/2109.15048)), and revisit the problems of multi-modal solutions.
 Finally, we'll explain several alternatives to prevent these issues. 
 
 It turns out that a key property that is missing in regular gradients is a proper _inversion_ of the Jacobian matrix.
@@ -34,7 +33,7 @@ For $\alpha=1$ everything is very simple: we're faced with a radially symmetric 
 ![physgrad-scaling](physgrad-scaling.jpg)
 > Loss landscapes in $x$ for different $\alpha$ of the 2D example problem. The green arrows visualize an example update step $- \nabla_x$ (not exactly to scale) for each case.
 
-However, within this book we're targeting _physical_ learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for $\alpha$, as shown in the middle and right graphs of the figure above.
+However, we're targeting _physical_ learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for $\alpha$, as shown in the middle and right graphs of the figure above.
 
 For larger $\alpha$, the loss landscape away from the minimum steepens along $x_2$. $x_1$ will have an increasingly different scale than $x_2$. As a consequence, the gradients grow along this $x_2$. If we don't want our optimization to blow up, we'll need to choose a smaller learning rate $\eta$, reducing progress along $x_1$. The gradient of course stays perpendicular to the loss. In this example we'll move quickly along $x_2$ until we're close to the x axis, and then only very slowly creep left towards the minimum. Even worse, as we'll show below, regular updates actually apply the square of the scaling! 
 And in settings with many dimensions, it will be extremely difficult to find a good learning rate.
