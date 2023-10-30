@@ -335,17 +335,7 @@ This comes at the cost of requiring an expression and discretization for a local
 
 In contrast to the second- and first-order approximations from Newton's method and IGs, it can potentially take highly nonlinear effects into account. Due to the potentially difficult construct of the inverse simulator, the main goal of the following sections is to illustrate how much we can gain from including all the higher-order information. Note that all three methods successfully include a rescaling of the search direction via inversion, in contrast to the previously discussed GD training. All of these methods represent different forms of differentiable physics, though.
 
-Before moving on to including improved updates in NN training processes, we will discuss some additional theoretical aspects, 
-and then illustrate the differences between these approaches with a practical example.
-
-
-
-```{note} 
-The following sections will provide an in-depth look ("deep-dive"), into 
-optimizations with inverse solvers. If you're interested in practical examples
-and connections to NNs, feel free to skip ahead to {doc}`physgrad-comparison` or 
-{doc}`physgrad-nn`, respectively.
-```
+Before moving on to including improved updates in NN training processes, we will discuss some additional theoretical aspects, and then illustrate the differences between these approaches with a practical example.
 
 ## Deep Dive into Inverse simulators
 
@@ -357,7 +347,7 @@ As long as the physical process does _not destroy_ information, the Jacobian is 
 In fact, it is believed that information in our universe cannot be destroyed so any physical process could in theory be inverted as long as we have perfect knowledge of the state.
 Hence, it's not unreasonable to expect that $\mathcal P^{-1}$ can be formulated in many settings.
 
-Update steps computed as described above also have some nice theoretical properties, e.g., that the optimization converges given that $\mathcal P^{-1}$ consistently a fixed target $x^*$. Details of the corresponding proofs can be found in {cite}`holl2021pg`.
+Update steps computed as described above also have some nice theoretical properties, e.g., that the optimization converges given that $\mathcal P^{-1}$ consistently a fixed target $x^*$. Details of the corresponding proofs can be found in [Holl et al. 2021](https://arxiv.org/abs/2109.15048).
 
 % We now show that these terms can help produce more stable updates than the IG alone, provided that $\mathcal P_{(x_0,z_0)}^{-1}$ is a sufficiently good approximation of the true inverse.
 % Let $\mathcal P^{-1}(z)$ be the true inverse function to $\mathcal P(x)$, assuming that $\mathcal P$ is fully invertible.
@@ -366,15 +356,6 @@ Update steps computed as described above also have some nice theoretical propert
 
 To more clearly illustrate the advantages in non-linear settings, we
 apply the fundamental theorem of calculus to rewrite the ratio $\Delta x_{\text{PG}} / \Delta y$ from above. This gives, 
-
-% \begin{equation} \label{eq:avg-grad}
-
-% $\begin{aligned}
-%     \frac{\Delta z}{\Delta x} = \frac{\int_{x_0}^{x_0+\Delta x} \frac{\partial z}{\partial x} \, dx}{\Delta x}
-% \end{aligned}$
-
-% where we've integrated over a trajectory in $x$, and 
-% focused on 1D for simplicity. Likewise, by integrating over $z$ we can obtain:
 
 $$\begin{aligned}
     \frac{\Delta x_{\text{PG}}}{\Delta y} = \frac{\int_{y_0}^{y_0+\Delta y} \frac{\partial x}{\partial y} \, dy}{\Delta y}
