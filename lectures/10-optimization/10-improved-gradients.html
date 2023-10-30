@@ -700,15 +700,7 @@ It gets all of the aspect above right: units 📏, function sensitivity 🔍, co
 and it provides a <em>scale-invariant</em> update.
 This comes at the cost of requiring an expression and discretization for a local inverse solver.</p>
 <p>In contrast to the second- and first-order approximations from Newton’s method and IGs, it can potentially take highly nonlinear effects into account. Due to the potentially difficult construct of the inverse simulator, the main goal of the following sections is to illustrate how much we can gain from including all the higher-order information. Note that all three methods successfully include a rescaling of the search direction via inversion, in contrast to the previously discussed GD training. All of these methods represent different forms of differentiable physics, though.</p>
-<p>Before moving on to including improved updates in NN training processes, we will discuss some additional theoretical aspects,
-and then illustrate the differences between these approaches with a practical example.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The following sections will provide an in-depth look (“deep-dive”), into
-optimizations with inverse solvers. If you’re interested in practical examples
-and connections to NNs, feel free to skip ahead to <span class="xref std std-doc">physgrad-comparison</span> or
-<span class="xref std std-doc">physgrad-nn</span>, respectively.</p>
-</div>
+<p>Before moving on to including improved updates in NN training processes, we will discuss some additional theoretical aspects, and then illustrate the differences between these approaches with a practical example.</p>
 </section>
 <section id="deep-dive-into-inverse-simulators">
 <h2>Deep Dive into Inverse simulators<a class="headerlink" href="#deep-dive-into-inverse-simulators" title="Permalink to this heading">#</a></h2>
@@ -719,7 +711,7 @@ The Jacobian of the simulator is, therefore, necessarily square.
 As long as the physical process does <em>not destroy</em> information, the Jacobian is non-singular.
 In fact, it is believed that information in our universe cannot be destroyed so any physical process could in theory be inverted as long as we have perfect knowledge of the state.
 Hence, it’s not unreasonable to expect that <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> can be formulated in many settings.</p>
-<p>Update steps computed as described above also have some nice theoretical properties, e.g., that the optimization converges given that <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> consistently a fixed target <span class="math notranslate nohighlight">\(x^*\)</span>. Details of the corresponding proofs can be found in <a href="#id1"><span class="problematic" id="id2">holl2021pg</span></a>.</p>
+<p>Update steps computed as described above also have some nice theoretical properties, e.g., that the optimization converges given that <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> consistently a fixed target <span class="math notranslate nohighlight">\(x^*\)</span>. Details of the corresponding proofs can be found in <a class="reference external" href="https://arxiv.org/abs/2109.15048">Holl et al. 2021</a>.</p>
 <section id="fundamental-theorem-of-calculus">
 <h3>Fundamental theorem of calculus<a class="headerlink" href="#fundamental-theorem-of-calculus" title="Permalink to this heading">#</a></h3>
 <p>To more clearly illustrate the advantages in non-linear settings, we
