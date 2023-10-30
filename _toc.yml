@@ -15,6 +15,6 @@ chapters:
   - file: lectures/08-deeponet/08-deeponet
   - file: lectures/08-deeponet/08a-gp
   - file: lectures/09-pi-deeponet/09-pi-deeponet
-  - file: lectures/10-optimization/10a-improved-gradients
+  - file: lectures/10-optimization/10-improved-gradients
   - file: lectures/10-optimization/10a-physgrad-comparison
   

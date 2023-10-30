@@ -1,4 +1,4 @@
-07a: Scale-Invariance and Inversion
+10: Scale-Invariance and Inversion
 ===================================
 
 In the following we will question some fundamental aspects of the formulations so far, namely the update step computed via gradients.
@@ -32,6 +32,8 @@ For $\alpha=1$ everything is very simple: we're faced with a radially symmetric 
 
 ![physgrad-scaling](physgrad-scaling.jpg)
 > Loss landscapes in $x$ for different $\alpha$ of the 2D example problem. The green arrows visualize an example update step $- \nabla_x$ (not exactly to scale) for each case.
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/10-optimization/10-gradient-variation.ipynb)
 
 However, we're targeting _physical_ learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for $\alpha$, as shown in the middle and right graphs of the figure above.
 
@@ -87,7 +89,7 @@ $$ (GD-update)
 
 where $\eta$ is the scalar learning rate.
 The Jacobian $\frac{\partial L}{\partial x}$ describes how the loss reacts to small changes of the input.
-Surprisingly, this very widely used update has a number of undesirable properties that we'll highlight in the following. Note that we've naturally applied this update in supervised settings such as {doc}`supervised-airfoils`, but we've also used it in the differentiable physics approaches. E.g., in {doc}`diffphys-code-sol` we've computed the derivative of the fluid solver. In the latter case, we've still only updated the NN parameters, but the fluid solver Jacobian was part of equation {eq}`GD-update`, as shown in {eq}`loss-deriv`.
+Surprisingly, this very widely used update has a number of undesirable properties that we'll highlight in the following. Note that we've naturally applied this update in supervised settings such as `PINN heat transfer`, but we've also used it in the differentiable physics approaches. E.g., in `differential wave propagation` we've computed the derivative of the 1D wave propagation. In the latter case, we've still only updated the NN parameters, but the 1D wave solver Jacobian was part of equation in the `loss-deriv`.
 
 We'll jointly evaluate GD and several other methods with respect to a range of categories: their handling of units, function sensitivity, and behavior near optima. While these topics are related, they illustrate differences and similarities of the approaches.
 
