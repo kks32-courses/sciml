@@ -420,7 +420,16 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#traditional-optimization-methods">Traditional optimization methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient descent</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quasi-newton-methods">Quasi-Newton methods</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-gradients">Inverse gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-gradients">Inverse gradients</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-inverse-gradients">Summary of inverse gradients:</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#notation">Notation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ig-update">IG Update</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-rate-analog">Learning Rate Analog</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-simulators">Inverse simulators</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-dive-into-inverse-simulators">Deep Dive into Inverse simulators</a><ul class="nav section-nav flex-column">
@@ -574,7 +583,7 @@ This behavior stems from the fact that the Hessian of a composite function carri
 Then the Hessian <span class="math notranslate nohighlight">\(\frac{d^2L}{dx^2} = \frac{\partial^2L}{\partial y^2} \left( \frac{\partial y}{\partial x} \right)^2 + \frac{\partial L}{\partial y} \cdot \frac{\partial^2 y}{\partial x^2}\)</span> depends on the square of the inner Jacobian <span class="math notranslate nohighlight">\(\frac{\partial y}{\partial x}\)</span>.
 This means that if we’d use this update in a backpropagation step, the Hessian is influenced by the <em>later</em> functions of the backprop chain.
 As a consequence, the update of any intermediate latent space is unknown during the computation of the gradients.</p>
-<p><strong>Dependence on Hessian</strong> 🎩</p>
+<p><strong>Dependence on Hessian</strong></p>
 <p>In addition, a fundamental disadvantage of quasi-Newton methods that becomes apparent from the discussion above is their dependence on the Hessian. It plays a crucial role for all the improvements discussed so far.</p>
 <p>The first obvious drawback is the <em>computational cost</em>.
 While evaluating the exact Hessian only adds one extra pass to every optimization step, this pass involves higher-dimensional tensors than the computation of the gradient.
@@ -619,7 +628,7 @@ The change in <span class="math notranslate nohighlight">\(x\)</span> is <span c
 The change in intermediate spaces is independent of their respective dependencies, at least up to first order.
 Consequently, the change to these spaces can be estimated during backprop, before all gradients have been computed.</p>
 <p>Note that even Newton’s method with its inverse Hessian didn’t fully get this right. The key here is that if the Jacobian is invertible, we’ll directly get the correctly scaled direction at a given layer, without helper quantities such as the inverse Hessian.</p>
-<p><strong>Dependence on the inverse Jacobian</strong> 🎩</p>
+<p><strong>Dependence on the inverse Jacobian</strong></p>
 <p>So far so good. The above properties are clearly advantageous, but unfortunately IGs
 require the inverse of the Jacobian, <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span>.
 It is only well-defined for square Jacobians, meaning for functions <span class="math notranslate nohighlight">\(y\)</span> with the same inputs and output dimensions.
@@ -627,6 +636,40 @@ In optimization, however, the input is typically high-dimensional while the outp
 And, somewhat similar to the Hessians of quasi-Newton methods,
 even when the <span class="math notranslate nohighlight">\(\frac{\partial y}{\partial x}\)</span> is square, it may not be invertible.</p>
 <p>Thus, we now consider the fact that inverse gradients are linearizations of inverse functions and show that using inverse functions provides additional advantages while retaining the same benefits.</p>
+<section id="summary-of-inverse-gradients">
+<h3>Summary of inverse gradients:<a class="headerlink" href="#summary-of-inverse-gradients" title="Permalink to this heading">#</a></h3>
+<p>The idea here is to use the inverse of the Jacobian to determine how the inputs (parameters) must change to achieve a desired small change in the output (loss). Note that a Jacobian matrix represents the first-order partial derivatives of a vector-valued function.</p>
+<section id="notation">
+<h4>Notation<a class="headerlink" href="#notation" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f\)</span> is a generic function that maps input <span class="math notranslate nohighlight">\(x\)</span> to some output.</p></li>
+<li><p>The task is to find an input <span class="math notranslate nohighlight">\(x\)</span> for a given target <span class="math notranslate nohighlight">\(f_{target}\)</span>. This represents an inverse problem.</p></li>
+</ul>
+</section>
+<section id="ig-update">
+<h4>IG Update<a class="headerlink" href="#ig-update" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>The equation (4) given by
+$<span class="math notranslate nohighlight">\( x_{new} = x_{old} - J^{-1} \delta f \)</span><span class="math notranslate nohighlight">\(
+is the IG update step. Here, \)</span>J<span class="math notranslate nohighlight">\( is the Jacobian matrix and \)</span>J^{-1}$ is its inverse.</p></li>
+<li><p><span class="math notranslate nohighlight">\( \delta f \)</span> is the desired change in the function value.</p></li>
+</ul>
+</section>
+<section id="properties">
+<h4>Properties<a class="headerlink" href="#properties" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>The Jacobian <span class="math notranslate nohighlight">\(J\)</span> gives the change in the output with respect to a small change in the input. Taking its inverse essentially asks the question in reverse: “For a small desired change in output, how should the input change?”</p></li>
+<li><p>This approach requires the Jacobian to be invertible. If the Jacobian is singular or near-singular, inversion can be problematic.</p></li>
+</ul>
+</section>
+<section id="learning-rate-analog">
+<h4>Learning Rate Analog<a class="headerlink" href="#learning-rate-analog" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>In traditional gradient descent, a learning rate <span class="math notranslate nohighlight">\( \eta \)</span> scales the gradient to determine the step size in parameter space.</p></li>
+<li><p>In inverse gradients, the step size is not determined by a learning rate but by the desired change in the function value, <span class="math notranslate nohighlight">\( \delta f \)</span>. This serves as an analog to the learning rate in traditional gradient descent. In the given context, it’s mentioned that <span class="math notranslate nohighlight">\( \delta f \)</span> could be computed as a step towards the ground truth.</p></li>
+</ul>
+</section>
+</section>
 </section>
 <section id="inverse-simulators">
 <h2>Inverse simulators<a class="headerlink" href="#inverse-simulators" title="Permalink to this heading">#</a></h2>
@@ -655,7 +698,7 @@ including the most higher-order terms.
 <span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span> can be seen as an “ideal” setting for improved (inverted) update steps.
 It gets all of the aspect above right: units 📏, function sensitivity 🔍, compositions, and convergence near optima 💎,
 and it provides a <em>scale-invariant</em> update.
-This comes at the cost of requiring an expression and discretization for a local inverse solver. 🎩</p>
+This comes at the cost of requiring an expression and discretization for a local inverse solver.</p>
 <p>In contrast to the second- and first-order approximations from Newton’s method and IGs, it can potentially take highly nonlinear effects into account. Due to the potentially difficult construct of the inverse simulator, the main goal of the following sections is to illustrate how much we can gain from including all the higher-order information. Note that all three methods successfully include a rescaling of the search direction via inversion, in contrast to the previously discussed GD training. All of these methods represent different forms of differentiable physics, though.</p>
 <p>Before moving on to including improved updates in NN training processes, we will discuss some additional theoretical aspects,
 and then illustrate the differences between these approaches with a practical example.</p>
@@ -821,7 +864,16 @@ Instead, we use a Newton step from equation <a class="reference internal" href="
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#traditional-optimization-methods">Traditional optimization methods</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-descent">Gradient descent</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quasi-newton-methods">Quasi-Newton methods</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-gradients">Inverse gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-gradients">Inverse gradients</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-inverse-gradients">Summary of inverse gradients:</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#notation">Notation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ig-update">IG Update</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#properties">Properties</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-rate-analog">Learning Rate Analog</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inverse-simulators">Inverse simulators</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-dive-into-inverse-simulators">Deep Dive into Inverse simulators</a><ul class="nav section-nav flex-column">

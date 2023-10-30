@@ -184,7 +184,7 @@ As a consequence, the update of any intermediate latent space is unknown during 
 % chain of function evaluations: Hessian of an outer function is influenced by inner ones; inversion corrects and yields quantity similar to IG, but nonetheless influenced by "later" derivatives
 
 
-**Dependence on Hessian** 🎩
+**Dependence on Hessian** 
 
 In addition, a fundamental disadvantage of quasi-Newton methods that becomes apparent from the discussion above is their dependence on the Hessian. It plays a crucial role for all the improvements discussed so far.
 
@@ -258,7 +258,7 @@ Note that even Newton's method with its inverse Hessian didn't fully get this ri
 % **Consistency in function compositions**
 % In the example in table~\ref{tab:function-composition-example}, the change $\Delta y$ is the same no matter what space is used as optimization target.
 
-**Dependence on the inverse Jacobian** 🎩
+**Dependence on the inverse Jacobian** 
 
 So far so good. The above properties are clearly advantageous, but unfortunately IGs
 require the inverse of the Jacobian, $\frac{\partial x}{\partial y}$.
@@ -268,6 +268,33 @@ And, somewhat similar to the Hessians of quasi-Newton methods,
 even when the $\frac{\partial y}{\partial x}$ is square, it may not be invertible.
 
 Thus, we now consider the fact that inverse gradients are linearizations of inverse functions and show that using inverse functions provides additional advantages while retaining the same benefits.
+
+### Summary of inverse gradients:
+
+
+The idea here is to use the inverse of the Jacobian to determine how the inputs (parameters) must change to achieve a desired small change in the output (loss). Note that a Jacobian matrix represents the first-order partial derivatives of a vector-valued function.
+
+#### Notation
+
+- $f$ is a generic function that maps input $x$ to some output.
+- The task is to find an input $x$ for a given target $f_{target}$. This represents an inverse problem.
+
+#### IG Update
+
+- The equation (4) given by
+  $$ x_{new} = x_{old} - J^{-1} \delta f $$
+  is the IG update step. Here, $J$ is the Jacobian matrix and $J^{-1}$ is its inverse.
+- $ \delta f $ is the desired change in the function value.
+
+#### Properties
+
+- The Jacobian $J$ gives the change in the output with respect to a small change in the input. Taking its inverse essentially asks the question in reverse: "For a small desired change in output, how should the input change?"
+- This approach requires the Jacobian to be invertible. If the Jacobian is singular or near-singular, inversion can be problematic.
+
+#### Learning Rate Analog
+
+- In traditional gradient descent, a learning rate $ \eta $ scales the gradient to determine the step size in parameter space.
+- In inverse gradients, the step size is not determined by a learning rate but by the desired change in the function value, $ \delta f $. This serves as an analog to the learning rate in traditional gradient descent. In the given context, it's mentioned that $ \delta f $ could be computed as a step towards the ground truth.
 
 
 ## Inverse simulators
@@ -304,7 +331,7 @@ including the most higher-order terms.
 $\Delta x_{\text{PG}}$ can be seen as an "ideal" setting for improved (inverted) update steps. 
 It gets all of the aspect above right: units 📏, function sensitivity 🔍, compositions, and convergence near optima 💎,
 and it provides a _scale-invariant_ update.
-This comes at the cost of requiring an expression and discretization for a local inverse solver. 🎩
+This comes at the cost of requiring an expression and discretization for a local inverse solver. 
 
 In contrast to the second- and first-order approximations from Newton's method and IGs, it can potentially take highly nonlinear effects into account. Due to the potentially difficult construct of the inverse simulator, the main goal of the following sections is to illustrate how much we can gain from including all the higher-order information. Note that all three methods successfully include a rescaling of the search direction via inversion, in contrast to the previously discussed GD training. All of these methods represent different forms of differentiable physics, though.
 
