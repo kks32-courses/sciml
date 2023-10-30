@@ -729,7 +729,25 @@ Newton iter 9: [0.05202458 0.92383826]
 <section id="inverse-simulators">
 <h2>Inverse simulators<a class="headerlink" href="#inverse-simulators" title="Permalink to this heading">#</a></h2>
 <p>Now we also use an analytical inverse of <span class="math notranslate nohighlight">\(\mathbf y\)</span> for the optimization. It represents our inverse simulator <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span> from the previous sections:
-<span class="math notranslate nohighlight">\(\mathbf{y}^{-1}(\mathbf{x}) = [x_0 \ x_1^{1/2}]^T\)</span>, to compute the scale-invariant update denoted by PG below. As a slight look-ahead to the next section, we’ll use a Newton’s step for <span class="math notranslate nohighlight">\(L\)</span>, and combine it with the inverse physics function to get an overall update. This gives an update step:</p>
+<span class="math notranslate nohighlight">\(\mathbf{y}^{-1}(\mathbf{x}) = [x_0 \ x_1^{1/2}]^T\)</span>.</p>
+<p>The function <span class="math notranslate nohighlight">\(\mathbf{y}(\mathbf{x})\)</span> is a mapping from vector <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> to <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>. You’ve provided the mapping as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\mathbf{y}(x_0, x_1) = \begin{bmatrix} x_0 \\ x_1^2 \end{bmatrix}
+\end{split}\]</div>
+<p>So, the first component of <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> remains unchanged, and the second component is squared.</p>
+<p>Now, to find the inverse, you’d have to find a function <span class="math notranslate nohighlight">\(\mathbf{y}^{-1}\)</span> such that:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{y}^{-1}(\mathbf{y}(x_0, x_1)) = \mathbf{x}
+\]</div>
+<p>Given the proposed inverse:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf{y}^{-1}(\mathbf{x}) = [x_0 \ x_1^{1/2}]^T
+\]</div>
+<p>Which is indeed the original input.</p>
+<p>To compute the scale-invariant update denoted by PG below. As a slight look-ahead to the next section, we’ll use a Newton’s step for <span class="math notranslate nohighlight">\(L\)</span>, and combine it with the inverse physics function to get an overall update. This gives an update step:</p>
 <div class="math notranslate nohighlight">
 \[\begin{aligned}
 \Delta \mathbf{x}_{\text{PG}} &amp;= 
