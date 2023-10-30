@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>07a: Scale-Invariance and Inversion &#8212; Scientific Machine Learning (SciML)</title>
+    <title>10: Scale-Invariance and Inversion &#8212; Scientific Machine Learning (SciML)</title>
   
   
   
@@ -67,6 +67,8 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/10-optimization/10-improved-gradients';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="07b: Simple Example comparing Different Optimizers" href="10a-physgrad-comparison.html" />
+    <link rel="prev" title="09: Physics-Informed DeepONet" href="../09-pi-deeponet/09-pi-deeponet.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -167,7 +169,7 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="nav bd-sidenav">
+        <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
 
@@ -219,6 +221,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 
 
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">10: Scale-Invariance and Inversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="10a-physgrad-comparison.html">07b: Simple Example comparing Different Optimizers</a></li>
 </ul>
 
@@ -403,7 +406,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>07a: Scale-Invariance and Inversion</h1>
+    <h1>10: Scale-Invariance and Inversion</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -439,8 +442,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="a-scale-invariance-and-inversion">
-<h1>07a: Scale-Invariance and Inversion<a class="headerlink" href="#a-scale-invariance-and-inversion" title="Permalink to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="scale-invariance-and-inversion">
+<h1>10: Scale-Invariance and Inversion<a class="headerlink" href="#scale-invariance-and-inversion" title="Permalink to this heading">#</a></h1>
 <p>In the following we will question some fundamental aspects of the formulations so far, namely the update step computed via gradients.
 To re-cap, the approaches explained previously either dealt with purely <em>supervised</em> training, integrated the physical model as a <em>physical loss term</em> or included it via <em>differentiable physics</em> (DP) operators embedded into the training graph.
 They share similarities, but in the loss term case, the physics evaluations are only required at training time. For DP approaches, the solver itself is usually also employed at inference time, which enables an end-to-end training of NNs and numerical solvers. All three approaches employ <em>first-order</em> derivatives to drive optimizations and learning processes, and the latter two also using them for the physics terms.</p>
@@ -466,6 +469,7 @@ Finally, we’ll explain several alternatives to prevent these issues.</p>
 <blockquote>
 <div><p>Loss landscapes in <span class="math notranslate nohighlight">\(x\)</span> for different <span class="math notranslate nohighlight">\(\alpha\)</span> of the 2D example problem. The green arrows visualize an example update step <span class="math notranslate nohighlight">\(- \nabla_x\)</span> (not exactly to scale) for each case.</p>
 </div></blockquote>
+<p><a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/10-optimization/10-gradient-variation.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>However, we’re targeting <em>physical</em> learning problems, and hence we have physical functions integrated into the learning process, as discussed at length for differentiable physics approaches. This is fundamentally different! Physical processes pretty much always introduce different scaling behavor for different components: some changes in the physical state are sensitive and produce massive responses, others have barely any effect. In our toy problem we can mimic this by choosing different values for <span class="math notranslate nohighlight">\(\alpha\)</span>, as shown in the middle and right graphs of the figure above.</p>
 <p>For larger <span class="math notranslate nohighlight">\(\alpha\)</span>, the loss landscape away from the minimum steepens along <span class="math notranslate nohighlight">\(x_2\)</span>. <span class="math notranslate nohighlight">\(x_1\)</span> will have an increasingly different scale than <span class="math notranslate nohighlight">\(x_2\)</span>. As a consequence, the gradients grow along this <span class="math notranslate nohighlight">\(x_2\)</span>. If we don’t want our optimization to blow up, we’ll need to choose a smaller learning rate <span class="math notranslate nohighlight">\(\eta\)</span>, reducing progress along <span class="math notranslate nohighlight">\(x_1\)</span>. The gradient of course stays perpendicular to the loss. In this example we’ll move quickly along <span class="math notranslate nohighlight">\(x_2\)</span> until we’re close to the x axis, and then only very slowly creep left towards the minimum. Even worse, as we’ll show below, regular updates actually apply the square of the scaling!
 And in settings with many dimensions, it will be extremely difficult to find a good learning rate.
@@ -486,7 +490,7 @@ When we simplify the setting, and leave out the NN for a moment, this gives the 
 As a central quantity, we have the composite gradient
 <span class="math notranslate nohighlight">\((\partial L / \partial x)^T\)</span> of the loss function <span class="math notranslate nohighlight">\(L\)</span>:</p>
 <div class="math notranslate nohighlight" id="equation-loss-deriv">
-<span class="eqno">()<a class="headerlink" href="#equation-loss-deriv" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(1)<a class="headerlink" href="#equation-loss-deriv" title="Permalink to this equation">#</a></span>\[
 \Big( \frac{\partial L}{\partial x} \Big)^T = 
     \Big( \frac{\partial \mathcal P}{\partial x} \Big)^T
     \Big( \frac{\partial L}{\partial \mathcal P} \Big)^T
@@ -501,12 +505,12 @@ Hence, in the following we’ll revisit GD along with Quasi-Newton methods and I
 <h2>Gradient descent<a class="headerlink" href="#gradient-descent" title="Permalink to this heading">#</a></h2>
 <p>The optimization updates <span class="math notranslate nohighlight">\(\Delta x_{\text{GD}}\)</span> of GD scale with the derivative of the objective w.r.t. the inputs,</p>
 <div class="math notranslate nohighlight" id="equation-gd-update">
-<span class="eqno">()<a class="headerlink" href="#equation-gd-update" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(2)<a class="headerlink" href="#equation-gd-update" title="Permalink to this equation">#</a></span>\[
     \Delta x_{\text{GD}} = -\eta \cdot \frac{\partial L}{\partial x}
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(\eta\)</span> is the scalar learning rate.
 The Jacobian <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial x}\)</span> describes how the loss reacts to small changes of the input.
-Surprisingly, this very widely used update has a number of undesirable properties that we’ll highlight in the following. Note that we’ve naturally applied this update in supervised settings such as <span class="xref std std-doc">supervised-airfoils</span>, but we’ve also used it in the differentiable physics approaches. E.g., in <span class="xref std std-doc">diffphys-code-sol</span> we’ve computed the derivative of the fluid solver. In the latter case, we’ve still only updated the NN parameters, but the fluid solver Jacobian was part of equation <a class="reference internal" href="#equation-gd-update">()</a>, as shown in <a class="reference internal" href="#equation-loss-deriv">()</a>.</p>
+Surprisingly, this very widely used update has a number of undesirable properties that we’ll highlight in the following. Note that we’ve naturally applied this update in supervised settings such as <code class="docutils literal notranslate"><span class="pre">PINN</span> <span class="pre">heat</span> <span class="pre">transfer</span></code>, but we’ve also used it in the differentiable physics approaches. E.g., in <code class="docutils literal notranslate"><span class="pre">differential</span> <span class="pre">wave</span> <span class="pre">propagation</span></code> we’ve computed the derivative of the 1D wave propagation. In the latter case, we’ve still only updated the NN parameters, but the 1D wave solver Jacobian was part of equation in the <code class="docutils literal notranslate"><span class="pre">loss-deriv</span></code>.</p>
 <p>We’ll jointly evaluate GD and several other methods with respect to a range of categories: their handling of units, function sensitivity, and behavior near optima. While these topics are related, they illustrate differences and similarities of the approaches.</p>
 <p><strong>Units</strong> 📏</p>
 <p>A first indicator that something is amiss with GD is that it inherently misrepresents dimensions.
@@ -544,7 +548,7 @@ stabilize the training. On the other hand, it makes the learning process difficu
 <h2>Quasi-Newton methods<a class="headerlink" href="#quasi-newton-methods" title="Permalink to this heading">#</a></h2>
 <p>Newton’s method employs the gradient <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial x}\)</span> and the inverse of the Hessian <span class="math notranslate nohighlight">\(\frac{\partial^2 L}{\partial x^2}\)</span> for the update</p>
 <div class="math notranslate nohighlight" id="equation-quasi-newton-update">
-<span class="eqno">()<a class="headerlink" href="#equation-quasi-newton-update" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(3)<a class="headerlink" href="#equation-quasi-newton-update" title="Permalink to this equation">#</a></span>\[
 \Delta x_{\text{QN}} = -\eta \cdot \left( \frac{\partial^2 L}{\partial x^2} \right)^{-1} \frac{\partial L}{\partial x} .
 \]</div>
 <p>More widely used in practice are Quasi-Newton methods, such as BFGS and its variants, which approximate the Hessian matrix.
@@ -553,7 +557,7 @@ As a further improvement, the step size <span class="math notranslate nohighligh
 This construction solves some of the problems of gradient descent from above, but has other drawbacks.</p>
 <p><strong>Units and Sensitivity</strong> 📏</p>
 <p>Quasi-Newton methods definitely provide a much better handling of physical units than GD.
-The quasi-Newton update from equation <a class="reference internal" href="#equation-quasi-newton-update">()</a>
+The quasi-Newton update from equation <a class="reference internal" href="#equation-quasi-newton-update">(3)</a>
 produces the correct units for all parameters to be optimized.
 As a consequence, <span class="math notranslate nohighlight">\(\eta\)</span> can stay dimensionless.</p>
 <p>If we now consider how the loss changes via
@@ -594,7 +598,7 @@ Unfortunately, they come with their own set of problems, which is why they only 
 This will typically be the physical simulator <span class="math notranslate nohighlight">\(\mathcal P\)</span> later on, but to keep things general and readable, we’ll call it <span class="math notranslate nohighlight">\(y\)</span> for now. This setup implies an inverse problem: for <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span> we want to find an <span class="math notranslate nohighlight">\(x\)</span> given a target <span class="math notranslate nohighlight">\(y^*\)</span>.
 We define the update</p>
 <div class="math notranslate nohighlight" id="equation-ig-def">
-<span class="eqno">()<a class="headerlink" href="#equation-ig-def" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(4)<a class="headerlink" href="#equation-ig-def" title="Permalink to this equation">#</a></span>\[
     \Delta x_{\text{IG}} = \frac{\partial x}{\partial y} \cdot \Delta y.
 \]</div>
 <p>to be the IG update.
@@ -634,12 +638,12 @@ In contrast to the inversion of Jacobian or Hessian matrices from before, <span 
 <p>It also turns out to be a good idea to employ a <em>local</em> inverse that is conditioned on an initial guess for the solution <span class="math notranslate nohighlight">\(x\)</span>. We’ll denote this local inverse with <span class="math notranslate nohighlight">\(\mathcal P^{-1}(y^*; x)\)</span>. As there are potentially very different <span class="math notranslate nohighlight">\(x\)</span>-space locations that result in very similar <span class="math notranslate nohighlight">\(y^*\)</span>, we’d like to find the one closest to the current guess. This is important to obtain well behaved solutions in multi-modal settings, where we’d like to avoid the solution manifold to consist of a set of very scattered points.</p>
 <p>Equipped with these changes, we can formulate an optimization problem where a current state of the optimization <span class="math notranslate nohighlight">\(x_0\)</span>, with <span class="math notranslate nohighlight">\(y_0 = \mathcal P(x_0)\)</span>, is updated with</p>
 <div class="math notranslate nohighlight" id="equation-pg-def">
-<span class="eqno">()<a class="headerlink" href="#equation-pg-def" title="Permalink to this equation">#</a></span>\[
+<span class="eqno">(5)<a class="headerlink" href="#equation-pg-def" title="Permalink to this equation">#</a></span>\[
     \Delta x_{\text{PG}}  =  \frac{ \big( \mathcal P^{-1} (y_0 + \Delta y; x_0) - x_0  \big) }{\Delta y} \cdot \Delta y . 
 \]</div>
 <p>Here the step in <span class="math notranslate nohighlight">\(y\)</span>-space, <span class="math notranslate nohighlight">\(\Delta y\)</span>, is either the full distance <span class="math notranslate nohighlight">\(y^*-y_0\)</span> or a part of it, in line with the <span class="math notranslate nohighlight">\(y\)</span>-step used for IGs.
 When applying the update <span class="math notranslate nohighlight">\( \mathcal P^{-1}(y_0 + \Delta y; x_0) - x_0\)</span> it will produce <span class="math notranslate nohighlight">\(\mathcal P(x_0 + \Delta x) = y_0 + \Delta y\)</span> exactly, despite <span class="math notranslate nohighlight">\(\mathcal P\)</span> being a potentially highly nonlinear function.
-Note that the <span class="math notranslate nohighlight">\(\Delta y\)</span> in equation <a class="reference internal" href="#equation-pg-def">()</a> effectively cancels out to give a step in terms of <span class="math notranslate nohighlight">\(x\)</span>. However, this notation serves to show the similarities with the IG step from equation <a class="reference internal" href="#equation-ig-def">()</a>.
+Note that the <span class="math notranslate nohighlight">\(\Delta y\)</span> in equation <a class="reference internal" href="#equation-pg-def">(5)</a> effectively cancels out to give a step in terms of <span class="math notranslate nohighlight">\(x\)</span>. However, this notation serves to show the similarities with the IG step from equation <a class="reference internal" href="#equation-ig-def">(4)</a>.
 The update <span class="math notranslate nohighlight">\(\Delta x_{\text{PG}}\)</span> gives us a first iterative method that makes use of <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span>, and as such leverages all its information, such as higher-order terms.</p>
 </section>
 <section id="summary">
@@ -718,9 +722,9 @@ Unless the simulator destroys information in practice, e.g., due to accumulated 
 <h3>Integrating a loss function<a class="headerlink" href="#integrating-a-loss-function" title="Permalink to this heading">#</a></h3>
 <p>Since introducing IGs, we’ve only considered a simulator with an output <span class="math notranslate nohighlight">\(y\)</span>. Now we can re-introduce the loss function <span class="math notranslate nohighlight">\(L\)</span>.
 As before, we consider minimization problems with a scalar objective function <span class="math notranslate nohighlight">\(L(y)\)</span> that depends on the result of an invertible simulator <span class="math notranslate nohighlight">\(y = \mathcal P(x)\)</span>.
-In equation <a class="reference internal" href="#equation-ig-def">()</a> we’ve introduced the inverse gradient (IG) update, which gives <span class="math notranslate nohighlight">\(\Delta x = \frac{\partial x}{\partial L} \cdot \Delta L\)</span> when the loss function is included.
+In equation <a class="reference internal" href="#equation-ig-def">(4)</a> we’ve introduced the inverse gradient (IG) update, which gives <span class="math notranslate nohighlight">\(\Delta x = \frac{\partial x}{\partial L} \cdot \Delta L\)</span> when the loss function is included.
 Here, <span class="math notranslate nohighlight">\(\Delta L\)</span> denotes a step to take in terms of the loss.</p>
-<p>By applying the chain rule and substituting the IG <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial L}\)</span> for the update from the inverse physics simulator from equation <a class="reference internal" href="#equation-pg-def">()</a>, we obtain, up to first order:</p>
+<p>By applying the chain rule and substituting the IG <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial L}\)</span> for the update from the inverse physics simulator from equation <a class="reference internal" href="#equation-pg-def">(5)</a>, we obtain, up to first order:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{aligned}
@@ -734,14 +738,14 @@ Here, <span class="math notranslate nohighlight">\(\Delta L\)</span> denotes a s
     &amp;= \mathcal P^{-1}(y_0 + \Delta y; x_0) - x_0 + \mathcal O(\Delta y^2)
 \end{aligned}
 \end{split}\]</div>
-<p>These equations show that equation <a class="reference internal" href="#equation-pg-def">()</a> is equal to the IG from the section above up to first order, but contains nonlinear terms, i.e.
+<p>These equations show that equation <a class="reference internal" href="#equation-pg-def">(5)</a> is equal to the IG from the section above up to first order, but contains nonlinear terms, i.e.
 <span class="math notranslate nohighlight">\( \Delta x_{\text{PG}} / \Delta y = \frac{\partial x}{\partial y} + \mathcal O(\Delta y^2) \)</span>.
 The accuracy of the update depends on the fidelity of the inverse function <span class="math notranslate nohighlight">\(\mathcal P^{-1}\)</span>.
 We can define an upper limit to the error of the local inverse using the local gradient <span class="math notranslate nohighlight">\(\frac{\partial x}{\partial y}\)</span>.
 In the worst case, we can therefore fall back to the regular gradient.</p>
 <p>Also, we have turned the step w.r.t. <span class="math notranslate nohighlight">\(L\)</span> into a step in <span class="math notranslate nohighlight">\(y\)</span> space: <span class="math notranslate nohighlight">\(\Delta y\)</span>.
 However, this does not prescribe a unique way to compute <span class="math notranslate nohighlight">\(\Delta y\)</span> since the derivative <span class="math notranslate nohighlight">\(\frac{\partial y}{\partial L}\)</span> as the right-inverse of the row-vector <span class="math notranslate nohighlight">\(\frac{\partial L}{\partial y}\)</span> puts almost no restrictions on <span class="math notranslate nohighlight">\(\Delta y\)</span>.
-Instead, we use a Newton step from equation <a class="reference internal" href="#equation-quasi-newton-update">()</a> to determine <span class="math notranslate nohighlight">\(\Delta y\)</span> where <span class="math notranslate nohighlight">\(\eta\)</span> controls the step size of the optimization steps. We will explain this in more detail in connection with the introduction of NNs after the following code example.</p>
+Instead, we use a Newton step from equation <a class="reference internal" href="#equation-quasi-newton-update">(3)</a> to determine <span class="math notranslate nohighlight">\(\Delta y\)</span> where <span class="math notranslate nohighlight">\(\eta\)</span> controls the step size of the optimization steps. We will explain this in more detail in connection with the introduction of NNs after the following code example.</p>
 </section>
 </section>
 <section id="reference">
@@ -780,6 +784,24 @@ Instead, we use a Newton step from equation <a class="reference internal" href="
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../09-pi-deeponet/09-pi-deeponet.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">09: Physics-Informed DeepONet</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="10a-physgrad-comparison.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">07b: Simple Example comparing Different Optimizers</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
