@@ -1,0 +1,1338 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>11. Bayesian regression with linear basis function models &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/11-bayes-linear/11-bayesian-linear-regression';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Scientific Machine Learning (SciML) - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Scientific Machine Learning (SciML) - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08a-gp.html">08a: Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10-improved-gradients.html">10: Scale-Invariance and Inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10a-physgrad-comparison.html">10a: Simple Example comparing Different Optimizers</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/11-bayes-linear/11-bayesian-linear-regression.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/11-bayes-linear/11-bayesian-linear-regression.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/11-bayes-linear/11-bayesian-linear-regression.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>11. Bayesian regression with linear basis function models</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-basis-function-models">Linear basis function models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-function">Likelihood function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-likelihood">Maximum likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-approach">Bayesian approach</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-and-posterior-distribution">Prior and posterior distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-predictive-distribution">Posterior predictive distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-function">Evidence function</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#maximization">Maximization</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-and-posterior-predictive-distribution">Posterior and posterior predictive distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-datasets">Example datasets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basis-functions">Basis functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#straight-line-fitting">Straight line fitting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-basis-functions">Gaussian basis functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-evaluation">Evidence evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-maximization">Evidence maximization</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="bayesian-regression-with-linear-basis-function-models">
+<h1>11. Bayesian regression with linear basis function models<a class="headerlink" href="#bayesian-regression-with-linear-basis-function-models" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/11-bayes/11-bayesian-linear-regression-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/11-bayes/11-bayesian-linear-regression.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>Bayesian linear regression is implemented from scratch with <a class="reference external" href="http://www.numpy.org/">NumPy</a> followed by an example how <a class="reference external" href="https://scikit-learn.org/stable/">scikit-learn</a> can be used to obtain equivalent results. I recommend reading chapter 3 of <a class="reference external" href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf">Pattern Recognition and Machine Learning</a> (PRML) but this is not necessary for following this article.</p>
+<section id="linear-basis-function-models">
+<h2>Linear basis function models<a class="headerlink" href="#linear-basis-function-models" title="Permalink to this heading">#</a></h2>
+<p>Linear regression models share the property of being linear in their parameters but not necessarily in their input variables. Using non-linear basis functions of input variables, linear models are able model arbitrary non-linearities from input variables to targets. Polynomial regression is such an example and will be demonstrated later. A linear regression model <span class="math notranslate nohighlight">\(y(\mathbf{x}, \mathbf{w})\)</span> can therefore be defined more generally as</p>
+<div class="math notranslate nohighlight">
+\[
+y(\mathbf{x}, \mathbf{w}) = w_0 + \sum_{j=1}^{M-1}{w_j \phi_j(\mathbf{x})} = \sum_{j=0}^{M-1}{w_j \phi_j(\mathbf{x})} = \mathbf{w}^T \boldsymbol\phi(\mathbf{x}) \tag{1}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\phi_j\)</span> are basis functions and <span class="math notranslate nohighlight">\(M\)</span> is the total number of parameters <span class="math notranslate nohighlight">\(w_j\)</span> including the bias term <span class="math notranslate nohighlight">\(w_0\)</span>. Here, we use the convention <span class="math notranslate nohighlight">\(\phi_0(\mathbf{x}) = 1\)</span>. The simplest form of linear regression models are also linear functions of their input variables i.e. the set of basis functions in this case is the identity <span class="math notranslate nohighlight">\(\boldsymbol\phi(\mathbf{x}) = \mathbf{x}\)</span>. The target variable <span class="math notranslate nohighlight">\(t\)</span> of an observation <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> is given by a deterministic function <span class="math notranslate nohighlight">\(y(\mathbf{x}, \mathbf{w})\)</span> plus additive random noise <span class="math notranslate nohighlight">\(\epsilon\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+t = y(\mathbf{x}, \mathbf{w}) + \epsilon \tag{2}
+\]</div>
+<p>We make the assumption that the noise is normally distributed i.e. follows a Gaussian distribution with zero mean and precision (= inverse variance) <span class="math notranslate nohighlight">\(\beta\)</span>. The corresponding probabilistic model i.e. the conditional distribution of <span class="math notranslate nohighlight">\(t\)</span> given <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> can therefore be written as</p>
+<div class="math notranslate nohighlight">
+\[
+p(t \lvert \mathbf{x}, \mathbf{w}, \beta) =
+\mathcal{N}(t \lvert y(\mathbf{x}, \mathbf{w}), \beta^{-1}) =
+\sqrt{\beta \over {2 \pi}} \exp\left(-{\beta \over 2} (t - y(\mathbf{x}, \mathbf{w}))^2 \right) \tag{3}
+\]</div>
+<p>where the mean of this distribution is the regression function <span class="math notranslate nohighlight">\(y(\mathbf{x}, \mathbf{w})\)</span>.</p>
+</section>
+<section id="likelihood-function">
+<h2>Likelihood function<a class="headerlink" href="#likelihood-function" title="Permalink to this heading">#</a></h2>
+<p>For fitting the model and for inference of model parameters we use a training set of <span class="math notranslate nohighlight">\(N\)</span> independent and identically distributed (i.i.d.) observations <span class="math notranslate nohighlight">\(\mathbf{x}_1,\ldots,\mathbf{x}_N\)</span> and their corresponding targets <span class="math notranslate nohighlight">\(t_1,\ldots,t_N\)</span>. After combining column vectors <span class="math notranslate nohighlight">\(\mathbf{x}_i\)</span> into matrix <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>, where <span class="math notranslate nohighlight">\(\mathbf{X}_{i,:} = \mathbf{x}_i^T\)</span>, and scalar targets <span class="math notranslate nohighlight">\(t_i\)</span> into column vector <span class="math notranslate nohighlight">\(\mathbf{t}\)</span> the joint conditional probability of targets <span class="math notranslate nohighlight">\(\mathbf{t}\)</span> given <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> can be formulated as</p>
+<div class="math notranslate nohighlight">
+\[
+p(\mathbf{t} \lvert \mathbf{X}, \mathbf{w}, \beta) =
+\prod_{i=1}^{N}{\mathcal{N}(t_i \lvert \mathbf{w}^T \boldsymbol\phi(\mathbf{x}_i), \beta^{-1})} \tag{4}
+\]</div>
+<p>This is a function of parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> and is called the <em>likelihood function</em>. For better readability, it will be written as <span class="math notranslate nohighlight">\(p(\mathbf{t} \lvert \mathbf{w}, \beta)\)</span> instead of <span class="math notranslate nohighlight">\(p(\mathbf{t} \lvert \mathbf{X}, \mathbf{w}, \beta)\)</span> from now on. The log of the likelihood function can be written as</p>
+<div class="math notranslate nohighlight">
+\[
+\log p(\mathbf{t} \lvert \mathbf{w}, \beta) =
+{N \over 2} \log \beta -
+{N \over 2} \log {2 \pi} -
+\beta E_D(\mathbf{w}) \tag{5}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(E_D(\mathbf{w})\)</span> is the sum-of-squares error function coming from the exponent of the likelihood function.</p>
+<div class="math notranslate nohighlight">
+\[
+E_D(\mathbf{w}) =
+{1 \over 2} \sum_{i=1}^{N}(t_i - \mathbf{w}^T \boldsymbol\phi(\mathbf{x}_i))^2 =
+{1 \over 2} \lVert \mathbf{t} - \boldsymbol\Phi \mathbf{w} \rVert^2 \tag{6}
+\]</div>
+<p>Matrix <span class="math notranslate nohighlight">\(\boldsymbol\Phi\)</span> is called the <em>design matrix</em> and is defined as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\boldsymbol\Phi =
+\begin{pmatrix}
+\phi_0(\mathbf{x}_1) &amp;  \phi_1(\mathbf{x}_1) &amp; \cdots &amp; \phi_{M-1}(\mathbf{x}_1) \\
+\phi_0(\mathbf{x}_2) &amp;  \phi_1(\mathbf{x}_2) &amp; \cdots &amp; \phi_{M-1}(\mathbf{x}_2) \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\phi_0(\mathbf{x}_N) &amp;  \phi_1(\mathbf{x}_N) &amp; \cdots &amp; \phi_{M-1}(\mathbf{x}_N)
+\end{pmatrix} \tag{7}
+\end{split}\]</div>
+</section>
+<section id="maximum-likelihood">
+<h2>Maximum likelihood<a class="headerlink" href="#maximum-likelihood" title="Permalink to this heading">#</a></h2>
+<p>Maximizing the log likelihood (= minimizing the sum-of-squares error function) w.r.t. <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> gives the maximum likelihood estimate of parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. Maximum likelihood estimation can lead to severe over-fitting if complex models (e.g. polynomial regression models of high order) are fit to datasets of limited size. A common approach to prevent over-fitting is to add a regularization term to the error function. As we will see shortly, this regularization term arises naturally when following a Bayesian approach (more precisely, when defining a prior distribution over parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>).</p>
+</section>
+<section id="bayesian-approach">
+<h2>Bayesian approach<a class="headerlink" href="#bayesian-approach" title="Permalink to this heading">#</a></h2>
+<section id="prior-and-posterior-distribution">
+<h3>Prior and posterior distribution<a class="headerlink" href="#prior-and-posterior-distribution" title="Permalink to this heading">#</a></h3>
+<p>For a Bayesian treatment of linear regression we need a prior probability distribution over model parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. For reasons of simplicity, we will use an isotropic Gaussian distribution over parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> with zero mean:</p>
+<div class="math notranslate nohighlight">
+\[
+p(\mathbf{w} \lvert \alpha) = \mathcal{N}(\mathbf{w} \lvert \mathbf{0}, \alpha^{-1}\mathbf{I}) \tag{8}
+\]</div>
+<p>An isotropic Gaussian distribution has a diagonal covariance matrix where all diagonal elements have the same variance <span class="math notranslate nohighlight">\(\alpha^{-1}\)</span> (<span class="math notranslate nohighlight">\(\alpha\)</span> is the precision of the prior). A zero mean favors small(er) values of parameters <span class="math notranslate nohighlight">\(w_j\)</span> a priori. The prior is <a class="reference external" href="https://en.wikipedia.org/wiki/Conjugate_prior">conjugate</a> to the likelihood <span class="math notranslate nohighlight">\(p(\mathbf{t} \lvert \mathbf{w}, \beta)\)</span> meaning that the posterior distribution has the same functional form as the prior i.e. is also a Gaussian. In this special case, the posterior has an analytical solution with the following sufficient statistics</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\mathbf{m}_N &amp;= \beta \mathbf{S}_N \boldsymbol\Phi^T \mathbf{t}  \tag{9} \\
+\mathbf{S}_N^{-1} &amp;= \alpha\mathbf{I} + \beta \boldsymbol\Phi^T \boldsymbol\Phi  \tag{10}
+\end{align*}
+\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\((9)\)</span> is the mean vector of the posterior and <span class="math notranslate nohighlight">\((10)\)</span> the inverse covariance matrix (= precision matrix). Hence, the posterior distribution can be written as</p>
+<div class="math notranslate nohighlight">
+\[
+p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) = \mathcal{N}(\mathbf{w} \lvert \mathbf{m}_N, \mathbf{S}_N) \tag{11}
+\]</div>
+<p>For the moment, we assume that the values of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are known. Since the posterior is proportional to the product of likelihood and prior, the log of the posterior distribution is proportional to the sum of the log likelihood and the log of the prior</p>
+<div class="math notranslate nohighlight">
+\[
+\log p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
+-\beta E_D(\mathbf{w}) - \alpha E_W(\mathbf{w}) + \mathrm{const.} \tag{12}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(E_D(\mathbf{w})\)</span> is defined by <span class="math notranslate nohighlight">\((6)\)</span> and</p>
+<div class="math notranslate nohighlight">
+\[
+E_W(\mathbf{w}) = {1 \over 2} \mathbf{w}^T \mathbf{w} \tag{13}
+\]</div>
+<p>Maximizing the log posterior w.r.t. <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> gives the <a class="reference external" href="https://en.wikipedia.org/wiki/Maximum_a_posteriori_estimation">maximum-a-posteriori</a> (MAP) estimate of <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. Maximizing the log posterior is equivalent to minimizing the sum-of-squares error function <span class="math notranslate nohighlight">\(E_D\)</span> plus a quadratic regularization term <span class="math notranslate nohighlight">\(E_W\)</span>. This particular form regularization is known as <em>L2 regularization</em> or <em>weight decay</em> as it limits the magnitude of weights <span class="math notranslate nohighlight">\(w_j\)</span>. The contribution of the regularization term is determined by the ratio <span class="math notranslate nohighlight">\(\alpha / \beta\)</span>.</p>
+</section>
+<section id="posterior-predictive-distribution">
+<h3>Posterior predictive distribution<a class="headerlink" href="#posterior-predictive-distribution" title="Permalink to this heading">#</a></h3>
+<p>For making a prediction <span class="math notranslate nohighlight">\(t\)</span> at a new location <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> we use the posterior predictive distribution which is defined as</p>
+<div class="math notranslate nohighlight">
+\[
+p(t \lvert \mathbf{x}, \mathbf{t}, \alpha, \beta) =
+\int{p(t \lvert \mathbf{x}, \mathbf{w}, \beta) p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) d\mathbf{w}} \tag{14}
+\]</div>
+<p>The posterior predictive distribution includes uncertainty about parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> into predictions by weighting the conditional distribution <span class="math notranslate nohighlight">\(p(t \lvert \mathbf{x}, \mathbf{w}, \beta)\)</span> with the posterior probability of weights <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta)\)</span> over the entire weight parameter space. By using the predictive distribution we’re not only getting the expected value of <span class="math notranslate nohighlight">\(t\)</span> at a new location <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> but also the uncertainty for that prediction. In our special case, the posterior predictive distribution is a Gaussian distribution</p>
+<div class="math notranslate nohighlight">
+\[
+p(t \lvert \mathbf{x}, \mathbf{t}, \alpha, \beta) =
+\mathcal{N}(t \lvert \mathbf{m}_N^T \boldsymbol\phi(\mathbf{x}), \sigma_N^2(\mathbf{x})) \tag{15}
+\]</div>
+<p>where mean <span class="math notranslate nohighlight">\(\mathbf{m}_N^T \boldsymbol\phi(\mathbf{x})\)</span> is the regression function after <span class="math notranslate nohighlight">\(N\)</span> observations and <span class="math notranslate nohighlight">\(\sigma_N^2(\mathbf{x})\)</span> is the corresponding predictive variance</p>
+<div class="math notranslate nohighlight">
+\[
+\sigma_N^2(\mathbf{x}) = {1 \over \beta} + \boldsymbol\phi(\mathbf{x})^T \mathbf{S}_N \boldsymbol\phi(\mathbf{x}) \tag{16}
+\]</div>
+<p>The first term in <span class="math notranslate nohighlight">\((16)\)</span> represents the inherent noise in the data and the second term covers the uncertainty about parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. So far, we have assumed that the values of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are known. In a fully Bayesian treatment, however, we should define priors over <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> and use the corresponding posteriors to additionally include uncertainties about <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> into predictions. Unfortunately, complete integration over all three parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>, <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> is analytically intractable and we have to use another approach.</p>
+</section>
+<section id="evidence-function">
+<h3>Evidence function<a class="headerlink" href="#evidence-function" title="Permalink to this heading">#</a></h3>
+<p>Estimates for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> can alternatively be obtained by first integrating the product of likelihood and prior over parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span></p>
+<div class="math notranslate nohighlight">
+\[
+p(\mathbf{t} \lvert \alpha, \beta) =
+\int{p(\mathbf{t} \lvert \mathbf{w}, \beta) p(\mathbf{w} \lvert \alpha) d\mathbf{w}} \tag{17}
+\]</div>
+<p>and then maximizing the resulting <em>marginal likelihood</em> or <em>evidence function</em> w.r.t. <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. This approach is known as <a class="reference external" href="https://en.wikipedia.org/wiki/Empirical_Bayes_method">empirical Bayes</a>. It can be shown that this is a good approximation for a fully Bayesian treatment if the posterior for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> is sharply peaked around the most probable value and the prior is relatively flat which is often a reasonable assumption. Integrating over model parameters or using a good approximation for it allows us to estimate values for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>, and hence the regularization strength <span class="math notranslate nohighlight">\(\alpha / \beta\)</span>, from training data alone i.e. without using a validation set.</p>
+<p>The log of the marginal likelihood is given by</p>
+<div class="math notranslate nohighlight">
+\[
+\log p(\mathbf{t} \lvert \alpha, \beta) = {M \over 2} \log \alpha + {N \over 2} \log \beta -
+E(\mathbf{m}_N) - {1 \over 2} \log \lvert \mathbf{S}_N^{-1}\rvert - {N \over 2} \log {2 \pi} \tag{18}
+\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[
+E(\mathbf{m}_N) = {\beta \over 2} \lVert \mathbf{t} - \boldsymbol\Phi \mathbf{m}_N \rVert^2 +
+{\alpha \over 2} \mathbf{m}_N^T \mathbf{m}_N \tag{19}
+\]</div>
+<p>For completeness, the relationship between evidence, likelihood, prior, posterior is of course given by Bayes’ theorem</p>
+<div class="math notranslate nohighlight">
+\[
+p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
+{p(\mathbf{t} \lvert \mathbf{w}, \beta) p(\mathbf{w} \lvert \alpha) \over p(\mathbf{t} \lvert \alpha, \beta)}  \tag{20}
+\]</div>
+<section id="maximization">
+<h4>Maximization<a class="headerlink" href="#maximization" title="Permalink to this heading">#</a></h4>
+<p>Maximization of the log marginal likelihood w.r.t. <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> gives the following implicit solutions.</p>
+<div class="math notranslate nohighlight">
+\[
+\alpha = {\gamma \over \mathbf{m}_N^T \mathbf{m}_N} \tag{21}
+\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[
+{1 \over \beta} = {1 \over N - \gamma} \sum_{i=1}^{N}(t_i - \mathbf{m}_N^T \boldsymbol\phi(\mathbf{x}_i))^2 \tag{22}
+\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[
+\gamma = \sum_{i=0}^{M-1} {\lambda_i \over \alpha + \lambda_i} \tag{23}
+\]</div>
+<p>and <span class="math notranslate nohighlight">\(\lambda_i\)</span> are the <a class="reference external" href="https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors">eigenvalues</a> of <span class="math notranslate nohighlight">\(\beta \boldsymbol\Phi^T \boldsymbol\Phi\)</span>. The solutions are implicit because <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> as well as <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\gamma\)</span> depend on each other. Solutions for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> can therefore be obtained by starting with initial values for these parameters and then iterating over the above equations until convergence.</p>
+</section>
+<section id="evaluation">
+<h4>Evaluation<a class="headerlink" href="#evaluation" title="Permalink to this heading">#</a></h4>
+<p>Integration over model parameters also makes models of different complexity directly comparable by evaluating their evidence function on training data alone without needing a validation set. Further below we’ll see an example how polynomial models of different complexity (i.e. different polynomial degree) can be compared directly by evaluating their evidence function alone. The highest evidence is usually obtained for models of intermediate complexity i.e. for models whose complexity is just high enough for explaining the data sufficiently well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+
+
+<span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_truth</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Truth&#39;</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_predictive</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">y_label</span><span class="o">=</span><span class="s1">&#39;Prediction&#39;</span><span class="p">,</span> <span class="n">std_label</span><span class="o">=</span><span class="s1">&#39;Uncertainty&#39;</span><span class="p">,</span> <span class="n">plot_xy_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">std</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">y_label</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">y</span> <span class="o">+</span> <span class="n">std</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">std</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">std_label</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_xy_labels</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_posterior_samples</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">plot_xy_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Post. samples&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ys</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_xy_labels</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_posterior</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">):</span>
+    <span class="n">resolution</span> <span class="o">=</span> <span class="mi">100</span>
+
+    <span class="n">grid_x</span> <span class="o">=</span> <span class="n">grid_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="n">grid_flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">grid_x</span><span class="p">,</span> <span class="n">grid_y</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">densities</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">grid_flat</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">cov</span><span class="o">=</span><span class="n">cov</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">resolution</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">densities</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">w0</span><span class="p">,</span> <span class="n">w1</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Truth&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;w0&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;w1&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">print_comparison</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a_prefix</span><span class="o">=</span><span class="s1">&#39;np&#39;</span><span class="p">,</span> <span class="n">b_prefix</span><span class="o">=</span><span class="s1">&#39;br&#39;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">a_prefix</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">b_prefix</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this heading">#</a></h2>
+<section id="posterior-and-posterior-predictive-distribution">
+<h3>Posterior and posterior predictive distribution<a class="headerlink" href="#posterior-and-posterior-predictive-distribution" title="Permalink to this heading">#</a></h3>
+<p>We start with the implementation of the posterior and posterior predictive distributions. Function <code class="docutils literal notranslate"><span class="pre">posterior</span></code> computes the mean and covariance matrix of the posterior distribution and function <code class="docutils literal notranslate"><span class="pre">posterior_predictive</span></code> computes the mean and the variances of the posterior predictive distribution. Here, readability of code and similarity to the mathematical definitions has higher priority than optimizations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">posterior</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes mean and covariance matrix of the posterior distribution.&quot;&quot;&quot;</span>
+    <span class="n">S_N_inv</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">Phi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">Phi</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Phi</span><span class="p">)</span>
+    <span class="n">S_N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">S_N_inv</span><span class="p">)</span>
+    <span class="n">m_N</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">S_N</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Phi</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">return_inverse</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">S_N_inv</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span>
+
+
+<span class="k">def</span> <span class="nf">posterior_predictive</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes mean and variances of the posterior predictive distribution.&quot;&quot;&quot;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">Phi_test</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m_N</span><span class="p">)</span>
+    <span class="c1"># Only compute variances (diagonal elements of covariance matrix)</span>
+    <span class="n">y_var</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">beta</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Phi_test</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">S_N</span><span class="p">)</span> <span class="o">*</span> <span class="n">Phi_test</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">y</span><span class="p">,</span> <span class="n">y_var</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-datasets">
+<h3>Example datasets<a class="headerlink" href="#example-datasets" title="Permalink to this heading">#</a></h3>
+<p>The datasets used in the following examples are based on <span class="math notranslate nohighlight">\(N\)</span> scalar observations <span class="math notranslate nohighlight">\(x_{i = 1,\ldots,N}\)</span> which are combined into a <span class="math notranslate nohighlight">\(N \times 1\)</span> matrix <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>. Target values <span class="math notranslate nohighlight">\(\mathbf{t}\)</span> are generated from <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> with functions <code class="docutils literal notranslate"><span class="pre">f</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> which also generate random noise whose variance can be specified with the <code class="docutils literal notranslate"><span class="pre">noise_variance</span></code> parameter. We will use <code class="docutils literal notranslate"><span class="pre">f</span></code> for generating noisy samples from a straight line and <code class="docutils literal notranslate"><span class="pre">g</span></code> for generating noisy samples from a sinusoidal function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f_w0</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.3</span>
+<span class="n">f_w1</span> <span class="o">=</span>  <span class="mf">0.5</span>
+
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Linear function plus noise&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">f_w0</span> <span class="o">+</span> <span class="n">f_w1</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="n">noise</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Sinusoidial function plus noise&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">noise</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">noise</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">variance</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="basis-functions">
+<h3>Basis functions<a class="headerlink" href="#basis-functions" title="Permalink to this heading">#</a></h3>
+<p>For straight line fitting, a model that is linear in its input variable <span class="math notranslate nohighlight">\(x\)</span> is sufficient. Hence, we don’t need to transform <span class="math notranslate nohighlight">\(x\)</span> with a basis function which is equivalent to using an <code class="docutils literal notranslate"><span class="pre">identity_basis_function</span></code>. For fitting a linear model to a sinusoidal dataset we transform input <span class="math notranslate nohighlight">\(x\)</span> with <code class="docutils literal notranslate"><span class="pre">gaussian_basis_function</span></code> and later with <code class="docutils literal notranslate"><span class="pre">polynomial_basis_function</span></code>. These non-linear basis functions are necessary to model the non-linear relationship between input <span class="math notranslate nohighlight">\(x\)</span> and target <span class="math notranslate nohighlight">\(t\)</span>. The design matrix <span class="math notranslate nohighlight">\(\boldsymbol\Phi\)</span> can be computed from observations <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> and a parametric basis function with function <code class="docutils literal notranslate"><span class="pre">expand</span></code>. This function also prepends a column vector <span class="math notranslate nohighlight">\(\mathbf{1}\)</span> according to <span class="math notranslate nohighlight">\(\phi_0(x) = 1\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">identity_basis_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+
+<span class="k">def</span> <span class="nf">gaussian_basis_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">polynomial_basis_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="n">power</span>
+
+
+<span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bf</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">bf_args</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="n">bf</span><span class="p">(</span><span class="n">x</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="n">bf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bf_arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">bf_arg</span> <span class="ow">in</span> <span class="n">bf_args</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="straight-line-fitting">
+<h3>Straight line fitting<a class="headerlink" href="#straight-line-fitting" title="Permalink to this heading">#</a></h3>
+<p>For straight line fitting, we use a linear regression model of the form <span class="math notranslate nohighlight">\(y(x, \mathbf{w}) = w_0 + w_1 x\)</span> and do Bayesian inference for model parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. Predictions are made with the posterior predictive distribution. Since this model has only two parameters, <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1\)</span>, we can visualize the posterior density in 2D which is done in the first column of the following output. Rows use an increasing number of training data from a training dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Training dataset sizes</span>
+<span class="n">N_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">25.0</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1"># Training observations in [-1, 1)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
+
+<span class="c1"># Training target values</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">beta</span><span class="p">)</span>
+
+<span class="c1"># Test observations</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Function values without noise</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Design matrix of test observations</span>
+<span class="n">Phi_test</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">identity_basis_function</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">N</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N_list</span><span class="p">):</span>
+    <span class="n">X_N</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>
+    <span class="n">t_N</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>
+
+    <span class="c1"># Design matrix of training observations</span>
+    <span class="n">Phi_N</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">identity_basis_function</span><span class="p">)</span>
+
+    <span class="c1"># Mean and covariance matrix of posterior</span>
+    <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span> <span class="o">=</span> <span class="n">posterior</span><span class="p">(</span><span class="n">Phi_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+
+    <span class="c1"># Mean and variances of posterior predictive</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">y_var</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+
+    <span class="c1"># Draw 5 random weight samples from posterior and compute y values</span>
+    <span class="n">w_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">m_N</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">S_N</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">y_samples</span> <span class="o">=</span> <span class="n">Phi_test</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w_samples</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot_posterior</span><span class="p">(</span><span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">f_w0</span><span class="p">,</span> <span class="n">f_w1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Posterior density (N = </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">)</span>
+    <span class="n">plot_truth</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
+    <span class="n">plot_posterior_samples</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_samples</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">)</span>
+    <span class="n">plot_truth</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">plot_predictive</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y_var</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/db7592005c9b06da07bd1a6fd10d0633c939bae3bc17d0ecb9341a1e31d1aae7.png" src="../../_images/db7592005c9b06da07bd1a6fd10d0633c939bae3bc17d0ecb9341a1e31d1aae7.png" />
+</div>
+</div>
+<p>In the second column, 5 random weight samples are drawn from the posterior and the corresponding regression lines are plotted in red color. The line resulting from the true parameters, <code class="docutils literal notranslate"><span class="pre">f_w0</span></code> and <code class="docutils literal notranslate"><span class="pre">f_w1</span></code> is plotted as dashed black line and the noisy training data as black dots. The third column shows the mean and the standard deviation of the posterior predictive distribution along with the true model and the training data.</p>
+<p>It can be clearly seen how the posterior density in the first column gets more sharply peaked as the size of the dataset increases which corresponds to a decrease in the sample variance in the second column and to a decrease in prediction uncertainty as shown in the third column. Also note how prediction uncertainty is higher in regions of less observations.</p>
+</section>
+<section id="gaussian-basis-functions">
+<h3>Gaussian basis functions<a class="headerlink" href="#gaussian-basis-functions" title="Permalink to this heading">#</a></h3>
+<p>The following example demonstrates how to fit a Gaussian basis function model to a noisy sinusoidal dataset. It uses 9 Gaussian basis functions with mean values equally distributed over <span class="math notranslate nohighlight">\([0, 1]\)</span> each having a standard deviation of <span class="math notranslate nohighlight">\(0.1\)</span>. Inference for parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> is done in the same way as in the previous example except that we now infer values for 10 parameters (bias term <span class="math notranslate nohighlight">\(w_0\)</span> and <span class="math notranslate nohighlight">\(w_1,\ldots,w_9\)</span> for the 9 basis functions) instead of 2. We therefore cannot display the posterior density unless we selected 2 parameters at random.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+
+<span class="n">beta</span> <span class="o">=</span> <span class="mf">25.0</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">2.0</span>
+
+<span class="c1"># Training observations in [-1, 1)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">N_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Training target values</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">beta</span><span class="p">)</span>
+
+<span class="c1"># Test observations</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Function values without noise</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Design matrix of test observations</span>
+<span class="n">Phi_test</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">bf</span><span class="o">=</span><span class="n">gaussian_basis_function</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">N</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">N_list</span><span class="p">):</span>
+    <span class="n">X_N</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>
+    <span class="n">t_N</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>
+
+    <span class="c1"># Design matrix of training observations</span>
+    <span class="n">Phi_N</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">bf</span><span class="o">=</span><span class="n">gaussian_basis_function</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+
+    <span class="c1"># Mean and covariance matrix of posterior</span>
+    <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span> <span class="o">=</span> <span class="n">posterior</span><span class="p">(</span><span class="n">Phi_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+
+    <span class="c1"># Mean and variances of posterior predictive</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">y_var</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+
+    <span class="c1"># Draw 5 random weight samples from posterior and compute y values</span>
+    <span class="n">w_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">m_N</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">S_N</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">y_samples</span> <span class="o">=</span> <span class="n">Phi_test</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w_samples</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_list</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">)</span>
+    <span class="n">plot_truth</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span>
+    <span class="n">plot_posterior_samples</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_samples</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_list</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">)</span>
+    <span class="n">plot_truth</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">plot_predictive</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y_var</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/deff2a9116ac76dcff191ff01d70a23825d67f3bf1c7e868f0f06e4871cbfd8e.png" src="../../_images/deff2a9116ac76dcff191ff01d70a23825d67f3bf1c7e868f0f06e4871cbfd8e.png" />
+</div>
+</div>
+<p>Again, as the size of the dataset increases the posterior sample variance and the prediction uncertainty decreases. Also, regions with less observations have higher prediction uncertainty.</p>
+</section>
+<section id="evidence-evaluation">
+<h3>Evidence evaluation<a class="headerlink" href="#evidence-evaluation" title="Permalink to this heading">#</a></h3>
+<p>As already mentioned, the evidence function or marginal likelihood can be used to compare models of different complexity using training data alone. This is shown here for 10 polynomial basis function models of different degree using a sinusoidal dataset generated with <code class="docutils literal notranslate"><span class="pre">g</span></code>. For evaluating the log marginal likelihood we implement <span class="math notranslate nohighlight">\((18)\)</span> as <code class="docutils literal notranslate"><span class="pre">log_marginal_likelihood</span></code> function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">log_marginal_likelihood</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the log of the marginal likelihood.&quot;&quot;&quot;</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">Phi</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">m_N</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">S_N_inv</span> <span class="o">=</span> <span class="n">posterior</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">E_D</span> <span class="o">=</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">Phi</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m_N</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">E_W</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m_N</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">score</span> <span class="o">=</span> <span class="n">M</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> \
+            <span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">-</span> \
+            <span class="n">E_D</span> <span class="o">-</span> \
+            <span class="n">E_W</span> <span class="o">-</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">S_N_inv</span><span class="p">))</span> <span class="o">-</span> \
+            <span class="n">N</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">score</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The 10 polynomial basis function models of degrees 0-9 are compared based on the log marginal likelihood computed with a dataset of 10 observations. We still assume that the values of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are known and will see in the next section how they can be inferred by maximizing the log marginal likelihood. When plotting the posterior predictive distribution of the polynomial models we can see that a model of degree 3 has already sufficient complexity to explain the data reasonably well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mf">0.3</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.005</span>
+
+<span class="n">degree</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">degrees</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">beta</span><span class="p">)</span>
+
+<span class="n">Phi</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bf</span><span class="o">=</span><span class="n">polynomial_basis_function</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="n">degrees</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+<span class="n">Phi_test</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">bf</span><span class="o">=</span><span class="n">polynomial_basis_function</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="n">degrees</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">degrees</span><span class="p">:</span>
+    <span class="n">up</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span> <span class="o">=</span> <span class="n">posterior</span><span class="p">(</span><span class="n">Phi</span><span class="p">[:,:</span><span class="n">up</span><span class="p">],</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">y_var</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">[:,:</span><span class="n">up</span><span class="p">],</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">up</span><span class="p">)</span>
+    <span class="n">plot_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">plot_truth</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">plot_predictive</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y_var</span><span class="p">),</span> <span class="n">y_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">std_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot_xy_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Degree = </span><span class="si">{</span><span class="n">d</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/ef000fd4215f7f26e944c3d2fb387c19e6184cf66b5746ea798950ccb3077daf.png" src="../../_images/ef000fd4215f7f26e944c3d2fb387c19e6184cf66b5746ea798950ccb3077daf.png" />
+</div>
+</div>
+<p>We also see how polynomial models of higher degree do not overfit to the dataset which is a consequence of using a prior over model parameters that favors small(er) parameter values. This is equivalent to minimizing a sum-of-squares error function plus a quadratic regularization term whose strength is given by ratio <span class="math notranslate nohighlight">\(\alpha / \beta\)</span> as can be seen from equation <span class="math notranslate nohighlight">\((12)\)</span>.</p>
+<p>When evaluating the log marginal likelihood for all 10 polynomial models we usually obtain the highest value for models of degree 3 or 4 (depending on the non-deterministic part i.e. noise of the generated dataset results may vary slightly). This is consistent with the observation that a polynomial model of degree 3 already explains the data sufficiently well and confirms that marginal likelihood evaluation favors models of intermediate complexity.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mlls</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">degrees</span><span class="p">:</span>
+    <span class="n">mll</span> <span class="o">=</span> <span class="n">log_marginal_likelihood</span><span class="p">(</span><span class="n">Phi</span><span class="p">[:,:</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+    <span class="n">mlls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mll</span><span class="p">)</span>
+
+<span class="n">degree_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">mlls</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">degrees</span><span class="p">,</span> <span class="n">mlls</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">degree_max</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Polynomial degree&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Log marginal likelihood&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/867c29e8b451cb0cf7055c22b187b5ecbce8a066c3ec2c6d20a111664023c682.png" src="../../_images/867c29e8b451cb0cf7055c22b187b5ecbce8a066c3ec2c6d20a111664023c682.png" />
+</div>
+</div>
+<p>It is also interesting to see that a polynomial model of degree 1 (straight line) seems to explain the data better than a model of degree 2. This is because the data-generating sinusoidal function has no even terms in a polynomial expansion. A model of degree 2 therefore only adds complexity without being able to explain the data better. This higher complexity is penalized by the evidence function (see also section 3.4. in <a class="reference external" href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf">PRML</a>).</p>
+</section>
+<section id="evidence-maximization">
+<h3>Evidence maximization<a class="headerlink" href="#evidence-maximization" title="Permalink to this heading">#</a></h3>
+<p>So far we have assumed that values of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are known. In most situations however, they are unknown and must be inferred. Iterating over equations <span class="math notranslate nohighlight">\((21)\)</span> and <span class="math notranslate nohighlight">\((22)\)</span> until convergence jointly infers the posterior distribution over parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> and optimal values for parameters <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. This is implemented in the following <code class="docutils literal notranslate"><span class="pre">fit</span></code> function. We start with small values for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> corresponding to a low precision (= high variance) of prior <span class="math notranslate nohighlight">\((8)\)</span> and conditional density <span class="math notranslate nohighlight">\((3)\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha_0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">beta_0</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Jointly infers the posterior sufficient statistics and optimal values</span>
+<span class="sd">    for alpha and beta by maximizing the log marginal likelihood.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Phi: Design matrix (N x M).</span>
+<span class="sd">        t: Target value array (N x 1).</span>
+<span class="sd">        alpha_0: Initial value for alpha.</span>
+<span class="sd">        beta_0: Initial value for beta.</span>
+<span class="sd">        max_iter: Maximum number of iterations.</span>
+<span class="sd">        rtol: Convergence criterion.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        alpha, beta, posterior mean, posterior covariance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">N</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="n">Phi</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">eigenvalues_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span><span class="n">Phi</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Phi</span><span class="p">))</span>
+
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">beta_0</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha_0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_iter</span><span class="p">):</span>
+        <span class="n">beta_prev</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="n">alpha_prev</span> <span class="o">=</span> <span class="n">alpha</span>
+
+        <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">eigenvalues_0</span> <span class="o">*</span> <span class="n">beta</span>
+
+        <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">S_N_inv</span> <span class="o">=</span> <span class="n">posterior</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">return_inverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">gamma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">eigenvalues</span> <span class="o">/</span> <span class="p">(</span><span class="n">eigenvalues</span> <span class="o">+</span> <span class="n">alpha</span><span class="p">))</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">gamma</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m_N</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">beta_inv</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="n">gamma</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">Phi</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m_N</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">beta_inv</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">alpha_prev</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">beta_prev</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Convergence after </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s1"> iterations.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Stopped after </span><span class="si">{</span><span class="n">max_iter</span><span class="si">}</span><span class="s1"> iterations.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We now generate a sinusoidal training dataset of size 30 with variance <span class="math notranslate nohighlight">\(\beta^{-1} = 0.3^2\)</span> and then use <code class="docutils literal notranslate"><span class="pre">fit</span></code> to obtain the posterior over parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> and optimal values for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. The used regression model is a polynomial model of degree 4.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="n">degree</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">Phi</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bf</span><span class="o">=</span><span class="n">polynomial_basis_function</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Convergence after 17 iterations.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Alternatively, we can also use <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.BayesianRidge.html#sklearn.linear_model.BayesianRidge"><code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code></a> from scikit-learn for Bayesian regression. The <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">predict</span></code> methods of this estimator are on the same abstraction level as our <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">posterior_predictive</span></code> functions. The implementation of <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code> is very similar to our implementation except that it uses <a class="reference external" href="https://en.wikipedia.org/wiki/Gamma_distribution">Gamma</a> priors over parameters <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. The default hyper-parameter values of the Gamma priors assign high probability density to low values for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. In our implementation, we simply start optimization from low <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> values. Another difference is that <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code> uses different parameter names (<code class="docutils literal notranslate"><span class="pre">lambda</span></code> instead of <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span></code> instead of <code class="docutils literal notranslate"><span class="pre">beta</span></code>, see also section <a class="reference external" href="https://scikit-learn.org/stable/modules/linear_model.html#bayesian-regression">Bayesian Regression</a> in the scikit-learn user guide).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">BayesianRidge</span>
+
+<span class="n">br</span> <span class="o">=</span> <span class="n">BayesianRidge</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">br</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Phi</span><span class="p">,</span> <span class="n">t</span><span class="o">.</span><span class="n">ravel</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Convergence after  18  iterations
+</pre></div>
+</div>
+</div>
+</div>
+<p>When comparing the results from our implementation with those from <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code> we see that they are almost identical. In the following, inferred values for <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\mathbf{m}_N\)</span> are compared as well as predictions and their uncertainties. Results prefixed with <code class="docutils literal notranslate"><span class="pre">np</span></code> are those from our implementation, results prefixed with <code class="docutils literal notranslate"><span class="pre">br</span></code> are those obtained with <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Alpha&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">br</span><span class="o">.</span><span class="n">lambda_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Alpha
+-----
+np: 0.00806351922744946
+br: 0.008063508492171594
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Beta&#39;</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">br</span><span class="o">.</span><span class="n">alpha_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Beta
+----
+np: 12.192001124355507
+br: 12.191994091185988
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Weights&#39;</span><span class="p">,</span> <span class="n">m_N</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">br</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Weights
+-------
+np: [  0.55870797   7.66926063 -18.29293125   0.26587723  10.7120351 ]
+br: [  0.55870718   7.66927169 -18.29296565   0.26591451  10.71202222]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test values at x = 0.3 and x = 0.7</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.3</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">]])</span>
+
+<span class="c1"># Design matrix of test values</span>
+<span class="n">Phi_test</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">bf</span><span class="o">=</span><span class="n">polynomial_basis_function</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y_np_mean</span><span class="p">,</span> <span class="n">y_np_var</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+<span class="n">y_br_mean</span><span class="p">,</span> <span class="n">y_br_std</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Prediction mean&#39;</span><span class="p">,</span> <span class="n">y_np_mean</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">y_br_mean</span><span class="p">)</span>
+<span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Prediction std&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y_np_var</span><span class="p">),</span> <span class="n">y_br_std</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction mean
+---------------
+np: [ 1.30706852 -0.37319038]
+br: [ 1.30706885 -0.3731906 ]
+
+Prediction std
+--------------
+np: [0.30029368 0.30119254]
+br: [0.30029375 0.30119261]
+</pre></div>
+</div>
+</div>
+</div>
+<p>An alternative, non-parametric approach to Bayesian regression are <a class="reference external" href="https://distill.pub/2019/visual-exploration-gaussian-processes/">Gaussian processes</a> which infer distributions over functions directly instead of distributions over parameters of parametric models.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/11-bayes-linear"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-basis-function-models">Linear basis function models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#likelihood-function">Likelihood function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maximum-likelihood">Maximum likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-approach">Bayesian approach</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-and-posterior-distribution">Prior and posterior distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-predictive-distribution">Posterior predictive distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-function">Evidence function</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#maximization">Maximization</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#posterior-and-posterior-predictive-distribution">Posterior and posterior predictive distribution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example-datasets">Example datasets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#basis-functions">Basis functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#straight-line-fitting">Straight line fitting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-basis-functions">Gaussian basis functions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-evaluation">Evidence evaluation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evidence-maximization">Evidence maximization</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
