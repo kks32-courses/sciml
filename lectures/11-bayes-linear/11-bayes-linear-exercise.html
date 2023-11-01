@@ -64,11 +64,9 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/11-bayes-linear/11-bayes-linear';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/11-bayes-linear/11-bayes-linear-exercise';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Probability Distributions" href="11a-distribution.html" />
-    <link rel="prev" title="10a: Simple Example comparing Different Optimizers" href="../10-optimization/10a-physgrad-comparison.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -169,7 +167,7 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="current nav bd-sidenav">
+        <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
 
@@ -223,7 +221,7 @@ const thebe_selector_output = ".output, .cell_output"
 
 <li class="toctree-l1"><a class="reference internal" href="../10-optimization/10-improved-gradients.html">10: Scale-Invariance and Inversion</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../10-optimization/10a-physgrad-comparison.html">10a: Simple Example comparing Different Optimizers</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">11. Bayesian regression with linear basis function models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-bayes-linear.html">11. Bayesian regression with linear basis function models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="11a-distribution.html">Probability Distributions</a></li>
 </ul>
 
@@ -279,7 +277,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/11-bayes-linear/11-bayes-linear.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/11-bayes-linear/11-bayes-linear-exercise.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -327,7 +325,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/11-bayes-linear/11-bayes-linear.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/11-bayes-linear/11-bayes-linear-exercise.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -357,7 +355,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/11-bayes-linear/11-bayes-linear.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/11-bayes-linear/11-bayes-linear-exercise.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -763,12 +761,12 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 
 <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;Linear function plus noise&#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">f_w0</span> <span class="o">+</span> <span class="n">f_w1</span> <span class="o">*</span> <span class="n">X</span> <span class="o">+</span> <span class="n">noise</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">)</span>
+    <span class="k">return</span> 
 
 
 <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;Sinusoidial function plus noise&#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="n">noise</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">noise_variance</span><span class="p">)</span>
+    <span class="k">return</span> 
 
 
 <span class="k">def</span> <span class="nf">noise</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">variance</span><span class="p">):</span>
@@ -784,7 +782,7 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">identity_basis_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span>
+    <span class="k">return</span> 
 
 
 <span class="k">def</span> <span class="nf">gaussian_basis_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
@@ -792,7 +790,7 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 
 
 <span class="k">def</span> <span class="nf">polynomial_basis_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">power</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">x</span> <span class="o">**</span> <span class="n">power</span>
+    <span class="k">return</span> 
 
 
 <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bf</span><span class="p">,</span> <span class="n">bf_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -842,17 +840,16 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
     <span class="n">t_N</span> <span class="o">=</span> <span class="n">t</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span>
 
     <span class="c1"># Design matrix of training observations</span>
-    <span class="n">Phi_N</span> <span class="o">=</span> <span class="n">expand</span><span class="p">(</span><span class="n">X_N</span><span class="p">,</span> <span class="n">identity_basis_function</span><span class="p">)</span>
+    
 
     <span class="c1"># Mean and covariance matrix of posterior</span>
-    <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span> <span class="o">=</span> <span class="n">posterior</span><span class="p">(</span><span class="n">Phi_N</span><span class="p">,</span> <span class="n">t_N</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+    
 
     <span class="c1"># Mean and variances of posterior predictive</span>
-    <span class="n">y</span><span class="p">,</span> <span class="n">y_var</span> <span class="o">=</span> <span class="n">posterior_predictive</span><span class="p">(</span><span class="n">Phi_test</span><span class="p">,</span> <span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+    
 
     <span class="c1"># Draw 5 random weight samples from posterior and compute y values</span>
-    <span class="n">w_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">m_N</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">S_N</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">y_samples</span> <span class="o">=</span> <span class="n">Phi_test</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">w_samples</span><span class="p">)</span>
+    
 
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">N_list</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">plot_posterior</span><span class="p">(</span><span class="n">m_N</span><span class="p">,</span> <span class="n">S_N</span><span class="p">,</span> <span class="n">f_w0</span><span class="p">,</span> <span class="n">f_w1</span><span class="p">)</span>
@@ -874,9 +871,6 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
     <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/db7592005c9b06da07bd1a6fd10d0633c939bae3bc17d0ecb9341a1e31d1aae7.png" src="../../_images/db7592005c9b06da07bd1a6fd10d0633c939bae3bc17d0ecb9341a1e31d1aae7.png" />
 </div>
 </div>
 <p>In the second column, 5 random weight samples are drawn from the posterior and the corresponding regression lines are plotted in red color. The line resulting from the true parameters, <code class="docutils literal notranslate"><span class="pre">f_w0</span></code> and <code class="docutils literal notranslate"><span class="pre">f_w1</span></code> is plotted as dashed black line and the noisy training data as black dots. The third column shows the mean and the standard deviation of the posterior predictive distribution along with the true model and the training data.</p>
@@ -943,9 +937,6 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/deff2a9116ac76dcff191ff01d70a23825d67f3bf1c7e868f0f06e4871cbfd8e.png" src="../../_images/deff2a9116ac76dcff191ff01d70a23825d67f3bf1c7e868f0f06e4871cbfd8e.png" />
-</div>
 </div>
 <p>Again, as the size of the dataset increases the posterior sample variance and the prediction uncertainty decreases. Also, regions with less observations have higher prediction uncertainty.</p>
 </section>
@@ -1009,9 +1000,6 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/ef000fd4215f7f26e944c3d2fb387c19e6184cf66b5746ea798950ccb3077daf.png" src="../../_images/ef000fd4215f7f26e944c3d2fb387c19e6184cf66b5746ea798950ccb3077daf.png" />
-</div>
 </div>
 <p>We also see how polynomial models of higher degree do not overfit to the dataset which is a consequence of using a prior over model parameters that favors small(er) parameter values. This is equivalent to minimizing a sum-of-squares error function plus a quadratic regularization term whose strength is given by ratio <span class="math notranslate nohighlight">\(\alpha / \beta\)</span> as can be seen from equation <span class="math notranslate nohighlight">\((12)\)</span>.</p>
 <p>When evaluating the log marginal likelihood for all 10 polynomial models we usually obtain the highest value for models of degree 3 or 4 (depending on the non-deterministic part i.e. noise of the generated dataset results may vary slightly). This is consistent with the observation that a polynomial model of degree 3 already explains the data sufficiently well and confirms that marginal likelihood evaluation favors models of intermediate complexity.</p>
@@ -1032,9 +1020,6 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Log marginal likelihood&#39;</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/867c29e8b451cb0cf7055c22b187b5ecbce8a066c3ec2c6d20a111664023c682.png" src="../../_images/867c29e8b451cb0cf7055c22b187b5ecbce8a066c3ec2c6d20a111664023c682.png" />
 </div>
 </div>
 <p>It is also interesting to see that a polynomial model of degree 1 (straight line) seems to explain the data better than a model of degree 2. This is because the data-generating sinusoidal function has no even terms in a polynomial expansion. A model of degree 2 therefore only adds complexity without being able to explain the data better. This higher complexity is penalized by the evidence function (see also section 3.4. in <a class="reference external" href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf">PRML</a>).</p>
@@ -1110,11 +1095,6 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Convergence after 17 iterations.
-</pre></div>
-</div>
-</div>
 </div>
 <p>Alternatively, we can also use <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.BayesianRidge.html#sklearn.linear_model.BayesianRidge"><code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code></a> from scikit-learn for Bayesian regression. The <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">predict</span></code> methods of this estimator are on the same abstraction level as our <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">posterior_predictive</span></code> functions. The implementation of <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code> is very similar to our implementation except that it uses <a class="reference external" href="https://en.wikipedia.org/wiki/Gamma_distribution">Gamma</a> priors over parameters <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. The default hyper-parameter values of the Gamma priors assign high probability density to low values for <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span>. In our implementation, we simply start optimization from low <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> values. Another difference is that <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code> uses different parameter names (<code class="docutils literal notranslate"><span class="pre">lambda</span></code> instead of <code class="docutils literal notranslate"><span class="pre">alpha</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span></code> instead of <code class="docutils literal notranslate"><span class="pre">beta</span></code>, see also section <a class="reference external" href="https://scikit-learn.org/stable/modules/linear_model.html#bayesian-regression">Bayesian Regression</a> in the scikit-learn user guide).</p>
 <div class="cell docutils container">
@@ -1126,24 +1106,11 @@ p(\mathbf{w} \lvert \mathbf{t}, \alpha, \beta) =
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Convergence after  18  iterations
-</pre></div>
-</div>
-</div>
 </div>
 <p>When comparing the results from our implementation with those from <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code> we see that they are almost identical. In the following, inferred values for <span class="math notranslate nohighlight">\(\alpha\)</span>, <span class="math notranslate nohighlight">\(\beta\)</span> and <span class="math notranslate nohighlight">\(\mathbf{m}_N\)</span> are compared as well as predictions and their uncertainties. Results prefixed with <code class="docutils literal notranslate"><span class="pre">np</span></code> are those from our implementation, results prefixed with <code class="docutils literal notranslate"><span class="pre">br</span></code> are those obtained with <code class="docutils literal notranslate"><span class="pre">BayesianRidge</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Alpha&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">br</span><span class="o">.</span><span class="n">lambda_</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Alpha
------
-np: 0.00806351922744946
-br: 0.008063508492171594
 </pre></div>
 </div>
 </div>
@@ -1154,26 +1121,10 @@ br: 0.008063508492171594
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Beta
-----
-np: 12.192001124355507
-br: 12.191994091185988
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Weights&#39;</span><span class="p">,</span> <span class="n">m_N</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">br</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Weights
--------
-np: [  0.55870797   7.66926063 -18.29293125   0.26587723  10.7120351 ]
-br: [  0.55870718   7.66927169 -18.29296565   0.26591451  10.71202222]
 </pre></div>
 </div>
 </div>
@@ -1196,19 +1147,6 @@ br: [  0.55870718   7.66927169 -18.29296565   0.26591451  10.71202222]
 
 <span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Prediction mean&#39;</span><span class="p">,</span> <span class="n">y_np_mean</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">y_br_mean</span><span class="p">)</span>
 <span class="n">print_comparison</span><span class="p">(</span><span class="s1">&#39;Prediction std&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">y_np_var</span><span class="p">),</span> <span class="n">y_br_std</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction mean
----------------
-np: [ 1.30706852 -0.37319038]
-br: [ 1.30706885 -0.3731906 ]
-
-Prediction std
---------------
-np: [0.30029368 0.30119254]
-br: [0.30029375 0.30119261]
 </pre></div>
 </div>
 </div>
@@ -1248,24 +1186,6 @@ br: [0.30029375 0.30119261]
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="../10-optimization/10a-physgrad-comparison.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">10a: Simple Example comparing Different Optimizers</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="11a-distribution.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Probability Distributions</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
