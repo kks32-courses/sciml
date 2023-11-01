@@ -17,4 +17,5 @@ chapters:
   - file: lectures/09-pi-deeponet/09-pi-deeponet
   - file: lectures/10-optimization/10-improved-gradients
   - file: lectures/10-optimization/10a-physgrad-comparison
-  - file: lectures/11-bayes-linear/11-bayes-linear  
+  - file: lectures/11-bayes-linear/11-bayes-linear
+  - file: lectures/11-bayes-linear/11a-distribution
