@@ -19,3 +19,4 @@ chapters:
   - file: lectures/10-optimization/10a-physgrad-comparison
   - file: lectures/11-bayes/11-bayes-linear
   - file: lectures/11-bayes/11a-distribution
+  - file: lectures/12-gnn/12-gnn
