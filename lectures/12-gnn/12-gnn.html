@@ -589,8 +589,8 @@ Successfully installed torch-geometric-2.4.0
 </ol>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;WaterDropSmall&quot;</span>
-<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="s2">&quot;./WaterDropSmall&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DATASET_NAME</span> <span class="o">=</span> <span class="s2">&quot;WaterDropSample&quot;</span>
+<span class="n">OUTPUT_DIR</span> <span class="o">=</span> <span class="s2">&quot;./WaterDropSample&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -1038,7 +1038,7 @@ rollout_path = os.path.join(&quot;temp&quot;, &quot;rollouts&quot;, DATASET_NAME
 !mkdir -p &quot;$rollout_path&quot;
 
 params = {
-    &quot;epoch&quot;: 210,
+    &quot;epoch&quot;: 1,
     &quot;batch_size&quot;: 4,
     &quot;lr&quot;: 1e-4,
     &quot;noise&quot;: 3e-4,
@@ -1765,9 +1765,9 @@ Epoch 209: 100%|██████████| 249/249 [00:19&lt;00:00, 13.09it
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>simulator = LearnedSimulator()
 simulator = simulator.cuda()
 
-!wget -O temp/models/WaterDropSmall/checkpoint_52000.pt https://github.com/kks32-courses/sciml/raw/main/lectures/12-gnn/checkpoint_52000.pt
+!wget -O temp/models/WaterDropSample/checkpoint_100000.pt https://github.com/kks32-courses/sciml/raw/main/lectures/12-gnn/checkpoint_100000.pt
 
-checkpoint = torch.load(&quot;temp/models/WaterDropSmall/checkpoint_52000.pt&quot;)
+checkpoint = torch.load(&quot;temp/models/WaterDropSample/checkpoint_100000.pt&quot;)
 simulator.load_state_dict(checkpoint[&quot;model&quot;])
 </pre></div>
 </div>
