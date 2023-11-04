@@ -1,0 +1,1419 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>11b: Bayesian Neural Networks &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/11-bayes/11b-bayes-nn-exercise';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Scientific Machine Learning (SciML) - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Scientific Machine Learning (SciML) - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08a-gp.html">08a: Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10-improved-gradients.html">10: Scale-Invariance and Inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10a-physgrad-comparison.html">10a: Simple Example comparing Different Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11-bayes-linear.html">11. Bayesian regression with linear basis function models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11a-distribution.html">Probability Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11b-bayes-nn.html">11b: Bayesian Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12-gnn/12-gnn.html">12: Graph Neural Network</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/11-bayes/11b-bayes-nn-exercise.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/11-bayes/11b-bayes-nn-exercise.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/11-bayes/11b-bayes-nn-exercise.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>11b: Bayesian Neural Networks</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-neural-networks">Bayesian Neural Networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#probabilistic-model">Probabilistic model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference">Variational inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-training">Network training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-characterization">Uncertainty characterization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulate-data">Simulate data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started-with-pyro">Getting started with Pyro</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-neural-network-with-gaussian-prior-and-likelihood">Bayesian Neural Network with Gaussian Prior and Likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-and-run-markov-chain-monte-carlo-sampler">Define and run Markov chain Monte Carlo sampler</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-deep-bayesian-neural-network">Exercise 1: Deep Bayesian Neural Network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#train-the-deep-bnn-with-mcmc">Train the deep BNN with MCMC…</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-bnns-with-mean-field-variational-inference">Train BNNs with mean-field variational inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-bayesian-updating-with-variational-inference">Exercise 2: Bayesian updating with variational inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-update">Bayesian update</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-pyro">Implementation in Pyro</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-1-learn-a-model-on-the-old-observations">Exercise 2.1 Learn a model on the old observations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-2-initialize-a-second-model-with-the-variational-parameters">Exercise 2.2 Initialize a second model with the variational parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-3-perform-variational-inference-on-the-new-model">Exercise 2.3 Perform variational inference on the new model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-other-nns">Evaluate other NNs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-non-bayesian-neural-network">Define non-Bayesian Neural Network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#train-one-deterministic-nn">Train one deterministic NN</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-ensemble">Deep Ensemble</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-dropout">Monte Carlo Dropout</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="b-bayesian-neural-networks">
+<h1>11b: Bayesian Neural Networks<a class="headerlink" href="#b-bayesian-neural-networks" title="Permalink to this heading">#</a></h1>
+<section id="bayesian-neural-networks">
+<h2>Bayesian Neural Networks<a class="headerlink" href="#bayesian-neural-networks" title="Permalink to this heading">#</a></h2>
+<p>Bayesian neural networks differ from plain neural networks in that their weights are assigned a probability distribution instead of a single value or point estimate. These probability distributions describe the uncertainty in weights and can be used to estimate uncertainty in predictions. Training a Bayesian neural network via variational inference learns the parameters of these distributions instead of the weights directly.</p>
+<p>A Bayesian neural network is a probabilistic model that allows us to estimate uncertainty in predictions by representing the weights and biases of the network as probability distributions rather than fixed values. This allows us to <em>incorporate prior knowledge</em> about the weights and biases into the model, and <em>update our beliefs</em> about them as we observe data.</p>
+<p>Mathematically, a Bayesian neural network can be represented as follows:</p>
+<p>Given a set of input data <span class="math notranslate nohighlight">\(x\)</span>, we want to predict the corresponding output <span class="math notranslate nohighlight">\(y\)</span>. The neural network represents this relationship as a function <span class="math notranslate nohighlight">\(f(x, \theta)\)</span>, where <span class="math notranslate nohighlight">\(\theta\)</span> are the weights and biases of the network. In a Bayesian neural network, we represent the weights and biases as probability distributions, so <span class="math notranslate nohighlight">\(f(x, \theta)\)</span> becomes a probability distribution over possible outputs:</p>
+<div class="math notranslate nohighlight">
+\[ p(y|x, \mathcal{D}) = \int p(y|x, \theta)p(\theta|\mathcal{D}) d\theta \]</div>
+<p>where <span class="math notranslate nohighlight">\(p(y|x, \theta)\)</span> is the likelihood function, which gives the probability of observing <span class="math notranslate nohighlight">\(y\)</span> given <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span>, and <span class="math notranslate nohighlight">\(p(\theta|\mathcal{D})\)</span> is the posterior distribution over the weights and biases given the observed data <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.</p>
+<p>To make predictions, we use the posterior predictive distribution:</p>
+<div class="math notranslate nohighlight">
+\[ p(y^*|x^*, \mathcal{D}) = \int p(y^*|x^*, \theta)p(\theta|\mathcal{D}) d\theta \]</div>
+<p>where <span class="math notranslate nohighlight">\(x^*\)</span> is a new input and <span class="math notranslate nohighlight">\(y^*\)</span> is the corresponding predicted output.</p>
+<p>To estimate the (intractable) posterior distribution <span class="math notranslate nohighlight">\(p(\theta|\mathcal{D})\)</span>, we can use either Markov Chain Monte Carlo (MCMC) or Variational Inference (VI).</p>
+</section>
+<section id="probabilistic-model">
+<h2>Probabilistic model<a class="headerlink" href="#probabilistic-model" title="Permalink to this heading">#</a></h2>
+<p>A neural network can be viewed as probabilistic model <span class="math notranslate nohighlight">\(p(y \lvert \mathbf{x},\mathbf{w})\)</span>. For classification, <span class="math notranslate nohighlight">\(y\)</span> is a set of classes and <span class="math notranslate nohighlight">\(p(y \lvert \mathbf{x},\mathbf{w})\)</span> is a categorical distribution. For regression, <span class="math notranslate nohighlight">\(y\)</span> is a continuous variable and <span class="math notranslate nohighlight">\(p(y \lvert \mathbf{x},\mathbf{w})\)</span> is a Gaussian distribution.</p>
+<p>Given a training dataset <span class="math notranslate nohighlight">\(\mathcal{D} = \left\{\mathbf{x}^{(i)}, y^{(i)}\right\}\)</span> we can construct the likelihood function <span class="math notranslate nohighlight">\(p(\mathcal{D} \lvert \mathbf{w}) = \prod_i p(y^{(i)} \lvert \mathbf{x}^{(i)}, \mathbf{w})\)</span> which is a function of parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. Maximizing the likelihood function gives the maximimum likelihood estimate (MLE) of <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. The usual optimization objective during training is the negative log likelihood. For a categorical distribution this is the <em>cross entropy</em> error function, for a Gaussian distribution this is proportional to the <em>sum of squares</em> error function. MLE can lead to severe overfitting though.</p>
+<p>Multiplying the likelihood with a prior distribution <span class="math notranslate nohighlight">\(p(\mathbf{w})\)</span> is, by Bayes theorem, proportional to the posterior distribution <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D}) \propto p(\mathcal{D} \lvert \mathbf{w}) p(\mathbf{w})\)</span>. Maximizing <span class="math notranslate nohighlight">\(p(\mathcal{D} \lvert \mathbf{w}) p(\mathbf{w})\)</span> gives the maximum a posteriori (MAP) estimate of <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>. Computing the MAP estimate has a regularizing effect and can prevent overfitting. The optimization objectives here are the same as for MLE plus a regularization term coming from the log prior.</p>
+<p>Both MLE and MAP give point estimates of parameters. If we instead had a full posterior distribution over parameters we could make predictions that take weight uncertainty into account. This is covered by the posterior predictive distribution <span class="math notranslate nohighlight">\(p(y \lvert \mathbf{x},\mathcal{D}) = \int p(y \lvert \mathbf{x}, \mathbf{w}) p(\mathbf{w} \lvert \mathcal{D}) d\mathbf{w}\)</span> in which the parameters have been marginalized out. This is equivalent to averaging predictions from an ensemble of neural networks weighted by the posterior probabilities of their parameters <span class="math notranslate nohighlight">\(\mathbf{w}\)</span>.</p>
+</section>
+<section id="variational-inference">
+<h2>Variational inference<a class="headerlink" href="#variational-inference" title="Permalink to this heading">#</a></h2>
+<p>Unfortunately, an analytical solution for the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D})\)</span> in neural networks is untractable. We therefore have to approximate the true posterior with a variational distribution <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> of known functional form whose parameters we want to estimate. This can be done by minimizing the <a class="reference external" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> between <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> and the true posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D})\)</span>. As shown in <span class="xref myst">Appendix</span>, the corresponding optimization objective or cost function is</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{F}(\mathcal{D},\boldsymbol{\theta}) =
+\mathrm{KL}(q(\mathbf{w} \lvert \boldsymbol{\theta}) \mid\mid p(\mathbf{w})) -
+\mathbb{E}_{q(\mathbf{w} \lvert \boldsymbol{\theta})} \log p(\mathcal{D} \lvert \mathbf{w})
+\tag{1}
+\]</div>
+<p>This is known as the <em>variational free energy</em>. The first term is the Kullback-Leibler divergence between the variational distribution <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> and the prior <span class="math notranslate nohighlight">\(p(\mathbf{w})\)</span> and is called the <em>complexity cost</em>. The second term is the expected value of the likelihood w.r.t. the variational distribution and is called the <em>likelihood cost</em>. By re-arranging the KL term, the cost function can also be written as</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{F}(\mathcal{D},\boldsymbol{\theta}) =
+\mathbb{E}_{q(\mathbf{w} \lvert \boldsymbol{\theta})} \log q(\mathbf{w} \lvert \boldsymbol{\theta}) -
+\mathbb{E}_{q(\mathbf{w} \lvert \boldsymbol{\theta})} \log p(\mathbf{w}) -
+\mathbb{E}_{q(\mathbf{w} \lvert \boldsymbol{\theta})} \log p(\mathcal{D} \lvert \mathbf{w})
+\tag{2}
+\]</div>
+<p>We see that all three terms in equation <span class="math notranslate nohighlight">\(2\)</span> are expectations w.r.t. the variational distribution <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span>. The cost function can therefore be approximated by drawing samples <span class="math notranslate nohighlight">\(\mathbf{w}^{(i)}\)</span> from <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{F}(\mathcal{D},\boldsymbol{\theta}) \approx {1 \over N} \sum_{i=1}^N \left[
+\log q(\mathbf{w}^{(i)} \lvert \boldsymbol{\theta}) -
+\log p(\mathbf{w}^{(i)}) -
+\log p(\mathcal{D} \lvert \mathbf{w}^{(i)})\right]
+\tag{3}
+\]</div>
+<p>In the following example, we’ll use a Gaussian distribution for the variational posterior, parameterized by <span class="math notranslate nohighlight">\(\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma})\)</span> where <span class="math notranslate nohighlight">\(\boldsymbol{\mu}\)</span> is the mean vector of the distribution and <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> the standard deviation vector. The elements of <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> are the elements of a diagonal covariance matrix which means that weights are assumed to be uncorrelated. Instead of parameterizing the neural network with weights <span class="math notranslate nohighlight">\(\mathbf{w}\)</span> directly we parameterize it with <span class="math notranslate nohighlight">\(\boldsymbol{\mu}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> and therefore double the number of parameters compared to a plain neural network.</p>
+</section>
+<section id="network-training">
+<h2>Network training<a class="headerlink" href="#network-training" title="Permalink to this heading">#</a></h2>
+<p>A training iteration consists of a forward-pass and and backward-pass. During a forward pass a single sample is drawn from the variational posterior distribution. It is used to evaluate the approximate cost function defined by equation <span class="math notranslate nohighlight">\(3\)</span>. The first two terms of the cost function are data-independent and can be evaluated layer-wise, the last term is data-dependent and is evaluated at the end of the forward-pass. During a backward-pass, gradients of <span class="math notranslate nohighlight">\(\boldsymbol{\mu}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> are calculated via backpropagation so that their values can be updated by an optimizer.</p>
+<p>Since a forward pass involves a stochastic sampling step we have to apply the so-called <em>re-parameterization trick</em> for backpropagation to work. The trick is to sample from a parameter-free distribution and then transform the sampled <span class="math notranslate nohighlight">\(\boldsymbol{\epsilon}\)</span> with a deterministic function <span class="math notranslate nohighlight">\(t(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\epsilon})\)</span> for which a gradient can be defined. Here, <span class="math notranslate nohighlight">\(\boldsymbol{\epsilon}\)</span> is drawn from a standard normal distribution i.e. <span class="math notranslate nohighlight">\(\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})\)</span> and function <span class="math notranslate nohighlight">\(t(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\epsilon}) = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}\)</span> shifts the sample by mean <span class="math notranslate nohighlight">\(\boldsymbol{\mu}\)</span> and scales it with <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> where <span class="math notranslate nohighlight">\(\odot\)</span> is element-wise multiplication.</p>
+<p>For numeric stability we will parameterize the network with <span class="math notranslate nohighlight">\(\boldsymbol{\rho}\)</span> instead of <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> directly and transform <span class="math notranslate nohighlight">\(\boldsymbol{\rho}\)</span> with the softplus function to obtain <span class="math notranslate nohighlight">\(\boldsymbol{\sigma} = \log(1 + \exp(\boldsymbol{\rho}))\)</span>. This ensures that <span class="math notranslate nohighlight">\(\boldsymbol{\sigma}\)</span> is always positive. As prior, a scale mixture of two Gaussians is used <span class="math notranslate nohighlight">\(p(\mathbf{w}) = \pi \mathcal{N}(\mathbf{w} \lvert 0,\sigma_1^2) + (1 - \pi) \mathcal{N}(\mathbf{w} \lvert 0,\sigma_2^2)\)</span> where <span class="math notranslate nohighlight">\(\sigma_1\)</span>, <span class="math notranslate nohighlight">\(\sigma_2\)</span> and <span class="math notranslate nohighlight">\(\pi\)</span> are hyper-parameters i.e. they are not learned during training.</p>
+</section>
+<section id="uncertainty-characterization">
+<h2>Uncertainty characterization<a class="headerlink" href="#uncertainty-characterization" title="Permalink to this heading">#</a></h2>
+<p>Uncertainty in predictions that arise from the uncertainty in weights is called <a class="reference external" href="https://en.wikipedia.org/wiki/Uncertainty_quantification">epistemic uncertainty</a>. This kind of uncertainty can be reduced if we get more data. Consequently,  epistemic uncertainty is higher in regions of no or little training data and lower in regions of more training data. Epistemic uncertainty is covered by the variational posterior distribution. Uncertainty coming from the inherent noise in training data is an example of <a class="reference external" href="https://en.wikipedia.org/wiki/Uncertainty_quantification">aleatoric uncertainty</a>. It cannot be reduced if we get more data. Aleatoric uncertainty is covered by the probability distribution used to define the likelihood function.</p>
+</section>
+<section id="simulate-data">
+<h2>Simulate data<a class="headerlink" href="#simulate-data" title="Permalink to this heading">#</a></h2>
+<p>Let’s generate noisy observations from a sinusoidal function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">trange</span><span class="p">,</span> <span class="n">tqdm</span>
+
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Set random seed for reproducibility</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Generate data</span>
+<span class="n">x_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)])</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">x_obs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">y_obs</span> <span class="o">=</span> <span class="n">x_obs</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_obs</span> <span class="o">+</span> <span class="n">noise</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_obs</span> <span class="o">+</span> <span class="n">noise</span><span class="p">))</span> <span class="o">+</span> <span class="n">noise</span>
+
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">x_true</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_true</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_true</span><span class="p">)</span>
+
+<span class="c1"># Set plot limits and labels</span>
+<span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>
+<span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">]</span>
+
+<span class="c1"># Create plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True function&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_obs</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">,</span> <span class="s1">&#39;ko&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Observations&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlims</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="getting-started-with-pyro">
+<h2>Getting started with Pyro<a class="headerlink" href="#getting-started-with-pyro" title="Permalink to this heading">#</a></h2>
+<p>Let’s install Pyro now.  You may have to restart the runtime after this step.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>pyro-ppl
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bayesian-neural-network-with-gaussian-prior-and-likelihood">
+<h2>Bayesian Neural Network with Gaussian Prior and Likelihood<a class="headerlink" href="#bayesian-neural-network-with-gaussian-prior-and-likelihood" title="Permalink to this heading">#</a></h2>
+<p>Our first Bayesian neural network employs a Gaussian prior on the weights and a Gaussian likelihood function for the data. The network is a shallow neural network with one hidden layer.</p>
+<p>To be specific, we use the following prior on the weights <span class="math notranslate nohighlight">\(\theta\)</span>:</p>
+<p><span class="math notranslate nohighlight">\(p(\theta) = \mathcal{N}(\mathbf{0}, 10\cdot\mathbb{I}),\)</span> where <span class="math notranslate nohighlight">\(\mathbb{I}\)</span> is the identity matrix.</p>
+<p>To train the network, we define a likelihood function comparing the predicted outputs of the network with the actual data points:</p>
+<p><span class="math notranslate nohighlight">\(p(y_i| x_i, \theta) = \mathcal{N}\big(NN_{\theta}(x_i), \sigma^2\big)\)</span>, with prior <span class="math notranslate nohighlight">\(\sigma \sim \Gamma(1,1)\)</span>.</p>
+<p>Here, <span class="math notranslate nohighlight">\(y_i\)</span> represents the actual output for the <span class="math notranslate nohighlight">\(i\)</span>-th data point, <span class="math notranslate nohighlight">\(x_i\)</span> represents the input for that data point, <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation parameter for the normal distribution and <span class="math notranslate nohighlight">\(NN_{\theta}\)</span> is the shallow neural network parameterized by <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+<p>Note that we use <span class="math notranslate nohighlight">\(\sigma^2\)</span> instead of <span class="math notranslate nohighlight">\(\sigma\)</span> in the likelihood function because we use a Gaussian prior on <span class="math notranslate nohighlight">\(\sigma\)</span> when performing variational inference and then want to avoid negative values for the standard deviation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyro</span>
+<span class="kn">import</span> <span class="nn">pyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+<span class="kn">from</span> <span class="nn">pyro.nn</span> <span class="kn">import</span> <span class="n">PyroModule</span><span class="p">,</span> <span class="n">PyroSample</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+
+
+<span class="k">class</span> <span class="nc">BNN</span><span class="p">(</span><span class="n">PyroModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hid_dim</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">prior_scale</span><span class="o">=</span><span class="mf">10.</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Set layer parameters as random variables</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="mf">.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># Infer the response noise</span>
+
+        <span class="c1"># Sampling model</span>
+        <span class="k">with</span> <span class="n">pyro</span><span class="o">.</span><span class="n">plate</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mu</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-and-run-markov-chain-monte-carlo-sampler">
+<h2>Define and run Markov chain Monte Carlo sampler<a class="headerlink" href="#define-and-run-markov-chain-monte-carlo-sampler" title="Permalink to this heading">#</a></h2>
+<p>To begin with, we can use MCMC to compute an <em>unbiased estimate</em> of <span class="math notranslate nohighlight">\(p(y|x, \mathcal{D}) = \mathbb{E}_{\theta \sim p(\theta|\mathcal{D})}\big[p(y|x,\theta)\big]\)</span> through Monte Carlo sampling. Specifically, we can approximate <span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim p(\theta|\mathcal{D})}\big[p(y|x,\theta)\big]\)</span> as follows:
+$<span class="math notranslate nohighlight">\(\mathbb{E}_{\theta \sim p(\theta|\mathcal{D})}\big[p(y|x,\theta)\big] \approx \frac{1}{N} \sum_{i=1}^{N} p(y|x,\theta_{i}),\)</span><span class="math notranslate nohighlight">\(
+where \)</span>\theta_{i} \sim p(\theta_i|\mathcal{D}) \propto p(\mathcal{D}|\theta)p(\theta)$ are samples drawn from the posterior distribution. Because the normalizing constant is intractable, we require MCMC methods like Hamiltonian Monte Carlo to draw samples from the non-normalized posterior.</p>
+<p>Here, we use the No-U-Turn (<a class="reference external" href="https://arxiv.org/abs/1111.4246">NUTS</a>) kernel.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyro.infer</span> <span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">BNN</span><span class="p">()</span>
+
+<span class="c1"># Set Pyro random seed</span>
+<span class="n">pyro</span><span class="o">.</span><span class="n">set_rng_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Define Hamiltonian Monte Carlo (HMC) kernel</span>
+<span class="c1"># NUTS = &quot;No-U-Turn Sampler&quot; (https://arxiv.org/abs/1111.4246), gives HMC an adaptive step size</span>
+<span class="c1"># jit_compile=True is faster but requires PyTorch 1.6+</span>
+
+<span class="c1"># Define MCMC sampler, get 50 posterior samples</span>
+
+<span class="c1"># Convert data to PyTorch tensors</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x_obs</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y_obs</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+<span class="c1"># Run MCMC</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We calculate and plot the predictive distribution.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyro.infer</span> <span class="kn">import</span> <span class="n">Predictive</span>
+
+<span class="n">predictive</span> <span class="o">=</span> <span class="n">Predictive</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">posterior_samples</span><span class="o">=</span><span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">())</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">xlims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xlims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">3000</span><span class="p">)</span>
+
+<span class="c1"># Get posterior predictive samples</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">):</span>
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y_std</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="s1">&#39;obs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">xlims</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>
+    <span class="n">ylims</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlims</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true function&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_obs</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">,</span> <span class="s1">&#39;ko&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_obs</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">,</span> <span class="s1">&#39;ko&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#408765&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;predictive mean&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_pred</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y_std</span><span class="p">,</span> <span class="n">y_pred</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y_std</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#86cfac&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-1-deep-bayesian-neural-network">
+<h2>Exercise 1: Deep Bayesian Neural Network<a class="headerlink" href="#exercise-1-deep-bayesian-neural-network" title="Permalink to this heading">#</a></h2>
+<p>We can define a deep Bayesian neural network in a similar fashion, with Gaussian priors on the weights:</p>
+<p><span class="math notranslate nohighlight">\(p(\theta) = \mathcal{N}(\mathbf{0}, 5\cdot\mathbb{I})\)</span>.</p>
+<p>The likelihood function is also Gaussian:</p>
+<p><span class="math notranslate nohighlight">\(p(y_i| x_i, \theta) = \mathcal{N}\big(NN_{\theta}(x_i), \sigma^2\big)\)</span>, with <span class="math notranslate nohighlight">\(\sigma \sim \Gamma(0.5,1)\)</span>.</p>
+<blockquote>
+<div><p>Implement the deep Bayesian neural network and run MCMC to obtain posterior samples.
+Compute and plot the predictive distribution.
+Use the following network architecture: Number of hidden layers: 5, Number of hidden units per layer: 10, Activation function: Tanh, Prior scale: 5.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">DeepBNN</span><span class="p">(</span><span class="n">PyroModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hid_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_hid_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">prior_scale</span><span class="o">=</span><span class="mf">5.</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>  <span class="c1"># could also be ReLU or LeakyReLU</span>
+        <span class="k">assert</span> <span class="n">in_dim</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">out_dim</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">hid_dim</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n_hid_layers</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># make sure the dimensions are valid</span>
+
+        <span class="c1"># Define the layer sizes and the PyroModule layer list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">]</span> <span class="o">+</span> <span class="n">n_hid_layers</span> <span class="o">*</span> <span class="p">[</span><span class="n">hid_dim</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">out_dim</span><span class="p">]</span>
+        <span class="n">layer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">PyroModule</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span>
+                      <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">PyroModule</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">](</span><span class="n">layer_list</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">layer_idx</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">PyroSample</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">prior_scale</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">layer_idx</span><span class="p">]))</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">layer_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">layer_idx</span><span class="p">]])</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">PyroSample</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="n">prior_scale</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">layer_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">x</span><span class="p">))</span>  <span class="c1"># input --&gt; hidden</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>  <span class="c1"># hidden --&gt; hidden</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">](</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>  <span class="c1"># hidden --&gt; output</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="mf">.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># infer the response noise</span>
+
+        <span class="k">with</span> <span class="n">pyro</span><span class="o">.</span><span class="n">plate</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mu</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="train-the-deep-bnn-with-mcmc">
+<h3>Train the deep BNN with MCMC…<a class="headerlink" href="#train-the-deep-bnn-with-mcmc" title="Permalink to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define model and data</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">DeepBNN</span><span class="p">(</span><span class="n">hid_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_hid_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">prior_scale</span><span class="o">=</span><span class="mf">5.</span><span class="p">)</span>
+
+<span class="c1"># define MCMC sampler</span>
+<span class="n">nuts_kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">jit_compile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">nuts_kernel</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Compute predictive distribution…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">predictive</span> <span class="o">=</span> <span class="n">Predictive</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">posterior_samples</span><span class="o">=</span><span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">())</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">predictive</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">plot_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="train-bnns-with-mean-field-variational-inference">
+<h2>Train BNNs with mean-field variational inference<a class="headerlink" href="#train-bnns-with-mean-field-variational-inference" title="Permalink to this heading">#</a></h2>
+<p>We will now move on to variational inference. Since the normalized posterior probability density <span class="math notranslate nohighlight">\(p(\theta|\mathcal{D})\)</span> is intractable, we approximate it with a tractable parametrized density <span class="math notranslate nohighlight">\(q_{\phi}(\theta)\)</span> in a family of probability densities <span class="math notranslate nohighlight">\(\mathcal{Q}\)</span>. The variational parameters are denoted by <span class="math notranslate nohighlight">\(\phi\)</span> and the variational density is called the “guide” in Pyro. The goal is to find the variational probability density that best approximates the posterior by minimizing the KL divergence $<span class="math notranslate nohighlight">\(KL\big(q_{\phi}(\theta)||p(\theta|\mathcal{D})\big)\)</span><span class="math notranslate nohighlight">\( with respect to the variational parameters.
+However, directly minimizing the KL divergence is not tractable because we assume that the posterior density is intractable. To solve this, we use Bayes theorem to obtain
+\)</span><span class="math notranslate nohighlight">\(
+\log p(\mathcal{D}|\theta) = KL\big(q_{\phi}(\theta)||p(\theta|\mathcal{D})\big) + ELBO(q_{\phi}(\theta)),
+\)</span><span class="math notranslate nohighlight">\(
+where \)</span>ELBO(q_{\phi}(\theta))<span class="math notranslate nohighlight">\( is the *Evidence Lower Bound*, given by
+\)</span><span class="math notranslate nohighlight">\(
+ELBO(q_{\phi}(\theta)) = \mathbb{E}_{\theta \sim q_{\phi}(\theta)}\big[\log p(y|x,\theta) \big] - KL\big(q_{\phi}(\theta) || p(\theta) \big).
+\)</span>$
+By maximizing the ELBO, we indirectly minimize the KL divergence between the variational probability density and the posterior density.</p>
+<p>Set up for stochastic variational inference with the variational density <span class="math notranslate nohighlight">\(q_{\phi}(\theta)\)</span> by using a normal probability density with a diagonal covariance matrix:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyro.infer</span> <span class="kn">import</span> <span class="n">SVI</span><span class="p">,</span> <span class="n">Trace_ELBO</span>
+<span class="kn">from</span> <span class="nn">pyro.infer.autoguide</span> <span class="kn">import</span> <span class="n">AutoDiagonalNormal</span>
+<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">trange</span>
+<span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">DeepBNN</span><span class="p">(</span><span class="n">hid_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_hid_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">prior_scale</span><span class="o">=</span><span class="mf">5.</span><span class="p">)</span>
+<span class="n">mean_field_guide</span> <span class="o">=</span> <span class="n">AutoDiagonalNormal</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">({</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">})</span>
+
+<span class="n">svi</span> <span class="o">=</span> <span class="n">SVI</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">mean_field_guide</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">Trace_ELBO</span><span class="p">())</span>
+<span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
+
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">25000</span>
+<span class="n">progress_bar</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">:</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">svi</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">progress_bar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As before, we compute the predictive distribution sampling from the trained variational density.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">predictive</span> <span class="o">=</span> <span class="n">Predictive</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">guide</span><span class="o">=</span><span class="n">mean_field_guide</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">predictive</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">plot_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2-bayesian-updating-with-variational-inference">
+<h2>Exercise 2: Bayesian updating with variational inference<a class="headerlink" href="#exercise-2-bayesian-updating-with-variational-inference" title="Permalink to this heading">#</a></h2>
+<p>What happens if we obtain new data points, denoted as <span class="math notranslate nohighlight">\(\mathcal{D}'\)</span>, after performing variational inference using the observations <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate new observations</span>
+<span class="n">x_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">x_new</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">y_new</span> <span class="o">=</span> <span class="n">x_new</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_new</span> <span class="o">+</span> <span class="n">noise</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">x_new</span> <span class="o">+</span> <span class="n">noise</span><span class="p">))</span> <span class="o">+</span> <span class="n">noise</span>
+
+<span class="c1"># Generate true function</span>
+<span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">x_true</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_true</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_true</span><span class="p">)</span>
+
+<span class="c1"># Set axis limits and labels</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlims</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylims</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Plot all datasets</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True function&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_new</span><span class="p">,</span> <span class="n">y_new</span><span class="p">,</span> <span class="s1">&#39;ko&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;New observations&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_obs</span><span class="p">,</span> <span class="n">y_obs</span><span class="p">,</span> <span class="s1">&#39;ko&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Old observations&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bayesian-update">
+<h2>Bayesian update<a class="headerlink" href="#bayesian-update" title="Permalink to this heading">#</a></h2>
+<p>How can we perform a Bayesian update on the model using variational inference when new observations become available?</p>
+<p>We can use the previously calculated posterior probability density as the new prior and update the posterior with the new observations. Specifically, the updated posterior probability density is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+p(\theta|\mathcal{D}') = \frac{p(\mathcal{D}'|\theta)q_{\phi}(\theta)}{\int p(\mathcal{D}'|\theta)q_{\phi}(\theta)}
+\]</div>
+<p>Note that we want to update our model using only the new observations <span class="math notranslate nohighlight">\(\mathcal{D}'\)</span>, relying on the fact that the variational density used as our new prior carries the necessary information on the old observations <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>.</p>
+<section id="implementation-in-pyro">
+<h3>Implementation in Pyro<a class="headerlink" href="#implementation-in-pyro" title="Permalink to this heading">#</a></h3>
+<p>To implement this in Pyro, we can extract the variational parameters (mean and standard deviation) from the <code class="docutils literal notranslate"><span class="pre">guide</span></code> and use them to initialize the prior in a new model that is similar to the original model used for variational inference.</p>
+<p>From the Gaussian <code class="docutils literal notranslate"><span class="pre">guide</span></code> we can extract the variational parameters (mean and standard deviation) as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mu</span> <span class="o">=</span> <span class="n">guide</span><span class="o">.</span><span class="n">get_posterior</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="n">guide</span><span class="o">.</span><span class="n">get_posterior</span><span class="p">()</span><span class="o">.</span><span class="n">stddev</span>
+</pre></div>
+</div>
+</section>
+<section id="exercise-2-1-learn-a-model-on-the-old-observations">
+<h3>Exercise 2.1 Learn a model on the old observations<a class="headerlink" href="#exercise-2-1-learn-a-model-on-the-old-observations" title="Permalink to this heading">#</a></h3>
+<p>First, as before, we define a model using Gaussian prior <span class="math notranslate nohighlight">\(\mathcal{N}(\mathbf{0}, 10\cdot \mathbb{I})\)</span>.</p>
+<blockquote>
+<div><p>Train a model <code class="docutils literal notranslate"><span class="pre">MyFirstBNN</span></code> on the old observations <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> using variational inference with <code class="docutils literal notranslate"><span class="pre">AutoDiagonalNormal()</span></code> as guide.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyro.optim</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="n">pyro</span><span class="o">.</span><span class="n">set_rng_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">BNN</span><span class="p">()</span>
+<span class="n">guide</span> <span class="o">=</span> <span class="n">AutoDiagonalNormal</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">optim</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">({</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.03</span><span class="p">})</span>
+<span class="n">svi</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">SVI</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">guide</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">Trace_ELBO</span><span class="p">())</span>
+
+<span class="n">num_iterations</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">progress_bar</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">:</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">svi</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">progress_bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;[iteration </span><span class="si">%04d</span><span class="s2">] loss: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_train</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">predictive</span> <span class="o">=</span> <span class="n">Predictive</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">guide</span><span class="o">=</span><span class="n">guide</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">predictive</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">plot_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, we can extract the variational parameters (mean and standard deviation) from the <code class="docutils literal notranslate"><span class="pre">guide</span></code> and use them to initialize the prior in a new model that is similar to the original model used for variational inference.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract variational parameters from guide</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="n">guide</span><span class="o">.</span><span class="n">get_posterior</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+<span class="n">stddev</span> <span class="o">=</span> <span class="n">guide</span><span class="o">.</span><span class="n">get_posterior</span><span class="p">()</span><span class="o">.</span><span class="n">stddev</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pyro</span><span class="o">.</span><span class="n">get_param_store</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pyro</span><span class="o">.</span><span class="n">param</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2-2-initialize-a-second-model-with-the-variational-parameters">
+<h3>Exercise 2.2 Initialize a second model with the variational parameters<a class="headerlink" href="#exercise-2-2-initialize-a-second-model-with-the-variational-parameters" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Define a new model similar to <code class="docutils literal notranslate"><span class="pre">MyFirstBNN(PyroModule)</span></code>, that takes the variational parameters and uses them to initialize the prior.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UpdatedBNN</span><span class="p">(</span><span class="n">PyroModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">stddev</span><span class="p">,</span> <span class="n">in_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">out_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hid_dim</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span> <span class="o">=</span> <span class="n">stddev</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span> <span class="o">=</span> <span class="n">PyroModule</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">](</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">hid_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span> <span class="o">=</span> <span class="n">PyroModule</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">](</span><span class="n">hid_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">PyroSample</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">PyroSample</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">])</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">PyroSample</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">PyroSample</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">16</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">stddev</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">16</span><span class="p">])</span><span class="o">.</span><span class="n">to_event</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># 17th parameter is parameter sigma from the Gamma distribution</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="mf">.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="n">pyro</span><span class="o">.</span><span class="n">plate</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;obs&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">),</span> <span class="n">obs</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mu</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="exercise-2-3-perform-variational-inference-on-the-new-model">
+<h3>Exercise 2.3 Perform variational inference on the new model<a class="headerlink" href="#exercise-2-3-perform-variational-inference-on-the-new-model" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Then perform variational inference on this new model using the new observations and plot the predictive distribution.
+What do you observe? How does the predictive distribution compare to the one obtained in Exercise 2.1?</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x_train_new</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+<span class="n">y_train_new</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y_new</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+
+<span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
+<span class="n">new_model</span> <span class="o">=</span> <span class="n">UpdatedBNN</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">stddev</span><span class="p">)</span>
+<span class="n">new_guide</span> <span class="o">=</span> <span class="n">AutoDiagonalNormal</span><span class="p">(</span><span class="n">new_model</span><span class="p">)</span>
+<span class="n">optim</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">({</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">})</span>
+<span class="n">svi</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">SVI</span><span class="p">(</span><span class="n">new_model</span><span class="p">,</span> <span class="n">new_guide</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">Trace_ELBO</span><span class="p">())</span>
+
+<span class="n">num_iterations</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">progress_bar</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">:</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">svi</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x_train_new</span><span class="p">,</span> <span class="n">y_train_new</span><span class="p">)</span>
+    <span class="n">progress_bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;[iteration </span><span class="si">%04d</span><span class="s2">] loss: </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x_train</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">predictive</span> <span class="o">=</span> <span class="n">Predictive</span><span class="p">(</span><span class="n">new_model</span><span class="p">,</span> <span class="n">guide</span><span class="o">=</span><span class="n">new_guide</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">predictive</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">plot_predictions</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="evaluate-other-nns">
+<h2>Evaluate other NNs<a class="headerlink" href="#evaluate-other-nns" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_simple_data_train</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">.6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">500</span><span class="p">)])</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">eps</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">eps</span><span class="p">))</span> <span class="o">+</span> <span class="n">eps</span>
+    <span class="n">x_train</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_generic</span><span class="p">(</span><span class="n">add_to_plot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">([</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">get_simple_data_train</span><span class="p">()</span>
+
+    <span class="n">x_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">x_true</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_true</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_true</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="s1">&#39;ko&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;observations&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_true</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;true function&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">add_to_plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">add_to_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_generic</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="define-non-bayesian-neural-network">
+<h3>Define non-Bayesian Neural Network<a class="headerlink" href="#define-non-bayesian-neural-network" title="Permalink to this heading">#</a></h3>
+<p>First let’s create our point estimate neural network, in other words a standard fully connected MLP. We will define the number of hidden layers dynamically so we can reuse the same class for different depths.  We will also add a <em>dropout</em> flag, this will allow us to easily use the same architecture for our BNN.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MLP</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">output_dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hidden_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">use_dropout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Dropout</span>
+        
+
+        <span class="c1"># dynamically define architecture</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_dim</span><span class="p">]</span> <span class="o">+</span> <span class="n">n_hidden_layers</span> <span class="o">*</span> <span class="p">[</span><span class="n">hidden_dim</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">output_dim</span><span class="p">]</span>
+        <span class="n">layer_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span>
+                      <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_sizes</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="n">layer_list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="nb">input</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">hidden_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">hidden</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_dropout</span><span class="p">:</span>
+                <span class="n">hidden_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">hidden_temp</span><span class="p">)</span>
+
+            <span class="n">hidden</span> <span class="o">=</span> <span class="n">hidden_temp</span> <span class="o">+</span> <span class="n">hidden</span>  <span class="c1"># residual connection</span>
+
+        <span class="n">output_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">](</span><span class="n">hidden</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">output_mean</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="train-one-deterministic-nn">
+<h3>Train one deterministic NN<a class="headerlink" href="#train-one-deterministic-nn" title="Permalink to this heading">#</a></h3>
+<p><strong>Training</strong></p>
+<p>Now let’s train our MLP with the training data we generated above:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">train_data</span><span class="p">):</span>
+    <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">train_data</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+    <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+
+    <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="mi">3000</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">:</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">net</span><span class="p">(</span><span class="n">x_train</span><span class="p">))</span>
+        <span class="n">progress_bar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">.3f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">net</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_data</span> <span class="o">=</span> <span class="n">get_simple_data_train</span><span class="p">()</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">3000</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>  <span class="c1"># test over the whole range</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_dim</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">train_data</span><span class="p">)</span>
+<span class="n">y_preds</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Evaluate</strong></p>
+<p>Let’s investigate how our deterministic MLP generalizes over the entire domain of our input variable <span class="math notranslate nohighlight">\(x\)</span> (the model was only trained on the observations, now we will also pass in data outside this region)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_predictions</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_predictions</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;neural net prediction&#39;</span><span class="p">)</span>
+
+    <span class="n">plot_generic</span><span class="p">(</span><span class="n">add_predictions</span><span class="p">)</span>
+<span class="n">plot_predictions</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that our deterministic MLP (red line) has correctly learned the data distribution in the training regions, however, as the model has not learned the underlying sinusoidal wave function, it’s predictions outside the training region are inaccurate. As our MLP is a point estimate NN we have no measure confidence in the predictions outside the training region. In the upcoming sections let’s see how this compares to BNN.</p>
+</section>
+</section>
+<section id="deep-ensemble">
+<h2>Deep Ensemble<a class="headerlink" href="#deep-ensemble" title="Permalink to this heading">#</a></h2>
+<p>Deep ensembles were first introduced by <a class="reference external" href="https://arxiv.org/abs/1612.01474">Lakshminarayanan et al. (2017)</a>. As the name implies multiple point estimate NN are trained, <em>an ensemble</em>, and the final prediction is computed as an average across the models. From a Bayesian perspective the different point estimates correspond to modes of a Bayesian posterior. This can be interpreted as approximating the posterior with a distribution parametrized as multiple Dirac deltas:</p>
+<div class="math notranslate nohighlight">
+\[
+q_{\phi}(\theta | D) = \sum_{\theta_{i} ∈ ϕ} \alpha_{\theta_{i}} δ_{\theta_{i}}(\theta)
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha_{\theta_{i}}\)</span> are positive constants such that their sum is equal to one.</p>
+<p><strong>Training</strong></p>
+<p>We will reuse the MLP architecture introduced before, simply now we will train an ensemble of such models</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ensemble_size</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">ensemble</span> <span class="o">=</span> <span class="p">[</span><span class="n">MLP</span><span class="p">(</span><span class="n">hidden_dim</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_size</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="p">:</span>
+    <span class="n">train</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">train_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Evaluate</strong></p>
+<p>Same as before, let’s investigate how our Deep Ensemble performs on the entire data domain of our input variable <span class="math notranslate nohighlight">\(x\)</span>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">y_preds</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span> <span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Plot each ensemble member’s predictive function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_multiple_predictions</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_multiple_predictions</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_preds</span><span class="p">)):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">plot_generic</span><span class="p">(</span><span class="n">add_multiple_predictions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_multiple_predictions</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this plot the benefit of an ensemble approach is not immediately clear. Still on the regions outside the training data each of the trained NN is inaccurate. So what is the benefit you might ask.</p>
+<p>Well let’s plot the above in a slightly different way: let’s visualize the ensemble’s <strong>uncertainty bands</strong>.</p>
+<blockquote>
+<div><p>From a Bayesian perspective we want to quantify the model’s uncertainty on its prediction. This is done via the marginal <span class="math notranslate nohighlight">\(p(y|x, D)\)</span>, which can be computed as:</p>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[
+p(y|x, D) = \int_{\theta}p(y|x,\theta')p(\theta'|D)d\theta'
+\]</div>
+<blockquote>
+<div><p>In practice, for Deep Ensembles we approximate the above by computing the mean and standard deviation across the ensemble. Meaning <span class="math notranslate nohighlight">\(p(\theta|D)\)</span> represents the parameters of one of the trained models, <span class="math notranslate nohighlight">\(\theta_{i} ∼ p(\theta|D)\)</span>, which we then use to compute <span class="math notranslate nohighlight">\(y_{i} = f(x,\theta_{i})\)</span>, representing <span class="math notranslate nohighlight">\(p(y|x,\theta')\)</span>.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_uncertainty_bands</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">):</span>
+    <span class="n">y_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_preds</span><span class="p">)</span>
+    <span class="n">y_mean</span> <span class="o">=</span> <span class="n">y_preds</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">y_std</span> <span class="o">=</span> <span class="n">y_preds</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_uncertainty</span><span class="p">(</span><span class="n">ax</span><span class="p">):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_mean</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#408765&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;predictive mean&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">y_mean</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y_std</span><span class="p">,</span> <span class="n">y_mean</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y_std</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;#86cfac&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="n">plot_generic</span><span class="p">(</span><span class="n">add_uncertainty</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_uncertainty_bands</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we see the benefit of a Bayesian approach. Outside the training region we not only have the point estimate, but also model’s uncertainty about its prediction.</p>
+</section>
+<section id="monte-carlo-dropout">
+<h2>Monte Carlo Dropout<a class="headerlink" href="#monte-carlo-dropout" title="Permalink to this heading">#</a></h2>
+<p>First we create our MC-Dropout Network. As you can see in the code below, creating a dropout network is extremely simple:
+We can reuse our existing network architecture, the only alteration is that during the forward pass we randomly <em>switch off</em> (zero) some of the elements of the input tensor.</p>
+<p>The Bayesian interpretation of MC-Dropout is that we can see each dropout configuration as a different sample from the approximate posterior distribution <span class="math notranslate nohighlight">\(\theta_{i} ∼ q(\theta|D)\)</span>.</p>
+<p><strong>Training</strong></p>
+<p><strong>Evaluate</strong></p>
+<p>Similarly to Deep Ensembles, we pass the test data multiple times through the MC-Dropout network. We do so to obtain <span class="math notranslate nohighlight">\(y_{i}\)</span> at the different parameter settings, <span class="math notranslate nohighlight">\(\theta_{i}\)</span> of the network, <span class="math notranslate nohighlight">\(y_{i}=f(x,\theta_{i})\)</span>, governed by the dropout mask.</p>
+<blockquote>
+<div><p>This is the main difference compared to dropout implementation in a deterministic NN where it serves as a regularization term. In normal dropout application during test time the dropout is <strong>not</strong> applied. Meaning that all connections are present, but the weights are <a class="reference external" href="https://cs231n.github.io/neural-networks-2/">adjusted</a></p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_dropout_samples</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># compute predictions, resampling dropout mask for each forward pass</span>
+<span class="n">y_preds</span> <span class="o">=</span> <span class="p">[</span><span class="n">net_dropout</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dropout_samples</span><span class="p">)]</span>
+<span class="n">y_preds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_multiple_predictions</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In the above plot each colored line (apart from blue) represents a different parametrization, <span class="math notranslate nohighlight">\(\theta_{i}\)</span>, of our MC-Dropout Network.</p>
+<p>Likewise to the Deep Ensemble Network, we can also compute the MC-dropout’s <strong>uncertainty bands</strong>.</p>
+<blockquote>
+<div><p>The approach in practice is the same as before: we compute the mean and standard deviation across each dropout mask, which corresponds to the marginal estimation we discussed earlier.</p>
+</div></blockquote>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_uncertainty_bands</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In the same way as Deep Ensembles, MC-Dropout allows us to have an uncertainty estimate next to our point wise predictions. However, for the given use-case this has come with the cost of an overall drop in the model’s performance on the training regions. We observe this because at every pass through our network we randomly choose which nodes to keep, so one could argue that we hinder the networks optimal performance.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/11-bayes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-neural-networks">Bayesian Neural Networks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#probabilistic-model">Probabilistic model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variational-inference">Variational inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#network-training">Network training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-characterization">Uncertainty characterization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulate-data">Simulate data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started-with-pyro">Getting started with Pyro</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-neural-network-with-gaussian-prior-and-likelihood">Bayesian Neural Network with Gaussian Prior and Likelihood</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-and-run-markov-chain-monte-carlo-sampler">Define and run Markov chain Monte Carlo sampler</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-1-deep-bayesian-neural-network">Exercise 1: Deep Bayesian Neural Network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#train-the-deep-bnn-with-mcmc">Train the deep BNN with MCMC…</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-bnns-with-mean-field-variational-inference">Train BNNs with mean-field variational inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-bayesian-updating-with-variational-inference">Exercise 2: Bayesian updating with variational inference</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-update">Bayesian update</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-in-pyro">Implementation in Pyro</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-1-learn-a-model-on-the-old-observations">Exercise 2.1 Learn a model on the old observations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-2-initialize-a-second-model-with-the-variational-parameters">Exercise 2.2 Initialize a second model with the variational parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercise-2-3-perform-variational-inference-on-the-new-model">Exercise 2.3 Perform variational inference on the new model</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-other-nns">Evaluate other NNs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-non-bayesian-neural-network">Define non-Bayesian Neural Network</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#train-one-deterministic-nn">Train one deterministic NN</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deep-ensemble">Deep Ensemble</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monte-carlo-dropout">Monte Carlo Dropout</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
