@@ -515,7 +515,7 @@ document.write(`
 </section>
 <section id="variational-inference">
 <h2>Variational inference<a class="headerlink" href="#variational-inference" title="Permalink to this heading">#</a></h2>
-<p>Unfortunately, an analytical solution for the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D})\)</span> in neural networks is untractable. We therefore have to approximate the true posterior with a variational distribution <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> of known functional form whose parameters we want to estimate. This can be done by minimizing the <a class="reference external" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> between <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> and the true posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D})\)</span>. As shown in <span class="xref myst">Appendix</span>, the corresponding optimization objective or cost function is</p>
+<p>Unfortunately, an analytical solution for the posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D})\)</span> in neural networks is untractable. We therefore have to approximate the true posterior with a variational distribution <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> of known functional form whose parameters we want to estimate. This can be done by minimizing the <a class="reference external" href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> between <span class="math notranslate nohighlight">\(q(\mathbf{w} \lvert \boldsymbol{\theta})\)</span> and the true posterior <span class="math notranslate nohighlight">\(p(\mathbf{w} \lvert \mathcal{D})\)</span>. The corresponding optimization objective or cost function is</p>
 <div class="math notranslate nohighlight">
 \[
 \mathcal{F}(\mathcal{D},\boldsymbol{\theta}) =
@@ -657,10 +657,10 @@ where \)</span>\theta_{i} \sim p(\theta_i|\mathcal{D}) \propto p(\mathcal{D}|\th
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyro.infer</span> <span class="kn">import</span> <span class="n">MCMC</span><span class="p">,</span> <span class="n">NUTS</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">BNN</span><span class="p">()</span>
+<span class="c1"># Define a model</span>
 
 <span class="c1"># Set Pyro random seed</span>
-<span class="n">pyro</span><span class="o">.</span><span class="n">set_rng_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
 
 <span class="c1"># Define Hamiltonian Monte Carlo (HMC) kernel</span>
 <span class="c1"># NUTS = &quot;No-U-Turn Sampler&quot; (https://arxiv.org/abs/1111.4246), gives HMC an adaptive step size</span>
@@ -774,12 +774,8 @@ Use the following network architecture: Number of hidden layers: 5, Number of hi
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define model and data</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">DeepBNN</span><span class="p">(</span><span class="n">hid_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_hid_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">prior_scale</span><span class="o">=</span><span class="mf">5.</span><span class="p">)</span>
 
 <span class="c1"># define MCMC sampler</span>
-<span class="n">nuts_kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">jit_compile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">nuts_kernel</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -816,19 +812,13 @@ By maximizing the ELBO, we indirectly minimize the KL divergence between the var
 <span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">trange</span>
 <span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">DeepBNN</span><span class="p">(</span><span class="n">hid_dim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_hid_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">prior_scale</span><span class="o">=</span><span class="mf">5.</span><span class="p">)</span>
-<span class="n">mean_field_guide</span> <span class="o">=</span> <span class="n">AutoDiagonalNormal</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">({</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">})</span>
+<span class="c1"># define model and guide</span>
 
-<span class="n">svi</span> <span class="o">=</span> <span class="n">SVI</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">mean_field_guide</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">Trace_ELBO</span><span class="p">())</span>
-<span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
 
 <span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">25000</span>
 <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">:</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">svi</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-    <span class="n">progress_bar</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -897,7 +887,7 @@ p(\theta|\mathcal{D}') = \frac{p(\mathcal{D}'|\theta)q_{\phi}(\theta)}{\int p(\m
 <h3>Exercise 2.1 Learn a model on the old observations<a class="headerlink" href="#exercise-2-1-learn-a-model-on-the-old-observations" title="Permalink to this heading">#</a></h3>
 <p>First, as before, we define a model using Gaussian prior <span class="math notranslate nohighlight">\(\mathcal{N}(\mathbf{0}, 10\cdot \mathbb{I})\)</span>.</p>
 <blockquote>
-<div><p>Train a model <code class="docutils literal notranslate"><span class="pre">MyFirstBNN</span></code> on the old observations <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> using variational inference with <code class="docutils literal notranslate"><span class="pre">AutoDiagonalNormal()</span></code> as guide.</p>
+<div><p>Train a model <code class="docutils literal notranslate"><span class="pre">BNN</span></code> on the old observations <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> using variational inference with <code class="docutils literal notranslate"><span class="pre">AutoDiagonalNormal()</span></code> as guide.</p>
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -933,8 +923,6 @@ p(\theta|\mathcal{D}') = \frac{p(\mathcal{D}'|\theta)q_{\phi}(\theta)}{\int p(\m
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract variational parameters from guide</span>
-<span class="n">mu</span> <span class="o">=</span> <span class="n">guide</span><span class="o">.</span><span class="n">get_posterior</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-<span class="n">stddev</span> <span class="o">=</span> <span class="n">guide</span><span class="o">.</span><span class="n">get_posterior</span><span class="p">()</span><span class="o">.</span><span class="n">stddev</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -997,7 +985,8 @@ What do you observe? How does the predictive distribution compare to the one obt
 <span class="n">y_train_new</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">y_new</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
 
 <span class="n">pyro</span><span class="o">.</span><span class="n">clear_param_store</span><span class="p">()</span>
-<span class="n">new_model</span> <span class="o">=</span> <span class="n">UpdatedBNN</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">stddev</span><span class="p">)</span>
+<span class="c1"># Define a new model</span>
+
 <span class="n">new_guide</span> <span class="o">=</span> <span class="n">AutoDiagonalNormal</span><span class="p">(</span><span class="n">new_model</span><span class="p">)</span>
 <span class="n">optim</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">({</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">})</span>
 <span class="n">svi</span> <span class="o">=</span> <span class="n">pyro</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">SVI</span><span class="p">(</span><span class="n">new_model</span><span class="p">,</span> <span class="n">new_guide</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">Trace_ELBO</span><span class="p">())</span>
@@ -1168,16 +1157,6 @@ q_{\phi}(\theta | D) = \sum_{\theta_{i} ∈ ϕ} \alpha_{\theta_{i}} δ_{\theta_{
 <p>where <span class="math notranslate nohighlight">\(\alpha_{\theta_{i}}\)</span> are positive constants such that their sum is equal to one.</p>
 <p><strong>Training</strong></p>
 <p>We will reuse the MLP architecture introduced before, simply now we will train an ensemble of such models</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ensemble_size</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">ensemble</span> <span class="o">=</span> <span class="p">[</span><span class="n">MLP</span><span class="p">(</span><span class="n">hidden_dim</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">n_hidden_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ensemble_size</span><span class="p">)]</span>
-<span class="k">for</span> <span class="n">net</span> <span class="ow">in</span> <span class="n">ensemble</span><span class="p">:</span>
-    <span class="n">train</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">train_data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p><strong>Evaluate</strong></p>
 <p>Same as before, let’s investigate how our Deep Ensemble performs on the entire data domain of our input variable <span class="math notranslate nohighlight">\(x\)</span>.</p>
 <div class="cell docutils container">
@@ -1257,7 +1236,7 @@ We can reuse our existing network architecture, the only alteration is that duri
 </div></blockquote>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_dropout_samples</span> <span class="o">=</span> <span class="mi">100</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_dropout_samples</span> <span class="o">=</span> 
 
 <span class="c1"># compute predictions, resampling dropout mask for each forward pass</span>
 <span class="n">y_preds</span> <span class="o">=</span> <span class="p">[</span><span class="n">net_dropout</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_dropout_samples</span><span class="p">)]</span>
