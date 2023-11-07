@@ -64,10 +64,9 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/12-gnn/12-gnn';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/12-gnn/12-gnn-exercise';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="11b: Bayesian Neural Networks" href="../11-bayes/11b-bayes-nn.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -168,7 +167,7 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="current nav bd-sidenav">
+        <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
 
@@ -225,7 +224,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../11-bayes/11-bayes-linear.html">11. Bayesian regression with linear basis function models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../11-bayes/11a-distribution.html">Probability Distributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../11-bayes/11b-bayes-nn.html">11b: Bayesian Neural Networks</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">12: Graph Neural Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12-gnn.html">12: Graph Neural Network</a></li>
 </ul>
 
     </div>
@@ -280,7 +279,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/12-gnn/12-gnn.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/12-gnn/12-gnn-exercise.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -328,7 +327,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/12-gnn/12-gnn.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/12-gnn/12-gnn-exercise.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -358,7 +357,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/12-gnn/12-gnn.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/12-gnn/12-gnn-exercise.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -720,51 +719,9 @@ In addition, since the dynamics of particles are not controlled by their absolut
 </div>
 </div>
 <p>GNN layers such as a IN layer can be easily implemented in PyTorch Geometric (PyG). In PyG, a GNN layer is generally implemented as a subclass of the MessagePassing class. We follow this convention and define the InteractionNetwork Class as follows</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">InteractionNetwork</span><span class="p">(</span><span class="n">pyg</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MessagePassing</span><span class="p">):</span>
-   <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-       <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">lin_edge</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">layers</span><span class="p">)</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">lin_node</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_size</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">layers</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>(1) Construct a message for each edge of the graph. The message is generated by concatenating the features of the edge’s two nodes and the feature of the edge itself, and transforming the concatenated vector with an MLP.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_i</span><span class="p">,</span> <span class="n">x_j</span><span class="p">,</span> <span class="n">edge_feature</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x_i</span><span class="p">,</span> <span class="n">x_j</span><span class="p">,</span> <span class="n">edge_feature</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_edge</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">x</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>(2) Aggregate (sum up) the messages of all the incoming edges for each node.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">torch_scatter</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_dim</span><span class="p">,</span> <span class="n">reduce</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>(3) Update node features and edge features. Each edge’s new feature is the sum of its old feature and the message on the edge. Each node’s new feature is determined by its old feature and the aggregation of messages.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">edge_feature</span><span class="p">):</span>
-    <span class="n">edge_out</span><span class="p">,</span> <span class="n">aggr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">propagate</span><span class="p">(</span><span class="n">edge_index</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">edge_feature</span><span class="o">=</span><span class="n">edge_feature</span><span class="p">)</span>
-    <span class="n">node_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lin_node</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">aggr</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">edge_out</span> <span class="o">=</span> <span class="n">edge_feature</span> <span class="o">+</span> <span class="n">edge_out</span>
-    <span class="n">node_out</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">node_out</span>
-    <span class="k">return</span> <span class="n">node_out</span><span class="p">,</span> <span class="n">edge_out</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>Let’s include the encoder, the processor and the decoder together! Before GNN layers, input features are transformed by MLP so that the expressiveness of GNN is improved without increasing GNN layers. After GNN layers, final outputs (accelerations of particles in our case) are extracted from features generated by GNN layers to meet the requirement of the task.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -779,21 +736,14 @@ In addition, since the dynamics of particles are not controlled by their absolut
        <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># dimension of the world, typically 2D or 3D</span>
    <span class="p">):</span>
        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">node_in</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">node_feature_dim</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">edge_in</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">edge_feature_dim</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">node_out</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">InteractionNetwork</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mp_layers</span><span class="p">)])</span>
+       
  
    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">node_feature</span><span class="p">,</span> <span class="n">edge_feature</span><span class="p">):</span>
        <span class="c1"># encoder</span>
-       <span class="n">node_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_in</span><span class="p">(</span><span class="n">node_feature</span><span class="p">)</span>
-       <span class="n">edge_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_in</span><span class="p">(</span><span class="n">edge_feature</span><span class="p">)</span>
+       
        <span class="c1"># processor</span>
-       <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
-           <span class="n">node_feature</span><span class="p">,</span> <span class="n">edge_feature</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">node_feature</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">,</span> <span class="n">edge_feature</span><span class="o">=</span><span class="n">edge_feature</span><span class="p">)</span>
+
        <span class="c1"># decoder</span>
-       <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_out</span><span class="p">(</span><span class="n">node_feature</span><span class="p">)</span>
-       <span class="k">return</span> <span class="n">out</span>
 </pre></div>
 </div>
 </div>
@@ -30310,15 +30260,6 @@ AAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY1OC43Ni4xMDA=
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="../11-bayes/11b-bayes-nn.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">11b: Bayesian Neural Networks</p>
-      </div>
-    </a>
 </div>
                 </footer>
               
