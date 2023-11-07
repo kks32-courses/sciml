@@ -532,11 +532,11 @@ document.write(`
 <section id="graphs">
 <h3>Graphs<a class="headerlink" href="#graphs" title="Permalink to this heading">#</a></h3>
 <p>Graphs are powerful means of representing interactions between physical systems.
-A granular material media can be represented as a graph <span class="math notranslate nohighlight">\( G=\left(V,E\right) \)</span> consisting of a set of vertices (<span class="math notranslate nohighlight">\(\bm{v}_i \in\ V\)</span>) representing the soil grains and edges (<span class="math notranslate nohighlight">\(\bm{e}_{i,j} \in\ E\)</span>) connecting a pair of vertices (<span class="math notranslate nohighlight">\(\bm{v}_i\)</span> and <span class="math notranslate nohighlight">\(\bm{v}_j\)</span>) representing the interaction relationship between grains.
+A granular material media can be represented as a graph <span class="math notranslate nohighlight">\( G=\left(V,E\right) \)</span> consisting of a set of vertices (<span class="math notranslate nohighlight">\(\mathbf{v}_i \in\ V\)</span>) representing the soil grains and edges (<span class="math notranslate nohighlight">\(\mathbf{e}_{i,j} \in\ E\)</span>) connecting a pair of vertices (<span class="math notranslate nohighlight">\(\mathbf{v}_i\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_j\)</span>) representing the interaction relationship between grains.
 We describe how graphs work by showing a simple example involving interaction between balls in a box (Figure 1a).
 The state of the physical system (Figure 1a and 1d) can be encoded as a graph (Figure 1b and 1c). The vertices describe the balls, and the edges describe the directional interaction between them, shown as arrows in Figure 1b and 1c.
-The state of the ball i is represented as a vertex feature vector <span class="math notranslate nohighlight">\(\bm{v}_i\)</span> at <span class="math notranslate nohighlight">\(i\)</span>. The feature vector includes properties such as velocities, mass, and distance to the boundary.
-The edge feature vector <span class="math notranslate nohighlight">\(\bm{e}_{i,j}\)</span> includes the information about the interaction between balls <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> such as the relative distance between the balls.</p>
+The state of the ball i is represented as a vertex feature vector <span class="math notranslate nohighlight">\(\mathbf{v}_i\)</span> at <span class="math notranslate nohighlight">\(i\)</span>. The feature vector includes properties such as velocities, mass, and distance to the boundary.
+The edge feature vector <span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}\)</span> includes the information about the interaction between balls <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> such as the relative distance between the balls.</p>
 <p>Graphs offer a permutation invariant form of encoding data, where the interaction between vertices is independent of the order of vertices or their position in Euclidean space.
 Rather,  graphs represent the interactions through the edge connection, not affected by the permutation of the vertices.
 Therefore, graphs can efficiently represent the physical state of granular flow where numerous orderless particles interact by using vertices to represent particles and edges to their interaction.</p>
@@ -544,16 +544,16 @@ Therefore, graphs can efficiently represent the physical state of granular flow 
 <section id="graph-neural-networks-gnns">
 <h3>Graph neural networks (GNNs)<a class="headerlink" href="#graph-neural-networks-gnns" title="Permalink to this heading">#</a></h3>
 <p>GNNs are a state-of-the-art deep learning architecture that can operate on a graph and learn the local interactions.
-GNNs take a graph <span class="math notranslate nohighlight">\(G=\left(\bm{V},\bm{E}\right)\)</span> at time t as an input, compute properties and propagate information through the network, termed as message passing, and output an updated graph <span class="math notranslate nohighlight">\(G^\prime=\left(\bm{V}^\prime,\bm{E}^\prime\right)\)</span> with an identical structure, where <span class="math notranslate nohighlight">\(\bm{V}^\prime\)</span> and <span class="math notranslate nohighlight">\(\bm{E}^\prime\)</span> are the set of updated vertex and edge features (<span class="math notranslate nohighlight">\(\bm{v}_i^\prime\)</span> and <span class="math notranslate nohighlight">\(\bm{e}_{i,\ j}^\prime\)</span>).
-In the balls-in-a-box example, the GNN first takes the original graph <span class="math notranslate nohighlight">\(G=\left(\bm{V},\bm{E}\right)\)</span>  (Figure 1b) that describes the current state of the physical system (<span class="math notranslate nohighlight">\(\bm{X}^t\)</span>).
-The GNN then updates the state of the physical system through message passing, which models the exchange of energy and momentum between the balls communicating through the edges, and returns an updated graph <span class="math notranslate nohighlight">\(G^\prime=\left(\bm{V}^\prime,\bm{E}^\prime\right)\)</span> (Figure 1c).
-After the GNN computation, we may decode G^\prime to extract useful information related to the future state of the physical system (<span class="math notranslate nohighlight">\(\bm{X}^{t+1}\)</span>) such as the next position or acceleration of the balls (Figure 1d).</p>
+GNNs take a graph <span class="math notranslate nohighlight">\(G=\left(\mathbf{V},\mathbf{E}\right)\)</span> at time t as an input, compute properties and propagate information through the network, termed as message passing, and output an updated graph <span class="math notranslate nohighlight">\(G^\prime=\left(\mathbf{V}^\prime,\mathbf{E}^\prime\right)\)</span> with an identical structure, where <span class="math notranslate nohighlight">\(\mathbf{V}^\prime\)</span> and <span class="math notranslate nohighlight">\(\mathbf{E}^\prime\)</span> are the set of updated vertex and edge features (<span class="math notranslate nohighlight">\(\mathbf{v}_i^\prime\)</span> and <span class="math notranslate nohighlight">\(\mathbf{e}_{i,\ j}^\prime\)</span>).
+In the balls-in-a-box example, the GNN first takes the original graph <span class="math notranslate nohighlight">\(G=\left(\mathbf{V},\mathbf{E}\right)\)</span>  (Figure 1b) that describes the current state of the physical system (<span class="math notranslate nohighlight">\(\mathbf{X}^t\)</span>).
+The GNN then updates the state of the physical system through message passing, which models the exchange of energy and momentum between the balls communicating through the edges, and returns an updated graph <span class="math notranslate nohighlight">\(G^\prime=\left(\mathbf{V}^\prime,\mathbf{E}^\prime\right)\)</span> (Figure 1c).
+After the GNN computation, we may decode G^\prime to extract useful information related to the future state of the physical system (<span class="math notranslate nohighlight">\(\mathbf{X}^{t+1}\)</span>) such as the next position or acceleration of the balls (Figure 1d).</p>
 <p><img alt="balls-in-a-box" src="../../_images/balls-in-a-box.svg" />
 <em>Figure. 1. An example of a graph and graph neural network (GNN) that process the graph (modified from Battaglia et al. (2018)):
-(a) A state of the current physical system (<span class="math notranslate nohighlight">\(\bm{X}^t\)</span>) where the balls are bouncing in a box boundary;
+(a) A state of the current physical system (<span class="math notranslate nohighlight">\(\mathbf{X}^t\)</span>) where the balls are bouncing in a box boundary;
 (b) Graph representation of the physical system (<span class="math notranslate nohighlight">\(G\)</span>).
 There are three vertices representing balls and six edges representing their directional interaction shown as arrows;
-(c) The updated graph (<span class="math notranslate nohighlight">\(G^\prime\)</span>) that GNN outputs through message passing; (d) The predicted future state of the physical system (<span class="math notranslate nohighlight">\(\bm{X}^{t+1}\)</span>) (i.e., the positions of the balls at the next timestep) decoded from the updated graph.</em></p>
+(c) The updated graph (<span class="math notranslate nohighlight">\(G^\prime\)</span>) that GNN outputs through message passing; (d) The predicted future state of the physical system (<span class="math notranslate nohighlight">\(\mathbf{X}^{t+1}\)</span>) (i.e., the positions of the balls at the next timestep) decoded from the updated graph.</em></p>
 </section>
 <section id="message-passing">
 <h3>Message passing<a class="headerlink" href="#message-passing" title="Permalink to this heading">#</a></h3>
@@ -561,49 +561,49 @@ There are three vertices representing balls and six edges representing their dir
 <div class="math notranslate nohighlight">
 \[ 
 \begin{equation} 
-    \bm{e}_{i,j}^\prime=\phi_{\bm{\Theta}_\phi}\left(\bm{v}_i,\bm{v}_j,\bm{e}_{i,\ j}\right)
+    \mathbf{e}_{i,j}^\prime=\phi_{\mathbf{\Theta}_\phi}\left(\mathbf{v}_i,\mathbf{v}_j,\mathbf{e}_{i,\ j}\right)
 \end{equation}
 \]</div>
 <div class="math notranslate nohighlight">
 \[ 
 \begin{equation} 
-    {\bar{\bm{v}}}_i=\Sigma_{j \in N\left(i\right)}\ \bm{e}_{i,j}^\prime
+    {\bar{\mathbf{v}}}_i=\Sigma_{j \in N\left(i\right)}\ \mathbf{e}_{i,j}^\prime
 \end{equation}
 \]</div>
 <div class="math notranslate nohighlight">
 \[ 
 \begin{equation} 
-    \bm{v}_i^\prime=\gamma_{\bm{\Theta}_\gamma}\left(\bm{v}_i,{\bar{\bm{v}}}_i\right)
+    \mathbf{v}_i^\prime=\gamma_{\mathbf{\Theta}_\gamma}\left(\mathbf{v}_i,{\bar{\mathbf{v}}}_i\right)
 \end{equation}
 \]</div>
-<p>The subscript <span class="math notranslate nohighlight">\(\bm{\Theta}_\phi\)</span> and <span class="math notranslate nohighlight">\(\bm{\Theta}_\gamma\)</span> represent a set of learnable parameters in each computation.
-The message construction function <span class="math notranslate nohighlight">\(\phi_{\Theta_{\phi}}\)</span> (Eq. 1) takes the feature vector of the receiver and sender vertices (<span class="math notranslate nohighlight">\(\bm{v}_i\)</span> and <span class="math notranslate nohighlight">\(\bm{v}_j\)</span>) and the feature vector of the edge connecting them (<span class="math notranslate nohighlight">\(\bm{e}_{i,\ j}\)</span>) and returns an updated edge feature vector <span class="math notranslate nohighlight">\(\bm{e}_{i,j}^\prime\)</span> as the output.
-<span class="math notranslate nohighlight">\(\phi_{\Theta_{\phi}}\)</span> is a matrix operation including the learnable parameter <span class="math notranslate nohighlight">\(\bm{\Theta}_\phi\)</span>.
-The updated edge feature vector <span class="math notranslate nohighlight">\(\bm{e}_{i,j}^\prime\)</span> is the message sent from vertex <span class="math notranslate nohighlight">\(j\)</span> to <span class="math notranslate nohighlight">\(i\)</span>.
-Figure 2a shows an example of constructing messages on edges directing to vertex 0 originating from vertices 1, 2, and 3 (<span class="math notranslate nohighlight">\(\bm{e}_{0,1}^\prime, \bm{e}_{0,2}^\prime, \bm{e}_{0,3}^\prime\)</span>).
-Here, we define the message construction function <span class="math notranslate nohighlight">\(\phi_{\Theta_{\phi}}\)</span> as <span class="math notranslate nohighlight">\(\left(\left(\bm{v}_i+\bm{v}_j\right)\times\bm{e}_{i,j}\right)\times\bm{\Theta}_\phi\)</span>.
-The updated feature vector <span class="math notranslate nohighlight">\(\bm{e}_{0,\ 1}^\prime\)</span> is computed as <span class="math notranslate nohighlight">\(\left(\left(\bm{v}_0+\bm{v}_1\right)\times\bm{e}_{0,1}\right)\times\bm{\Theta}_\phi\)</span>, where <span class="math notranslate nohighlight">\(\bm{v}_0\)</span> and <span class="math notranslate nohighlight">\(\bm{v}_1\)</span> are the receiver and sender vertex feature vectors, and <span class="math notranslate nohighlight">\(\bm{e}_{0,1}\)</span> is their edge feature vector.
-If we assume that all values of <span class="math notranslate nohighlight">\(\bm{\Theta}_\phi\)</span> are 1.0 for simplicity, we obtain <span class="math notranslate nohighlight">\(\bm{e}_{0,\ 1}^\prime=(\left(\left[1,\ 0,\ 2\right]\right)+\left[1,\ 3,\ 2\right])\times\left[2,\ 1,\ 0\right]^T)\times1=[4,\ 3,\ 0]\)</span>.
-Similarly, we compute the messages <span class="math notranslate nohighlight">\(\bm{e}_{0,\ 2}^\prime=\left[0,\ 3,\ 9\right]\)</span> and <span class="math notranslate nohighlight">\(\bm{e}_{0,\ 3}^\prime=\left[3,\ 4,\ 9\right]\)</span>.</p>
+<p>The subscript <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\phi\)</span> and <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\gamma\)</span> represent a set of learnable parameters in each computation.
+The message construction function <span class="math notranslate nohighlight">\(\phi_{\Theta_{\phi}}\)</span> (Eq. 1) takes the feature vector of the receiver and sender vertices (<span class="math notranslate nohighlight">\(\mathbf{v}_i\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_j\)</span>) and the feature vector of the edge connecting them (<span class="math notranslate nohighlight">\(\mathbf{e}_{i,\ j}\)</span>) and returns an updated edge feature vector <span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}^\prime\)</span> as the output.
+<span class="math notranslate nohighlight">\(\phi_{\Theta_{\phi}}\)</span> is a matrix operation including the learnable parameter <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\phi\)</span>.
+The updated edge feature vector <span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}^\prime\)</span> is the message sent from vertex <span class="math notranslate nohighlight">\(j\)</span> to <span class="math notranslate nohighlight">\(i\)</span>.
+Figure 2a shows an example of constructing messages on edges directing to vertex 0 originating from vertices 1, 2, and 3 (<span class="math notranslate nohighlight">\(\mathbf{e}_{0,1}^\prime, \mathbf{e}_{0,2}^\prime, \mathbf{e}_{0,3}^\prime\)</span>).
+Here, we define the message construction function <span class="math notranslate nohighlight">\(\phi_{\Theta_{\phi}}\)</span> as <span class="math notranslate nohighlight">\(\left(\left(\mathbf{v}_i+\mathbf{v}_j\right)\times\mathbf{e}_{i,j}\right)\times\mathbf{\Theta}_\phi\)</span>.
+The updated feature vector <span class="math notranslate nohighlight">\(\mathbf{e}_{0,\ 1}^\prime\)</span> is computed as <span class="math notranslate nohighlight">\(\left(\left(\mathbf{v}_0+\mathbf{v}_1\right)\times\mathbf{e}_{0,1}\right)\times\mathbf{\Theta}_\phi\)</span>, where <span class="math notranslate nohighlight">\(\mathbf{v}_0\)</span> and <span class="math notranslate nohighlight">\(\mathbf{v}_1\)</span> are the receiver and sender vertex feature vectors, and <span class="math notranslate nohighlight">\(\mathbf{e}_{0,1}\)</span> is their edge feature vector.
+If we assume that all values of <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\phi\)</span> are 1.0 for simplicity, we obtain <span class="math notranslate nohighlight">\(\mathbf{e}_{0,\ 1}^\prime=(\left(\left[1,\ 0,\ 2\right]\right)+\left[1,\ 3,\ 2\right])\times\left[2,\ 1,\ 0\right]^T)\times1=[4,\ 3,\ 0]\)</span>.
+Similarly, we compute the messages <span class="math notranslate nohighlight">\(\mathbf{e}_{0,\ 2}^\prime=\left[0,\ 3,\ 9\right]\)</span> and <span class="math notranslate nohighlight">\(\mathbf{e}_{0,\ 3}^\prime=\left[3,\ 4,\ 9\right]\)</span>.</p>
 <p>The next step in message passing is the message aggregation <span class="math notranslate nohighlight">\(\Sigma_{j \in N\left(i\right)}\)</span> (Eq. 2), where <span class="math notranslate nohighlight">\(N\left(i\right)\)</span> is the set of sender vertices j related to vertex <span class="math notranslate nohighlight">\(i\)</span>.
-It collects all the messages directing to vertex <span class="math notranslate nohighlight">\(i\)</span> and aggregates those into a single vector with the same dimension as the aggregated message (<span class="math notranslate nohighlight">\({\bar{\bm{v}}}_i\)</span>).
+It collects all the messages directing to vertex <span class="math notranslate nohighlight">\(i\)</span> and aggregates those into a single vector with the same dimension as the aggregated message (<span class="math notranslate nohighlight">\({\bar{\mathbf{v}}}_i\)</span>).
 The aggregation rule can be element-wise vector summation or averaging, hence it is a permutation invariant computation.
-In Figure 2a, the aggregated message <span class="math notranslate nohighlight">\(\bar{\bm{v}_0}=\left[7,10,18\right]\)</span> is the element-wise summation of the messages directing to vertex 0 as <span class="math notranslate nohighlight">\(\bar{\bm{v}_o}=\bm{e}_{0,\ 1}^\prime+\ \bm{e}_{0,\ 2}^\prime+\ \bm{e}_{0,\ 3}^\prime\)</span>.</p>
+In Figure 2a, the aggregated message <span class="math notranslate nohighlight">\(\bar{\mathbf{v}_0}=\left[7,10,18\right]\)</span> is the element-wise summation of the messages directing to vertex 0 as <span class="math notranslate nohighlight">\(\bar{\mathbf{v}_o}=\mathbf{e}_{0,\ 1}^\prime+\ \mathbf{e}_{0,\ 2}^\prime+\ \mathbf{e}_{0,\ 3}^\prime\)</span>.</p>
 <p>The final step of the message passing is updating vertex features using Eq. 3.
-It takes the aggregated message (<span class="math notranslate nohighlight">\({\bar{\bm{v}}}_i\)</span>) and the current vertex feature vector <span class="math notranslate nohighlight">\(\bm{v}_i\)</span>, and returns an updated vertex feature vector <span class="math notranslate nohighlight">\(\bm{v}_i^\prime\)</span>, using predefined vector operations including the learnable parameter <span class="math notranslate nohighlight">\(\bm{\Theta}_\gamma\)</span>. Figure 2b shows an example of the update at vertex 0.
-Here, we define the update function <span class="math notranslate nohighlight">\(\gamma_{\Theta_{\gamma}}\)</span> as <span class="math notranslate nohighlight">\(\bm{\Theta}_\gamma\left(\bm{v}_i+{\bar{\bm{v}}}_i\right)\)</span>.
-The updated feature vector <span class="math notranslate nohighlight">\(\bm{v}_0^\prime\)</span> is computed as <span class="math notranslate nohighlight">\(\bm{\Theta}_\gamma\left(\bm{v}_0+{\bar{\bm{v}}}_\mathbf{0}\right)\)</span>.
-Assuming all parameters in <span class="math notranslate nohighlight">\(\bm{\Theta}_\gamma\)</span> are 1.0 for simpliticy, we obtain <span class="math notranslate nohighlight">\(\bm{v}_0^\prime=\left[1,\ 0,\ 2\right]+\left[7,\ 10,\ 18\right]=\left[8,10,20\right]\)</span>. Similarly, we update the other vertex features <span class="math notranslate nohighlight">\((\bm{v}_1^\prime, \bm{v}_2^\prime, \bm{v}_3^\prime)\)</span>.</p>
-<p>At the end of the message passing, the graph vertex and edge features (<span class="math notranslate nohighlight">\(\bm{v}_i\)</span> and <span class="math notranslate nohighlight">\(\bm{e}_{i,\ j}\)</span>) are updated to <span class="math notranslate nohighlight">\(\bm{v}_i^\prime\)</span> and <span class="math notranslate nohighlight">\(\bm{e}_{i,\ j}^\prime\)</span>.
+It takes the aggregated message (<span class="math notranslate nohighlight">\({\bar{\mathbf{v}}}_i\)</span>) and the current vertex feature vector <span class="math notranslate nohighlight">\(\mathbf{v}_i\)</span>, and returns an updated vertex feature vector <span class="math notranslate nohighlight">\(\mathbf{v}_i^\prime\)</span>, using predefined vector operations including the learnable parameter <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\gamma\)</span>. Figure 2b shows an example of the update at vertex 0.
+Here, we define the update function <span class="math notranslate nohighlight">\(\gamma_{\Theta_{\gamma}}\)</span> as <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\gamma\left(\mathbf{v}_i+{\bar{\mathbf{v}}}_i\right)\)</span>.
+The updated feature vector <span class="math notranslate nohighlight">\(\mathbf{v}_0^\prime\)</span> is computed as <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\gamma\left(\mathbf{v}_0+{\bar{\mathbf{v}}}_\mathbf{0}\right)\)</span>.
+Assuming all parameters in <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\gamma\)</span> are 1.0 for simpliticy, we obtain <span class="math notranslate nohighlight">\(\mathbf{v}_0^\prime=\left[1,\ 0,\ 2\right]+\left[7,\ 10,\ 18\right]=\left[8,10,20\right]\)</span>. Similarly, we update the other vertex features <span class="math notranslate nohighlight">\((\mathbf{v}_1^\prime, \mathbf{v}_2^\prime, \mathbf{v}_3^\prime)\)</span>.</p>
+<p>At the end of the message passing, the graph vertex and edge features (<span class="math notranslate nohighlight">\(\mathbf{v}_i\)</span> and <span class="math notranslate nohighlight">\(\mathbf{e}_{i,\ j}\)</span>) are updated to <span class="math notranslate nohighlight">\(\mathbf{v}_i^\prime\)</span> and <span class="math notranslate nohighlight">\(\mathbf{e}_{i,\ j}^\prime\)</span>.
 The GNN may include multiple message passing steps to propagate the information further through the network.</p>
 <p><img alt="message_construction" src="../../_images/message_construction.svg" />{width=55%}
 (a)
 <img alt="update" src="../../_images/message_aggregate.svg" />{width=55%}
 (b)</p>
 <p><em>Figure 2. An example of message passing on a graph:
-(a) message construction directing to receiver vertex 0 <span class="math notranslate nohighlight">\((\bm{e}_{0,\ 1}^\prime, \bm{e}_{0,\ 2}^\prime, \bm{e}_{0,\ 3}^\prime)\)</span> and the resultant aggregated message <span class="math notranslate nohighlight">\(({\bar{\bm{v}}}_0)\)</span>;
-(b) feature update at vertex 0 using <span class="math notranslate nohighlight">\({\bar{\bm{v}}}_0\)</span>. Note that we assume <span class="math notranslate nohighlight">\(\bm{\Theta}_\phi\)</span> and <span class="math notranslate nohighlight">\(\bm{\Theta}_r\)</span> are 1.0 for the convenience of calculation.</em></p>
-<p>Unlike the example shown above, where we assume a constant value of 1.0 for the learnable parameters, in a supervised learning environment, the optimization algorithm will find a set of the best learnable parameters (<span class="math notranslate nohighlight">\(\bm{\Theta}_\phi, \bm{\Theta}_\gamma\)</span>) in the message passing operation.</p>
+(a) message construction directing to receiver vertex 0 <span class="math notranslate nohighlight">\((\mathbf{e}_{0,\ 1}^\prime, \mathbf{e}_{0,\ 2}^\prime, \mathbf{e}_{0,\ 3}^\prime)\)</span> and the resultant aggregated message <span class="math notranslate nohighlight">\(({\bar{\mathbf{v}}}_0)\)</span>;
+(b) feature update at vertex 0 using <span class="math notranslate nohighlight">\({\bar{\mathbf{v}}}_0\)</span>. Note that we assume <span class="math notranslate nohighlight">\(\mathbf{\Theta}_\phi\)</span> and <span class="math notranslate nohighlight">\(\mathbf{\Theta}_r\)</span> are 1.0 for the convenience of calculation.</em></p>
+<p>Unlike the example shown above, where we assume a constant value of 1.0 for the learnable parameters, in a supervised learning environment, the optimization algorithm will find a set of the best learnable parameters (<span class="math notranslate nohighlight">\(\mathbf{\Theta}_\phi, \mathbf{\Theta}_\gamma\)</span>) in the message passing operation.</p>
 </section>
 </section>
 <section id="graph-neural-network-based-simulator-gns">
@@ -611,61 +611,61 @@ The GNN may include multiple message passing steps to propagate the information 
 <p>In this study, we use GNN as a surrogate simulator to model granular flow behavior.
 Figure 3 shows an overview of the general concepts and structure of the GNN-based simulator (GNS).
 Consider a granular flow domain represented as particles (Figure 3a).
-In GNS, we represent the physical state of the granular domain at time t with a set of <span class="math notranslate nohighlight">\(\bm{x}_i^t\)</span> describing the state and properties of each particle.
-The GNS takes the current state of the granular flow <span class="math notranslate nohighlight">\(\bm{x}_t^i \in \bm{X}_t\)</span> and predicts its next state <span class="math notranslate nohighlight">\({\bm{x}_{i+1}^i \in\ bm{X}}_{t+1}\)</span> (Figure 3a).
+In GNS, we represent the physical state of the granular domain at time t with a set of <span class="math notranslate nohighlight">\(\mathbf{x}_i^t\)</span> describing the state and properties of each particle.
+The GNS takes the current state of the granular flow <span class="math notranslate nohighlight">\(\mathbf{x}_t^i \in \mathbf{X}_t\)</span> and predicts its next state <span class="math notranslate nohighlight">\({\mathbf{x}_{i+1}^i \in\ bm{X}}_{t+1}\)</span> (Figure 3a).
 The GNS consists of two components: a parameterized function approximator <span class="math notranslate nohighlight">\(\ d_\mathbf{\Theta}\)</span> and an updater function (Figure 3b).
-The approximator <span class="math notranslate nohighlight">\(d_\theta\)</span> take takes <span class="math notranslate nohighlight">\(\bm{X}_t\)</span> as an input and outputs dynamics information <span class="math notranslate nohighlight">\({\bm{y}_i^t \in \bm{Y}}_t\)</span>.
-The updater then computes <span class="math notranslate nohighlight">\(\bm{X}_{t+1}\)</span> using <span class="math notranslate nohighlight">\(\bm{Y}_t\)</span> and <span class="math notranslate nohighlight">\(\bm{X}_t\)</span>.
+The approximator <span class="math notranslate nohighlight">\(d_\theta\)</span> take takes <span class="math notranslate nohighlight">\(\mathbf{X}_t\)</span> as an input and outputs dynamics information <span class="math notranslate nohighlight">\({\mathbf{y}_i^t \in \mathbf{Y}}_t\)</span>.
+The updater then computes <span class="math notranslate nohighlight">\(\mathbf{X}_{t+1}\)</span> using <span class="math notranslate nohighlight">\(\mathbf{Y}_t\)</span> and <span class="math notranslate nohighlight">\(\mathbf{X}_t\)</span>.
 Figure 3c shows the details of <span class="math notranslate nohighlight">\(d_\theta\)</span> which consists of an encoder, a processor, and a decoder.
-The encoder (Figure 3c-1) takes the state of the system <span class="math notranslate nohighlight">\(\bm{X}^t\)</span> and embed it into a latent graph <span class="math notranslate nohighlight">\(G_0=\left(\bm{V}_0,\ \bm{E}_0\right)\)</span> to represent the relationship between particles, where the vertices <span class="math notranslate nohighlight">\(\bm{v}_i^t \in \bm{V}_0\)</span> contain latent information of the current particle state, and the edges <span class="math notranslate nohighlight">\(\bm{e}_{i,j}^t \in \bm{E}_0\)</span> contain latent information of the pair-wise relationship between particles.
+The encoder (Figure 3c-1) takes the state of the system <span class="math notranslate nohighlight">\(\mathbf{X}^t\)</span> and embed it into a latent graph <span class="math notranslate nohighlight">\(G_0=\left(\mathbf{V}_0,\ \mathbf{E}_0\right)\)</span> to represent the relationship between particles, where the vertices <span class="math notranslate nohighlight">\(\mathbf{v}_i^t \in \mathbf{V}_0\)</span> contain latent information of the current particle state, and the edges <span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}^t \in \mathbf{E}_0\)</span> contain latent information of the pair-wise relationship between particles.
 Next, the processer (Figure 3c-2) converts <span class="math notranslate nohighlight">\(G_0\)</span> to <span class="math notranslate nohighlight">\(G_M\)</span> with <span class="math notranslate nohighlight">\(M\)</span> stacks of message passing GNN (<span class="math notranslate nohighlight">\(G_0\rightarrow\ G_1\rightarrow\cdots\rightarrow\ G_M\)</span>)  to compute the interaction between particles.
-Finally, the decoder (Figure 3c-3) extracts dynamics of the particles (<span class="math notranslate nohighlight">\(\bm{Y}^t\)</span>) from <span class="math notranslate nohighlight">\(G_M\)</span>, such as the acceleration of the physical system.
-The entire simulation (Figure 3a) involves running GNS surrogate model through <span class="math notranslate nohighlight">\(K\)</span> timesteps predicting from the initial state <span class="math notranslate nohighlight">\(\bm{X}_0\)</span> to <span class="math notranslate nohighlight">\(\bm{X}_K\)</span> <span class="math notranslate nohighlight">\((\bm{X}_0,\ \ \bm{X}_1,\ \ \ldots,\ \ \bm{X}_K\)</span>), updating at each step (<span class="math notranslate nohighlight">\(\bm{X}_t\rightarrow\bm{X}_{t+1}\)</span>)</p>
+Finally, the decoder (Figure 3c-3) extracts dynamics of the particles (<span class="math notranslate nohighlight">\(\mathbf{Y}^t\)</span>) from <span class="math notranslate nohighlight">\(G_M\)</span>, such as the acceleration of the physical system.
+The entire simulation (Figure 3a) involves running GNS surrogate model through <span class="math notranslate nohighlight">\(K\)</span> timesteps predicting from the initial state <span class="math notranslate nohighlight">\(\mathbf{X}_0\)</span> to <span class="math notranslate nohighlight">\(\mathbf{X}_K\)</span> <span class="math notranslate nohighlight">\((\mathbf{X}_0,\ \ \mathbf{X}_1,\ \ \ldots,\ \ \mathbf{X}_K\)</span>), updating at each step (<span class="math notranslate nohighlight">\(\mathbf{X}_t\rightarrow\mathbf{X}_{t+1}\)</span>)</p>
 <p><img alt="GNS" src="../../_images/gns_structure.svg" />
 <em>Figure 3. The structure of the graph neural network (GNN)-based physics simulator (GNS) for granular flow (modified from Sanchez-Gonzalez et al. (2020)):
 (a) The entire simulation procedure using the GNS,
 (b) The computation procedure of GNS and its composition, (c) The computation procedure of the parameterized function approximator <span class="math notranslate nohighlight">\(d_\theta\)</span> and its composition.</em></p>
 <section id="input">
 <h3>Input<a class="headerlink" href="#input" title="Permalink to this heading">#</a></h3>
-<p>The input to the GNS, <span class="math notranslate nohighlight">\(\bm{x}_i^t \in \bm{X}^t\)</span>, is a vector consisting of the current particle position <span class="math notranslate nohighlight">\(\bm{p}_i^t\)</span>, the particle velocity context <span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^{\le t}\)</span>, information on boundaries <span class="math notranslate nohighlight">\(\bm{b}_i^t\)</span>, and particle type embedding <span class="math notranslate nohighlight">\({\bm{f}}\)</span> (Eq. 4).
-<span class="math notranslate nohighlight">\(\bm{x}_i^t\)</span> will be used to construct vertex feature (<span class="math notranslate nohighlight">\(\bm{v}_i^t\)</span>) (Eq. 6).</p>
+<p>The input to the GNS, <span class="math notranslate nohighlight">\(\mathbf{x}_i^t \in \mathbf{X}^t\)</span>, is a vector consisting of the current particle position <span class="math notranslate nohighlight">\(\mathbf{p}_i^t\)</span>, the particle velocity context <span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^{\le t}\)</span>, information on boundaries <span class="math notranslate nohighlight">\(\mathbf{b}_i^t\)</span>, and particle type embedding <span class="math notranslate nohighlight">\({\mathbf{f}}\)</span> (Eq. 4).
+<span class="math notranslate nohighlight">\(\mathbf{x}_i^t\)</span> will be used to construct vertex feature (<span class="math notranslate nohighlight">\(\mathbf{v}_i^t\)</span>) (Eq. 6).</p>
 <div class="math notranslate nohighlight">
 \[ 
 \begin{equation} 
-    \bm{x}_i^t=\left[\bm{p}_i^t,{\dot{\bm{p}}}_i^{\le t},\bm{b}_i^t,\bm{f}\right]
+    \mathbf{x}_i^t=\left[\mathbf{p}_i^t,{\dot{\mathbf{p}}}_i^{\le t},\mathbf{b}_i^t,\mathbf{f}\right]
 \end{equation}
 \]</div>
-<p>The velocity context <span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^{\le t}\)</span> includes the current and previous particle velocities for n timesteps <span class="math notranslate nohighlight">\(\left[{\dot{\bm{p}}}_i^{t-n},\cdots,\ {\dot{\bm{p}}}_i^t\right]\)</span>.
-We use <span class="math notranslate nohighlight">\(n\)</span>=4 to include sufficient velocity context in the vertex feature <span class="math notranslate nohighlight">\(\bm{x}_i^t\)</span>.
+<p>The velocity context <span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^{\le t}\)</span> includes the current and previous particle velocities for n timesteps <span class="math notranslate nohighlight">\(\left[{\dot{\mathbf{p}}}_i^{t-n},\cdots,\ {\dot{\mathbf{p}}}_i^t\right]\)</span>.
+We use <span class="math notranslate nohighlight">\(n\)</span>=4 to include sufficient velocity context in the vertex feature <span class="math notranslate nohighlight">\(\mathbf{x}_i^t\)</span>.
 Sanchez-Gonzalez et al. (2020) show that having <span class="math notranslate nohighlight">\(n\)</span>&gt;1 significantly improves the model performance.
-The velocities are computed using the finite difference of the position sequence (i.e.,  <span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^t=\left(\bm{p}_i^t-\bm{p}_i^{t-1}\right)/\Delta t\)</span>).
-For a 2D problem, <span class="math notranslate nohighlight">\(\bm{b}_i^t\)</span> has four components each of which indicates the distance between particles and the four walls.
-We normalize <span class="math notranslate nohighlight">\(\bm{b}_i^t\)</span> by the connectivity radius, which is explained in the next section, and restrict it between 1.0 to 1.0. <span class="math notranslate nohighlight">\(\bm{b}_i^t\)</span> is used to evaluate boundary interaction for a particle.
-<span class="math notranslate nohighlight">\({\bm{f}}\)</span> is a vector embedding describing a particle type.</p>
-<p>In addition to <span class="math notranslate nohighlight">\(\bm{x}_i^t\)</span>, we define the interaction relationship between particles <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> as <span class="math notranslate nohighlight">\(\bm{r}_{i,\ j}^t\)</span> using the distance and displacement of the particles in the current timestep (see Eq. 5).
+The velocities are computed using the finite difference of the position sequence (i.e.,  <span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^t=\left(\mathbf{p}_i^t-\mathbf{p}_i^{t-1}\right)/\Delta t\)</span>).
+For a 2D problem, <span class="math notranslate nohighlight">\(\mathbf{b}_i^t\)</span> has four components each of which indicates the distance between particles and the four walls.
+We normalize <span class="math notranslate nohighlight">\(\mathbf{b}_i^t\)</span> by the connectivity radius, which is explained in the next section, and restrict it between 1.0 to 1.0. <span class="math notranslate nohighlight">\(\mathbf{b}_i^t\)</span> is used to evaluate boundary interaction for a particle.
+<span class="math notranslate nohighlight">\({\mathbf{f}}\)</span> is a vector embedding describing a particle type.</p>
+<p>In addition to <span class="math notranslate nohighlight">\(\mathbf{x}_i^t\)</span>, we define the interaction relationship between particles <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> as <span class="math notranslate nohighlight">\(\mathbf{r}_{i,\ j}^t\)</span> using the distance and displacement of the particles in the current timestep (see Eq. 5).
 The former reflects the level of interaction, and the latter reflects its spatial direction.
-<span class="math notranslate nohighlight">\(\bm{r}_{i,\ j}^t\)</span> will be used to construct edge features (<span class="math notranslate nohighlight">\(\bm{e}_{i,j}^t\)</span>).</p>
+<span class="math notranslate nohighlight">\(\mathbf{r}_{i,\ j}^t\)</span> will be used to construct edge features (<span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}^t\)</span>).</p>
 <div class="math notranslate nohighlight">
 \[ 
 \begin{equation} 
-    \bm{r}_{i,j}^t=\left[(\bm{p}_i^t-\bm{p}_j^t),||\bm{p}_i^t-\bm{p}_j^t||\right]
+    \mathbf{r}_{i,j}^t=\left[(\mathbf{p}_i^t-\mathbf{p}_j^t),||\mathbf{p}_i^t-\mathbf{p}_j^t||\right]
 \end{equation}
 \]</div>
 </section>
 <section id="encoder">
 <h3>Encoder<a class="headerlink" href="#encoder" title="Permalink to this heading">#</a></h3>
-<p>The vertex and edge encoders (<span class="math notranslate nohighlight">\(\varepsilon_\Theta^v\)</span> and <span class="math notranslate nohighlight">\(\varepsilon_\Theta^e\)</span>) convert <span class="math notranslate nohighlight">\(\bm{x}_i^t\)</span> and <span class="math notranslate nohighlight">\(\bm{r}_{i,\ j}^t\)</span> into the vertex and edge feature vectors (<span class="math notranslate nohighlight">\(\bm{v}_i^t\)</span> and <span class="math notranslate nohighlight">\(\bm{e}_{i,j}^t\)</span>) (Eq. 6) and embed them into a latent graph <span class="math notranslate nohighlight">\(G_0=\left(\bm{V}_0, \bm{E}_0\right)\)</span>,  <span class="math notranslate nohighlight">\(\bm{v}_i^t \in \bm{V}_0\)</span>, <span class="math notranslate nohighlight">\(\bm{e}_{i,j}^t \in \bm{E}_0\)</span>.</p>
+<p>The vertex and edge encoders (<span class="math notranslate nohighlight">\(\varepsilon_\Theta^v\)</span> and <span class="math notranslate nohighlight">\(\varepsilon_\Theta^e\)</span>) convert <span class="math notranslate nohighlight">\(\mathbf{x}_i^t\)</span> and <span class="math notranslate nohighlight">\(\mathbf{r}_{i,\ j}^t\)</span> into the vertex and edge feature vectors (<span class="math notranslate nohighlight">\(\mathbf{v}_i^t\)</span> and <span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}^t\)</span>) (Eq. 6) and embed them into a latent graph <span class="math notranslate nohighlight">\(G_0=\left(\mathbf{V}_0, \mathbf{E}_0\right)\)</span>,  <span class="math notranslate nohighlight">\(\mathbf{v}_i^t \in \mathbf{V}_0\)</span>, <span class="math notranslate nohighlight">\(\mathbf{e}_{i,j}^t \in \mathbf{E}_0\)</span>.</p>
 <div class="math notranslate nohighlight">
 \[ 
 \begin{equation} 
-    \bm{v}_i^t=\varepsilon_\Theta^v\left(\bm{x}_i^t\right),\ \ \bm{e}_{r,s}^t=\varepsilon_\Theta^e\left(\bm{r}_{r,s}^t\right)
+    \mathbf{v}_i^t=\varepsilon_\Theta^v\left(\mathbf{x}_i^t\right),\ \ \mathbf{e}_{r,s}^t=\varepsilon_\Theta^e\left(\mathbf{r}_{r,s}^t\right)
 \end{equation}
 \]</div>
 <p>We use a two-layered 128-dimensional multi-layer perceptron (MLP) for the <span class="math notranslate nohighlight">\(\varepsilon_\Theta^v\)</span> and <span class="math notranslate nohighlight">\(\varepsilon_\Theta^e\)</span>.
 The MLP and optimization algorithm search for the best candidate for the parameter set <span class="math notranslate nohighlight">\(\Theta\)</span> that estimates a proper way of representing the physical state of the particles and their relationship which will be embedded into <span class="math notranslate nohighlight">\(G_0\)</span>.</p>
-<p>The edge encoder <span class="math notranslate nohighlight">\(\varepsilon_\Theta^v\)</span> uses <span class="math notranslate nohighlight">\(\bm{x}_i^t\)</span> (Eq. 4) without the current position of the particle (<span class="math notranslate nohighlight">\(\bm{p}_i^t\)</span>), but still with its velocities (<span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^{\le t}\)</span>), since velocity governs the momentum, and the interaction dynamics is independent of the absolute position of the particles.
+<p>The edge encoder <span class="math notranslate nohighlight">\(\varepsilon_\Theta^v\)</span> uses <span class="math notranslate nohighlight">\(\mathbf{x}_i^t\)</span> (Eq. 4) without the current position of the particle (<span class="math notranslate nohighlight">\(\mathbf{p}_i^t\)</span>), but still with its velocities (<span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^{\le t}\)</span>), since velocity governs the momentum, and the interaction dynamics is independent of the absolute position of the particles.
 Rubanova et al. (2022) confirmed that including position causes poorer model performance.
-We only use <span class="math notranslate nohighlight">\(\bm{p}_i^t\)</span> to predict the next position <span class="math notranslate nohighlight">\(\bm{p}_i^{t+1}\)</span> based on the predicted velocity <span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^{t+1}\)</span> (Eq. 9).</p>
+We only use <span class="math notranslate nohighlight">\(\mathbf{p}_i^t\)</span> to predict the next position <span class="math notranslate nohighlight">\(\mathbf{p}_i^{t+1}\)</span> based on the predicted velocity <span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^{t+1}\)</span> (Eq. 9).</p>
 <p>We consider the interaction between two particles by constructing the edges between them only if vertices are located within a certain distance called connectivity radius <span class="math notranslate nohighlight">\(R\)</span> (see the shaded circular area in Figure 3b).
 The connectivity radius is a critical hyperparameter that governs how effectively the model learns the local interaction.
 <span class="math notranslate nohighlight">\(R\)</span> should be sufficiently large to include the local interaction as edges between particles but also to capture the global dynamics of the simulation domain.</p>
@@ -673,40 +673,40 @@ The connectivity radius is a critical hyperparameter that governs how effectivel
 <section id="processor">
 <h3>Processor<a class="headerlink" href="#processor" title="Permalink to this heading">#</a></h3>
 <p>The processor performs message passing (based on Eq. 1-3) on the initial latent graph (<span class="math notranslate nohighlight">\(G_0\)</span>) from the encoder for M times (<span class="math notranslate nohighlight">\(G_0\rightarrow\ G_1\rightarrow\cdots\rightarrow\ G_M\)</span>) and returns a final updated graph <span class="math notranslate nohighlight">\(G_M\)</span>.
-We use two-layered 128-dimensional MLPs for both message construction function <span class="math notranslate nohighlight">\(\phi_{\bm{\Theta}_\phi}\)</span> and vertex update function <span class="math notranslate nohighlight">\(\gamma_{\bm{\Theta}_r}\)</span>, and element-wise summation for the message aggregation function <span class="math notranslate nohighlight">\(\bm{\Sigma}_{j \in N\left(i\right)}\)</span> in Eq. 1-3.
+We use two-layered 128-dimensional MLPs for both message construction function <span class="math notranslate nohighlight">\(\phi_{\mathbf{\Theta}_\phi}\)</span> and vertex update function <span class="math notranslate nohighlight">\(\gamma_{\mathbf{\Theta}_r}\)</span>, and element-wise summation for the message aggregation function <span class="math notranslate nohighlight">\(\mathbf{\Sigma}_{j \in N\left(i\right)}\)</span> in Eq. 1-3.
 We set <span class="math notranslate nohighlight">\(M\)</span>=10 to ensure sufficient message propagation through the network.
 These stacks of message passing models the propagation of information through the network of particles.</p>
 </section>
 <section id="decoder">
 <h3>Decoder<a class="headerlink" href="#decoder" title="Permalink to this heading">#</a></h3>
-<p>The decoder <span class="math notranslate nohighlight">\(\delta_\Theta^v\)</span> extracts the dynamics <span class="math notranslate nohighlight">\(\bm{y}_i^t \in \bm{Y}^t\)</span> of the particles from the vertices <span class="math notranslate nohighlight">\(\bm{v}_i^t\)</span> (Eq. 7) using the final graph <span class="math notranslate nohighlight">\(G_M\)</span>.
+<p>The decoder <span class="math notranslate nohighlight">\(\delta_\Theta^v\)</span> extracts the dynamics <span class="math notranslate nohighlight">\(\mathbf{y}_i^t \in \mathbf{Y}^t\)</span> of the particles from the vertices <span class="math notranslate nohighlight">\(\mathbf{v}_i^t\)</span> (Eq. 7) using the final graph <span class="math notranslate nohighlight">\(G_M\)</span>.
 We use a two-layered 128-dimensional MLP for <span class="math notranslate nohighlight">\(\delta_\Theta^v\)</span> which learns to extract the relevant particle dynamics from <span class="math notranslate nohighlight">\(G_M\)</span>.</p>
 <div class="math notranslate nohighlight">
 \[
 \begin{equation} 
-\bm{y}_i^t=\delta_\Theta^v\left(\bm{v}_i^t\right)
+\mathbf{y}_i^t=\delta_\Theta^v\left(\mathbf{v}_i^t\right)
 \end{equation}
 \]</div>
 </section>
 <section id="updater">
 <h3>Updater<a class="headerlink" href="#updater" title="Permalink to this heading">#</a></h3>
-<p>We use the dynamics <span class="math notranslate nohighlight">\(\bm{y}_i^t\)</span> to predict the velocity and position of the particles at the next timestep (<span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^{t+1}\)</span> and  <span class="math notranslate nohighlight">\(\bm{p}_i^{t+1}\)</span>) based on Euler integration (Eq. 8 and Eq. 9), which makes <span class="math notranslate nohighlight">\(\bm{y}_i^t\)</span> analogous to acceleration  <span class="math notranslate nohighlight">\({\ddot{\bm{p}}}_i^t\)</span>.</p>
+<p>We use the dynamics <span class="math notranslate nohighlight">\(\mathbf{y}_i^t\)</span> to predict the velocity and position of the particles at the next timestep (<span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^{t+1}\)</span> and  <span class="math notranslate nohighlight">\(\mathbf{p}_i^{t+1}\)</span>) based on Euler integration (Eq. 8 and Eq. 9), which makes <span class="math notranslate nohighlight">\(\mathbf{y}_i^t\)</span> analogous to acceleration  <span class="math notranslate nohighlight">\({\ddot{\mathbf{p}}}_i^t\)</span>.</p>
 <div class="math notranslate nohighlight">
 \[
 \begin{equation} 
-{\dot{\bm{p}}}_i^{t+1}={\dot{\bm{p}}}_i^t+\bm{y}_i^t\Delta t
+{\dot{\mathbf{p}}}_i^{t+1}={\dot{\mathbf{p}}}_i^t+\mathbf{y}_i^t\Delta t
 \end{equation}
 \]</div>
 <div class="math notranslate nohighlight">
 \[
 \begin{equation} 
-\bm{p}_i^{t+1}=\bm{p}_i^t+{\dot{\bm{p}}}_i^{t+1}\Delta t
+\mathbf{p}_i^{t+1}=\mathbf{p}_i^t+{\dot{\mathbf{p}}}_i^{t+1}\Delta t
 \end{equation}
 \]</div>
-<p>Based on the new particle position and velocity, we update <span class="math notranslate nohighlight">\(\bm{x}_i^t \in \bm{X}^t\)</span> (Eq. 5) to <span class="math notranslate nohighlight">\(\bm{x}_i^{t+1} \in \bm{X}^{t+1}\)</span>. The updated physical state <span class="math notranslate nohighlight">\(\bm{X}^{t+1}\)</span> is then used to predict the position and velocity for the next timestep.</p>
+<p>Based on the new particle position and velocity, we update <span class="math notranslate nohighlight">\(\mathbf{x}_i^t \in \mathbf{X}^t\)</span> (Eq. 5) to <span class="math notranslate nohighlight">\(\mathbf{x}_i^{t+1} \in \mathbf{X}^{t+1}\)</span>. The updated physical state <span class="math notranslate nohighlight">\(\mathbf{X}^{t+1}\)</span> is then used to predict the position and velocity for the next timestep.</p>
 <p>The updater imposes inductive biases to GNS to improve learning efficiency.
-GNS does not directly predict the next position from the current position and velocity (i.e., <span class="math notranslate nohighlight">\(\bm{p}_i^{t+1}=GNS\left(\bm{p}_i^t,\ {\dot{\bm{p}}}_i^t\right)\)</span>) which has to learn the static motion and inertial motion.
-Instead, it uses (1) the inertial prior (Eq. 8) where the prediction of next velocity <span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^{t+1}\)</span> should be based on the current velocity <span class="math notranslate nohighlight">\({\dot{\bm{p}}}_i^t\)</span>  and (2) the static prior (Eq. 9) where the prediction of the next position <span class="math notranslate nohighlight">\(\bm{p}_i^{t+1}\)</span> should be based on the current position <span class="math notranslate nohighlight">\(\bm{p}_i^t\)</span>.
+GNS does not directly predict the next position from the current position and velocity (i.e., <span class="math notranslate nohighlight">\(\mathbf{p}_i^{t+1}=GNS\left(\mathbf{p}_i^t,\ {\dot{\mathbf{p}}}_i^t\right)\)</span>) which has to learn the static motion and inertial motion.
+Instead, it uses (1) the inertial prior (Eq. 8) where the prediction of next velocity <span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^{t+1}\)</span> should be based on the current velocity <span class="math notranslate nohighlight">\({\dot{\mathbf{p}}}_i^t\)</span>  and (2) the static prior (Eq. 9) where the prediction of the next position <span class="math notranslate nohighlight">\(\mathbf{p}_i^{t+1}\)</span> should be based on the current position <span class="math notranslate nohighlight">\(\mathbf{p}_i^t\)</span>.
 These make GNS to be trivial to learn static and inertial motions that is already certain and focus on learning dynamics which is uncertain.
 In addition, since the dynamics of particles are not controlled by their absolute position, GNS prediction can be generalizable to other geometric conditions.</p>
 <div class="cell docutils container">
