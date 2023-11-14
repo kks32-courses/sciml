@@ -64,10 +64,9 @@ const thebe_selector_output = ".output, .cell_output"
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/13-sindy/13-sindy';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/13-sindy/13-sindy-exercise';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="12: Graph Neural Network" href="../12-gnn/12-gnn.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -168,7 +167,7 @@ const thebe_selector_output = ".output, .cell_output"
                 </a>
             </li>
         </ul>
-        <ul class="current nav bd-sidenav">
+        <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
 
@@ -226,7 +225,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../11-bayes/11a-distribution.html">Probability Distributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../11-bayes/11b-bayes-nn.html">11b: Bayesian Neural Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../12-gnn/12-gnn.html">12: Graph Neural Network</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">13: Sparse Identification of Nonlinear Dynamical systems (SINDy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sindy.html">13: Sparse Identification of Nonlinear Dynamical systems (SINDy)</a></li>
 </ul>
 
     </div>
@@ -281,7 +280,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/13-sindy/13-sindy.ipynb" target="_blank"
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/13-sindy/13-sindy-exercise.ipynb" target="_blank"
    class="btn btn-sm dropdown-item"
    title="Launch onColab"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -329,7 +328,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/13-sindy/13-sindy.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/13-sindy/13-sindy-exercise.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -359,7 +358,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../../_sources/lectures/13-sindy/13-sindy.ipynb" target="_blank"
+      <li><a href="../../_sources/lectures/13-sindy/13-sindy-exercise.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -635,19 +634,11 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D at 0x163196c10&gt;]
-</pre></div>
-</div>
-<img alt="../../_images/1916a6853df921f102ddae3d8f3554f85b3940e09017714c55442cd5bba37488.png" src="../../_images/1916a6853df921f102ddae3d8f3554f85b3940e09017714c55442cd5bba37488.png" />
-</div>
 </div>
 <p>We can select a differentiation method from the <code class="docutils literal notranslate"><span class="pre">differentiation</span></code> submodule.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">differentiation_method</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">FiniteDifference</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
-<span class="c1"># We could instead call ps.differentiation.FiniteDifference(order=2)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># We could instead call ps.differentiation.FiniteDifference(order=2)</span>
 </pre></div>
 </div>
 </div>
@@ -656,9 +647,7 @@ document.write(`
 <p>The candidate library can be specified with an object from the <code class="docutils literal notranslate"><span class="pre">feature_library</span></code> submodule, which will also be passed into the <code class="docutils literal notranslate"><span class="pre">SINDy</span></code> object.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">feature_library</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">PolynomialLibrary</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-
-<span class="c1"># Note: We could instead call ps.feature_library.PolynomialLibrary(degree=3)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note: We could instead call ps.feature_library.PolynomialLibrary(degree=3)</span>
 </pre></div>
 </div>
 </div>
@@ -666,59 +655,19 @@ document.write(`
 <p>Next we select which optimizer should be used.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">STLSQ</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-
-<span class="c1"># Note: We could instead call ps.optimizers.STLSQ(threshold=0.2)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note: We could instead call ps.optimizers.STLSQ(threshold=0.2)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <p>Finally, we bring these three components together in one <code class="docutils literal notranslate"><span class="pre">SINDy</span></code> object.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">(</span>
-    <span class="n">differentiation_method</span><span class="o">=</span><span class="n">differentiation_method</span><span class="p">,</span>
-    <span class="n">feature_library</span><span class="o">=</span><span class="n">feature_library</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
-    <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">],</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>Following the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> workflow, we first instantiate a <code class="docutils literal notranslate"><span class="pre">SINDy</span></code> class object with the desired properties, then fit it to the data in separate step.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_html"><style>#sk-container-id-1 {color: black;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: "▸";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: "▾";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: "";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: "";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>SINDy(differentiation_method=FiniteDifference(),
-      feature_library=PolynomialLibrary(degree=3), feature_names=[&#x27;x&#x27;, &#x27;y&#x27;],
-      optimizer=STLSQ(threshold=0.2))</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" ><label for="sk-estimator-id-1" class="sk-toggleable__label sk-toggleable__label-arrow">SINDy</label><div class="sk-toggleable__content"><pre>SINDy(differentiation_method=FiniteDifference(),
-      feature_library=PolynomialLibrary(degree=3), feature_names=[&#x27;x&#x27;, &#x27;y&#x27;],
-      optimizer=STLSQ(threshold=0.2))</pre></div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" ><label for="sk-estimator-id-2" class="sk-toggleable__label sk-toggleable__label-arrow">feature_library: PolynomialLibrary</label><div class="sk-toggleable__content"><pre>PolynomialLibrary(degree=3)</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox" ><label for="sk-estimator-id-3" class="sk-toggleable__label sk-toggleable__label-arrow">PolynomialLibrary</label><div class="sk-toggleable__content"><pre>PolynomialLibrary(degree=3)</pre></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label sk-toggleable__label-arrow">optimizer: STLSQ</label><div class="sk-toggleable__content"><pre>STLSQ(threshold=0.2)</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label sk-toggleable__label-arrow">STLSQ</label><div class="sk-toggleable__content"><pre>STLSQ(threshold=0.2)</pre></div></div></div></div></div></div></div></div></div></div></div></div>
-</div>
 <p>We can inspect the governing equations discovered by the model and check whether they seem reasonable with the <code class="docutils literal notranslate"><span class="pre">print</span></code> function.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x)&#39; = -2.000 x
-(y)&#39; = 1.000 y
-</pre></div>
-</div>
-</div>
-</div>
 <p>Once the SINDy model has been fit we can use it to evolve new initial conditions forward in time with the <code class="docutils literal notranslate"><span class="pre">simulate</span></code> function.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t_test</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">gen_data2</span><span class="p">()</span>
-<span class="n">sim</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">simulate</span><span class="p">([</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">],</span> <span class="n">t</span><span class="o">=</span><span class="n">t_test</span><span class="p">)</span>
+<span class="c1"># Simulate</span>
 </pre></div>
 </div>
 </div>
@@ -739,15 +688,12 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../../_images/ebf9f90eb70fa01a3c02ccdf186ae0cd7e3a63a8a8cd5823219ea48bf593d3f7.png" src="../../_images/ebf9f90eb70fa01a3c02ccdf186ae0cd7e3a63a8a8cd5823219ea48bf593d3f7.png" />
-</div>
 </div>
 <p>Note that if the library we had chosen had been inappropriate for the problem at hand (i.e. if the dynamics could not be well-approximated as a sparse linear combination of library functions), then SINDy would have failed to produce a reasonable model. For example, if we solve the same problem, but using sines and cosines as our basis functions, SINDy is unable to find a sparse model for the dynamics:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Populate the library with trigonometric functions</span>
-<span class="n">feature_library</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">FourierLibrary</span><span class="p">()</span>
+
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">(</span>
     <span class="n">differentiation_method</span><span class="o">=</span><span class="n">differentiation_method</span><span class="p">,</span>
@@ -760,12 +706,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x)&#39; = 0.772 sin(1 x) + 2.097 cos(1 x) + -2.298 sin(1 y) + -3.115 cos(1 y)
-(y)&#39; = 1.362 sin(1 y) + -0.222 cos(1 y)
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -790,9 +730,6 @@ document.write(`
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../../_images/ae3ec707c0dcd647f8fbdf4c4076b659b4068f24f840e24f9ad5b0b57ad9a789.png" src="../../_images/ae3ec707c0dcd647f8fbdf4c4076b659b4068f24f840e24f9ad5b0b57ad9a789.png" />
 </div>
 </div>
 </section>
@@ -915,7 +852,7 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using finite difference derivatives with numpy.gradient.&quot;</span><span class="p">)</span>
     <span class="c1"># Calculate the derivative using numpy.gradient</span>
-    <span class="n">uprime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
     
     <span class="k">return</span> <span class="n">uprime</span>
 </pre></div>
@@ -925,11 +862,6 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Uprime</span> <span class="o">=</span> <span class="n">calculate_finite_difference_derivatives</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using finite difference derivatives with numpy.gradient.
 </pre></div>
 </div>
 </div>
@@ -955,13 +887,10 @@ document.write(`
     <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
     <span class="c1"># Polynomials of order 1.</span>
-    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">theta</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
+    
 
     <span class="c1"># Polynomials of order 2.</span>
-    <span class="k">if</span> <span class="n">polynomial_order</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-                <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">theta</span><span class="p">,</span> <span class="n">u</span><span class="p">[:,</span> <span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">u</span><span class="p">[:,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+   
 
     <span class="c1"># Polynomials of order 3.</span>
     <span class="k">if</span> <span class="n">polynomial_order</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
@@ -1051,22 +980,7 @@ document.write(`
 <p>The first operation in this algorithm is to calculate a least-squares solution to the equation using a direct method, which is a great starting point:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">lstsq</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">Uprime</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.55532216e-02 -8.30092479e-02 -3.75189629e-01]
- [-9.95931046e+00  2.76556092e+01 -2.36380368e-03]
- [ 9.97191480e+00 -8.50288233e-01  3.16696386e-03]
- [ 1.53011196e-03  9.60832279e-03 -2.61005862e+00]
- [ 1.76063938e-04  1.05500926e-04  1.01744253e-02]
- [-2.07122048e-04  2.94951425e-04  9.91509536e-01]
- [-1.33273727e-03 -9.89062223e-01  1.86258361e-05]
- [ 7.97423644e-05 -3.13833086e-04  8.56372784e-04]
- [ 1.01633347e-03 -3.38802659e-03 -7.46635580e-05]
- [-4.61585636e-05 -2.15240315e-04 -1.88624525e-03]]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solve theta * xi = uprime in the least-squares sense.</span>
 </pre></div>
 </div>
 </div>
@@ -1097,7 +1011,7 @@ document.write(`
 \dot z &amp;= xy - 2.67z
 \end{align*}
 \end{split}\]</div>
-<p>As you can see, the system discovered by this algorithm is very similar to the Lorenz system with parameters <span class="math notranslate nohighlight">\(\sima =10\)</span>, <span class="math notranslate nohighlight">\(\rho=28\)</span>, and <span class="math notranslate nohighlight">\(\beta=8/3\)</span>. These are the parameter values I used in the generation of the input data, as we’ll see in the next section.</p>
+<p>As you can see, the system discovered by this algorithm is very similar to the Lorenz system with parameters <span class="math notranslate nohighlight">\(\sigma =10\)</span>, <span class="math notranslate nohighlight">\(\rho=28\)</span>, and <span class="math notranslate nohighlight">\(\beta=8/3\)</span>. These are the parameter values I used in the generation of the input data, as we’ll see in the next section.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}
 \begin{align*}
@@ -1111,8 +1025,7 @@ document.write(`
 library of candidate functions, and it uses the Sequential Thresholded Least-Squares algorithm to discover <span class="math notranslate nohighlight">\(\Xi\)</span>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">theta</span> <span class="o">=</span> <span class="n">create_library</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">POLYNOMIAL_ORDER</span><span class="p">,</span> <span class="n">USE_TRIG</span><span class="p">)</span>
-<span class="n">xi</span> <span class="o">=</span> <span class="n">calculate_regression</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">Uprime</span><span class="p">,</span> <span class="n">THRESHOLD</span><span class="p">,</span> <span class="n">MAX_ITERATIONS</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define Theta and Xi matrices.</span>
 </pre></div>
 </div>
 </div>
@@ -1120,20 +1033,6 @@ library of candidate functions, and it uses the Sequential Thresholded Least-Squ
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[  0.           0.           0.        ]
- [-10.00449518  27.80496577   0.        ]
- [ 10.00429024  -0.95767769   0.        ]
- [  0.           0.          -2.66700595]
- [  0.           0.           0.        ]
- [  0.           0.           0.99924596]
- [  0.          -0.99347666   0.        ]
- [  0.           0.           0.        ]
- [  0.           0.           0.        ]
- [  0.           0.           0.        ]]
 </pre></div>
 </div>
 </div>
@@ -1150,21 +1049,16 @@ library of candidate functions, and it uses the Sequential Thresholded Least-Squ
 <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">u</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses PySINDy to find the equation that best fits the data u.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">STLSQ</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="n">THRESHOLD</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">MAX_ITERATIONS</span><span class="p">)</span>
+    
 
     <span class="c1"># Total variation derivatives with regularization.</span>
     <span class="c1"># differentiation_method = SINDyDerivative(</span>
     <span class="c1">#     derivative_kws={&quot;trend_filtered&quot;, 0, 1e-2})</span>
 
     <span class="c1"># Finite difference derivatives.</span>
-    <span class="n">differentiation_method</span> <span class="o">=</span> <span class="n">FiniteDifference</span><span class="p">()</span>
+    
 
-    <span class="n">model</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
-                     <span class="n">differentiation_method</span><span class="o">=</span><span class="n">differentiation_method</span><span class="p">,</span>
-                     <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
-                     <span class="n">discrete_time</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
-    <span class="n">model</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+    
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;xi: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span>
@@ -1174,14 +1068,7 @@ library of candidate functions, and it uses the Sequential Thresholded Least-Squ
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x)&#39; = -10.005 x + 10.004 y
-(y)&#39; = 27.805 x + -0.958 y + -0.993 x z
-(z)&#39; = -2.667 z + 0.999 x y
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit model</span>
 </pre></div>
 </div>
 </div>
@@ -1282,22 +1169,9 @@ library of candidate functions, and it uses the Sequential Thresholded Least-Squ
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">u0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">27</span><span class="p">])</span>
-<span class="n">u_approximation</span> <span class="o">=</span> <span class="n">compute_trajectory</span><span class="p">(</span><span class="n">u0</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
-<span class="n">graph_results</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u_approximation</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graph_results</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u_approximation</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42491/4121611849.py:28: MatplotlibDeprecationWarning: The w_xaxis attribute was deprecated in Matplotlib 3.1 and will be removed in 3.8. Use xaxis instead.
-  style_axis(axis3d.w_xaxis)
-/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42491/4121611849.py:29: MatplotlibDeprecationWarning: The w_yaxis attribute was deprecated in Matplotlib 3.1 and will be removed in 3.8. Use yaxis instead.
-  style_axis(axis3d.w_yaxis)
-/var/folders/6k/lmrc2s553fq0vn7c57__f37r0000gn/T/ipykernel_42491/4121611849.py:30: MatplotlibDeprecationWarning: The w_zaxis attribute was deprecated in Matplotlib 3.1 and will be removed in 3.8. Use zaxis instead.
-  style_axis(axis3d.w_zaxis)
-</pre></div>
-</div>
-<img alt="../../_images/4c5d13e37168f25bffe9de9c1b6c11cc223bc1a20a5539f5d0d9940ca1d4bb0a.png" src="../../_images/4c5d13e37168f25bffe9de9c1b6c11cc223bc1a20a5539f5d0d9940ca1d4bb0a.png" />
 </div>
 </div>
 <p>As you can see, the images aren’t exactly the same (because the equations discovered by SINDy aren’t exactly the same as the originals), but they’re very close. In the derivative calculation step, if instead of finite differences we had used exact derivatives, these two images would be exactly the same.</p>
@@ -1335,15 +1209,6 @@ library of candidate functions, and it uses the Sequential Thresholded Least-Squ
                 <footer class="prev-next-footer">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="../12-gnn/12-gnn.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">12: Graph Neural Network</p>
-      </div>
-    </a>
 </div>
                 </footer>
               
