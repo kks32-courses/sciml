@@ -1,0 +1,1046 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Normalizing Flows &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/14-normalizing-flows/14-normalizing-flows-exercise';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Scientific Machine Learning (SciML) - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Scientific Machine Learning (SciML) - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08a-gp.html">08a: Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10-improved-gradients.html">10: Scale-Invariance and Inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10a-physgrad-comparison.html">10a: Simple Example comparing Different Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11-bayes/11-bayes-linear.html">11. Bayesian regression with linear basis function models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11-bayes/11a-distribution.html">Probability Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11-bayes/11b-bayes-nn.html">11b: Bayesian Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12-gnn/12-gnn.html">12: Graph Neural Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../13-sindy/13-sindy.html">13: Sparse Identification of Nonlinear Dynamical systems (SINDy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="14-normalizing-flows.html">Normalizing Flows</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/14-normalizing-flows/14-normalizing-flows-exercise.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/14-normalizing-flows/14-normalizing-flows-exercise.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/14-normalizing-flows/14-normalizing-flows-exercise.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Normalizing Flows</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#univariate-distributions">Univariate Distributions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed-univariate-transforms-in-pyro">Fixed Univariate Transforms in Pyro</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learnable-univariate-distributions-in-pyro">Learnable Univariate Distributions in Pyro</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multivariate-distributions">Multivariate Distributions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multivariate-transforms-in-pyro">Multivariate Transforms in Pyro</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conditional-versus-joint-distributions">Conditional versus Joint Distributions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conditional-transforms-in-pyro">Conditional Transforms in Pyro</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusions">Conclusions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="normalizing-flows">
+<h1>Normalizing Flows<a class="headerlink" href="#normalizing-flows" title="Permalink to this heading">#</a></h1>
+<p><strong>Exercise:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/14-normalizing-flows/14-normalizing-flows-exercise.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/14-normalizing-flows/14-normalizing-flows.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
+<p>In standard probabilistic modeling practice, we represent our beliefs over unknown continuous quantities with simple parametric distributions like the normal, exponential, and Laplacian distributions. However, using such simple forms, which are commonly symmetric and unimodal (or have a fixed number of modes when we take a mixture of them), restricts the performance and flexibility of our methods. For instance, standard variational inference in the Variational Autoencoder uses independent univariate normal distributions to represent the variational family. The true posterior is neither independent nor normally distributed, which results in suboptimal inference and simplifies the model that is learnt. In other scenarios, we are likewise restricted by not being able to model multimodal distributions and heavy or light tails.</p>
+<p>Normalizing Flows [1-4] are a family of methods for constructing flexible learnable probability distributions, often with neural networks, which allow us to surpass the limitations of simple parametric forms. Pyro contains state-of-the-art normalizing flow implementations, and this tutorial explains how you can use this library for learning complex models and performing flexible variational inference. We introduce the main idea of Normalizing Flows (NFs) and demonstrate learning simple univariate distributions with element-wise, multivariate, and conditional flows.</p>
+</section>
+<section id="univariate-distributions">
+<h2>Univariate Distributions<a class="headerlink" href="#univariate-distributions" title="Permalink to this heading">#</a></h2>
+<section id="background">
+<h3>Background<a class="headerlink" href="#background" title="Permalink to this heading">#</a></h3>
+<p>Normalizing Flows are a family of methods for constructing flexible distributions. Let’s first restrict our attention to representing univariate distributions. The basic idea is that a simple source of noise, for example a variable with a standard normal distribution, <span class="math notranslate nohighlight">\(X\sim\mathcal{N}(0,1)\)</span>, is passed through a bijective (i.e. invertible) function, <span class="math notranslate nohighlight">\(g(\cdot)\)</span> to produce a more complex transformed variable <span class="math notranslate nohighlight">\(Y=g(X)\)</span>.</p>
+<p>For a given random variable, we typically want to perform two operations: sampling and scoring. Sampling <span class="math notranslate nohighlight">\(Y\)</span> is trivial. First, we sample <span class="math notranslate nohighlight">\(X=x\)</span>, then calculate <span class="math notranslate nohighlight">\(y=g(x)\)</span>. Scoring <span class="math notranslate nohighlight">\(Y\)</span>, or rather, evaluating the log-density <span class="math notranslate nohighlight">\(\log(p_Y(y))\)</span>, is more involved. How does the density of <span class="math notranslate nohighlight">\(Y\)</span> relate to the density of <span class="math notranslate nohighlight">\(X\)</span>? We can use the substitution rule of integral calculus to answer this. Suppose we want to evaluate the expectation of some function of <span class="math notranslate nohighlight">\(X\)</span>. Then,</p>
+<p>\begin{align}
+\mathbb{E}<em>{p_X(\cdot)}\left[f(X)\right] &amp;= \int</em>{\text{supp}(X)}f(x)p_X(x)dx\
+&amp;= \int_{\text{supp}(Y)}f(g^{-1}(y))p_X(g^{-1}(y))\left|\frac{dx}{dy}\right|dy\
+&amp;= \mathbb{E}_{p_Y(\cdot)}\left[f(g^{-1}(Y))\right],
+\end{align}</p>
+<p>where <span class="math notranslate nohighlight">\(\text{supp}(X)\)</span> denotes the support of <span class="math notranslate nohighlight">\(X\)</span>, which in this case is <span class="math notranslate nohighlight">\((-\infty,\infty)\)</span>. Crucially, we used the fact that <span class="math notranslate nohighlight">\(g\)</span> is bijective to apply the substitution rule in going from the first to the second line. Equating the last two lines we get,</p>
+<p>\begin{align}
+\log(p_Y(y)) &amp;= \log(p_X(g^{-1}(y)))+\log\left(\left|\frac{dx}{dy}\right|\right)\
+&amp;= \log(p_X(g^{-1}(y)))-\log\left(\left|\frac{dy}{dx}\right|\right).
+\end{align}</p>
+<p>Inituitively, this equation says that the density of <span class="math notranslate nohighlight">\(Y\)</span> is equal to the density at the corresponding point in <span class="math notranslate nohighlight">\(X\)</span> plus a term that corrects for the warp in volume around an infinitesimally small length around <span class="math notranslate nohighlight">\(Y\)</span> caused by the transformation.</p>
+<p>If <span class="math notranslate nohighlight">\(g\)</span> is cleverly constructed (and we will see several examples shortly), we can produce distributions that are more complex than standard normal noise and yet have easy sampling and computationally tractable scoring. Moreover, we can compose such bijective transformations to produce even more complex distributions. By an inductive argument, if we have <span class="math notranslate nohighlight">\(L\)</span> transforms <span class="math notranslate nohighlight">\(g_{(0)}, g_{(1)},\ldots,g_{(L-1)}\)</span>, then the log-density of the transformed variable <span class="math notranslate nohighlight">\(Y=(g_{(0)}\circ g_{(1)}\circ\cdots\circ g_{(L-1)})(X)\)</span> is</p>
+<p>\begin{align}
+\log(p_Y(y)) &amp;= \log\left(p_X\left(\left(g_{(L-1)}^{-1}\circ\cdots\circ g_{(0)}^{-1}\right)\left(y\right)\right)\right)+\sum^{L-1}<em>{l=0}\log\left(\left|\frac{dg^{-1}</em>{(l)}(y_{(l)})}{dy’}\right|\right),</p>
+<p>\end{align}</p>
+<p>where we’ve defined <span class="math notranslate nohighlight">\(y_{(0)}=x\)</span>, <span class="math notranslate nohighlight">\(y_{(L-1)}=y\)</span> for convenience of notation.</p>
+<p>In a latter section, we will see how to generalize this method to multivariate <span class="math notranslate nohighlight">\(X\)</span>. The field of Normalizing Flows aims to construct such <span class="math notranslate nohighlight">\(g\)</span> for multivariate <span class="math notranslate nohighlight">\(X\)</span> to transform simple i.i.d. standard normal noise into complex, learnable, high-dimensional distributions. The methods have been applied to such diverse applications as image modeling, text-to-speech, unsupervised language induction, data compression, and modeling molecular structures. As probability distributions are the most fundamental component of probabilistic modeling we will likely see many more exciting state-of-the-art applications in the near future.</p>
+</section>
+<section id="fixed-univariate-transforms-in-pyro">
+<h3>Fixed Univariate Transforms in Pyro<a class="headerlink" href="#fixed-univariate-transforms-in-pyro" title="Permalink to this heading">#</a></h3>
+<p>PyTorch contains classes for representing <em>fixed</em> univariate bijective transformations, and sampling/scoring from transformed distributions derived from these. Pyro extends this with a comprehensive library of <em>learnable</em> univariate and multivariate transformations using the latest developments in the field. As Pyro imports all of PyTorch’s distributions and transformations, we will work solely with Pyro. We also note that the NF components in Pyro can be used independently of the probabilistic programming functionality of Pyro, which is what we will be doing in the first two tutorials.</p>
+<p>Let us begin by showing how to represent and manipulate a simple transformed distribution,</p>
+<p>\begin{align}
+X &amp;\sim \mathcal{N}(0,1)\
+Y &amp;= \text{exp}(X).
+\end{align}</p>
+<p>You may have recognized that this is by definition, <span class="math notranslate nohighlight">\(Y\sim\text{LogNormal}(0,1)\)</span>.</p>
+<p>We begin by importing the relevant libraries:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">pyro</span>
+<span class="kn">import</span> <span class="nn">pyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+<span class="kn">import</span> <span class="nn">pyro.distributions.transforms</span> <span class="k">as</span> <span class="nn">T</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="n">smoke_test</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;CI&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>A variety of bijective transformations live in the <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#transforms">pyro.distributions.transforms</a> module, and the classes to define transformed distributions live in <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html">pyro.distributions</a>. We first create the base distribution of <span class="math notranslate nohighlight">\(X\)</span> and the class encapsulating the transform <span class="math notranslate nohighlight">\(\text{exp}(\cdot)\)</span>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_x</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">exp_transform</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExpTransform</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The class <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.ExpTransform">ExpTransform</a> derives from <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.Transform">Transform</a> and defines the forward, inverse, and log-absolute-derivative operations for this transform,</p>
+<p>\begin{align}
+g(x) &amp;= \text{exp(x)}\
+g^{-1}(y) &amp;= \log(y)\
+\log\left(\left|\frac{dg}{dx}\right|\right) &amp;= x.
+\end{align}</p>
+<p>In general, a transform class defines these three operations, from which it is sufficient to perform sampling and scoring.</p>
+<p>The class <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transformed_distribution.TransformedDistribution">TransformedDistribution</a> takes a base distribution of simple noise and a list of transforms, and encapsulates the distribution formed by applying these transformations in sequence. We use it as:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_y</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">TransformedDistribution</span><span class="p">(</span><span class="n">dist_x</span><span class="p">,</span> <span class="p">[</span><span class="n">exp_transform</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, plotting samples from both to verify that we that have produced the log-normal distribution:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dist_x</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1000</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Standard Normal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dist_y</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1000</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Standard Log-Normal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Our example uses a single transform. However, we can compose transforms to produce more expressive distributions. For instance, if we apply an affine transformation we can produce the general log-normal distribution,</p>
+<p>\begin{align}
+X &amp;\sim \mathcal{N}(0,1)\
+Y &amp;= \text{exp}(\mu+\sigma X).
+\end{align}</p>
+<p>or rather, <span class="math notranslate nohighlight">\(Y\sim\text{LogNormal}(\mu,\sigma^2)\)</span>. In Pyro this is accomplished, e.g. for <span class="math notranslate nohighlight">\(\mu=3, \sigma=0.5\)</span>, as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_x</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">affine_transform</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">AffineTransform</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">exp_transform</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExpTransform</span><span class="p">()</span>
+<span class="n">dist_y</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">TransformedDistribution</span><span class="p">(</span><span class="n">dist_x</span><span class="p">,</span> <span class="p">[</span><span class="n">affine_transform</span><span class="p">,</span> <span class="n">exp_transform</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dist_x</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1000</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Standard Normal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dist_y</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1000</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Log-Normal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For the forward operation, transformations are applied in the order of the list that is the second argument to <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transformed_distribution.TransformedDistribution">TransformedDistribution</a>. In this case, first <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.AffineTransform">AffineTransform</a> is applied to the base distribution and then <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.ExpTransform">ExpTransform</a>.</p>
+</section>
+<section id="learnable-univariate-distributions-in-pyro">
+<h3>Learnable Univariate Distributions in Pyro<a class="headerlink" href="#learnable-univariate-distributions-in-pyro" title="Permalink to this heading">#</a></h3>
+<p>Having introduced the interface for invertible transforms and transformed distributions, we now show how to represent <em>learnable</em> transforms and use them for density estimation. Our dataset in this section and the next will comprise samples along two concentric circles. Examining the joint and marginal distributions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">datasets</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_circles</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Samples from $p(x_1,x_2)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_1)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_2)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Standard transforms derive from the <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.ExpTransform">Transform</a> class and are not designed to contain learnable parameters. Learnable transforms, on the other hand, derive from <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.TransformModule">TransformModule</a>, which is a <a class="reference external" href="https://pytorch.org/docs/master/generated/torch.nn.Module.html#torch.nn.Module">torch.nn.Module</a> and registers parameters with the object.</p>
+<p>We will learn the marginals of the above distribution using such a transform, <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.transforms.Spline">Spline</a> [5,6], defined on a two-dimensional input:</p>
+<p>This transform passes each dimension of its input through a <em>separate</em> monotonically increasing function known as a spline. From a high-level, a spline is a complex parametrizable curve for which we can define specific points known as knots that it passes through and the derivatives at the knots. The knots and their derivatives are parameters that can be learnt, e.g., through stochastic gradient descent on a maximum likelihood objective, as we now demonstrate:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">smoke_test</span> <span class="k">else</span> <span class="mi">1001</span>
+
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+    
+    <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">200</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;step: </span><span class="si">{}</span><span class="s1">, loss: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we call <code class="docutils literal notranslate"><span class="pre">flow_dist.clear_cache()</span></code> after each optimization step to clear the transform’s forward-inverse cache. This is required because <code class="docutils literal notranslate"><span class="pre">flow_dist</span></code>’s <code class="docutils literal notranslate"><span class="pre">spline_transform</span></code> is a stateful <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.TransformModule">TransformModule</a> rather than a purely stateless <a class="reference external" href="https://pytorch.org/docs/stable/distributions.html#torch.distributions.transforms.Transform">Transform</a> object. Purely functional Pyro code typically creates <code class="docutils literal notranslate"><span class="pre">Transform</span></code> objects each model execution, then discards them after <code class="docutils literal notranslate"><span class="pre">.backward()</span></code>, effectively clearing the transform caches. By contrast in this tutorial we create stateful module objects and need to manually clear their cache after update.</p>
+<p>Plotting samples drawn from the transformed distribution after learning:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_flow</span> <span class="o">=</span> <span class="n">flow_dist</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1000</span><span class="p">,]))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Joint Distribution&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_flow</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_1)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_2)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As we can see, we have learnt close approximations to the marginal distributions, <span class="math notranslate nohighlight">\(p(x_1),p(x_2)\)</span>. It would have been challenging to fit the irregularly shaped marginals with standard methods, e.g., a mixture of normal distributions. As expected, since there is a dependency between the two dimensions, we do not learn a good representation of the joint, <span class="math notranslate nohighlight">\(p(x_1,x_2)\)</span>. In the next section, we explain how to learn multivariate distributions whose dimensions are not independent.</p>
+</section>
+</section>
+<section id="multivariate-distributions">
+<h2>Multivariate Distributions<a class="headerlink" href="#multivariate-distributions" title="Permalink to this heading">#</a></h2>
+<section id="id1">
+<h3>Background<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>The fundamental idea of normalizing flows also applies to multivariate random variables, and this is where its value is clearly seen - <em>representing complex high-dimensional distributions</em>. In this case, a simple multivariate source of noise, for example a standard i.i.d. normal distribution, <span class="math notranslate nohighlight">\(X\sim\mathcal{N}(\mathbf{0},I_{D\times D})\)</span>, is passed through a vector-valued bijection, <span class="math notranslate nohighlight">\(g:\mathbb{R}^D\rightarrow\mathbb{R}^D\)</span>, to produce the more complex transformed variable <span class="math notranslate nohighlight">\(Y=g(X)\)</span>.</p>
+<p>Sampling <span class="math notranslate nohighlight">\(Y\)</span> is again trivial and involves evaluation of the forward pass of <span class="math notranslate nohighlight">\(g\)</span>. We can score <span class="math notranslate nohighlight">\(Y\)</span> using the multivariate substitution rule of integral calculus,</p>
+<p>\begin{align}
+\mathbb{E}<em>{p_X(\cdot)}\left[f(X)\right] &amp;= \int</em>{\text{supp}(X)}f(\mathbf{x})p_X(\mathbf{x})d\mathbf{x}\
+&amp;= \int_{\text{supp}(Y)}f(g^{-1}(\mathbf{y}))p_X(g^{-1}(\mathbf{y}))\det\left|\frac{d\mathbf{x}}{d\mathbf{y}}\right|d\mathbf{y}\
+&amp;= \mathbb{E}_{p_Y(\cdot)}\left[f(g^{-1}(Y))\right],
+\end{align}</p>
+<p>where <span class="math notranslate nohighlight">\(d\mathbf{x}/d\mathbf{y}\)</span> denotes the Jacobian matrix of <span class="math notranslate nohighlight">\(g^{-1}(\mathbf{y})\)</span>. Equating the last two lines we get,</p>
+<p>\begin{align}
+\log(p_Y(y)) &amp;= \log(p_X(g^{-1}(y)))+\log\left(\det\left|\frac{d\mathbf{x}}{d\mathbf{y}}\right|\right)\
+&amp;= \log(p_X(g^{-1}(y)))-\log\left(\det\left|\frac{d\mathbf{y}}{d\mathbf{x}}\right|\right).
+\end{align}</p>
+<p>Inituitively, this equation says that the density of <span class="math notranslate nohighlight">\(Y\)</span> is equal to the density at the corresponding point in <span class="math notranslate nohighlight">\(X\)</span> plus a term that corrects for the warp in volume around an infinitesimally small volume around <span class="math notranslate nohighlight">\(Y\)</span> caused by the transformation. For instance, in <span class="math notranslate nohighlight">\(2\)</span>-dimensions, the geometric interpretation of the absolute value of the determinant of a Jacobian is that it represents the area of a parallelogram with edges defined by the columns of the Jacobian. In <span class="math notranslate nohighlight">\(n\)</span>-dimensions, the geometric interpretation of the absolute value of the determinant Jacobian is that is represents the hyper-volume of a parallelepiped with <span class="math notranslate nohighlight">\(n\)</span> edges defined by the columns of the Jacobian (see a calculus reference such as [7] for more details).</p>
+<p>Similar to the univariate case, we can compose such bijective transformations to produce even more complex distributions. By an inductive argument, if we have <span class="math notranslate nohighlight">\(L\)</span> transforms <span class="math notranslate nohighlight">\(g_{(0)}, g_{(1)},\ldots,g_{(L-1)}\)</span>, then the log-density of the transformed variable <span class="math notranslate nohighlight">\(Y=(g_{(0)}\circ g_{(1)}\circ\cdots\circ g_{(L-1)})(X)\)</span> is</p>
+<p>\begin{align}
+\log(p_Y(y)) &amp;= \log\left(p_X\left(\left(g_{(L-1)}^{-1}\circ\cdots\circ g_{(0)}^{-1}\right)\left(y\right)\right)\right)+\sum^{L-1}<em>{l=0}\log\left(\left|\frac{dg^{-1}</em>{(l)}(y_{(l)})}{dy’}\right|\right),</p>
+<p>\end{align}</p>
+<p>where we’ve defined <span class="math notranslate nohighlight">\(y_{(0)}=x\)</span>, <span class="math notranslate nohighlight">\(y_{(L-1)}=y\)</span> for convenience of notation.</p>
+<p>The main challenge is in designing parametrizable multivariate bijections that have closed form expressions for both <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(g^{-1}\)</span>, a tractable Jacobian whose calculation scales with <span class="math notranslate nohighlight">\(O(D)\)</span> rather than <span class="math notranslate nohighlight">\(O(D^3)\)</span>, and can express a flexible class of functions.</p>
+</section>
+<section id="multivariate-transforms-in-pyro">
+<h3>Multivariate Transforms in Pyro<a class="headerlink" href="#multivariate-transforms-in-pyro" title="Permalink to this heading">#</a></h3>
+<p>Up to this point we have used element-wise transforms in Pyro. These are indicated by having the property <code class="docutils literal notranslate"><span class="pre">transform.event_dim</span> <span class="pre">==</span> <span class="pre">0</span></code> set on the transform object. Such element-wise transforms can only be used to represent univariate distributions and multivariate distributions whose dimensions are independent (known in variational inference as the mean-field approximation).</p>
+<p>The power of Normalizing Flow, however, is most apparent in their ability to model complex high-dimensional distributions with neural networks and Pyro contains several such flows for accomplishing this. Transforms that operate on vectors have the property <code class="docutils literal notranslate"><span class="pre">transform.event_dim</span> <span class="pre">==</span> <span class="pre">1</span></code>, transforms on matrices with <code class="docutils literal notranslate"><span class="pre">transform.event_dim</span> <span class="pre">==</span> <span class="pre">2</span></code>, and so on. In general, the <code class="docutils literal notranslate"><span class="pre">event_dim</span></code> property of a transform indicates how many dependent dimensions there are in the output of a transform.</p>
+<p>In this section, we show how to use <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.transforms.SplineCoupling">SplineCoupling</a> to learn the bivariate toy distribution from our running example. A coupling transform [8, 9] divides the input variable into two parts and applies an element-wise bijection to the section half whose parameters are a function of the first. Optionally, an element-wise bijection is also applied to the first half. Dividing the inputs at <span class="math notranslate nohighlight">\(d\)</span>, the transform is,</p>
+<p>\begin{align}
+\mathbf{y}<em>{1:d} &amp;= g</em>\theta(\mathbf{x}<em>{1:d})\
+\mathbf{y}</em>{(d+1):D} &amp;= h_\phi(\mathbf{x}<em>{(d+1):D};\mathbf{x}</em>{1:d}),
+\end{align}</p>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{x}_{1:d}\)</span> represents the first <span class="math notranslate nohighlight">\(d\)</span> elements of the inputs, <span class="math notranslate nohighlight">\(g_\theta\)</span> is either the identity function or an elementwise bijection parameters <span class="math notranslate nohighlight">\(\theta\)</span>, and <span class="math notranslate nohighlight">\(h_\phi\)</span> is an element-wise bijection whose parameters are a function of <span class="math notranslate nohighlight">\(\mathbf{x}_{1:d}\)</span>.</p>
+<p>This type of transform is easily invertible. We invert the first half, <span class="math notranslate nohighlight">\(\mathbf{y}_{1:d}\)</span>, then use the resulting <span class="math notranslate nohighlight">\(\mathbf{x}_{1:d}\)</span> to evaluate <span class="math notranslate nohighlight">\(\phi\)</span> and invert the second half,</p>
+<p>\begin{align}
+\mathbf{x}<em>{1:d} &amp;= g</em>\theta^{-1}(\mathbf{y}<em>{1:d})\
+\mathbf{x}</em>{(d+1):D} &amp;= h_\phi^{-1}(\mathbf{y}<em>{(d+1):D};\mathbf{x}</em>{1:d}).
+\end{align}</p>
+<p>Difference choices for <span class="math notranslate nohighlight">\(g\)</span> and <span class="math notranslate nohighlight">\(h\)</span> form different types of coupling transforms. When both are monotonic rational splines, the transform is the spline coupling layer of Neural Spline Flow [5,6], which is represented in Pyro by the <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.transforms.SplineCoupling">SplineCoupling</a> class. As shown in the references, when we combine a sequence of coupling layers sandwiched between random permutations so we introduce dependencies between all dimensions, we can model complex multivariate distributions.</p>
+<p>Most of the learnable transforms in Pyro have a corresponding helper function that takes care of constructing a neural network for the transform with the correct output shape. This neural network outputs the parameters of the transform and is known as a <a class="reference external" href="https://arxiv.org/abs/1609.09106">hypernetwork</a> [10]. The helper functions are represented by lower-case versions of the corresponding class name, and usually input at the very least the input-dimension or shape of the distribution to model. For instance, the helper function corresponding to <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.transforms.SplineCoupling">SplineCoupling</a> is <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#spline-coupling">spline_coupling</a>.  We create a bivariate flow with a single spline coupling layer as follows:</p>
+<p>Similarly to before, we train this distribution on the toy dataset and plot the results:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">smoke_test</span> <span class="k">else</span> <span class="mi">5001</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">spline_transform</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">flow_dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="n">flow_dist</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;step: </span><span class="si">{}</span><span class="s1">, loss: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_flow</span> <span class="o">=</span> <span class="n">flow_dist</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1000</span><span class="p">,]))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Joint Distribution&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_flow</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_1)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_2)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We see from the output that this normalizing flow has successfully learnt both the univariate marginals <em>and</em> the bivariate distribution.</p>
+</section>
+</section>
+<section id="conditional-versus-joint-distributions">
+<h2>Conditional versus Joint Distributions<a class="headerlink" href="#conditional-versus-joint-distributions" title="Permalink to this heading">#</a></h2>
+<section id="id2">
+<h3>Background<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>In many cases, we wish to represent conditional rather than joint distributions. For instance, in performing variational inference, the variational family is a class of conditional distributions,</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align}
+\{q_\psi(\mathbf{z}\mid\mathbf{x})\mid\theta\in\Theta\},
+\end{align}
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> is the latent variable and <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> the observed one, that hopefully contains a member close to the true posterior of the model, <span class="math notranslate nohighlight">\(p(\mathbf{z}\mid\mathbf{x})\)</span>. In other cases, we may wish to learn to generate an object <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> conditioned on some context <span class="math notranslate nohighlight">\(\mathbf{c}\)</span> using <span class="math notranslate nohighlight">\(p_\theta(\mathbf{x}\mid\mathbf{c})\)</span> and observations <span class="math notranslate nohighlight">\(\{(\mathbf{x}_n,\mathbf{c}_n)\}^N_{n=1}\)</span>. For instance, <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> may be a spoken sentence and <span class="math notranslate nohighlight">\(\mathbf{c}\)</span> a number of speech features.</p>
+<p>The theory of Normalizing Flows is easily generalized to conditional distributions. We denote the variable to condition on by <span class="math notranslate nohighlight">\(C=\mathbf{c}\in\mathbb{R}^M\)</span>. A simple multivariate source of noise, for example a standard i.i.d. normal distribution, <span class="math notranslate nohighlight">\(X\sim\mathcal{N}(\mathbf{0},I_{D\times D})\)</span>, is passed through a vector-valued bijection that also conditions on C, <span class="math notranslate nohighlight">\(g:\mathbb{R}^D\times\mathbb{R}^M\rightarrow\mathbb{R}^D\)</span>, to produce the more complex transformed variable <span class="math notranslate nohighlight">\(Y=g(X;C=\mathbf{c})\)</span>. In practice, this is usually accomplished by making the parameters for a known normalizing flow bijection <span class="math notranslate nohighlight">\(g\)</span> the output of a hypernet neural network that inputs <span class="math notranslate nohighlight">\(\mathbf{c}\)</span>.</p>
+<p>Sampling of conditional transforms simply involves evaluating <span class="math notranslate nohighlight">\(Y=g(X; C=\mathbf{c})\)</span>. Conditioning the bijections on <span class="math notranslate nohighlight">\(\mathbf{c}\)</span>, the same formula holds for scoring as for the joint multivariate case.</p>
+</section>
+<section id="conditional-transforms-in-pyro">
+<h3>Conditional Transforms in Pyro<a class="headerlink" href="#conditional-transforms-in-pyro" title="Permalink to this heading">#</a></h3>
+<p>In Pyro, most learnable transforms have a corresponding conditional version that derives from <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#conditionaltransformmodule">ConditionalTransformModule</a>. For instance, the conditional version of the spline transform is <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#conditionalspline">ConditionalSpline</a> with helper function <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#conditional-spline">conditional_spline</a>.</p>
+<p>In this section, we will show how we can learn our toy dataset as the decomposition of the product of a conditional and a univariate distribution,</p>
+<div class="math notranslate nohighlight">
+\[
+\begin{align}
+p(x_1,x_2) &amp;= p(x_2\mid x_1)p(x_1).
+\end{align}
+\]</div>
+<p>First, we create the univariate distribution for <span class="math notranslate nohighlight">\(x_1\)</span> as shown previously,</p>
+<p>A conditional transformed distribution is created by passing the base distribution and list of conditional and non-conditional transforms to the <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#conditionaltransformeddistribution">ConditionalTransformedDistribution</a> class:</p>
+<p>You will notice that we pass the dimension of the context variable, <span class="math notranslate nohighlight">\(M=1\)</span>, to the conditional spline helper function.</p>
+<p>Until we condition on a value of <span class="math notranslate nohighlight">\(x_1\)</span>, the <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#conditionaltransformeddistribution">ConditionalTransformedDistribution</a> object is merely a placeholder and cannot be used for sampling or scoring. By calling its <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#pyro.distributions.ConditionalDistribution.condition">.condition(context)</a> method, we obtain a <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#transformeddistribution">TransformedDistribution</a> for which all its conditional transforms have been conditioned on <code class="docutils literal notranslate"><span class="pre">context</span></code>.</p>
+<p>For example, to draw a sample from <span class="math notranslate nohighlight">\(x_2\mid x_1=1\)</span>:</p>
+<p>In general, the context variable may have batch dimensions and these dimensions must broadcast over the batch dimensions of the input variable.</p>
+<p>Now, combining the two distributions and training it on the toy dataset:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">steps</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">smoke_test</span> <span class="k">else</span> <span class="mi">5001</span>
+<span class="n">modules</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">([</span><span class="n">x1_transform</span><span class="p">,</span> <span class="n">x2_transform</span><span class="p">])</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">modules</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">3e-3</span><span class="p">)</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[:,</span><span class="mi">0</span><span class="p">][:,</span><span class="kc">None</span><span class="p">]</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[:,</span><span class="mi">1</span><span class="p">][:,</span><span class="kc">None</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">ln_p_x1</span> <span class="o">=</span> <span class="n">dist_x1</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">ln_p_x2_given_x1</span> <span class="o">=</span> <span class="n">dist_x2_given_x1</span><span class="o">.</span><span class="n">condition</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">detach</span><span class="p">())</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">ln_p_x1</span> <span class="o">+</span> <span class="n">ln_p_x2_given_x1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="n">dist_x1</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+    <span class="n">dist_x2_given_x1</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">500</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;step: </span><span class="si">{}</span><span class="s1">, loss: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x1_flow</span> <span class="o">=</span> <span class="n">dist_x1</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1000</span><span class="p">,]))</span>
+<span class="n">x2_flow</span> <span class="o">=</span> <span class="n">dist_x2_given_x1</span><span class="o">.</span><span class="n">condition</span><span class="p">(</span><span class="n">x1_flow</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1000</span><span class="p">,]))</span>
+<span class="n">X_flow</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x1_flow</span><span class="p">,</span> <span class="n">x2_flow</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Joint Distribution&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X_flow</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_1)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">X_flow</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kde</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+             <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;firebrick&#39;</span><span class="p">,</span>
+             <span class="n">hist_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;edgecolor&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">},</span>
+             <span class="n">kde_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;linewidth&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+             <span class="n">label</span><span class="o">=</span><span class="s1">&#39;flow&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$p(x_2)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusions">
+<h3>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this heading">#</a></h3>
+<p>We have explained the basic idea behind normalizing flows and the Pyro interface to create flows to represent univariate, multivariate, and conditional distributions. It is useful to think of flows as a powerful general-purpose tool in your probabilistic modelling toolkit, and you can replace any existing distribution in your model with one to increase its flexibility and performance. We hope you have fun exploring the power of normalizing flows!</p>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>E.G. Tabak, Christina Turner. <a class="reference external" href="https://www.math.nyu.edu/faculty/tabak/publications/Tabak-Turner.pdf"><em>A Family of Nonparametric Density Estimation Algorithms</em></a>. Communications on Pure and Applied Mathematics, 66(2):145–164, 2013.</p></li>
+<li><p>Danilo Jimenez Rezende, Shakir Mohamed. <a class="reference external" href="http://proceedings.mlr.press/v37/rezende15.pdf"><em>Variational Inference with Normalizing Flows</em></a>. ICML 2015.</p></li>
+<li><p>Ivan Kobyzev, Simon J.D. Prince, and Marcus A. Brubaker. <a class="reference external" href="https://arxiv.org/abs/1908.09257"><em>Normalizing Flows: An Introduction and Review of Current Methods</em></a>. [arXiv:1908.09257] 2019.</p></li>
+<li><p>George Papamakarios, Eric Nalisnick, Danilo Jimenez Rezende, Shakir Mohamed, Balaji Lakshminarayanan. <a class="reference external" href="https://arxiv.org/abs/1912.02762"><em>Normalizing Flows for Probabilistic Modeling and Inference</em></a>. [arXiv:1912.02762] 2019.</p></li>
+<li><p>Conor Durkan, Artur Bekasov, Iain Murray, George Papamakarios. <a class="reference external" href="https://arxiv.org/abs/1906.04032"><em>Neural Spline Flows</em></a>. NeurIPS 2019.</p></li>
+<li><p>Hadi M. Dolatabadi, Sarah Erfani, Christopher Leckie. <a class="reference external" href="https://arxiv.org/abs/2001.05168"><em>Invertible Generative Modeling using Linear Rational Splines</em></a>. AISTATS 2020.</p></li>
+<li><p>James Stewart. <a class="reference external" href="https://www.stewartcalculus.com/"><em>Calculus</em></a>. Cengage Learning. 9th Edition 2020.</p></li>
+<li><p>Laurent Dinh, David Krueger, Yoshua Bengio. <a class="reference external" href="https://arxiv.org/abs/1410.8516"><em>NICE: Non-linear Independent Components Estimation</em></a>. Workshop contribution at ICLR 2015.</p></li>
+<li><p>Laurent Dinh, Jascha Sohl-Dickstein, Samy Bengio. <a class="reference external" href="https://arxiv.org/abs/1605.08803"><em>Density estimation using Real-NVP</em></a>. Conference paper at ICLR 2017.</p></li>
+<li><p>David Ha, Andrew Dai, Quoc V. Le. <a class="reference external" href="https://arxiv.org/abs/1609.09106"><em>HyperNetworks</em></a>. Workshop contribution at ICLR 2017.</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/14-normalizing-flows"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#univariate-distributions">Univariate Distributions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed-univariate-transforms-in-pyro">Fixed Univariate Transforms in Pyro</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learnable-univariate-distributions-in-pyro">Learnable Univariate Distributions in Pyro</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multivariate-distributions">Multivariate Distributions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multivariate-transforms-in-pyro">Multivariate Transforms in Pyro</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conditional-versus-joint-distributions">Conditional versus Joint Distributions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Background</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conditional-transforms-in-pyro">Conditional Transforms in Pyro</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusions">Conclusions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
