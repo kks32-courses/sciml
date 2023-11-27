@@ -481,13 +481,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/121.0 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
-     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">121.0/121.0 kB</span> <span class=" -Color -Color-Red">3.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
-?25h
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -496,21 +489,21 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--2023-11-27 01:25:33--  https://github.com/kks32-courses/sciml/raw/main/lectures/13-sindy/damped_oscillator_900.mp4
-Resolving github.com (github.com)... 192.30.255.112
-Connecting to github.com (github.com)|192.30.255.112|:443... connected.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--2023-11-27 12:31:44--  https://github.com/kks32-courses/sciml/raw/main/lectures/13-sindy/damped_oscillator_900.mp4
+Resolving github.com (github.com)... 140.82.112.4
+Connecting to github.com (github.com)|140.82.112.4|:443... connected.
 HTTP request sent, awaiting response... 302 Found
 Location: https://raw.githubusercontent.com/kks32-courses/sciml/main/lectures/13-sindy/damped_oscillator_900.mp4 [following]
---2023-11-27 01:25:33--  https://raw.githubusercontent.com/kks32-courses/sciml/main/lectures/13-sindy/damped_oscillator_900.mp4
+--2023-11-27 12:31:44--  https://raw.githubusercontent.com/kks32-courses/sciml/main/lectures/13-sindy/damped_oscillator_900.mp4
 Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...
 Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.108.133|:443... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 19025164 (18M) [application/octet-stream]
-Saving to: ‘damped_oscillator_900.mp4.1’
+Saving to: ‘damped_oscillator_900.mp4’
 
 damped_oscillator_9 100%[===================&gt;]  18.14M  --.-KB/s    in 0.1s    
 
-2023-11-27 01:25:33 (161 MB/s) - ‘damped_oscillator_900.mp4.1’ saved [19025164/19025164]
+2023-11-27 12:31:45 (124 MB/s) - ‘damped_oscillator_900.mp4’ saved [19025164/19025164]
 </pre></div>
 </div>
 </div>
@@ -646,7 +639,7 @@ damped_oscillator_9 100%[===================&gt;]  18.14M  --.-KB/s    in 0.1s
 </div>
 </div>
 <p>In the code above, the first parameter passed to the function is the path to the input video file, which we’ll open using OpenCV’s VideoCapture(…) function. We also receive the coordinates of the bounding box of the paint can in the first frame of the input video, in format (left, top, width, height). Then for each frame of the input video, we read it, get the bounding box for the paint can in that frame, calculate its center, and append the center to the centers list. In addition, we also receive as parameter a path to where we’ll save an output video file. This file contains the input video with the tracker findings overlayed on top of it: a red outline representing the bounding box around the paint can, and a red dot in its center. The (x, y) coordinates of the center dots over time make up our data matrix <span class="math notranslate nohighlight">\(U\)</span>, which we return in the end.</p>
-<p>You may be wondering how you can figure out the bounding box of the paint can in the first frame. How did I come up with the coordinates (269, 433, 378, 464) in the code above? If you have access to Adobe Creative Cloud, you can open the video in Adobe Premiere Pro, export its first frame, open it in Adobe Photoshop, and get the coordinates for the top left corner, width and height. Otherwise, you can get the coordinates interactively through code. I left the code that provides this functionality in the project, commented out, in case you’d like to follow this approach in your project:</p>
+<p>You may be wondering how you can figure out the bounding box of the paint can in the first frame. How did we come up with the coordinates (269, 433, 378, 464) in the code above? If you have access to Adobe Creative Cloud, you can open the video in Adobe Premiere Pro, export its first frame, open it in Adobe Photoshop, and get the coordinates for the top left corner, width and height. Otherwise, you can get the coordinates interactively through code.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Utilities related to graphing.&quot;&quot;&quot;</span>
@@ -723,9 +716,24 @@ damped_oscillator_9 100%[===================&gt;]  18.14M  --.-KB/s    in 0.1s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 425/425 [01:20&lt;00:00,  5.26it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 425/425 [01:38&lt;00:00,  4.31it/s]
 </pre></div>
 </div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;x(t)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;y(t)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x7f8c6c7eceb0&gt;
+</pre></div>
+</div>
+<img alt="../../_images/5e733e20323de12ca593974052cb6d62d806780ea1a3748cfd7760cf1848511c.png" src="../../_images/5e733e20323de12ca593974052cb6d62d806780ea1a3748cfd7760cf1848511c.png" />
 </div>
 </div>
 <p>And that’s all there is to it. We have our data <span class="math notranslate nohighlight">\(U\)</span> and the corresponding timestamps <span class="math notranslate nohighlight">\(t\)</span>. We won’t calculate derivatives in this step — instead, we’ll have PySINDy calculate them in the fitting step. We’re now ready to use PySINDy to get a system of ordinary differential equations that describes the motion of the paint can.</p>
@@ -753,7 +761,7 @@ y_2 &amp;= \dot{y}
 \[\begin{split}
 \begin{align*}
 \dot{y_1} &amp;= y_2 \\
-y_2 &amp;= -\frac{b}{m}y_2 - \frac{k}{m}y_1
+\dot{y_2} &amp;= -\frac{b}{m}y_2 - \frac{k}{m}y_1
 \end{align*}
 \end{split}\]</div>
 <p>This is great information to have, because we now know that the vertical movement most likely needs two coordinates to be represented as a system of first-order equations: one of them being the <span class="math notranslate nohighlight">\(y\)</span> coordinate that was recorded by the tracker, and the other one being its derivative. And we can pass along this information to PySINDy, as we’ll see later.</p>
