@@ -22,5 +22,6 @@ chapters:
   - file: lectures/11-bayes/11b-bayes-nn
   - file: lectures/12-gnn/12-gnn
   - file: lectures/13-sindy/13-sindy
+  - file: lectures/13-sindy/13a-sindy-experiment
   - file: lectures/14-normalizing-flows/14-normalizing-flows
   - file: lectures/14-normalizing-flows/14a-variational-inference-normalizing-flows.ipynb
