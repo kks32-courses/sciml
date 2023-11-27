@@ -1,0 +1,947 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>13a: Discovering equation from experimental data using SINDy &#8212; Scientific Machine Learning (SciML)</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lectures/13-sindy/13a-sindy-experiment';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="../../README.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="Scientific Machine Learning (SciML) - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="Scientific Machine Learning (SciML) - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../README.html">
+                    Scientific Machine Learning (SciML)
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../00-perceptron/00-perceptron.html">00: Perceptron</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../01-classification/01-classification.html">01: Classification</a></li>
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../02-pinn/02-pinn.html">02: Physics-Informed Neural Networks (PINNs)</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="../03-pinn-ode/03-pinn-ode.html">03: Ordinary Differential Equations in SciML</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../04-pde-fdm/04-pde-fdm.html">04: Partial Differential Equation and Finite Difference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../05-pinn-heat-transfer/05-pinn-heat-transfer.html">05: PINNs and steady-state heat transfer</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../06-burgers/06-burgers.html">06: Forward and inverse modeling of Burger’s Equation</a></li>
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../07-ad/07-ad.html">07: Automatic Differentiation</a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08-deeponet.html">08: DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../08-deeponet/08a-gp.html">08a: Gaussian Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../09-pi-deeponet/09-pi-deeponet.html">09: Physics-Informed DeepONet</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10-improved-gradients.html">10: Scale-Invariance and Inversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../10-optimization/10a-physgrad-comparison.html">10a: Simple Example comparing Different Optimizers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11-bayes/11-bayes-linear.html">11. Bayesian regression with linear basis function models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11-bayes/11a-distribution.html">Probability Distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../11-bayes/11b-bayes-nn.html">11b: Bayesian Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../12-gnn/12-gnn.html">12: Graph Neural Network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="13-sindy.html">13: Sparse Identification of Nonlinear Dynamical systems (SINDy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14-normalizing-flows/14-normalizing-flows.html">14: Normalizing Flows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../14-normalizing-flows/14a-variational-inference-normalizing-flows.html">14a: Variational Inference with Normalizing Flows</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/lectures/13-sindy/13a-sindy-experiment.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="../../_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/kks32-courses/sciml/issues/new?title=Issue%20on%20page%20%2Flectures/13-sindy/13a-sindy-experiment.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/lectures/13-sindy/13a-sindy-experiment.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>13a: Discovering equation from experimental data using SINDy</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fitting-using-pysindy">Fitting using PySINDy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction-of-trajectory">Prediction of trajectory</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="a-discovering-equation-from-experimental-data-using-sindy">
+<h1>13a: Discovering equation from experimental data using SINDy<a class="headerlink" href="#a-discovering-equation-from-experimental-data-using-sindy" title="Permalink to this heading">#</a></h1>
+<p><strong>Solution:</strong> <a class="reference external" href="https://colab.research.google.com/github/kks32-courses/sciml/blob/main/lectures/13-sindy/13a-sindy-experiment.ipynb"><img alt="Open in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>In this project, we want to discover a system of ordinary differential equations that describes the trajectory of the paint can in this video:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>!pip3 install pysindy --quiet
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/121.0 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">121.0/121.0 kB</span> <span class=" -Color -Color-Red">3.5 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>!wget https://github.com/kks32-courses/sciml/raw/main/lectures/13-sindy/damped_oscillator_900.mp4
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--2023-11-27 01:25:33--  https://github.com/kks32-courses/sciml/raw/main/lectures/13-sindy/damped_oscillator_900.mp4
+Resolving github.com (github.com)... 192.30.255.112
+Connecting to github.com (github.com)|192.30.255.112|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://raw.githubusercontent.com/kks32-courses/sciml/main/lectures/13-sindy/damped_oscillator_900.mp4 [following]
+--2023-11-27 01:25:33--  https://raw.githubusercontent.com/kks32-courses/sciml/main/lectures/13-sindy/damped_oscillator_900.mp4
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 185.199.108.133, 185.199.109.133, 185.199.110.133, ...
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|185.199.108.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 19025164 (18M) [application/octet-stream]
+Saving to: ‘damped_oscillator_900.mp4.1’
+
+damped_oscillator_9 100%[===================&gt;]  18.14M  --.-KB/s    in 0.1s    
+
+2023-11-27 01:25:33 (161 MB/s) - ‘damped_oscillator_900.mp4.1’ saved [19025164/19025164]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Our first task is to collect data points for our experiment — in this case our data points represent the position of the paint can over time. We could have taken many different approaches in the representation of this data. In this project our data <span class="math notranslate nohighlight">\(U\)</span> consists of the (x, y) coordinates of the center of the paint can over the 425 frames in the video, so the shape of <span class="math notranslate nohighlight">\(U\)</span> is 425 × 2. We gathered this information by using the CSRT Tracker found in the OpenCV package:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="c1"># Replace the URL below with your raw GitHub video URL</span>
+<span class="n">video_url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/kks32-courses/sciml/raw/main/lectures/13-sindy/damped_oscillator_900.mp4&quot;</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;video width=&quot;640&quot; height=&quot;480&quot; controls&gt;</span>
+<span class="s2">  &lt;source src=&quot;</span><span class="si">{</span><span class="n">video_url</span><span class="si">}</span><span class="s2">&quot; type=&quot;video/mp4&quot;&gt;</span>
+<span class="s2">&lt;/video&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">
+<video width="640" height="480" controls>
+  <source src="https://github.com/kks32-courses/sciml/raw/main/lectures/13-sindy/damped_oscillator_900.mp4" type="video/mp4">
+</video>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Utilities related to video.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+
+<span class="k">def</span> <span class="nf">track_object</span><span class="p">(</span><span class="n">input_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bbox</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                 <span class="n">output_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Tracks an object in a video defined by the bounding box passed</span>
+<span class="sd">    as a parameter. Saves an output video showing the bounding box found.</span>
+<span class="sd">    Returns an ndarray of shape (frames, 2) containing the</span>
+<span class="sd">    (x, y) center of the bounding box in each frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Tracking object.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Open video.</span>
+    <span class="n">capture</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="n">input_file_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">capture</span><span class="o">.</span><span class="n">isOpened</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not open video: </span><span class="si">{</span><span class="n">input_file_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Define tracker.</span>
+    <span class="n">tracker</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">TrackerCSRT_create</span><span class="p">()</span>
+
+    <span class="c1"># Get the codec for an AVI file.</span>
+    <span class="n">fourcc</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoWriter_fourcc</span><span class="p">(</span><span class="o">*</span><span class="s2">&quot;XVID&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Read each frame of the video, gather centers of all bounding boxes, and</span>
+    <span class="c1"># save video showing those bounding boxes.</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">centers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">frame_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">capture</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">CAP_PROP_FRAME_COUNT</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">frame_count</span><span class="p">)):</span>
+        <span class="p">(</span><span class="n">ok</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span> <span class="o">=</span> <span class="n">capture</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot read video frame </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Uncomment this to select a bounding box interactively.</span>
+            <span class="c1"># bbox = cv2.selectROI(&quot;Frame&quot;,</span>
+            <span class="c1">#                      frame,</span>
+            <span class="c1">#                      fromCenter=False,</span>
+            <span class="c1">#                      showCrosshair=True)</span>
+            <span class="n">tracker</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">bbox</span><span class="p">)</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">VideoWriter</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span>
+                                     <span class="n">fourcc</span><span class="p">,</span>
+                                     <span class="n">fps</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+                                     <span class="n">frameSize</span><span class="o">=</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">frame</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">ok</span><span class="p">,</span> <span class="n">bbox</span><span class="p">)</span> <span class="o">=</span> <span class="n">tracker</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not track object in frame </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">centers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+
+        <span class="c1"># Color the bounding box and center of an output video frame.</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">fill_rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">color</span><span class="p">)</span>
+        <span class="n">outline_rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+
+    <span class="n">capture</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">centers</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">fill_rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">bbox</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                   <span class="n">color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draws a filled rectangle with the specified bounding box and color</span>
+<span class="sd">    on the frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+            <span class="n">set_color</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">outline_rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">bbox</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+                      <span class="n">color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Draws the outline of a rectangle with the specified bounding box and</span>
+<span class="sd">    color on the frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+        <span class="n">set_color</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="n">set_color</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">]):</span>
+        <span class="n">set_color</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="p">)</span>
+        <span class="n">set_color</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">set_color</span><span class="p">(</span><span class="n">frame</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sets the pixel at position (x, y) on the frame to the specified color.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frame</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>In the code above, the first parameter passed to the function is the path to the input video file, which we’ll open using OpenCV’s VideoCapture(…) function. We also receive the coordinates of the bounding box of the paint can in the first frame of the input video, in format (left, top, width, height). Then for each frame of the input video, we read it, get the bounding box for the paint can in that frame, calculate its center, and append the center to the centers list. In addition, we also receive as parameter a path to where we’ll save an output video file. This file contains the input video with the tracker findings overlayed on top of it: a red outline representing the bounding box around the paint can, and a red dot in its center. The (x, y) coordinates of the center dots over time make up our data matrix <span class="math notranslate nohighlight">\(U\)</span>, which we return in the end.</p>
+<p>You may be wondering how you can figure out the bounding box of the paint can in the first frame. How did I come up with the coordinates (269, 433, 378, 464) in the code above? If you have access to Adobe Creative Cloud, you can open the video in Adobe Premiere Pro, export its first frame, open it in Adobe Photoshop, and get the coordinates for the top left corner, width and height. Otherwise, you can get the coordinates interactively through code. I left the code that provides this functionality in the project, commented out, in case you’d like to follow this approach in your project:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Utilities related to graphing.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">def</span> <span class="nf">style_axis2d</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Styles a 2D graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">very_light_gray</span> <span class="o">=</span> <span class="s2">&quot;#efefef&quot;</span>
+    <span class="n">light_gray</span> <span class="o">=</span> <span class="s2">&quot;#999999&quot;</span>
+    <span class="n">dark_gray</span> <span class="o">=</span> <span class="s2">&quot;#444444&quot;</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">dark_gray</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">dark_gray</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_title</span><span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">dark_gray</span><span class="p">})</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">light_gray</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">light_gray</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">very_light_gray</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">spine</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="n">light_gray</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">graph_result</span><span class="p">(</span><span class="n">u</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">u_approximation_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                 <span class="n">u_approximation_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Graphs y(t).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="s2">&quot;#EF6C00&quot;</span>
+    <span class="n">teal</span> <span class="o">=</span> <span class="s2">&quot;#007b96&quot;</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">figaspect</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:],</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">orange</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:],</span> <span class="n">u_approximation_x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">teal</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;x(t)&quot;</span><span class="p">)</span>
+    <span class="n">style_axis2d</span><span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Original trajectory&quot;</span><span class="p">,</span> <span class="s2">&quot;SINDy approximation&quot;</span><span class="p">],</span>
+               <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:],</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">orange</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:],</span> <span class="n">u_approximation_y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">teal</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;y(t)&quot;</span><span class="p">)</span>
+    <span class="n">style_axis2d</span><span class="p">(</span><span class="n">ax2</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Original trajectory&quot;</span><span class="p">,</span> <span class="s2">&quot;SINDy approximation&quot;</span><span class="p">],</span>
+               <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Constants used in the Sequential Thresholded Least-Squares algorithm.</span>
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mf">0.001</span>
+<span class="n">MAX_ITERATIONS</span> <span class="o">=</span> <span class="mi">100</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">input_file_name</span> <span class="o">=</span> <span class="s2">&quot;damped_oscillator_900.mp4&quot;</span>
+<span class="n">bbox</span> <span class="o">=</span> <span class="p">(</span><span class="mi">269</span><span class="p">,</span> <span class="mi">433</span><span class="p">,</span> <span class="mi">378</span><span class="p">,</span> <span class="mi">464</span><span class="p">)</span>
+<span class="n">output_file_name</span> <span class="o">=</span> <span class="s2">&quot;damped_oscillator_900_tracked.avi&quot;</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">track_object</span><span class="p">(</span><span class="n">input_file_name</span><span class="p">,</span> <span class="n">bbox</span><span class="p">,</span> <span class="n">output_file_name</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">stop</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 425/425 [01:20&lt;00:00,  5.26it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<p>And that’s all there is to it. We have our data <span class="math notranslate nohighlight">\(U\)</span> and the corresponding timestamps <span class="math notranslate nohighlight">\(t\)</span>. We won’t calculate derivatives in this step — instead, we’ll have PySINDy calculate them in the fitting step. We’re now ready to use PySINDy to get a system of ordinary differential equations that describes the motion of the paint can.</p>
+<section id="fitting-using-pysindy">
+<h2>Fitting using PySINDy<a class="headerlink" href="#fitting-using-pysindy" title="Permalink to this heading">#</a></h2>
+<p>If you try to ask PySINDy for a model by simply giving it all the data collected in the previous section, you won’t get great results. Machine learning is a powerful tool, but you still have to think and use good judgement. We may not know the exact equations of the movement, but we can use basic knowledge of ordinary differential equations to make some guesses that will help guide PySINDy in the right direction.</p>
+<p>Let’s first consider the vertical movement of the paint can. This movement resembles that of the well-studied damped harmonic oscillator, which can be represented by the following second-order linear equation:</p>
+<div class="math notranslate nohighlight">
+\[
+\ddot{y} + \frac{b}{m}\dot{y} + \frac{k}{m}y = 0
+\]</div>
+<p>So, we can make an informed guess that our vertical coordinate <span class="math notranslate nohighlight">\(y\)</span> will have strong similarities to this equation. However, the equation above is second-order, and PySINDy is only capable of discovering the function <span class="math notranslate nohighlight">\(f\)</span> on the right-hand-side of first-order systems of the form:</p>
+<div class="math notranslate nohighlight">
+\[\dot{u} = f(u)\]</div>
+<p>Therefore, in order to make use of our assumption, we need to first turn the second-order damped harmonic oscillator equation into a system of two first-order equations. We can do that with the aid of two new variables, <span class="math notranslate nohighlight">\(y_1\)</span> and <span class="math notranslate nohighlight">\(y_2\)</span> , that correspond to the following:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+y_1 &amp;= y \\
+y_2 &amp;= \dot{y}
+\end{align*}
+\end{split}\]</div>
+<p>The equation can then be re-written as the following system:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align*}
+\dot{y_1} &amp;= y_2 \\
+y_2 &amp;= -\frac{b}{m}y_2 - \frac{k}{m}y_1
+\end{align*}
+\end{split}\]</div>
+<p>This is great information to have, because we now know that the vertical movement most likely needs two coordinates to be represented as a system of first-order equations: one of them being the <span class="math notranslate nohighlight">\(y\)</span> coordinate that was recorded by the tracker, and the other one being its derivative. And we can pass along this information to PySINDy, as we’ll see later.</p>
+<p>Now let’s consider the horizontal movement of the paint can. This time the movement resembles a pendulum, and we also have a well-studied ordinary differential equation that represents that trajectory. However, the movement is so slight that the damped harmonic oscillator equation is probably a good enough approximation for our purposes. It’s also much simpler than the pendulum equation, which would require a change of variables (great topic for a future post). Therefore, we’ll use the exact same technique to help PySINDy understand the horizontal movement: we’ll assume that it needs two coordinates, one of them being the <span class="math notranslate nohighlight">\(x\)</span> coordinate recorded by the tracker, and the other one being its derivative.</p>
+<p>You could try giving PySINDy data for these four coordinates, but I found that I get better results if I treat the horizontal and vertical movements as independent. As you can see in the code below, I create two independent PySINDy models, one for the horizontal movement, and another for the vertical movement:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">pysindy</span> <span class="k">as</span> <span class="nn">ps</span>
+<span class="c1"># pylint: disable=unused-import</span>
+<span class="kn">from</span> <span class="nn">pysindy.differentiation</span> <span class="kn">import</span> <span class="n">FiniteDifference</span><span class="p">,</span> <span class="n">SINDyDerivative</span>
+<span class="kn">from</span> <span class="nn">pysindy.optimizers</span> <span class="kn">import</span> <span class="n">STLSQ</span>
+
+
+<span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="n">u</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">,</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses PySINDy to find the equation that best fits the data u.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">STLSQ</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="n">THRESHOLD</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">MAX_ITERATIONS</span><span class="p">)</span>
+
+    <span class="n">differentiation_method</span> <span class="o">=</span> <span class="n">FiniteDifference</span><span class="p">()</span>
+    <span class="c1"># pylint: disable=protected-access</span>
+    <span class="n">udot</span> <span class="o">=</span> <span class="n">differentiation_method</span><span class="o">.</span><span class="n">_differentiate</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+    <span class="c1"># Get a model for the movement in x.</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Model for x&quot;</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">xdot</span> <span class="o">=</span> <span class="n">udot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">datax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">xdot</span><span class="p">))</span>
+    <span class="n">modelx</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+                      <span class="n">differentiation_method</span><span class="o">=</span><span class="n">differentiation_method</span><span class="p">,</span>
+                      <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;xdot&quot;</span><span class="p">],</span>
+                      <span class="n">discrete_time</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">modelx</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">datax</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">ensemble</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">modelx</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;coefficients: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">modelx</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="c1"># Get a model for the movement in y.</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Model for y&quot;</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">ydot</span> <span class="o">=</span> <span class="n">udot</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">datay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">y</span><span class="p">,</span> <span class="n">ydot</span><span class="p">))</span>
+    <span class="n">modely</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">SINDy</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+                      <span class="n">differentiation_method</span><span class="o">=</span><span class="n">differentiation_method</span><span class="p">,</span>
+                      <span class="n">feature_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;ydot&quot;</span><span class="p">],</span>
+                      <span class="n">discrete_time</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">modely</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">datay</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">ensemble</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">modely</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;coefficients: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">modely</span><span class="o">.</span><span class="n">coefficients</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">modelx</span><span class="p">,</span> <span class="n">modely</span><span class="p">,</span> <span class="n">xdot</span><span class="p">,</span> <span class="n">ydot</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Notice that I give each model two coordinates, one with spatial measurements gathered by the tracker and another with its derivatives (calculated using the Finite Differences method). Notice also that I choose the Sequential Thresholded Least-Squares (STLSQ) method to find a sparse set of candidate functions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">modelx</span><span class="p">,</span> <span class="n">modely</span><span class="p">,</span> <span class="n">xdot</span><span class="p">,</span> <span class="n">ydot</span><span class="p">)</span> <span class="o">=</span> <span class="n">fit</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(x)&#39; = 1.000 xdot
+(xdot)&#39; = 6.399 1 + -0.015 x + -0.008 xdot + 0.005 xdot^2
+(y)&#39; = 1.000 ydot
+(ydot)&#39; = 17.371 1 + -0.041 y + -0.011 ydot + 0.001 ydot^2
+</pre></div>
+</div>
+</div>
+</div>
+<p>We discovered systems of ordinary differential equations for both types of movement! But can they predict the trajectory of a bouncing paint can? Let’s take a look in the next section.</p>
+</section>
+<section id="prediction-of-trajectory">
+<h2>Prediction of trajectory<a class="headerlink" href="#prediction-of-trajectory" title="Permalink to this heading">#</a></h2>
+<p>In this section, we’ll use the two models to predict trajectories for the horizontal and vertical movements of the paint can. In order to get a trajectory, we need to specify initial conditions for our coordinates <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(\dot{x}\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, and <span class="math notranslate nohighlight">\(\dot{y}\)</span>. We also need a list of timestamps, which determines the length of the trajectory. We chose the same initial conditions and length as the original trajectory we tracked, so that we can better compare them. Then we can simply call the <code class="docutils literal notranslate"><span class="pre">simulate(...)</span></code> function from the model to get the predicted trajectory.  Let’s visualize our predicted trajectory for and , and compare it with the original:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">u0x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xdot</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">u_approximation_x</span> <span class="o">=</span> <span class="n">modelx</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">u0x</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">u0y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">ydot</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="n">u_approximation_y</span> <span class="o">=</span> <span class="n">modely</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">u0y</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="n">graph_result</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u_approximation_x</span><span class="p">,</span> <span class="n">u_approximation_y</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/b7120cb797973ca77186f9068a643d6b035b3056feabeb386915b7ed530a26c6.png" src="../../_images/b7120cb797973ca77186f9068a643d6b035b3056feabeb386915b7ed530a26c6.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./lectures/13-sindy"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fitting-using-pysindy">Fitting using PySINDy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prediction-of-trajectory">Prediction of trajectory</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Krishna Kumar
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
