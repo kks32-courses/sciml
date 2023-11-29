@@ -493,14 +493,14 @@ document.write(`
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h2>
 <p>In standard probabilistic modeling practice, we represent our beliefs over unknown continuous quantities with simple parametric distributions like the normal, exponential, and Laplacian distributions. However, using such simple forms, which are commonly symmetric and unimodal (or have a fixed number of modes when we take a mixture of them), restricts the performance and flexibility of our methods. For instance, standard variational inference in the Variational Autoencoder uses independent univariate normal distributions to represent the variational family. The true posterior is neither independent nor normally distributed, which results in suboptimal inference and simplifies the model that is learnt. In other scenarios, we are likewise restricted by not being able to model multimodal distributions and heavy or light tails.</p>
-<p>Normalizing Flows [1-4] are a family of methods for constructing flexible learnable probability distributions, often with neural networks, which allow us to surpass the limitations of simple parametric forms. Pyro contains state-of-the-art normalizing flow implementations, and this tutorial explains how you can use this library for learning complex models and performing flexible variational inference. We introduce the main idea of Normalizing Flows (NFs) and demonstrate learning simple univariate distributions with element-wise, multivariate, and conditional flows.</p>
+<p>Normalizing Flows [1-4] are a family of methods for constructing flexible learnable probability distributions, often with neural networks, which allow us to surpass the limitations of simple parametric forms. We introduce the main idea of Normalizing Flows (NFs) and demonstrate learning simple univariate distributions with element-wise, multivariate, and conditional flows.</p>
 </section>
 <section id="univariate-distributions">
 <h2>Univariate Distributions<a class="headerlink" href="#univariate-distributions" title="Permalink to this heading">#</a></h2>
 <section id="background">
 <h3>Background<a class="headerlink" href="#background" title="Permalink to this heading">#</a></h3>
 <p>Normalizing Flows are a family of methods for constructing flexible distributions. Let’s first restrict our attention to representing univariate distributions. The basic idea is that a simple source of noise, for example a variable with a standard normal distribution, <span class="math notranslate nohighlight">\(X\sim\mathcal{N}(0,1)\)</span>, is passed through a bijective (i.e. invertible) function, <span class="math notranslate nohighlight">\(g(\cdot)\)</span> to produce a more complex transformed variable <span class="math notranslate nohighlight">\(Y=g(X)\)</span>.</p>
-<p>For a given random variable, we typically want to perform two operations: sampling and scoring. Sampling <span class="math notranslate nohighlight">\(Y\)</span> is trivial. First, we sample <span class="math notranslate nohighlight">\(X=x\)</span>, then calculate <span class="math notranslate nohighlight">\(y=g(x)\)</span>. Scoring <span class="math notranslate nohighlight">\(Y\)</span>, or rather, evaluating the log-density <span class="math notranslate nohighlight">\(\log(p_Y(y))\)</span>, is more involved. How does the density of <span class="math notranslate nohighlight">\(Y\)</span> relate to the density of <span class="math notranslate nohighlight">\(X\)</span>? We can use the substitution rule of integral calculus to answer this. Suppose we want to evaluate the expectation of some function of <span class="math notranslate nohighlight">\(X\)</span>. Then,</p>
+<p>For a given random variable, we typically want to perform two operations: sampling and scoring. Scoring often refers to evaluating how well the model represents the data distribution. This evaluation is typically done by computing the log-density. A higher log-density for a given data point suggests that the model believes this point is more likely to be observed, according to the learned distribution. Sampling <span class="math notranslate nohighlight">\(Y\)</span> is trivial. First, we sample <span class="math notranslate nohighlight">\(X=x\)</span>, then calculate <span class="math notranslate nohighlight">\(y=g(x)\)</span>. Scoring <span class="math notranslate nohighlight">\(Y\)</span>, or rather, evaluating the log-density <span class="math notranslate nohighlight">\(\log(p_Y(y))\)</span>, is more involved. How does the density of <span class="math notranslate nohighlight">\(Y\)</span> relate to the density of <span class="math notranslate nohighlight">\(X\)</span>? We can use the substitution rule of integral calculus to answer this. Suppose we want to evaluate the expectation of some function of <span class="math notranslate nohighlight">\(X\)</span>. Then,</p>
 <p>\begin{align}
 \mathbb{E}<em>{p_X(\cdot)}\left[f(X)\right] &amp;= \int</em>{\text{supp}(X)}f(x)p_X(x)dx\
 &amp;= \int_{\text{supp}(Y)}f(g^{-1}(y))p_X(g^{-1}(y))\left|\frac{dx}{dy}\right|dy\
@@ -521,7 +521,7 @@ document.write(`
 </section>
 <section id="fixed-univariate-transforms-in-pyro">
 <h3>Fixed Univariate Transforms in Pyro<a class="headerlink" href="#fixed-univariate-transforms-in-pyro" title="Permalink to this heading">#</a></h3>
-<p>PyTorch contains classes for representing <em>fixed</em> univariate bijective transformations, and sampling/scoring from transformed distributions derived from these. Pyro extends this with a comprehensive library of <em>learnable</em> univariate and multivariate transformations using the latest developments in the field. As Pyro imports all of PyTorch’s distributions and transformations, we will work solely with Pyro. We also note that the NF components in Pyro can be used independently of the probabilistic programming functionality of Pyro, which is what we will be doing in the first two tutorials.</p>
+<p>PyTorch contains classes for representing <em>fixed</em> univariate bijective transformations, and sampling/scoring from transformed distributions derived from these. Pyro extends this with a comprehensive library of <em>learnable</em> univariate and multivariate transformations. As Pyro imports all of PyTorch’s distributions and transformations, we will work solely with Pyro. We also note that the NF components in Pyro can be used independently of the probabilistic programming functionality of Pyro.</p>
 <p>Let us begin by showing how to represent and manipulate a simple transformed distribution,</p>
 <p>\begin{align}
 X &amp;\sim \mathcal{N}(0,1)\
@@ -551,14 +551,6 @@ Y &amp;= \text{exp}(X).
 </div>
 </div>
 <p>A variety of bijective transformations live in the <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html#transforms">pyro.distributions.transforms</a> module, and the classes to define transformed distributions live in <a class="reference external" href="http://docs.pyro.ai/en/stable/distributions.html">pyro.distributions</a>. We first create the base distribution of <span class="math notranslate nohighlight">\(X\)</span> and the class encapsulating the transform <span class="math notranslate nohighlight">\(\text{exp}(\cdot)\)</span>:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_x</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">exp_transform</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExpTransform</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>The class <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.ExpTransform">ExpTransform</a> derives from <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transforms.Transform">Transform</a> and defines the forward, inverse, and log-absolute-derivative operations for this transform,</p>
 <p>\begin{align}
 g(x) &amp;= \text{exp(x)}\
@@ -567,13 +559,6 @@ g^{-1}(y) &amp;= \log(y)\
 \end{align}</p>
 <p>In general, a transform class defines these three operations, from which it is sufficient to perform sampling and scoring.</p>
 <p>The class <a class="reference external" href="https://pytorch.org/docs/master/distributions.html#torch.distributions.transformed_distribution.TransformedDistribution">TransformedDistribution</a> takes a base distribution of simple noise and a list of transforms, and encapsulates the distribution formed by applying these transformations in sequence. We use it as:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_y</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">TransformedDistribution</span><span class="p">(</span><span class="n">dist_x</span><span class="p">,</span> <span class="p">[</span><span class="n">exp_transform</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
 <p>Now, plotting samples from both to verify that we that have produced the log-normal distribution:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -597,16 +582,20 @@ Y &amp;= \text{exp}(\mu+\sigma X).
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dist_x</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">affine_transform</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">AffineTransform</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">exp_transform</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ExpTransform</span><span class="p">()</span>
-<span class="n">dist_y</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">TransformedDistribution</span><span class="p">(</span><span class="n">dist_x</span><span class="p">,</span> <span class="p">[</span><span class="n">affine_transform</span><span class="p">,</span> <span class="n">exp_transform</span><span class="p">])</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Affine transformation</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dist_x</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1000</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Standard Normal&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dist_y</span><span class="o">.</span><span class="n">sample</span><span class="p">([</span><span class="mi">1000</span><span class="p">])</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Log-Normal&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Transformed distribution&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -625,9 +614,9 @@ Y &amp;= \text{exp}(\mu+\sigma X).
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
-<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_circles</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="c1"># Generate data</span>
+
 
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Samples from $p(x_1,x_2)$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">)</span>
@@ -654,8 +643,8 @@ Y &amp;= \text{exp}(\mu+\sigma X).
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">steps</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">smoke_test</span> <span class="k">else</span> <span class="mi">1001</span>
-<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1001</span><span class="p">):</span>
 
     <span class="k">if</span> <span class="n">step</span> <span class="o">%</span> <span class="mi">200</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;step: </span><span class="si">{}</span><span class="s1">, loss: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()))</span>
@@ -667,8 +656,7 @@ Y &amp;= \text{exp}(\mu+\sigma X).
 <p>Plotting samples drawn from the transformed distribution after learning:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_flow</span> <span class="o">=</span> <span class="n">flow_dist</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">Size</span><span class="p">([</span><span class="mi">1000</span><span class="p">,]))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Joint Distribution&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Joint Distribution&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$x_1$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$x_2$&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -873,7 +861,7 @@ p(x_1,x_2) &amp;= p(x_2\mid x_1)p(x_1).
 </section>
 <section id="conclusions">
 <h3>Conclusions<a class="headerlink" href="#conclusions" title="Permalink to this heading">#</a></h3>
-<p>We have explained the basic idea behind normalizing flows and the Pyro interface to create flows to represent univariate, multivariate, and conditional distributions. It is useful to think of flows as a powerful general-purpose tool in your probabilistic modelling toolkit, and you can replace any existing distribution in your model with one to increase its flexibility and performance. We hope you have fun exploring the power of normalizing flows!</p>
+<p>We have explained the basic idea behind normalizing flows and the Pyro interface to create flows to represent univariate, multivariate, and conditional distributions. It is useful to think of flows as a powerful general-purpose tool in your probabilistic modelling toolkit, and you can replace any existing distribution in your model with one to increase its flexibility and performance.</p>
 </section>
 <section id="references">
 <h3>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h3>
