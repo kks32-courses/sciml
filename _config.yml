@@ -30,3 +30,4 @@ html:
   use_issues_button: true
   use_repository_button: true
   extra_navbar: ""
+  google_analytics_id: G-X06NJT7GSH
