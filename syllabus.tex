@@ -1,0 +1,237 @@
+\documentclass[11pt,fourier]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{fourier}
+\usepackage{hyperref}
+\usepackage{array, booktabs, tabularx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% Set page margins
+\geometry{a4paper, margin=1in}
+
+% Define header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{The University of Texas at Austin}
+\fancyhead[R]{CE 397 Scientific Machine Learning}
+\cfoot{\thepage}
+
+% Title formatting
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+
+\begin{document}
+
+\begin{center}
+    \Large\textbf{CE 397 Scientific Machine Learning}\\
+    \large\textbf{Fall 2025}
+\end{center}
+
+\vspace{1em}
+\begin{tabularx}{\textwidth}{@{}p{2.5cm}X@{}}
+\toprule
+\textbf{Instructor} & Krishna Kumar \\
+\textbf{Contact} & \href{mailto:krishnak@utexas.edu}{krishnak@utexas.edu} \\
+ & 512-232-4406 \\
+\midrule
+\textbf{Office Hours} & M 2:00 - 3 PM and Wed 3 - 4 PM at ECJ 9.227 B \\
+\textbf{Lectures} & MW 12:30 PM - 2:00 PM at ECJ 3.402 \\
+\textbf{Textbooks} & A formal textbook is not required for this course. \\
+\textbf{References} & ``Scientific Machine Learning," [Draft Notes] Krishna Kumar, (2025). \\
+& ``Deep Learning," Aaron Courville, Ian Goodfellow, and Yoshua Bengio, (2015). \\
+\textbf{Course website} & Canvas \href{https://canvas.utexas.edu}{https://canvas.utexas.edu} \\
+\textbf{Prerequisites} & Basic programming skills in Python or a similar language\\
+ & Familiarity with linear algebra, calculus, and basic probability theory\\
+ & Some prior exposure to machine learning is recommended but not required\\
+\bottomrule
+\end{tabularx}
+
+\section*{Course Description}
+This course provides a rigorous introduction to Scientific Machine Learning (SciML), focusing on the development, analysis, and application of machine learning techniques for solving complex problems governed by ordinary and partial differential equations (ODEs/PDEs). Bridging numerical analysis, scientific computing, and deep learning, SciML offers novel computational paradigms for challenges where traditional methods face limitations, such as high-dimensional problems, inverse problems, and systems with incomplete physical knowledge.
+
+We will delve into the mathematical foundations underpinning modern SciML solvers. Key topics include Physics-Informed Neural Networks (PINNs), where PDE constraints are embedded into the neural network's loss function, and Operator Learning frameworks (e.g., DeepONets, Fourier Neural Operators), which learn mappings between infinite-dimensional function spaces. The course will explore the theoretical basis for these methods, including function approximation theory in relevant spaces (e.g., Sobolev spaces), the role of automatic differentiation for computing derivatives and residuals, and the specific optimization challenges encountered when training physics-informed models.
+
+Emphasis will be placed on formulating differential equations as learning problems, analyzing the properties of different SciML architectures and loss functions, understanding techniques for enforcing boundary conditions, and evaluating the convergence and accuracy of the resulting solutions. We will also cover methods for uncertainty quantification (Bayesian Neural Networks, Gaussian Processes) within the SciML context and explore the discovery of governing equations from data (e.g., SINDy). Practical implementation will be demonstrated using modern frameworks like PyTorch, Jax, and TensorFlow, enabling students to apply these advanced computational techniques to challenging scientific and engineering problems.
+
+\section*{Learning Outcomes}
+Upon successful completion of this course, students will be able to:
+\begin{itemize}
+    \item \textbf{Formulate and Implement SciML Solvers:} Formulate scientific problems governed by ODEs/PDEs within machine learning frameworks; implement, train, and evaluate core methods like Physics-Informed Neural Networks (PINNs) and Operator Learning techniques, including appropriate handling of boundary conditions and sampling strategies.
+    \item \textbf{Analyze Theoretical Foundations:} Analyze the mathematical underpinnings of SciML methods, including relevant function approximation theory (e.g., Universal Approximation Theorems in Sobolev spaces) and the specific optimization challenges (loss landscapes, convergence properties) associated with physics-informed training.
+    \item \textbf{Quantify Uncertainty and Discover Dynamics:} Implement and interpret methods for uncertainty quantification (e.g., Bayesian Neural Networks, Gaussian Processes) and data-driven discovery of governing differential equations (e.g., SINDy) within scientific applications.
+    \item \textbf{Critically Evaluate and Compare:} Critically assess the applicability, performance characteristics (accuracy, convergence, cost), and limitations of various SciML techniques in comparison to traditional numerical methods for solving differential equations.
+    \item \textbf{Hands-on activities:} Effectively employ deep learning libraries (PyTorch, Jax, TensorFlow) leveraging automatic differentiation and best practices for reproducible SciML research and development.
+\end{itemize}
+
+\section*{Course Modules}
+The following 10 modules provide a comprehensive technical foundation in Scientific Machine Learning:
+
+\subsection*{Module 1: Foundations of Machine Learning for Scientific Computing}
+\textbf{Description:} Introduces fundamental ML principles for scientific applications: neural networks, optimization algorithms, and automatic differentiation.
+\begin{itemize}
+    \item \textbf{Neural Networks \& Function Approximation:} Perceptrons; multilayer architectures (Feedforward NNs); Activation functions (properties, smoothness, impact on derivatives); Universal Approximation Theorem (classical formulation, relevance and limitations for SciML).
+    \item \textbf{Optimization for SciML:} Gradient Descent variants (SGD, Adam); Second-order methods (L-BFGS); Convergence concepts; Challenges (non-convexity, saddle points, ill-conditioning); Loss landscapes in SciML.
+    \item \textbf{Automatic Differentiation (AD):} Computational graphs; Forward and Reverse modes (mathematical basis and implementation); Computing gradients, Jacobians, Hessians via AD; AD in ML frameworks (PyTorch, JAX).
+    \item \textbf{Scientific Regularization:} L1/L2 regularization; Early stopping; Introduction to physics-based regularization concepts.
+\end{itemize}
+
+\subsection*{Module 2: Mathematical Foundations for SciML}
+\textbf{Description:} Covers essential mathematical concepts: function spaces, differential equations, numerical methods, and inverse problems.
+\begin{itemize}
+    \item \textbf{Function Spaces:} Hilbert and Banach spaces; Sobolev spaces ($H^k$, weak derivatives, norms); Relevance to PDE solution regularity and weak formulations.
+    \item \textbf{Differential Equations:} Classification (ODEs/PDEs, linearity, order, type); Boundary/Initial Conditions; Well-posedness; Overview of traditional numerical methods (FDM, FEM, Spectral).
+    \item \textbf{Numerical Analysis Concepts:} Discretization error; Stability; Consistency; Convergence; CFL condition.
+    \item \textbf{Inverse Problems:} Formulation; Well-posed vs. ill-posed problems; Regularization concepts.
+\end{itemize}
+
+\subsection*{Module 3: Physics-Informed Neural Networks (PINNs)}
+\textbf{Description:} Comprehensive study of PINNs: mathematical foundations, implementation, training strategies, and applications.
+\begin{itemize}
+    \item \textbf{PINNs Formulation:} Embedding physics via loss functions (PDE residuals, BC/IC losses); Strong vs. Weak forms; Network architecture design; UAT in Sobolev spaces; Error analysis concepts.
+    \item \textbf{Boundary Condition Enforcement:} Soft constraints (penalty method); Hard constraints (architectural methods, distance functions); Variational/Energy-based approaches (Deep Ritz).
+    \item \textbf{Training Strategies \& Challenges:} Collocation point sampling (strategies, adaptive methods like RAR/RAD); Loss balancing techniques; Gradient pathologies; Optimization challenges.
+    \item \textbf{Applications:} Solving forward and Inverse ODE/PDE problems (parameter estimation).
+\end{itemize}
+
+\subsection*{Module 4: Differentiable Programming and Physics Simulation}
+\textbf{Description:} Explores differentiable programming for scientific simulation, allowing gradient-based optimization through physics simulators.
+\begin{itemize}
+    \item \textbf{Foundations of Differentiable Programming:} End-to-end differentiation through computational processes; Differentiable physics simulators; AD frameworks (JAX, PyTorch) for scientific computing; Differentiable numerical solvers.
+    
+    \item \textbf{Implementation Techniques:} Differentiable time-stepping schemes; Stability considerations; Memory-efficient backpropagation through iterations; Differentiable grid-based and mesh-based methods.
+    
+    \item \textbf{Inverse Problems and Parameter Estimation:} Gradient-based optimization of physical parameters; Simulator-in-the-loop learning; Multi-objective optimization; Comparing with non-differentiable approaches.
+    
+    \item \textbf{Applications:} Design optimization; System identification; Wave propagation.
+\end{itemize}
+
+\subsection*{Module 5: Operator Learning I: DeepONet}
+\textbf{Description:} Focuses on DeepONet architectures for learning mappings between function spaces (operators).
+\begin{itemize}
+    \item \textbf{Operator Learning Theory:} Function-to-function mappings; Universal Approximation Theorem for Operators; DeepONet architecture (Branch/Trunk).
+    \item \textbf{Physics-Informed DeepONet (PI-DeepONet):} Incorporating PDE residuals; Comparison with standard DeepONet/PINNs.
+    \item \textbf{Implementation and Applications:} Data requirements; Training; Parametric PDEs; Surrogate modeling.
+\end{itemize}
+
+\subsection*{Module 6: Operator Learning II: Fourier Neural Operators (FNOs)}
+\textbf{Description:} Explores Fourier Neural Operators (FNOs) leveraging spectral representations for efficient operator learning.
+\begin{itemize}
+    \item \textbf{Spectral Methods Review:} Fourier analysis relevance to PDEs.
+    \item \textbf{FNO Architecture:} Fourier layers (FFT-based); Properties (resolution invariance).
+    \item \textbf{Implementation and Properties:} Efficiency; Handling boundaries.
+    \item \textbf{Applications:} Fluid dynamics, wave propagation.
+\end{itemize}
+
+\subsection*{Module 7: Graph Neural Networks (GNNs) for Scientific Simulation}
+\textbf{Description:} This module covers Graph Neural Networks for scientific problems involving systems with irregular structure or interactions, such as particle systems, meshes, and molecules.
+\begin{itemize}
+    \item \textbf{Representing Physical Systems as Graphs:} Node/edge features for physical states; Graph construction (radius graphs, meshes); Handling boundary interactions.
+    \item \textbf{Message Passing Neural Networks:} Core GNN paradigm; Learning interaction kernels (message functions); Aggregation schemes; Update functions; Example: Interaction Networks for particle simulation.
+    \item \textbf{Symmetries and Equivariance:} Importance of physical symmetries (translation, rotation); Concept of equivariant GNNs for physics simulation.
+    \item \textbf{Applications:} Simulating particle-based systems (fluids, granular materials); \end{itemize}
+
+\subsection*{Module 8: Transformers in Scientific Machine Learning}
+\textbf{Description:} Explores the adaptation of transformer architectures for capturing long-range dependencies in scientific data.
+\begin{itemize}
+    \item \textbf{Self-Attention for Scientific Data:} Adapting attention for spatial/temporal coordinates.
+    \item \textbf{Spatio-Temporal Modeling:} Transformers for time-dependent physical systems; Long-horizon forecasting.
+    \item \textbf{Architectural Considerations:} Attention variants; Physics-informed modifications.
+    \item \textbf{Applications:} Climate modeling; Time-series analysis.
+\end{itemize}
+
+\subsection*{Module 9: Equation Discovery}
+\textbf{Description:} Explores techniques for discovering governing equations and physical laws directly from data using sparse regression.
+\begin{itemize}
+    \item \textbf{Sparse Identification of Nonlinear Dynamics (SINDy):} Formulation; Candidate libraries; Sparse regression (STLSQ); Noise handling.
+    \item \textbf{Implementation and Workflow:} Numerical differentiation; Library construction; Model selection.
+    \item \textbf{Applications:} Discovering ODEs from time-series data (Lorenz, damped oscillator examples).
+\end{itemize}
+
+\subsection*{Module 10: Advanced Generative Models and Uncertainty Quantification}
+\textbf{Description:} This module covers advanced generative models and uncertainty quantification techniques for scientific applications, focusing on normalizing flows, Bayesian approaches, and their implementation in complex physical systems.
+
+\begin{itemize}
+\item \textbf{Normalizing Flows:} Invertible transformations; coupling layers; autoregressive flows; continuous normalizing flows; physical constraints; density estimation; sampling techniques.
+
+\item \textbf{Bayesian Neural Networks:} Prior specification; posterior approximation; variational inference; ensemble methods; Hamiltonian Monte Carlo; model averaging; epistemic uncertainty.
+
+\item \textbf{Gaussian Processes:} Kernel design for physics; multi-output GPs; sparse approximations; deep GPs; spectral methods; differential operators in kernels; GP-neural hybrids.
+
+\end{itemize}
+
+\section*{Grading}
+Your grade (G) will be computed based on the following formula:
+\[ G = 0.3H + 0.3P + 0.2E1 + 0.2E2 \]
+where (H) stands for homework, and (P) stands for a project, and (E) is midterm Exams. Students who miss an examination will receive a grade of zero. Exceptions to this rule will be made only on a carefully considered basis, and only if the student contacts the instructor \textit{before} the exam.
+
+I encourage you to use the opportunity to resubmit all your assignments, projects, and exams (excluding the final exam) by fixing any errors within 1 week of grading, for full credit in the homework/projects and extra credits for exams. The maximum extra credit for corrections to your exams will be decided based on the class performance.
+
+Your letter grade cutoff (G): 
+\begin{itemize}
+    \item A $\ge$ 94\%, A- $\ge$ 90\%
+    \item B+ $\ge$ 87\%, B $\ge$ 84\%, B- $\ge$ 80\%
+    \item C+ $\ge$ 77\%, C $\ge$ 74\%, C- $\ge$ 70\%
+    \item D+ $\ge$ 67\%, D $\ge$ 64\%, D- $\ge$ 60\%
+    \item F $<$ 60\%
+\end{itemize}
+
+The scale shown above is based on minimum bounds. I reserve the right to change these bounds. Any adjustment to the bounds will depend on the class performance.
+
+\section*{Grace Policy (Time-Bank)}
+Sometimes we have bad days, bad weeks, and bad semesters. In an effort to accommodate any unexpected, unfortunate personal crisis, I have built "time banks" into our course. You do not have to utilize this policy, but if you find yourself struggling with unexpected personal events, I encourage you to contact me as soon as possible to notify me that you are using our grace policy.
+
+\textit{Each student will get a total of 7 days of NO QUESTIONS ASKED extension for the homework deadlines. It is up to each student to use those days at once or for multiple assignments. These will be accounted for in increments of 1-day and should be requested through email (indicating proposed submission date) 24hrs before the original deadline.}
+
+\section*{Course Attendance}
+Students are \textbf{expected to attend all class and laboratory periods}. Those who fail to attend class and laboratory regularly are inviting scholastic difficulty. Students are responsible for material identified in the readings and covered in class and laboratory, even if absent for authorized activities. If you are absent on the day that your team meets, you are responsible for providing your team with the necessary information to compensate for your absence. \textit{It is crucial to keep in communication with your team members; you are responsible for letting both us and your team know if you cannot make it to a class}.
+
+\textbf{Excused Absence:} If you plan to miss class due to the observance of a religious holiday, please let us know at least two weeks in advance. You will still be responsible for any work you will miss on that day if applicable. Check with us for details or arrangements. For further information: \href{http://catalog.utexas.edu/general-information/academic-policies-and-procedures/attendance/}{http://catalog.utexas.edu/general-information/academic-policies-and-procedures/attendance/}
+
+\section*{Computing Resources}
+\textbf{Cloud access:} The class will use Google colab to do all assignments, in-class materials, homeworks and lab. Google colab can be accessed directly at \href{https://colab.research.google.com/notebooks/intro.ipynb}{https://colab.research.google.com/notebooks/intro.ipynb} Your UT Email account will give you direct access to colab. Students may also use \href{https://repl.it/}{https://repl.it/} an online Integrated Development Environment (IDE) for Python projects.
+
+\section*{Academic Integrity}
+Each student in the course is expected to abide by the University of Texas Honor Code: "\textit{As a student of The University of Texas at Austin, I shall abide by the core values of the University and uphold academic integrity.}" \textbf{Plagiarism is taken very seriously at UT.} Therefore, if you use words or ideas that are not your own (or that you have used in the previous class), you must cite your sources. Otherwise, you will be guilty of plagiarism and subject to academic disciplinary action, including failure of the course. Copying previous years' solutions from Chegg or CourseHero is considered cheating. You are responsible for understanding UT's Academic Honesty and the University Honor Code: \href{http://catalog.utexas.edu/general-information/appendices/appendix-c/student-discipline-and-conduct/}{http://catalog.utexas.edu/general-information/appendices/appendix-c/student-discipline-and-conduct/}
+
+You are \textbf{welcome and encouraged to use any AI/Large Language Models} (ChatGPT, Bard, Claude, LlaMa, etc) for your assignments, labs, and exams. Please see acceptable AI tool use: 
+\href{https://security.utexas.edu/ai-tools}{https://security.utexas.edu/ai-tools}
+
+
+\subsection*{Sharing of Course Materials}
+Prohibited. Course materials (lecture notes, videos, assignments, solutions, etc.) may not be shared online or with anyone outside the class without explicit written permission from the instructor. Unauthorized sharing violates the Honor Code and will be reported to the Office of the Dean of Students.
+
+\subsection*{Class Recordings}
+Class recordings are for educational purposes for students enrolled in this class only and are protected under FERPA. Do not share recordings outside the class. Violations may lead to Student Misconduct proceedings.
+
+\subsection*{COVID Caveats}
+``Keep Learning" Resources: Explore strategies for online/hybrid learning: \url{https://onestop.utexas.edu/keep-learning/}.
+Safety Information: Stay updated on UT's policies: \url{https://protect.utexas.edu/}. Wearing a recommended protective face mask is encouraged inside university buildings.
+
+\subsection*{Statement on Learning Success}
+Your success is important. We all learn differently. If aspects of this course prevent you from learning or exclude you, please let me know. We can develop strategies together. I also encourage you to use UT's student resources; I'm happy to connect you.
+
+\subsection*{Statement on Inclusive Classroom}
+This classroom is a place where you will be treated with respect. I welcome individuals of all backgrounds, beliefs, identities, and abilities. All members are expected to contribute to a respectful, welcoming, and inclusive environment.
+
+\subsection*{University Resources for Students}
+\begin{itemize}
+    \item \textbf{Services for Students with Disabilities (SSD):} If you have a documented disability requiring academic accommodations, contact SSD (\url{http://diversity.utexas.edu/disability/}) to request an official letter. Discuss your needs with me early in the semester. Confidentiality is maintained.
+    \item \textbf{Counseling and Mental Health Center (CMHC):} Support for academic stress, life events, anxiety, depression. \url{http://www.cmhc.utexas.edu/individualcounseling.html}
+    \item \textbf{Sanger Learning Center:} Tutoring, workshops, academic coaching. \url{http://www.utexas.edu/ugs/slc} | 512-471-3614 (JES A332).
+    \item \textbf{Other Resources:} Undergraduate Writing Center (\url{http://uwc.utexas.edu/}), Libraries (\url{http://www.lib.utexas.edu/}), ITS (\url{http://www.utexas.edu/its/}), Student Emergency Services (\url{http://deanofstudents.utexas.edu/emergency/}).
+    \item \textbf{Behavior Concerns Advice Line (BCAL):} 512-232-5050. Anonymous reporting for concerns about student/staff behavior.
+\end{itemize}
+
+\subsection*{Emergency Evacuation}
+Familiarize yourself with exit routes. If you need assistance during evacuation, inform the instructor in writing during the first week. Follow faculty instructions during an evacuation. Do not re-enter buildings until authorized. Evacuation info: \url{https://preparedness.utexas.edu/safety/emergency-terms} | Campus Safety: 512-471-5767, \url{http://www.utexas.edu/safety/}.
+
+\subsection*{Title IX Reporting}
+Title IX protects against sex and gender-based discrimination/harassment. Faculty and certain staff are "Responsible Employees" required to report Title IX violations to the Title IX Coordinator. Before discussing a Title IX-related incident, ask if the person is a Responsible Employee. For confidential support without an official report, email \href{mailto:advocate@austin.utexas.edu}{advocate@austin.utexas.edu}. More info: \url{titleix.utexas.edu} | \href{mailto:titleix@austin.utexas.edu}{titleix@austin.utexas.edu}.
+
+\subsection*{Other Policies}
+Consult the General Information Catalog for university policies not explicitly included here: \url{http://catalog.utexas.edu/general-information/}.
+
+\end{document}
