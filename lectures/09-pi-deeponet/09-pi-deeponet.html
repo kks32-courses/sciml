@@ -540,19 +540,19 @@ document.write(`
 \]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">onp</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
-<span class="kn">from</span> <span class="nn">jax.example_libraries</span> <span class="kn">import</span> <span class="n">optimizers</span>
-<span class="kn">from</span> <span class="nn">jax.experimental.ode</span> <span class="kn">import</span> <span class="n">odeint</span>
-<span class="kn">from</span> <span class="nn">jax.nn</span> <span class="kn">import</span> <span class="n">relu</span>
-<span class="kn">from</span> <span class="nn">jax.config</span> <span class="kn">import</span> <span class="n">config</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">onp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">grad</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.example_libraries</span><span class="w"> </span><span class="kn">import</span> <span class="n">optimizers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.experimental.ode</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.nn</span><span class="w"> </span><span class="kn">import</span> <span class="n">relu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
-<span class="kn">from</span> <span class="nn">torch.utils</span> <span class="kn">import</span> <span class="n">data</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">trange</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
 </pre></div>
@@ -562,7 +562,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define RBF kernel</span>
-<span class="k">def</span> <span class="nf">RBF</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">RBF</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
     <span class="n">output_scale</span><span class="p">,</span> <span class="n">lengthscales</span> <span class="o">=</span> <span class="n">params</span>
     <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x1</span> <span class="o">/</span> <span class="n">lengthscales</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> \
             <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x2</span> <span class="o">/</span> <span class="n">lengthscales</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -574,7 +574,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_us</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_us</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">u</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">s</span><span class="p">):</span>
   <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
   <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;18&#39;</span>
   <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span>
@@ -654,7 +654,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geneate training data corresponding to one input sample</span>
-<span class="k">def</span> <span class="nf">generate_one_training_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_one_training_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
     <span class="c1"># Sample GP prior at a fine grid</span>
     <span class="n">N</span> <span class="o">=</span> <span class="mi">512</span>
     <span class="n">gp_params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">)</span>
@@ -691,7 +691,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Geneate test data corresponding to one input sample</span>
-<span class="k">def</span> <span class="nf">generate_one_test_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_one_test_data</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">P</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
     <span class="c1"># Sample GP prior at a fine grid</span>
     <span class="n">N</span> <span class="o">=</span> <span class="mi">512</span>
     <span class="n">gp_params</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">length_scale</span><span class="p">)</span>
@@ -796,8 +796,8 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data generator</span>
-<span class="k">class</span> <span class="nc">DataGenerator</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataGenerator</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span>
                  <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">rng_key</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">1234</span><span class="p">)):</span>
         <span class="s1">&#39;Initialization&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="n">u</span> <span class="c1"># input sample</span>
@@ -808,14 +808,14 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">rng_key</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="s1">&#39;Generate one batch of data&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">subkey</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_generation</span><span class="p">(</span><span class="n">subkey</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span>
 
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
-    <span class="k">def</span> <span class="nf">__data_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__data_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="s1">&#39;Generates data containing batch_size samples&#39;</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,),</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">[</span><span class="n">idx</span><span class="p">,:]</span>
@@ -836,10 +836,10 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the neural net</span>
-<span class="k">def</span> <span class="nf">MLP</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MLP</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">relu</span><span class="p">):</span>
 <span class="w">  </span><span class="sd">&#39;&#39;&#39; Vanilla MLP&#39;&#39;&#39;</span>
-  <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="n">rng_key</span><span class="p">):</span>
-      <span class="k">def</span> <span class="nf">init_layer</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="n">rng_key</span><span class="p">):</span>
+      <span class="k">def</span><span class="w"> </span><span class="nf">init_layer</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">):</span>
           <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
           <span class="n">glorot_stddev</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">d_in</span> <span class="o">+</span> <span class="n">d_out</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
           <span class="n">W</span> <span class="o">=</span> <span class="n">glorot_stddev</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">k1</span><span class="p">,</span> <span class="p">(</span><span class="n">d_in</span><span class="p">,</span> <span class="n">d_out</span><span class="p">))</span>
@@ -848,7 +848,7 @@ document.write(`
       <span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">keys</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">))</span>
       <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">init_layer</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">layers</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
       <span class="k">return</span> <span class="n">params</span>
-  <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
       <span class="k">for</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
           <span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
           <span class="n">inputs</span> <span class="o">=</span> <span class="n">activation</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
@@ -863,8 +863,8 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define the model</span>
-<span class="k">class</span> <span class="nc">PI_DeepONet</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_layers</span><span class="p">,</span> <span class="n">trunk_layers</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PI_DeepONet</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_layers</span><span class="p">,</span> <span class="n">trunk_layers</span><span class="p">):</span>
         <span class="c1"># Network initialization and evaluation functions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_apply</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">branch_layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trunk_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trunk_apply</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span><span class="n">trunk_layers</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">)</span>
@@ -890,7 +890,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">loss_physics_log</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Define DeepONet architecture</span>
-    <span class="k">def</span> <span class="nf">operator_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">operator_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="n">branch_params</span><span class="p">,</span> <span class="n">trunk_params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="n">B</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_apply</span><span class="p">(</span><span class="n">branch_params</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
         <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trunk_apply</span><span class="p">(</span><span class="n">trunk_params</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -898,13 +898,13 @@ document.write(`
         <span class="k">return</span> <span class="n">outputs</span>
 
     <span class="c1"># Define ODE/PDE residual</span>
-    <span class="k">def</span> <span class="nf">residual_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">residual_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="c1"># computes gradient with respect to second argument `y`</span>
         <span class="n">s_y</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_net</span><span class="p">,</span> <span class="n">argnums</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)(</span><span class="n">params</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s_y</span>
 
     <span class="c1"># Define operator loss</span>
-    <span class="k">def</span> <span class="nf">loss_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
         <span class="c1"># Fetch data</span>
         <span class="c1"># inputs: (u, y), shape = (N, m), (N,1)</span>
         <span class="c1"># outputs: s, shape = (N,1)</span>
@@ -917,7 +917,7 @@ document.write(`
         <span class="k">return</span> <span class="n">loss</span>
 
     <span class="c1"># Define physics loss</span>
-    <span class="k">def</span> <span class="nf">loss_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
         <span class="c1"># Fetch data</span>
         <span class="c1"># inputs: (u_r, y_r), shape = (NxQ, m), (NxQ,1)</span>
         <span class="c1"># outputs: s_r, shape = (NxQ, 1)</span>
@@ -930,7 +930,7 @@ document.write(`
         <span class="k">return</span> <span class="n">loss</span>
 
     <span class="c1"># Define total loss</span>
-    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">):</span>
         <span class="n">loss_operator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_operator</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">)</span>
         <span class="n">loss_physics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_physics</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_operator</span> <span class="o">+</span> <span class="n">loss_physics</span>
@@ -938,13 +938,13 @@ document.write(`
 
     <span class="c1"># Define a compiled update step</span>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="n">opt_state</span><span class="p">)</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">grad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">)(</span><span class="n">params</span><span class="p">,</span> <span class="n">operator_batch</span><span class="p">,</span> <span class="n">physics_batch</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_update</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">opt_state</span><span class="p">)</span>
 
     <span class="c1"># Optimize parameters in a loop</span>
-    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator_dataset</span><span class="p">,</span> <span class="n">physics_dataset</span><span class="p">,</span> <span class="n">nIter</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator_dataset</span><span class="p">,</span> <span class="n">physics_dataset</span><span class="p">,</span> <span class="n">nIter</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">):</span>
         <span class="c1"># Define the data iterator</span>
         <span class="n">operator_data</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">operator_dataset</span><span class="p">)</span>
         <span class="n">physics_data</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">physics_dataset</span><span class="p">)</span>
@@ -978,12 +978,12 @@ document.write(`
 
     <span class="c1"># Evaluates predictions at test points</span>
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
-    <span class="k">def</span> <span class="nf">predict_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">):</span>
         <span class="n">s_pred</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator_net</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s_pred</span>
 
     <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
-    <span class="k">def</span> <span class="nf">predict_s_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_s_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">):</span>
         <span class="n">s_y_pred</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_net</span><span class="p">,</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))(</span><span class="n">params</span><span class="p">,</span> <span class="n">U_star</span><span class="p">,</span> <span class="n">Y_star</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s_y_pred</span>
 </pre></div>

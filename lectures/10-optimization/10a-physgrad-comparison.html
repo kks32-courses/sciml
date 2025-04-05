@@ -524,9 +524,9 @@ the right position in <span class="math notranslate nohighlight">\(\mathbf{x}\)<
 JAX also has a nice numpy wrapper that implements most of numpy’s functions. Below we’ll use this wrapper as <code class="docutils literal notranslate"><span class="pre">np</span></code>, and the <em>original</em> numpy as <code class="docutils literal notranslate"><span class="pre">onp</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">onp</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">onp</span>
 </pre></div>
 </div>
 </div>
@@ -535,16 +535,16 @@ JAX also has a nice numpy wrapper that implements most of numpy’s functions. B
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># &quot;physics&quot; function y</span>
-<span class="k">def</span> <span class="nf">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span>
 
 <span class="c1"># simple L2 loss</span>
-<span class="k">def</span> <span class="nf">loss_y</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loss_y</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
     <span class="c1">#return y[0]*y[0] + y[1]*y[1] # &quot;manual version&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="p">)</span>
 
 <span class="c1"># composite function with L &amp; y , evaluating the loss for x</span>
-<span class="k">def</span> <span class="nf">loss_x</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loss_x</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">loss_y</span><span class="p">(</span><span class="n">physics_y</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 
 
@@ -662,7 +662,7 @@ GD iter 9: [2.4512184  0.96171147]
 <p>Let’s take a look at the progression over the course of the iterations (the evolution was stored in the <code class="docutils literal notranslate"><span class="pre">history</span></code> list above). The blue points denote the positions in <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> from the GD iterations, with the target at the origin shown with a thin black cross.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 <span class="n">historyGD</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">historyGD</span><span class="p">)</span>
 <span class="n">updatesGD</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">updatesGD</span><span class="p">)</span> <span class="c1"># for later</span>
@@ -775,7 +775,7 @@ Newton iter 9: [0.05202458 0.92383826]
 <span class="n">eta</span> <span class="o">=</span> <span class="mf">0.3</span>
 <span class="n">historyPG</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">];</span> <span class="n">historyPGy</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">updatesPG</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="k">def</span> <span class="nf">physics_y_inv</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">physics_y_inv</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mf">0.5</span><span class="p">)]</span> <span class="p">)</span>
 
 <span class="n">Gy</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">loss_y</span><span class="p">)</span>
@@ -842,10 +842,10 @@ PG iter 9: [0.08474258 0.50421   ]
 <p>This difference also shows in first update step for each method: below we measure how well it is aligned with the diagonal.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">mag</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">mag</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
 
-<span class="k">def</span> <span class="nf">one_len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">one_len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">x</span><span class="o">/</span><span class="n">mag</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]))</span> 
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Diagonal lengths (larger is better): GD </span><span class="si">%f</span><span class="s2">, Nt </span><span class="si">%f</span><span class="s2">, PG </span><span class="si">%f</span><span class="s2"> &quot;</span> <span class="o">%</span> 
@@ -960,14 +960,14 @@ PG iter 9: [0.08474258 0.50421   ]
 <p>Below, we’ll use the BFGS variant <code class="docutils literal notranslate"><span class="pre">fmin_l_bfgs_b</span></code> from <code class="docutils literal notranslate"><span class="pre">scipy</span></code> to compute the inverse. It’s not very complicated, but we’ll use numpy and scipy directly here, which makes the code a bit messier than it should be.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">physics_y_inv_opt</span><span class="p">(</span><span class="n">target_y</span><span class="p">,</span> <span class="n">x_ini</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">physics_y_inv_opt</span><span class="p">(</span><span class="n">target_y</span><span class="p">,</span> <span class="n">x_ini</span><span class="p">):</span>
     <span class="c1"># a bit ugly, we switch to pure scipy here inside each iteration for BFGS</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-    <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fmin_l_bfgs_b</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">fmin_l_bfgs_b</span>
     <span class="n">target_y</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target_y</span><span class="p">)</span>
     <span class="n">x_ini</span>    <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_ini</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">physics_y_opt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">target_y</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">physics_y_opt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">target_y</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]):</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span> <span class="c1"># we cant use physics_y from JAX here</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="n">onp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="n">onp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">target_y</span><span class="p">)</span> <span class="p">)</span>
         <span class="k">return</span> <span class="n">ret</span>

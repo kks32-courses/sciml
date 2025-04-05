@@ -786,7 +786,7 @@ $<span class="math notranslate nohighlight">\( \frac{\partial y}{\partial x_2} =
 <p>To calculate the derivatives of the function <span class="math notranslate nohighlight">\(y = x_1^2 + x_2\)</span> at <span class="math notranslate nohighlight">\(x_1 = 2\)</span> and <span class="math notranslate nohighlight">\(x_2 = 3\)</span> using PyTorch, follow the code below:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 <span class="c1"># Define the variables and indicate that they require gradients</span>
 
@@ -911,8 +911,8 @@ $<span class="math notranslate nohighlight">\(
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># JAX compute gradients of a sin function</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span>
 
 
 <span class="c1"># Outputs the cosine of 1.0</span>
@@ -934,8 +934,8 @@ $<span class="math notranslate nohighlight">\(
 <p>JAX can JIT (Just-In-Time) compile Python functions to enhance execution speed, particularly in loop-heavy computations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">jit</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 
 <span class="c1"># JIT compile the function</span>
 </pre></div>
@@ -1006,21 +1006,21 @@ $<span class="math notranslate nohighlight">\(
 <p>Iterating with these update rules, our values for <span class="math notranslate nohighlight">\(v_0\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> adjust in a manner that reduces the loss, gradually optimizing them to achieve the desired projectile distance.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span>
-<span class="kn">from</span> <span class="nn">jax.numpy</span> <span class="kn">import</span> <span class="n">linalg</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">matplotlib.animation</span> <span class="k">as</span> <span class="nn">animation</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
-<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.animation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">animation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">init_v</span><span class="p">):</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="n">init_v</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes the position, velocity and acceleration of a particle based on its initial velocity.</span>
 <span class="sd">    </span>
@@ -1053,7 +1053,7 @@ $<span class="math notranslate nohighlight">\(
 
 
 <span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">init_v</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">init_v</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the loss of a particle based on its initial velocity and the target position.</span>
 <span class="sd">    </span>
@@ -1340,12 +1340,12 @@ $<span class="math notranslate nohighlight">\( p = 2(y - d) \)</span><span class
 \[u2[j] = 2*u1[j] -u0[j] + C2*(u1[j-1]-2*u1[j]+u1[j+1])\]</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
-<span class="kn">import</span> <span class="nn">jax.scipy</span> <span class="k">as</span> <span class="nn">jsp</span>
-<span class="kn">import</span> <span class="nn">jax.scipy.optimize</span> <span class="k">as</span> <span class="nn">jsp_opt</span>
-<span class="kn">import</span> <span class="nn">optax</span> 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jsp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jsp_opt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optax</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="c1"># Set up an n-point uniform mesh</span>
@@ -1387,12 +1387,12 @@ $<span class="math notranslate nohighlight">\( p = 2(y - d) \)</span><span class
 <h2>FWI inverse modeling<a class="headerlink" href="#fwi-inverse-modeling" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
-<span class="kn">import</span> <span class="nn">jax.scipy</span> <span class="k">as</span> <span class="nn">jsp</span>
-<span class="kn">import</span> <span class="nn">jax.scipy.optimize</span> <span class="k">as</span> <span class="nn">jsp_opt</span>
-<span class="kn">import</span> <span class="nn">optax</span> 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jsp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jsp_opt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optax</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="c1"># Set up an n-point uniform mesh</span>
@@ -1401,7 +1401,7 @@ $<span class="math notranslate nohighlight">\( p = 2(y - d) \)</span><span class
 <span class="n">x0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
 
 <span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">params</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="mf">5e-4</span>
     <span class="c1"># Sanity check the physical constants</span>
@@ -1413,7 +1413,7 @@ $<span class="math notranslate nohighlight">\( p = 2(y - d) \)</span><span class
     <span class="n">u0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">u1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">u2</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
         <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">carry</span>
         <span class="c1"># Shift right to get j - 1 and set the first value to 0</span>
         <span class="n">u1p</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -1557,13 +1557,13 @@ $<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1
 <p>In summary, while both BFGS and Adam are powerful optimization algorithms, they come from different families of methods and are often chosen based on the problem size, complexity, and specific characteristics of the function being optimized.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
-<span class="kn">import</span> <span class="nn">jax.scipy</span> <span class="k">as</span> <span class="nn">jsp</span>
-<span class="kn">import</span> <span class="nn">jax.scipy.optimize</span> <span class="k">as</span> <span class="nn">jsp_opt</span>
-<span class="kn">import</span> <span class="nn">optax</span> 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">tensorflow_probability.substrates</span> <span class="kn">import</span> <span class="n">jax</span> <span class="k">as</span> <span class="n">tfp</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">grad</span><span class="p">,</span> <span class="n">jit</span><span class="p">,</span> <span class="n">vmap</span><span class="p">,</span> <span class="n">lax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.scipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jsp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.scipy.optimize</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jsp_opt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optax</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow_probability.substrates</span><span class="w"> </span><span class="kn">import</span> <span class="n">jax</span> <span class="k">as</span> <span class="n">tfp</span>
 
 <span class="c1"># Set up an n-point uniform mesh</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">1000</span>
@@ -1571,7 +1571,7 @@ $<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1
 <span class="n">x0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="n">n</span><span class="p">)</span>
 
 <span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">wave_propagation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">params</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="mf">5e-4</span>
     <span class="c1"># Sanity check the physical constants</span>
@@ -1583,7 +1583,7 @@ $<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1
     <span class="n">u0</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">u1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="mf">0.5</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">u2</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
         <span class="n">u0</span><span class="p">,</span> <span class="n">u1</span><span class="p">,</span> <span class="n">u2</span> <span class="o">=</span> <span class="n">carry</span>
         <span class="c1"># Shift right to get j - 1 and set the first value to 0</span>
         <span class="n">u1p</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">u1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -1609,7 +1609,7 @@ $<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1
 
 <span class="c1"># For TFP set jaxopt value_and_grad = True</span>
 <span class="c1"># @jax.value_and_grad</span>
-<span class="k">def</span> <span class="nf">compute_loss</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_loss</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
     <span class="n">u2</span> <span class="o">=</span> <span class="n">wave_propagation</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">u2</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span>
 
@@ -1620,7 +1620,7 @@ $<span class="math notranslate nohighlight">\(m_t = \beta_1 m_{t-1} + (1-\beta_1
 <span class="n">params</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
 <span class="c1"># Optimizers</span>
-<span class="k">def</span> <span class="nf">optax_adam</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">niter</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">optax_adam</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">niter</span><span class="p">):</span>
   <span class="c1"># Initialize parameters of the model + optimizer.</span>
   <span class="n">start_learning_rate</span> <span class="o">=</span> <span class="mf">1e-3</span>
   <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optax</span><span class="o">.</span><span class="n">adam</span><span class="p">(</span><span class="n">start_learning_rate</span><span class="p">)</span>
