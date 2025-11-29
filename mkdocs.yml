@@ -154,6 +154,9 @@ nav:
     - Adjoint: 08-neural-ode/constrained_optimization_adjoint_methods.md
     - Latent ODE: 08-neural-ode/latent-ode.ipynb
     - Van Der Pol with Function Encoder: 08-neural-ode/vanderpol-function-encoder.ipynb
+  - Bayesian SciML:
+    - From Bayes to CNFs: 09-bayes-cnf/09a-bayes-to-flows.ipynb
+    - Advanced CNF Tooling: 09-bayes-cnf/09b-advanced-cnf.ipynb
 
 copyright: |
   &copy; 2025 <a href="https://github.com/kks32-courses"  target="_blank" rel="noopener">Krishna Kumar</a>
