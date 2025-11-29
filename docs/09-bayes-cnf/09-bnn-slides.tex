@@ -1,1226 +1,697 @@
-%**************************************************************************************
-% Bayesian Neural Networks: From Foundations to Applications
-% License: CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
-%**************************************************************************************
-
 \documentclass{beamer}
 
-\mode<presentation> {
+\mode<presentation>{
 \usetheme{Madrid}
-
-% Burnt orange
-\definecolor{burntorange}{rgb}{0.8, 0.33, 0.0}
+\definecolor{burntorange}{rgb}{0.8,0.33,0.0}
 \colorlet{beamer@blendedblue}{burntorange}
-% Pale yellow
-\definecolor{paleyellow}{rgb}{1.0, 1.0, 0.953}
+\definecolor{paleyellow}{rgb}{1.0,1.0,0.953}
 \setbeamercolor{background canvas}{bg=paleyellow}
-% Secondary and tertiary palette
 \setbeamercolor*{palette secondary}{use=structure,fg=white,bg=burntorange!80!black}
 \setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=burntorange!60!black}
 }
 
-\usepackage{amsmath}
-\usepackage{amssymb}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\usepackage{bm}
-\usepackage{booktabs}
+\usepackage{amsmath,amssymb,bm}
 \usepackage{graphicx}
 \usepackage{xcolor}
+\usepackage{booktabs}
 \usepackage{tikz}
 \usetikzlibrary{positioning,calc,shapes.geometric,arrows.meta,bayesnet}
-
-%----------------------------------------------------------------------------------------
-%	TITLE PAGE
-%----------------------------------------------------------------------------------------
+\graphicspath{{figs/}}
 
 \title[Bayesian Neural Networks]{Bayesian Neural Networks}
-\subtitle{Uncertainty Quantification for Scientific Machine Learning}
-
+\subtitle{From Bayes' Rule to Surrogates}
 \author{Krishna Kumar}
-\institute[UT Austin]{
-University of Texas at Austin
-}
+\institute[UT Austin]{University of Texas at Austin}
 \date{\today}
 
 \begin{document}
 
+%----------------------------------------------------------------------------------------
 \begin{frame}
 \titlepage
 \end{frame}
 
 %----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Overview}
+\frametitle{Roadmap}
 \tableofcontents
 \end{frame}
 
 %========================================================================================
-\section{The Bayesian Perspective}
+\section{Anchor Problem: Noisy Oscillator}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Why Bayesian Methods?}
-
-\textbf{Traditional Machine Learning:}
+\frametitle{Why Bayesian?}
+Standard neural networks give point predictions. But in science and engineering we need:
 \begin{itemize}
-\item Train model, get weights $\mathbf{w}_{\text{best}}$
-\item Make prediction: $y = f(\mathbf{x}, \mathbf{w}_{\text{best}})$
-\item Single answer, no measure of confidence
+    \item \textbf{Uncertainty quantification}: How confident is the model?
+    \item \textbf{Extrapolation warnings}: When is the model outside its training domain?
+    \item \textbf{Parameter inference}: What physical parameters are consistent with data?
 \end{itemize}
+\vspace{0.3cm}
+Bayesian methods provide a principled framework for all three.
+\end{frame}
 
-\vspace{0.5cm}
-
-\textbf{The Problem:}
+\begin{frame}
+\frametitle{Start with a concrete question}
 \begin{itemize}
-\item What if data is limited or noisy?
-\item How confident should we be in extrapolation?
-\item Which regions of input space are poorly understood?
+    \item Lightly damped oscillator with noisy sensors on $x(t)$.
+    \item Governing ODE: $\ddot{x} + 2\zeta\omega_n \dot{x} + \omega_n^2 x = 0$
+    \item Unknown: damping ratio $\zeta$, natural frequency $\omega_n$.
+    \item Goal: credible predictions beyond the observed window.
 \end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{The Bayesian Solution:}
-
-Instead of one "best" set of weights, maintain a \textbf{distribution} over plausible weights.
-
 \begin{center}
-\large
-Uncertainty isn't a bug—it's the feature.
+\includegraphics[width=0.85\linewidth]{09a-bnn-6-1.png}
 \end{center}
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{A Simple Example: Fitting a Line}
-
-\textbf{Scenario:} Three noisy measurements of a linear relationship.
-
-\vspace{0.3cm}
-
-\textbf{Point estimate approach:}
+\frametitle{The challenge}
 \begin{itemize}
-\item Fit one line through the data
-\item Predict using that single line
-\item No information about uncertainty
+    \item We observe noisy measurements $y_i = x(t_i) + \epsilon_i$ for $t \in [0, 6]$ s.
+    \item We want predictions for $t \in [6, 8]$ s (extrapolation).
+    \item \textbf{Key question}: How uncertain should we be about extrapolated predictions?
 \end{itemize}
-
 \vspace{0.3cm}
-
-\textbf{Bayesian approach:}
-\begin{itemize}
-\item Find all plausible lines consistent with the data
-\item Weight each line by its probability
-\item Prediction = average over all plausible lines
-\item Get prediction $\pm$ confidence interval for free
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Key insight:} With limited data, many lines fit reasonably well. The Bayesian approach acknowledges this and quantifies it.
-
+A standard NN would give a single curve with no uncertainty. \\
+A Bayesian approach gives a \emph{distribution} over predictions.
 \end{frame}
 
 %========================================================================================
-\section{Bayes' Theorem: The Foundation}
+\section{Probability Distributions Primer}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Bayes' Theorem}
-
-\begin{equation}
-p(\theta \mid \mathcal{D}) = \frac{p(\mathcal{D} \mid \theta) \, p(\theta)}{p(\mathcal{D})}
-\end{equation}
-
-\vspace{0.5cm}
-
-\textbf{Read this as:}
-
-"The posterior equals the likelihood times the prior, normalized by the evidence."
-
-\vspace{0.5cm}
-
-\textbf{Components:}
-\begin{description}
-\item[$p(\theta)$] \textbf{Prior:} What we believe before seeing data
-\item[$p(\mathcal{D} \mid \theta)$] \textbf{Likelihood:} How well $\theta$ explains the data
-\item[$p(\theta \mid \mathcal{D})$] \textbf{Posterior:} Updated belief after seeing data
-\item[$p(\mathcal{D})$] \textbf{Evidence:} Normalizing constant (often intractable)
-\end{description}
-
+\frametitle{Building blocks: probability distributions}
+Bayesian models require specifying distributions. Three families cover most needs:
+\begin{itemize}
+    \item \textbf{Normal} $\mathcal{N}(\mu, \sigma^2)$: measurement noise, weight priors
+    \item \textbf{Gamma} $\text{Gamma}(\alpha, \beta)$: positive scales, precisions
+    \item \textbf{Uniform} $\text{Uniform}(a, b)$: weakly informative bounded priors
+\end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Understanding Each Component}
-
-\textbf{Prior} $p(\theta)$:
+\frametitle{The Normal distribution}
+\[
+p(x|\mu, \sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+\]
+\begin{center}
+\includegraphics[width=0.9\linewidth]{09a-bnn-8-2.png}
+\end{center}
 \begin{itemize}
-\item Encodes domain knowledge or ignorance
-\item Example: "I expect weights to be small" $\Rightarrow$ $p(\mathbf{w}) = \mathcal{N}(\mathbf{0}, \sigma^2)$
-\item Example: "I only know bounds" $\Rightarrow$ $p(\theta) = \text{Uniform}(a, b)$
+    \item $\mu$ shifts the center, $\sigma$ controls spread.
+    \item Ubiquitous: Central Limit Theorem, maximum entropy for fixed variance.
 \end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Likelihood} $p(\mathcal{D} \mid \theta)$:
-\begin{itemize}
-\item The forward model evaluated at data points
-\item For regression: $p(y \mid x, \mathbf{w}) = \mathcal{N}(f_\mathbf{w}(x), \sigma^2)$
-\item For classification: $p(y \mid x, \mathbf{w}) = \text{Categorical}(\text{softmax}(f_\mathbf{w}(x)))$
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Posterior} $p(\theta \mid \mathcal{D})$:
-\begin{itemize}
-\item Balances what we knew (prior) with what we measured (likelihood)
-\item Scarce data $\Rightarrow$ prior dominates
-\item Abundant data $\Rightarrow$ likelihood dominates
-\end{itemize}
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{The Evidence: Why It Matters}
+\frametitle{Gamma and Uniform distributions}
+\begin{center}
+\includegraphics[width=0.95\linewidth]{09a-bnn-8-3.png}
+\end{center}
+\begin{itemize}
+    \item \textbf{Gamma}: positive support, models precisions ($\tau = 1/\sigma^2$).
+    \item \textbf{Inverse-Gamma}: conjugate prior for variance in Normal likelihood.
+    \item \textbf{Uniform}: ``I only know the parameter lies in $[a,b]$.''
+\end{itemize}
+\end{frame}
 
-$$p(\mathcal{D}) = \int p(\mathcal{D} \mid \theta) p(\theta) d\theta$$
+%========================================================================================
+\section{Bayes' Theorem}
+%========================================================================================
 
+\begin{frame}
+\frametitle{Bayes' theorem: the update rule}
+Given data $\mathcal{D}$ and parameters $\theta$:
+\[
+\underbrace{p(\theta|\mathcal{D})}_{\text{posterior}} = \frac{\overbrace{p(\mathcal{D}|\theta)}^{\text{likelihood}} \cdot \overbrace{p(\theta)}^{\text{prior}}}{\underbrace{p(\mathcal{D})}_{\text{evidence}}}
+\]
+\vspace{0.2cm}
+\begin{itemize}
+    \item \textbf{Prior} $p(\theta)$: what we believe before seeing data.
+    \item \textbf{Likelihood} $p(\mathcal{D}|\theta)$: probability of data given parameters.
+    \item \textbf{Posterior} $p(\theta|\mathcal{D})$: updated belief after seeing data.
+    \item \textbf{Evidence} $p(\mathcal{D})$: normalizing constant (model comparison).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Bayes on the oscillator: setup}
+\textbf{Prior beliefs} (before seeing data):
+\begin{itemize}
+    \item Damping: $\zeta \sim \text{Uniform}(0, 0.25)$ --- light to moderate damping
+    \item Frequency: $\omega_n \sim \text{Uniform}(0.6, 1.6)$ rad/s
+\end{itemize}
+\vspace{0.3cm}
+\textbf{Likelihood} (how data relates to parameters):
+\[
+p(\mathcal{D}|\zeta, \omega_n) = \prod_{i=1}^{N} \mathcal{N}\bigl(y_i \,|\, x(t_i; \zeta, \omega_n), \sigma^2\bigr)
+\]
+where $x(t; \zeta, \omega_n)$ is the ODE solution.
+\end{frame}
+
+\begin{frame}
+\frametitle{Bayes on the oscillator: posterior}
+\[
+p(\zeta, \omega_n | \mathcal{D}) \propto p(\mathcal{D}|\zeta, \omega_n) \cdot p(\zeta) \cdot p(\omega_n)
+\]
+\begin{center}
+\includegraphics[width=0.5\linewidth]{09a-bnn-10-4.png}
+\end{center}
+\begin{itemize}
+    \item Grid evaluation feasible because $\dim(\theta) = 2$.
+    \item Posterior concentrates near true values $(\zeta=0.08, \omega_n=1.1)$.
+    \item Uncertainty reflects noise level and data coverage.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The curse of dimensionality}
+Grid evaluation worked for 2 parameters. But:
+\begin{itemize}
+    \item Neural network with 1000 weights $\Rightarrow$ $10^{1000}$ grid points needed!
+    \item Even MCMC struggles in high dimensions.
+\end{itemize}
+\vspace{0.3cm}
+\textbf{Solution}: Variational inference --- approximate the posterior with a tractable distribution and optimize.
 \vspace{0.3cm}
 
-\textbf{The marginal likelihood integrates over all possible parameters.}
-
-\vspace{0.3cm}
-
-\textbf{Why compute it?}
-\begin{enumerate}
-\item \textbf{Model comparison:} Higher evidence = better model
-\item \textbf{Hyperparameter tuning:} Find $\alpha, \beta$ that maximize evidence
-\item \textbf{Normalization:} Ensures posterior is a valid probability distribution
-\end{enumerate}
-
-\vspace{0.3cm}
-
-\textbf{The challenge:}
-
-For neural networks, this integral is over millions of dimensions and is intractable to compute exactly.
-
-\vspace{0.3cm}
-
-\textbf{The solution:}
-
-Approximate inference via variational methods or MCMC.
-
+But first, let's understand exact Bayesian inference in a simpler setting...
 \end{frame}
 
 %========================================================================================
 \section{Bayesian Linear Regression}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Warm-Up: Bayesian Linear Regression}
-
-\textbf{Goal:} Fit a straight line $y = w_0 + w_1 x$ to noisy data.
-
-\vspace{0.3cm}
-
-\textbf{Model:}
-$$t = w_0 + w_1 x + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \beta^{-1})$$
-
-\vspace{0.3cm}
-
-\textbf{Prior on weights:}
-$$p(\mathbf{w}) = \mathcal{N}(\mathbf{0}, \alpha^{-1}\mathbf{I})$$
-
-\vspace{0.3cm}
-
-\textbf{Why this example?}
+\frametitle{Why start with linear regression?}
+Bayesian linear regression is the \textbf{only} case where:
 \begin{enumerate}
-\item Posterior has a \textbf{closed-form solution} (conjugate Gaussian)
-\item Can visualize everything in 2D (two weights: $w_0, w_1$)
-\item Shows all Bayesian concepts concretely
-\item Natural bridge to Bayesian neural networks
+    \item Posterior is available in closed form (no approximation needed).
+    \item Predictive distribution is analytically tractable.
+    \item We can visualize exactly what ``Bayesian'' means.
 \end{enumerate}
-
+\vspace{0.3cm}
+The intuitions carry over to neural networks, where we must approximate.
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{The Posterior Distribution}
-
-For Bayesian linear regression, the posterior is Gaussian:
-
-$$p(\mathbf{w} \mid \mathcal{D}) = \mathcal{N}(\mathbf{m}_N, \mathbf{S}_N)$$
-
-\vspace{0.3cm}
-
-\textbf{Posterior mean:}
-$$\mathbf{m}_N = \beta \mathbf{S}_N \boldsymbol{\Phi}^T \mathbf{t}$$
-
-\textbf{Posterior covariance:}
-$$\mathbf{S}_N^{-1} = \alpha \mathbf{I} + \beta \boldsymbol{\Phi}^T \boldsymbol{\Phi}$$
+\frametitle{Model setup}
+\textbf{Likelihood}: Linear model with Gaussian noise
+\[
+y = \mathbf{w}^T \boldsymbol{\phi}(\mathbf{x}) + \epsilon, \quad \epsilon \sim \mathcal{N}(0, \beta^{-1})
+\]
+where $\boldsymbol{\phi}(\mathbf{x}) = [1, \phi_1(\mathbf{x}), \ldots, \phi_{M-1}(\mathbf{x})]^T$ are basis functions.
 
 \vspace{0.3cm}
-
-where $\boldsymbol{\Phi}$ is the design matrix (each row is $[1, x_i]$).
-
-\vspace{0.3cm}
-
-\textbf{Observations:}
+\textbf{Prior}: Gaussian on weights
+\[
+p(\mathbf{w}) = \mathcal{N}(\mathbf{0}, \alpha^{-1}\mathbf{I})
+\]
 \begin{itemize}
-\item $\mathbf{m}_N$ is the regularized least-squares solution
-\item $\mathbf{S}_N$ shrinks as we see more data (uncertainty decreases)
-\item Ratio $\alpha/\beta$ controls regularization strength
+    \item $\alpha$ = prior precision (large $\alpha$ $\Rightarrow$ weights close to zero).
+    \item $\beta$ = noise precision (large $\beta$ $\Rightarrow$ low noise).
 \end{itemize}
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Posterior Predictive Distribution}
+\frametitle{Posterior derivation}
+With $N$ observations $\{(\mathbf{x}_i, y_i)\}$, define design matrix $\boldsymbol{\Phi}$ with rows $\boldsymbol{\phi}(\mathbf{x}_i)^T$.
 
-\textbf{For a new input $x^*$, we want:}
-
-$$p(t^* \mid x^*, \mathcal{D}) = \int p(t^* \mid x^*, \mathbf{w}) \, p(\mathbf{w} \mid \mathcal{D}) \, d\mathbf{w}$$
-
-\vspace{0.3cm}
-
-\textbf{This integral marginalizes over weight uncertainty.}
-
-\vspace{0.3cm}
-
-\textbf{Result is also Gaussian:}
-
-$$p(t^* \mid x^*, \mathcal{D}) = \mathcal{N}(\mu^*, \sigma^{*2})$$
-
+\vspace{0.2cm}
+\textbf{Posterior} (Gaussian $\times$ Gaussian = Gaussian):
+\[
+p(\mathbf{w}|\mathcal{D}) = \mathcal{N}(\mathbf{m}_N, \mathbf{S}_N)
+\]
 where:
-\begin{align*}
-\mu^* &= \mathbf{m}_N^T \boldsymbol{\phi}(x^*) \quad \text{(mean prediction)} \\
-\sigma^{*2} &= \underbrace{\frac{1}{\beta}}_{\text{data noise}} + \underbrace{\boldsymbol{\phi}(x^*)^T \mathbf{S}_N \boldsymbol{\phi}(x^*)}_{\text{model uncertainty}}
-\end{align*}
+\[
+\mathbf{S}_N^{-1} = \alpha\mathbf{I} + \beta\boldsymbol{\Phi}^T\boldsymbol{\Phi}, \qquad \mathbf{m}_N = \beta\mathbf{S}_N\boldsymbol{\Phi}^T\mathbf{t}
+\]
 
-\vspace{0.3cm}
-
-\textbf{Two sources of uncertainty:}
-\begin{enumerate}
-\item Irreducible observation noise (aleatoric)
-\item Uncertainty about which weights are correct (epistemic)
-\end{enumerate}
-
+\vspace{0.2cm}
+\begin{itemize}
+    \item $\mathbf{m}_N$: posterior mean (regularized least squares solution).
+    \item $\mathbf{S}_N$: posterior covariance (uncertainty in weights).
+\end{itemize}
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Visualizing the Posterior}
+\frametitle{Predictive distribution}
+For a new input $\mathbf{x}_*$, integrate over weight uncertainty:
+\[
+p(y_*|\mathbf{x}_*, \mathcal{D}) = \int p(y_*|\mathbf{x}_*, \mathbf{w}) \, p(\mathbf{w}|\mathcal{D}) \, d\mathbf{w}
+\]
+\vspace{0.2cm}
+Result (Gaussian):
+\[
+p(y_*|\mathbf{x}_*, \mathcal{D}) = \mathcal{N}\bigl(\mathbf{m}_N^T\boldsymbol{\phi}_*, \; \sigma_*^2\bigr)
+\]
+where:
+\[
+\sigma_*^2 = \underbrace{\beta^{-1}}_{\text{noise}} + \underbrace{\boldsymbol{\phi}_*^T \mathbf{S}_N \boldsymbol{\phi}_*}_{\text{weight uncertainty}}
+\]
+\end{frame}
 
-\begin{columns}[T]
-\column{0.5\textwidth}
-\textbf{Left: Predictions}
+\begin{frame}
+\frametitle{Two sources of uncertainty}
+\[
+\sigma_*^2 = \underbrace{\beta^{-1}}_{\text{aleatoric}} + \underbrace{\boldsymbol{\phi}_*^T \mathbf{S}_N \boldsymbol{\phi}_*}_{\text{epistemic}}
+\]
+\vspace{0.2cm}
 \begin{itemize}
-\item Mean prediction (red line)
-\item Confidence band (shaded)
-\item Wider outside training data
-\item Quantifies extrapolation risk
+    \item \textbf{Aleatoric uncertainty} ($\beta^{-1}$): irreducible noise in the data. Cannot be reduced by collecting more data.
+    \item \textbf{Epistemic uncertainty} ($\boldsymbol{\phi}_*^T \mathbf{S}_N \boldsymbol{\phi}_*$): uncertainty about model parameters. \emph{Shrinks} as we collect more data.
 \end{itemize}
+\vspace{0.3cm}
+This decomposition is central to Bayesian approaches!
+\end{frame}
 
-\column{0.5\textwidth}
-\textbf{Right: Weight Space}
+\begin{frame}
+\frametitle{Posterior evolution with data}
+\begin{center}
+\includegraphics[width=0.75\linewidth]{09a-bnn-13-5.png}
+\end{center}
+\vspace{-0.2cm}
 \begin{itemize}
-\item Posterior over $(w_0, w_1)$
-\item Peaked near true values
-\item Covariance shows correlation
-\item Shrinks with more data
+    \item \textbf{Left}: Posterior density over weights sharpens with more data.
+    \item \textbf{Middle}: Posterior samples of functions become more consistent.
+    \item \textbf{Right}: Predictive bands shrink where data exist.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Nonlinear targets via basis functions}
+Replace identity basis with Gaussian basis: $\phi_j(x) = \exp\bigl(-\frac{(x - \mu_j)^2}{2\sigma^2}\bigr)$
+\begin{center}
+\includegraphics[width=0.58\linewidth]{09a-bnn-14-6.png}
+\end{center}
+Linear model in $\boldsymbol{\phi}$ space fits nonlinear targets in $x$ space.
+\end{frame}
+
+\begin{frame}
+\frametitle{Key observation: uncertainty away from data}
+\begin{center}
+\includegraphics[width=0.55\linewidth]{09a-bnn-14-6.png}
+\end{center}
+\begin{itemize}
+    \item Predictive bands are \textbf{tight} near observations.
+    \item Bands \textbf{widen} away from data (epistemic uncertainty grows).
+    \item This is exactly what we want for extrapolation warnings!
+\end{itemize}
+\end{frame}
+
+%========================================================================================
+\section{Model Selection via Evidence}
+%========================================================================================
+
+\begin{frame}
+\frametitle{The model selection problem}
+How do we choose:
+\begin{itemize}
+    \item Number of basis functions?
+    \item Polynomial degree?
+    \item Network architecture?
+\end{itemize}
+\vspace{0.3cm}
+Cross-validation is one approach. Bayesian model selection uses the \textbf{evidence} (marginal likelihood):
+\[
+p(\mathcal{D}|\mathcal{M}) = \int p(\mathcal{D}|\theta, \mathcal{M}) \, p(\theta|\mathcal{M}) \, d\theta
+\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Evidence as automatic Occam's razor}
+\[
+\ln p(\mathbf{t}|\alpha,\beta) = \underbrace{\frac{M}{2}\ln\alpha + \frac{N}{2}\ln\beta - E(\mathbf{m}_N)}_{\text{data fit}} - \underbrace{\frac{1}{2}\ln|\mathbf{S}_N^{-1}|}_{\text{complexity}} - \frac{N}{2}\ln(2\pi)
+\]
+\vspace{0.2cm}
+\begin{itemize}
+    \item Complex models can fit data well but have low prior probability for any specific fit.
+    \item Simple models have high prior probability but may not fit data.
+    \item Evidence balances automatically --- no tuning needed.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Evidence in action: polynomial regression}
+\begin{columns}[T]
+\column{0.6\textwidth}
+\includegraphics[width=\linewidth]{09a-bnn-16-7.png}
+\column{0.4\textwidth}
+\vspace{0.3cm}
+\includegraphics[width=\linewidth]{09a-bnn-16-8.png}
+\vspace{0.2cm}
+\begin{itemize}
+\item Peak at degree 3.
+\item Lower degrees: underfit.
+\item Higher degrees: overfit.
 \end{itemize}
 \end{columns}
+\end{frame}
 
-\vspace{0.5cm}
-
-\textbf{Key takeaway:}
-
-The posterior predictive distribution gives us prediction $\pm$ uncertainty for free. No need for bootstrap or cross-validation.
-
+\begin{frame}
+\frametitle{Empirical Bayes}
+We can also optimize hyperparameters $\alpha, \beta$ by maximizing evidence:
+\[
+\alpha^*, \beta^* = \arg\max_{\alpha, \beta} \ln p(\mathcal{D}|\alpha, \beta)
+\]
+\vspace{0.2cm}
+\begin{itemize}
+    \item Called ``Empirical Bayes'' or ``Type II Maximum Likelihood.''
+    \item Automatic regularization strength selection.
+    \item No cross-validation needed.
+\end{itemize}
 \end{frame}
 
 %========================================================================================
-\section{From Linear Models to Neural Networks}
+\section{Variational Inference}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Why Neural Networks Break Everything}
-
-\textbf{Bayesian linear regression works because:}
-\begin{enumerate}
-\item Model is linear in parameters
-\item Gaussian prior + Gaussian likelihood = Gaussian posterior (conjugacy)
-\item Can invert the design matrix to get closed-form solution
-\end{enumerate}
-
-\vspace{0.5cm}
-
-\textbf{Neural networks break all three assumptions:}
-\begin{enumerate}
-\item \textbf{Nonlinearity:} Nested activations $\sigma(W_2 \sigma(W_1 x))$, not linear
-\item \textbf{No conjugacy:} Posterior has no closed form
-\item \textbf{High-dimensional:} Modern networks have millions of parameters
-\end{enumerate}
-
-\vspace{0.5cm}
-
-\textbf{The posterior for a neural network:}
-
-$$p(\mathbf{w} \mid \mathcal{D}) = \frac{p(\mathcal{D} \mid \mathbf{w}) p(\mathbf{w})}{\int p(\mathcal{D} \mid \mathbf{w}') p(\mathbf{w}') d\mathbf{w}'}$$
-
-The denominator integrates over millions of dimensions with non-convex likelihood. Computing this exactly is hopeless.
-
+\frametitle{The scalability problem}
+Bayesian linear regression works because:
+\begin{itemize}
+    \item Gaussian prior $\times$ Gaussian likelihood $=$ Gaussian posterior.
+\end{itemize}
+\vspace{0.3cm}
+For neural networks:
+\begin{itemize}
+    \item Posterior $p(\mathbf{w}|\mathcal{D})$ is \textbf{intractable} (no closed form).
+    \item MCMC is too slow for millions of parameters.
+    \item We need a fast approximation.
+\end{itemize}
+\vspace{0.3cm}
+\textbf{Variational inference}: Approximate $p(\mathbf{w}|\mathcal{D})$ with a tractable $q_\phi(\mathbf{w})$.
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Probabilistic View of Neural Networks}
-
-\textbf{A neural network defines a conditional distribution:}
-
-$$p(y \mid \mathbf{x}, \mathbf{w})$$
-
+\frametitle{The variational objective}
+Find $q_\phi(\mathbf{w})$ that is ``close'' to $p(\mathbf{w}|\mathcal{D})$ by minimizing KL divergence:
+\[
+\text{KL}(q_\phi \| p(\cdot|\mathcal{D})) = \int q_\phi(\mathbf{w}) \ln \frac{q_\phi(\mathbf{w})}{p(\mathbf{w}|\mathcal{D})} d\mathbf{w}
+\]
+\vspace{0.2cm}
+Problem: This requires knowing $p(\mathbf{w}|\mathcal{D})$, which is intractable!
 \vspace{0.3cm}
 
-\textbf{For regression:}
-$$p(y \mid \mathbf{x}, \mathbf{w}) = \mathcal{N}(y \mid f_\mathbf{w}(\mathbf{x}), \sigma^2)$$
-
-\textbf{For classification:}
-$$p(y \mid \mathbf{x}, \mathbf{w}) = \text{Categorical}(\text{softmax}(f_\mathbf{w}(\mathbf{x})))$$
-
-\vspace{0.5cm}
-
-\textbf{Three approaches to parameter estimation:}
-
-\begin{enumerate}
-\item \textbf{MLE:} $\mathbf{w}_{\text{MLE}} = \argmax_\mathbf{w} \, p(\mathcal{D} \mid \mathbf{w})$ \quad (standard training)
-\item \textbf{MAP:} $\mathbf{w}_{\text{MAP}} = \argmax_\mathbf{w} \, p(\mathcal{D} \mid \mathbf{w}) p(\mathbf{w})$ \quad (+ weight decay)
-\item \textbf{Full Bayes:} $p(\mathbf{w} \mid \mathcal{D})$ \quad (Bayesian neural networks)
-\end{enumerate}
-
+Solution: Rearrange to get the \textbf{Evidence Lower Bound (ELBO)}.
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Two Types of Uncertainty}
-
-\textbf{Aleatoric Uncertainty (Data Uncertainty):}
-\begin{itemize}
-\item Inherent noise in the observations
-\item Cannot be reduced by collecting more data
-\item Example: Sensor noise, measurement error
-\item Captured by $\sigma^2$ in $p(y \mid x, \mathbf{w}) = \mathcal{N}(f_\mathbf{w}(x), \sigma^2)$
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{Epistemic Uncertainty (Model Uncertainty):}
-\begin{itemize}
-\item Uncertainty about which parameters are correct
-\item Can be reduced by collecting more data
-\item Example: Extrapolation to unseen regions
-\item Captured by the integral $\int p(y \mid x, \mathbf{w}) p(\mathbf{w} \mid \mathcal{D}) d\mathbf{w}$
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{Bayesian neural networks quantify both.}
-
+\frametitle{Deriving the ELBO}
+Start with log evidence:
+\[
+\ln p(\mathcal{D}) = \ln \int p(\mathcal{D}, \mathbf{w}) \, d\mathbf{w}
+\]
+Multiply and divide by $q_\phi(\mathbf{w})$, apply Jensen's inequality:
+\[
+\ln p(\mathcal{D}) \geq \underbrace{\mathbb{E}_{q_\phi}\bigl[\ln p(\mathcal{D}|\mathbf{w})\bigr]}_{\text{expected log-likelihood}} - \underbrace{\text{KL}(q_\phi \| p(\mathbf{w}))}_{\text{complexity penalty}}
+\]
+This is the \textbf{ELBO} $\mathcal{L}(\phi)$. Maximizing ELBO $\Leftrightarrow$ minimizing KL to posterior.
 \end{frame}
 
-%========================================================================================
-\section{Approximate Inference}
-%========================================================================================
-
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Two Roads to Approximation}
-
-Since exact inference is intractable, we approximate.
-
-\vspace{0.5cm}
-
-\begin{columns}[T]
-\column{0.45\textwidth}
-\textbf{Markov Chain Monte Carlo}
-
+\frametitle{ELBO intuition}
+\[
+\mathcal{L}(\phi) = \underbrace{\mathbb{E}_{q_\phi}[\ln p(\mathcal{D}|\mathbf{w})]}_{\text{data fit}} - \underbrace{\text{KL}(q_\phi \| p(\mathbf{w}))}_{\text{stay close to prior}}
+\]
 \vspace{0.3cm}
-
-Sample from posterior:
-$$\mathbf{w}_i \sim p(\mathbf{w} \mid \mathcal{D})$$
-
+\begin{itemize}
+    \item \textbf{First term}: Encourages $q_\phi$ to put mass on weights that explain data.
+    \item \textbf{Second term}: Penalizes $q_\phi$ for deviating from prior (regularization).
+\end{itemize}
 \vspace{0.3cm}
-
-\textbf{Pros:}
-\begin{itemize}
-\item Unbiased (given enough samples)
-\item Theoretically sound
-\end{itemize}
-
-\textbf{Cons:}
-\begin{itemize}
-\item Slow for large networks
-\item Hard to diagnose convergence
-\item Requires many network evaluations
-\end{itemize}
-
-\column{0.45\textwidth}
-\textbf{Variational Inference}
-
-\vspace{0.3cm}
-
-Approximate with $q_\phi(\mathbf{w})$:
-$$q_\phi \approx p(\mathbf{w} \mid \mathcal{D})$$
-
-\vspace{0.3cm}
-
-\textbf{Pros:}
-\begin{itemize}
-\item Fast (gradient-based)
-\item Scales to large networks
-\item Deterministic training
-\end{itemize}
-
-\textbf{Cons:}
-\begin{itemize}
-\item Biased approximation
-\item Quality depends on $q_\phi$ family
-\item May underestimate uncertainty
-\end{itemize}
-\end{columns}
-
-\vspace{0.5cm}
-
-\textbf{We focus on variational inference for scalability.}
-
+Same trade-off as MAP estimation, but for entire distributions!
 \end{frame}
 
-%========================================================================================
-\section{Variational Inference and the ELBO}
-%========================================================================================
-
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Variational Inference: The Core Idea}
+\frametitle{The reparameterization trick}
+To optimize ELBO with gradient descent, we need $\nabla_\phi \mathbb{E}_{q_\phi}[f(\mathbf{w})]$.
+\vspace{0.2cm}
 
-\textbf{Goal:} Find $q_\phi(\mathbf{w})$ that best approximates $p(\mathbf{w} \mid \mathcal{D})$.
+\textbf{Problem}: Expectation depends on $\phi$ through the distribution.
+\vspace{0.2cm}
 
-\vspace{0.3cm}
-
-\textbf{Approach:} Minimize KL divergence:
-
-$$\text{KL}(q_\phi(\mathbf{w}) \| p(\mathbf{w} \mid \mathcal{D})) = \int q_\phi(\mathbf{w}) \log \frac{q_\phi(\mathbf{w})}{p(\mathbf{w} \mid \mathcal{D})} d\mathbf{w}$$
-
-\vspace{0.3cm}
-
-\textbf{Problem:} This requires knowing $p(\mathbf{w} \mid \mathcal{D})$, which is intractable!
-
-\vspace{0.3cm}
-
-\textbf{Solution:} Use Bayes' theorem to derive an equivalent objective that doesn't require the posterior:
-
-$$\log p(\mathcal{D}) = \text{KL}(q_\phi \| p(\mathbf{w} \mid \mathcal{D})) + \mathcal{L}(\phi)$$
-
-where $\mathcal{L}(\phi)$ is the Evidence Lower Bound (ELBO).
-
-\vspace{0.3cm}
-
-Since $\log p(\mathcal{D})$ is constant, minimizing KL = maximizing ELBO.
-
+\textbf{Solution}: Reparameterize the sampling:
+\[
+\mathbf{w} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \quad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\]
+Now $\mathbf{w}$ is a deterministic function of $\phi = \{\boldsymbol{\mu}, \boldsymbol{\sigma}\}$ and random $\boldsymbol{\epsilon}$:
+\[
+\nabla_\phi \mathbb{E}_{q_\phi}[f(\mathbf{w})] = \mathbb{E}_{\boldsymbol{\epsilon}}[\nabla_\phi f(\boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon})]
+\]
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{The Evidence Lower Bound (ELBO)}
-
-\begin{equation}
-\mathcal{L}(\phi) = \mathbb{E}_{q_\phi(\mathbf{w})}[\log p(\mathcal{D} \mid \mathbf{w})] - \text{KL}(q_\phi(\mathbf{w}) \| p(\mathbf{w}))
-\end{equation}
-
-\vspace{0.5cm}
-
-\textbf{Two terms with clear interpretations:}
-
-\begin{enumerate}
-\item \textbf{Expected log-likelihood (reconstruction term):}
-$$\mathbb{E}_{q_\phi}[\log p(\mathcal{D} \mid \mathbf{w})]$$
-Rewards weights that explain the data well.
-
-\item \textbf{KL divergence (regularization term):}
-$$-\text{KL}(q_\phi(\mathbf{w}) \| p(\mathbf{w}))$$
-Keeps approximate posterior close to prior.
-\end{enumerate}
-
-\vspace{0.3cm}
-
-\textbf{This is like autoencoder training:}
+\frametitle{VI example: approximating a bimodal posterior}
+\begin{center}
+\includegraphics[width=0.85\linewidth]{09a-bnn-18-9.png}
+\end{center}
 \begin{itemize}
-\item One term for accurate reconstruction
-\item One term to keep latent variables well-behaved
+    \item True posterior is bimodal (two plausible values of $\theta$).
+    \item Single Gaussian $q_\phi$ can only capture one mode.
+    \item This is the \textbf{mean-field approximation} limitation.
 \end{itemize}
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Computing the ELBO}
-
-\textbf{Expand the expectations:}
-
-$$\mathcal{L}(\phi) = \mathbb{E}_{q_\phi}\big[\log p(\mathcal{D} \mid \mathbf{w})\big] - \mathbb{E}_{q_\phi}\big[\log q_\phi(\mathbf{w})\big] + \mathbb{E}_{q_\phi}\big[\log p(\mathbf{w})\big]$$
-
-\vspace{0.5cm}
-
-\textbf{For a Gaussian variational distribution:}
-$$q_\phi(\mathbf{w}) = \mathcal{N}(\boldsymbol{\mu}, \text{diag}(\boldsymbol{\sigma}^2))$$
-
-where $\phi = (\boldsymbol{\mu}, \boldsymbol{\sigma})$.
-
-\vspace{0.5cm}
-
-\textbf{Estimate via Monte Carlo sampling:}
-\begin{enumerate}
-\item Sample $\mathbf{w} \sim q_\phi(\mathbf{w})$ using the reparameterization trick
-\item Evaluate all three terms
-\item Average over multiple samples
-\item Compute gradients via backpropagation
-\item Update $\phi$ with gradient ascent
-\end{enumerate}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{The Reparameterization Trick}
-
-\textbf{Problem:} How do we backpropagate through sampling $\mathbf{w} \sim q_\phi(\mathbf{w})$?
-
+\frametitle{Mean-field approximation}
+For computational tractability, we assume:
+\[
+q_\phi(\mathbf{w}) = \prod_{i} q_{\phi_i}(w_i) = \prod_i \mathcal{N}(w_i | \mu_i, \sigma_i^2)
+\]
+\vspace{0.2cm}
+\begin{itemize}
+    \item Each weight has independent Gaussian posterior.
+    \item Ignores correlations between weights.
+    \item Trades accuracy for scalability.
+\end{itemize}
 \vspace{0.3cm}
-
-\textbf{Direct sampling (doesn't work):}
-$$\mathbf{w} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2)$$
-No gradient w.r.t. $\boldsymbol{\mu}, \boldsymbol{\sigma}$ through random sampling.
-
-\vspace{0.5cm}
-
-\textbf{Reparameterization (works!):}
-\begin{align*}
-\boldsymbol{\epsilon} &\sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \quad \text{(parameter-free noise)} \\
-\mathbf{w} &= \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon} \quad \text{(deterministic transformation)}
-\end{align*}
-
-\vspace{0.3cm}
-
-Now $\mathbf{w}$ is a deterministic function of $\phi = (\boldsymbol{\mu}, \boldsymbol{\sigma})$ and we can compute:
-$$\frac{\partial \mathcal{L}}{\partial \boldsymbol{\mu}}, \quad \frac{\partial \mathcal{L}}{\partial \boldsymbol{\sigma}}$$
-
-\vspace{0.3cm}
-
-\textbf{This moves randomness outside the parameters, enabling backpropagation.}
-
+Despite limitations, works surprisingly well in practice!
 \end{frame}
 
 %========================================================================================
 \section{Bayesian Neural Networks}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Architecture of a Bayesian Neural Network}
-
-\textbf{Standard neural network layer:}
-$$\mathbf{h} = \sigma(\mathbf{W}\mathbf{x} + \mathbf{b})$$
-
-Weights $\mathbf{W}, \mathbf{b}$ are fixed after training.
-
-\vspace{0.5cm}
-
-\textbf{Bayesian neural network layer:}
-
-Each weight is a \textbf{distribution}, not a single value:
-\begin{align*}
-\mathbf{W} &\sim q_\phi(\mathbf{W}) = \mathcal{N}(\boldsymbol{\mu}_W, \text{diag}(\boldsymbol{\sigma}_W^2)) \\
-\mathbf{b} &\sim q_\phi(\mathbf{b}) = \mathcal{N}(\boldsymbol{\mu}_b, \text{diag}(\boldsymbol{\sigma}_b^2))
-\end{align*}
-
-\vspace{0.3cm}
-
-\textbf{Parameters to learn:} $\phi = \{\boldsymbol{\mu}_W, \boldsymbol{\sigma}_W, \boldsymbol{\mu}_b, \boldsymbol{\sigma}_b\}$
-
-\vspace{0.3cm}
-
-This \textbf{doubles} the number of parameters compared to a standard network.
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Training a Bayesian Neural Network}
-
-\textbf{Bayes by Backprop Algorithm:}
-
+\frametitle{From VI to BNNs}
+Apply variational inference to neural network weights:
 \begin{enumerate}
-\item \textbf{Sample weights:} For each layer, sample:
-\begin{align*}
-\boldsymbol{\epsilon} &\sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
-\mathbf{W} &= \boldsymbol{\mu}_W + \boldsymbol{\sigma}_W \odot \boldsymbol{\epsilon}
-\end{align*}
-
-\item \textbf{Forward pass:} Compute predictions with sampled weights
-
-\item \textbf{Compute ELBO:}
-\begin{align*}
-\mathcal{L}(\phi) &= \log p(\mathcal{D} \mid \mathbf{W}) + \log p(\mathbf{W}) - \log q_\phi(\mathbf{W})
-\end{align*}
-
-\item \textbf{Backward pass:} Compute gradients $\nabla_\phi \mathcal{L}$
-
-\item \textbf{Update:} $\phi \leftarrow \phi + \alpha \nabla_\phi \mathcal{L}$ (gradient ascent on ELBO)
+    \item Replace each weight $w_{ij}$ with distribution $q(w_{ij}) = \mathcal{N}(\mu_{ij}, \sigma_{ij}^2)$.
+    \item Define prior $p(\mathbf{w}) = \mathcal{N}(\mathbf{0}, \sigma_p^2 \mathbf{I})$.
+    \item Optimize ELBO via stochastic gradient descent.
 \end{enumerate}
-
 \vspace{0.3cm}
-
-\textbf{This looks almost identical to standard training!}
-
-The main difference: sample weights at each iteration and include KL penalty.
-
+This is \textbf{Bayes by Backprop} (Blundell et al., 2015).
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Making Predictions}
-
-\textbf{Posterior predictive distribution:}
-
-$$p(y \mid \mathbf{x}, \mathcal{D}) = \int p(y \mid \mathbf{x}, \mathbf{w}) \, p(\mathbf{w} \mid \mathcal{D}) \, d\mathbf{w}$$
-
+\frametitle{BayesianLinear layer}
+Standard linear layer: $\mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b}$ with fixed $\mathbf{W}, \mathbf{b}$.
 \vspace{0.3cm}
 
-\textbf{Approximate with Monte Carlo:}
-
+Bayesian linear layer:
 \begin{enumerate}
-\item Sample $T$ weight configurations from $q_\phi(\mathbf{w})$:
-$$\mathbf{w}_1, \mathbf{w}_2, \ldots, \mathbf{w}_T \sim q_\phi(\mathbf{w})$$
-
-\item Make prediction with each:
-$$y_t = f_{\mathbf{w}_t}(\mathbf{x})$$
-
-\item Average predictions:
-$$\mathbb{E}[y \mid \mathbf{x}, \mathcal{D}] \approx \frac{1}{T} \sum_{t=1}^T y_t$$
-
-\item Compute predictive variance:
-$$\text{Var}[y \mid \mathbf{x}, \mathcal{D}] \approx \frac{1}{T} \sum_{t=1}^T (y_t - \bar{y})^2$$
+    \item Store $\mu_W, \rho_W, \mu_b, \rho_b$ (variational parameters).
+    \item Compute $\sigma = \text{softplus}(\rho) = \ln(1 + e^\rho)$ (ensures $\sigma > 0$).
+    \item Sample: $W = \mu_W + \sigma_W \odot \epsilon_W$, \; $\epsilon_W \sim \mathcal{N}(0, 1)$.
+    \item Forward pass: $\mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b}$.
+    \item Compute KL term for loss.
 \end{enumerate}
-
-\vspace{0.3cm}
-
-\textbf{This gives us prediction $\pm$ uncertainty.}
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Visualizing BNN Predictions}
+\frametitle{Bayes by Backprop loss}
+\vspace{-0.2cm}
+\[
+\mathcal{L} = \underbrace{\text{KL}(q_\phi(\mathbf{w}) \| p(\mathbf{w}))}_{\text{complexity cost}} - \underbrace{\mathbb{E}_{q_\phi}[\ln p(\mathcal{D}|\mathbf{w})]}_{\text{likelihood cost}}
+\]
+Monte Carlo estimate with $S$ weight samples:
+\[
+\mathcal{L} \approx \frac{1}{S}\sum_{s=1}^{S}\Bigl[\ln q_\phi(\mathbf{w}^{(s)}) - \ln p(\mathbf{w}^{(s)}) - \ln p(\mathcal{D}|\mathbf{w}^{(s)})\Bigr]
+\]
+\vspace{0.2cm}
+\begin{itemize}
+    \item Sample weights once (or few times) per minibatch.
+    \item Backprop through sampled network as usual.
+    \item Twice the parameters (mean + variance for each weight).
+\end{itemize}
+\end{frame}
 
+\begin{frame}
+\frametitle{Training the BNN surrogate}
 \begin{center}
-\textbf{Interpolation vs. Extrapolation}
+\includegraphics[width=0.6\linewidth]{09a-bnn-22-10.png}
 \end{center}
+\begin{itemize}
+    \item Architecture: 1 $\to$ 64 $\to$ 64 $\to$ 1 with tanh activations.
+    \item Prior: $\mathcal{N}(0, 1)$ on all weights.
+    \item Training: 3500 epochs, Adam optimizer, 6 MC samples per step.
+\end{itemize}
+\end{frame}
 
+\begin{frame}
+\frametitle{Predictive distribution}
+At test time, approximate predictive distribution via Monte Carlo:
+\[
+p(y_*|x_*, \mathcal{D}) \approx \frac{1}{S}\sum_{s=1}^{S} p(y_*|x_*, \mathbf{w}^{(s)}), \quad \mathbf{w}^{(s)} \sim q_\phi(\mathbf{w})
+\]
+\vspace{0.2cm}
+In practice:
+\begin{enumerate}
+    \item Sample $S$ weight configurations from $q_\phi$.
+    \item Run forward pass for each to get $S$ predictions.
+    \item Compute mean and variance of predictions.
+\end{enumerate}
+\end{frame}
+
+%========================================================================================
+\section{Results: Interpolation vs Extrapolation}
+%========================================================================================
+
+\begin{frame}
+\frametitle{BNN predictions with uncertainty}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{09a-bnn-23-11.png}
+\end{center}
+\begin{itemize}
+    \item \textbf{Green region} (0--6 s): Training data. Tight predictive bands.
+    \item \textbf{Red region} (6--8 s): Extrapolation. Bands widen significantly.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Why uncertainty grows in extrapolation}
+\begin{itemize}
+    \item In training region: Many weight configurations fit the data $\Rightarrow$ predictions agree.
+    \item In extrapolation: Weight configurations that agreed on training data \textbf{diverge} outside it.
+\end{itemize}
 \vspace{0.3cm}
+This is exactly what we want! The model \textbf{knows what it doesn't know}.
+\end{frame}
 
-\begin{columns}[T]
-\column{0.5\textwidth}
-\textbf{Inside training region:}
+\begin{frame}
+\frametitle{Posterior samples tell the story}
+\begin{center}
+\includegraphics[width=0.95\linewidth]{09a-bnn-24-12.png}
+\end{center}
 \begin{itemize}
-\item Tight agreement between samples
-\item Low epistemic uncertainty
-\item Confident predictions
+    \item Each curve: one forward pass with $\mathbf{w}^{(s)} \sim q_\phi(\mathbf{w})$.
+    \item Curves cluster in training region, fan out when extrapolating.
+    \item \textbf{Epistemic uncertainty} visualized directly.
 \end{itemize}
+\end{frame}
 
-\column{0.5\textwidth}
-\textbf{Outside training region:}
+\begin{frame}
+\frametitle{Epistemic vs Aleatoric uncertainty revisited}
 \begin{itemize}
-\item Samples diverge
-\item High epistemic uncertainty
-\item Model says "I don't know"
+    \item \textbf{Aleatoric} (data noise): Present everywhere, irreducible.
+    \item \textbf{Epistemic} (model uncertainty):
+    \begin{itemize}
+        \item Small where data exist (model is confident).
+        \item Large in extrapolation (model is uncertain).
+        \item Can be reduced with more data in those regions.
+    \end{itemize}
 \end{itemize}
-\end{columns}
-
-\vspace{0.5cm}
-
-\textbf{This is exactly what we want for scientific ML:}
-\begin{itemize}
-\item Trust the model where data is abundant
-\item Question the model where data is scarce
-\item Quantitative measure of extrapolation risk
-\end{itemize}
-
+\vspace{0.3cm}
+BNNs naturally capture both through the predictive distribution.
 \end{frame}
 
 %========================================================================================
 \section{Practical Considerations}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Choosing the Prior}
-
-\textbf{Common choice:} Gaussian prior
-$$p(\mathbf{w}) = \mathcal{N}(\mathbf{0}, \sigma_p^2 \mathbf{I})$$
-
-\vspace{0.3cm}
-
-\textbf{Effect of prior scale $\sigma_p$:}
-
+\frametitle{BNN limitations}
 \begin{itemize}
-\item \textbf{Small $\sigma_p$:} Strong regularization, favors small weights
-\begin{itemize}
-\item Higher bias, lower variance
-\item Good for limited data
+    \item \textbf{Computational cost}: 2$\times$ parameters, multiple forward passes.
+    \item \textbf{Mean-field approximation}: Ignores weight correlations.
+    \item \textbf{Prior specification}: Results sensitive to prior choice.
+    \item \textbf{Underestimated uncertainty}: VI tends to underestimate variance.
 \end{itemize}
-
-\item \textbf{Large $\sigma_p$:} Weak regularization, allows large weights
-\begin{itemize}
-\item Lower bias, higher variance
-\item Good for abundant data
-\end{itemize}
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Advanced priors:}
-\begin{itemize}
-\item \textbf{Mixture of Gaussians:} $p(\mathbf{w}) = \pi \mathcal{N}(0, \sigma_1^2) + (1-\pi) \mathcal{N}(0, \sigma_2^2)$
-\item \textbf{Horseshoe prior:} Encourages sparsity
-\item \textbf{Hierarchical priors:} Learn prior hyperparameters from data
-\end{itemize}
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Computational Cost}
-
-\textbf{Training:}
+\frametitle{Faster alternatives}
+\textbf{MC Dropout} (Gal \& Ghahramani, 2016):
 \begin{itemize}
-\item Similar cost to standard neural network
-\item Need to sample weights at each iteration (cheap)
-\item Compute KL divergence (cheap for Gaussian $q$ and $p$)
-\item Backprop through sampled weights (standard)
+    \item Keep dropout on at test time.
+    \item Multiple forward passes $\approx$ posterior samples.
+    \item No architecture changes needed!
 \end{itemize}
-
-\textbf{Overall:} 1-2$\times$ slower than standard training.
-
-\vspace{0.5cm}
-
-\textbf{Inference:}
+\vspace{0.3cm}
+\textbf{Deep Ensembles} (Lakshminarayanan et al., 2017):
 \begin{itemize}
-\item Need $T$ forward passes to estimate predictive distribution
-\item Each forward pass samples different weights
-\item Typically $T = 100-1000$ samples for good uncertainty estimates
+    \item Train $M$ networks with different initializations.
+    \item Ensemble variance $\approx$ epistemic uncertainty.
+    \item Often outperforms BNNs in practice.
 \end{itemize}
-
-\textbf{Overall:} $T\times$ slower than standard inference.
-
-\vspace{0.5cm}
-
-\textbf{Trade-off:} Pay extra computation cost to get uncertainty quantification.
-
-For scientific applications, this is often worth it!
-
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Limitations of Mean-Field Variational Inference}
-
-\textbf{Mean-field assumption:}
-$$q_\phi(\mathbf{w}) = \prod_{i} q_\phi(w_i)$$
-
-Weights are independent in the approximate posterior.
-
-\vspace{0.3cm}
-
-\textbf{Problems:}
-\begin{enumerate}
-\item \textbf{Underestimates uncertainty:} True posterior has correlations
-\item \textbf{Unimodal:} Cannot capture multi-modal posteriors
-\item \textbf{Gaussian assumption:} May be poor for some problems
-\end{enumerate}
-
-\vspace{0.5cm}
-
-\textbf{Better approximations:}
+\frametitle{When to use BNNs}
+\textbf{Good fit for BNNs}:
 \begin{itemize}
-\item \textbf{Normalizing flows:} Transform simple $q$ to complex distribution
-\item \textbf{Matrix Gaussian:} Allow correlations between layer weights
-\item \textbf{Implicit VI:} Learn $q$ via adversarial training
+    \item Small to medium datasets where uncertainty matters.
+    \item Safety-critical applications (medical, autonomous systems).
+    \item Active learning (query where uncertainty is high).
+    \item Scientific ML: need calibrated extrapolation warnings.
 \end{itemize}
-
 \vspace{0.3cm}
-
-\textbf{Trade-off:} More expressive $q$ = better approximation but higher cost.
-
-\end{frame}
-
-%========================================================================================
-\section{Applications in Scientific ML}
-%========================================================================================
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Why BNNs for Scientific Machine Learning?}
-
-\textbf{Scientific computing has unique requirements:}
-
-\begin{enumerate}
-\item \textbf{Limited data:} Experiments are expensive
+\textbf{Consider alternatives}:
 \begin{itemize}
-\item BNNs naturally regularize via the prior
-\item Uncertainty grows appropriately with data scarcity
+    \item Large-scale vision/NLP (use ensembles or MC dropout).
+    \item When computational budget is very limited.
 \end{itemize}
-
-\item \textbf{Extrapolation:} Often predict outside training regime
-\begin{itemize}
-\item BNNs quantify when extrapolation is risky
-\item Epistemic uncertainty flags unreliable predictions
-\end{itemize}
-
-\item \textbf{Safety-critical:} Errors can be costly or dangerous
-\begin{itemize}
-\item Uncertainty estimates enable risk-aware decisions
-\item Can halt prediction when uncertainty is too high
-\end{itemize}
-
-\item \textbf{Interpretability:} Need to understand the model
-\begin{itemize}
-\item Uncertainty maps show what the model has learned
-\item Can guide where to collect new data
-\end{itemize}
-\end{enumerate}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Application: Surrogate Modeling}
-
-\textbf{Problem:} Expensive PDE solver $u(x, t; \theta)$
-
-\begin{itemize}
-\item Full simulation takes hours/days
-\item Need many evaluations for optimization or uncertainty quantification
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Solution:} Train BNN surrogate $f_\mathbf{w}(x, t; \theta) \approx u(x, t; \theta)$
-
-\begin{itemize}
-\item Train on limited high-fidelity simulations
-\item Fast evaluation ($\sim$ms per query)
-\item Uncertainty estimates for free
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Use cases:}
-\begin{enumerate}
-\item \textbf{Uncertainty propagation:} Propagate input uncertainties through surrogate
-\item \textbf{Multi-fidelity:} Combine cheap low-fidelity + expensive high-fidelity data
-\item \textbf{Active learning:} Query simulator where BNN is most uncertain
-\item \textbf{Optimization:} Use surrogate + uncertainty for Bayesian optimization
-\end{enumerate}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Application: Physics-Informed BNNs}
-
-\textbf{Combine data with physical laws:}
-
-$$\mathcal{L}_{\text{total}} = \underbrace{\mathcal{L}_{\text{data}}}_{\text{fit observations}} + \lambda \underbrace{\mathcal{L}_{\text{physics}}}_{\text{satisfy PDE}}$$
-
-\vspace{0.3cm}
-
-\textbf{Physics loss for PDE $\mathcal{N}[u] = f$:}
-$$\mathcal{L}_{\text{physics}} = \int \|\mathcal{N}[f_\mathbf{w}(x)] - f(x)\|^2 dx$$
-
-\vspace{0.3cm}
-
-\textbf{Bayesian treatment:}
-\begin{itemize}
-\item Prior on weights: $p(\mathbf{w})$
-\item Likelihood from data: $p(\mathcal{D}_{\text{data}} \mid \mathbf{w})$
-\item Likelihood from physics: $p(\mathcal{D}_{\text{physics}} \mid \mathbf{w})$
-\item Posterior over weights that respect both data and physics
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Benefits:}
-\begin{itemize}
-\item Physics provides strong regularization
-\item Uncertainty inherits physical constraints
-\item Can learn with very limited data
-\end{itemize}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Application: Inverse Problems}
-
-\textbf{Problem:} Infer parameters $\theta$ from observations $\mathcal{D}$
-
-\vspace{0.3cm}
-
-\textbf{Example:} Damped oscillator
-$$\ddot{x} + 2\zeta\omega_n\dot{x} + \omega_n^2 x = 0$$
-
-Observe noisy displacement $x(t)$, infer $(\zeta, \omega_n)$.
-
-\vspace{0.3cm}
-
-\textbf{Two-stage Bayesian approach:}
-
-\begin{enumerate}
-\item \textbf{Learn forward model:} Train BNN $f_\mathbf{w}(\theta) \approx x(t; \theta)$
-$$p(\mathbf{w} \mid \mathcal{D}_{\text{forward}})$$
-
-\item \textbf{Bayesian inversion:} Use BNN in likelihood for inverse problem
-$$p(\theta \mid \mathcal{D}_{\text{obs}}) \propto p(\mathcal{D}_{\text{obs}} \mid \theta) p(\theta)$$
-where $p(\mathcal{D}_{\text{obs}} \mid \theta) = \int p(\mathcal{D}_{\text{obs}} \mid \mathbf{w}, \theta) p(\mathbf{w} \mid \mathcal{D}_{\text{forward}}) d\mathbf{w}$
-\end{enumerate}
-
-\vspace{0.3cm}
-
-\textbf{The BNN uncertainty propagates into the parameter posterior.}
-
-\end{frame}
-
-%========================================================================================
-\section{Beyond Mean-Field: Advanced Topics}
-%========================================================================================
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{MC Dropout: The Simplest BNN}
-
-\textbf{Observation (Gal \& Ghahramani, 2016):}
-
-Dropout training can be viewed as approximate Bayesian inference.
-
-\vspace{0.3cm}
-
-\textbf{Standard dropout:}
-\begin{itemize}
-\item During training: randomly zero out neurons
-\item During testing: use all neurons (scaled)
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{MC Dropout:}
-\begin{itemize}
-\item During training: use dropout as usual
-\item During testing: \textbf{keep dropout on!}
-\item Make $T$ predictions with different dropout masks
-\item Average for mean, variance for uncertainty
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Advantages:}
-\begin{itemize}
-\item No change to network architecture
-\item No extra parameters to store
-\item Can apply to pre-trained models
-\end{itemize}
-
-\textbf{Disadvantages:}
-\begin{itemize}
-\item Underestimates uncertainty compared to full BNN
-\item No principled way to set dropout rate
-\end{itemize}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Deep Ensembles: Practical Alternative}
-
-\textbf{Idea:} Train $M$ networks with different initializations.
-
-\vspace{0.3cm}
-
-\textbf{Algorithm:}
-\begin{enumerate}
-\item Train $M$ networks $f_{\mathbf{w}_1}, \ldots, f_{\mathbf{w}_M}$ independently
-\item For prediction, average over ensemble:
-$$\mu(x) = \frac{1}{M} \sum_{i=1}^M f_{\mathbf{w}_i}(x)$$
-$$\sigma^2(x) = \frac{1}{M} \sum_{i=1}^M (f_{\mathbf{w}_i}(x) - \mu(x))^2$$
-\end{enumerate}
-
-\vspace{0.3cm}
-
-\textbf{Bayesian interpretation:}
-
-Each network represents a mode of the posterior. Ensemble approximates:
-$$q(\mathbf{w}) = \sum_{i=1}^M \alpha_i \delta_{\mathbf{w}_i}(\mathbf{w})$$
-
-\vspace{0.3cm}
-
-\textbf{Surprisingly effective in practice!}
-\begin{itemize}
-\item Often better calibrated than single BNN
-\item Easier to implement and debug
-\item Trivially parallelizable
-\end{itemize}
-
 \end{frame}
 
 %========================================================================================
 \section{Summary}
 %========================================================================================
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{The Bayesian Journey}
+\frametitle{Key takeaways}
+\begin{enumerate}
+    \item \textbf{Bayes' theorem} provides a principled framework for updating beliefs with data.
+    \item \textbf{Bayesian linear regression} gives exact posteriors --- study it to build intuition.
+    \item \textbf{Evidence} automatically balances model fit vs complexity.
+    \item \textbf{Variational inference} turns Bayesian inference into optimization.
+    \item \textbf{BNNs} provide calibrated uncertainty, especially for extrapolation.
+\end{enumerate}
+\end{frame}
 
+\begin{frame}
+\frametitle{The big picture}
 \begin{center}
-\begin{tikzpicture}[
-    box/.style={rectangle, draw, fill=blue!20, text width=5cm, align=center, minimum height=0.8cm},
-    arrow/.style={->, >=Stealth, thick}
-]
+\begin{tikzpicture}[node distance=1.5cm, auto,
+    box/.style={rectangle, draw, text width=2.5cm, align=center, minimum height=1cm}]
+    \node[box] (prior) {Prior $p(\mathbf{w})$};
+    \node[box, right=of prior] (likelihood) {Likelihood $p(\mathcal{D}|\mathbf{w})$};
+    \node[box, below=of prior, xshift=1.75cm] (posterior) {Posterior $p(\mathbf{w}|\mathcal{D})$};
+    \node[box, below=of posterior] (predictive) {Predictive $p(y_*|x_*, \mathcal{D})$};
 
-\node[box] (bayes) at (0,0) {Bayes' Theorem};
-\node[box] (linear) at (0,-1.3) {Bayesian Linear Regression};
-\node[box] (approx) at (0,-2.6) {Approximate Inference (VI)};
-\node[box] (bnn) at (0,-3.9) {Bayesian Neural Networks};
-\node[box] (app) at (0,-5.2) {Scientific ML Applications};
-
-\draw[arrow] (bayes) -- (linear);
-\draw[arrow] (linear) -- (approx);
-\draw[arrow] (approx) -- (bnn);
-\draw[arrow] (bnn) -- (app);
-
-\node[right=0.3cm of bayes, text width=3cm, font=\small] {Foundation};
-\node[right=0.3cm of linear, text width=3cm, font=\small] {Exact inference};
-\node[right=0.3cm of approx, text width=3cm, font=\small] {ELBO, reparam trick};
-\node[right=0.3cm of bnn, text width=3cm, font=\small] {Bayes by backprop};
-\node[right=0.3cm of app, text width=3cm, font=\small] {UQ for SciML};
-
+    \draw[->, thick] (prior) -- (posterior);
+    \draw[->, thick] (likelihood) -- (posterior);
+    \draw[->, thick] (posterior) -- (predictive) node[midway, right] {marginalize};
 \end{tikzpicture}
 \end{center}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Key Takeaways}
-
-\begin{enumerate}
-\item \textbf{Uncertainty quantification is essential for scientific ML}
-\begin{itemize}
-\item Limited data, extrapolation, safety-critical applications
-\end{itemize}
-
-\item \textbf{Bayesian methods provide a principled framework}
-\begin{itemize}
-\item Prior + likelihood = posterior
-\item Posterior predictive = predictions with uncertainty
-\end{itemize}
-
-\item \textbf{Exact inference is tractable only for simple models}
-\begin{itemize}
-\item Linear models: closed-form Gaussian posterior
-\item Neural networks: require approximations
-\end{itemize}
-
-\item \textbf{Variational inference scales to large networks}
-\begin{itemize}
-\item ELBO = reconstruction - KL(q || p)
-\item Reparameterization trick enables gradients
-\item Bayes by backprop = VI for neural networks
-\end{itemize}
-
-\item \textbf{Trade-offs exist between methods}
-\begin{itemize}
-\item Full BNN: principled but expensive
-\item MC Dropout: cheap but approximate
-\item Deep Ensembles: practical and effective
-\end{itemize}
-\end{enumerate}
-
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-\begin{frame}
-\frametitle{Further Reading}
-
-\textbf{Foundational Papers:}
-\begin{itemize}
-\item Graves (2011): Practical Variational Inference for NNs
-\item Blundell et al. (2015): Weight Uncertainty in Neural Networks
-\item Gal \& Ghahramani (2016): Dropout as Bayesian Approximation
-\item Lakshminarayanan et al. (2017): Simple and Scalable Predictive Uncertainty
-\end{itemize}
-
 \vspace{0.3cm}
-
-\textbf{Reviews and Tutorials:}
-\begin{itemize}
-\item MacKay (1992): A Practical Bayesian Framework for Backprop Networks
-\item Neal (1996): Bayesian Learning for Neural Networks (book)
-\item Gal (2016): Uncertainty in Deep Learning (PhD thesis)
-\item Wilson \& Izmailov (2020): Bayesian Deep Learning and a Probabilistic Perspective
-\end{itemize}
-
-\vspace{0.3cm}
-
-\textbf{Software:}
-\begin{itemize}
-\item PyTorch: Built-in distributions for VI
-\item Pyro: Probabilistic programming on PyTorch
-\item TensorFlow Probability: End-to-end Bayesian modeling
-\end{itemize}
-
+BNNs approximate this pipeline with variational inference, giving us uncertainty-aware predictions for scientific machine learning.
 \end{frame}
 
-%----------------------------------------------------------------------------------------
 \begin{frame}
-\frametitle{Questions?}
-
-\begin{center}
-\Huge Thank you!
-
-\vspace{1cm}
-
-\Large
-Bayesian Neural Networks:\\
-Principled Uncertainty for Scientific ML
-
-\vspace{1cm}
-
-\normalsize
-Remember:
+\frametitle{Further reading}
 \begin{itemize}
-\item Uncertainty is a feature, not a bug
-\item Prior + likelihood = posterior (always!)
-\item When in doubt, approximate (intelligently)
+    \item \textbf{Bishop, PRML Ch. 3}: Bayesian linear regression derivations.
+    \item \textbf{Blundell et al. (2015)}: ``Weight Uncertainty in Neural Networks'' --- Bayes by Backprop.
+    \item \textbf{Gal \& Ghahramani (2016)}: ``Dropout as a Bayesian Approximation.''
+    \item \textbf{Lakshminarayanan et al. (2017)}: ``Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles.''
 \end{itemize}
-\end{center}
-
+\vspace{0.3cm}
+\textbf{Code}: See accompanying notebook \texttt{09a-bnn.ipynb} for full implementation.
 \end{frame}
 
 \end{document}
