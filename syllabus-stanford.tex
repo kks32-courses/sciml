@@ -1,0 +1,197 @@
+\documentclass[11pt,fourier]{article}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{fourier}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=black]{hyperref}
+\usepackage{array, booktabs, tabularx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% Set page margins
+\geometry{a4paper, margin=1in}
+
+% Define header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{Stanford University}
+\fancyhead[R]{CE 292 Scientific Machine Learning}
+\cfoot{\thepage}
+
+% Title formatting
+\titleformat{\section}
+{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+
+% Custom list formatting
+\setlist[itemize]{leftmargin=1.2em, itemsep=0em}
+
+\begin{document}
+	
+	\begin{center}
+		\Large\textbf{CE 292 Scientific Machine Learning}\\
+		\large\textbf{Autumn 2026}
+	\end{center}
+	
+	\vspace{1em}
+	\noindent
+	\begin{tabularx}{\textwidth}{@{}p{0.2\textwidth}X@{}}
+		\toprule
+		\textbf{Instructor} & Krishna Kumar \\
+		\textbf{Contact} & \href{mailto:kks32@stanford.edu}{kks32@stanford.edu}  \\
+		\midrule
+		\textbf{Office Hours} & M 3:00 - 4 PM and Wed 11 AM - 12 PM at ECJ 9.227 B \\
+		\textbf{Lectures} & MWF 1:30 PM - 2:50 PM at \href{https://campus-map.stanford.edu/?id=04-560}{Mitchell Earth Sciences B67} \\
+		\textbf{Textbooks} & A formal textbook is not required for this course. \\
+		\textbf{References} & ``Scientific Machine Learning," [Draft Notes] Krishna Kumar, (2025). \\
+		& ``Deep Learning," Aaron Courville, Ian Goodfellow, and Yoshua Bengio, (2015). \\
+		\textbf{Course website} & Canvas \href{https://canvas.stanford.edu}{https://canvas.stanford.edu} \\
+		\textbf{Prerequisites} & Basic programming skills in Python or a similar language\\
+		& Familiarity with linear algebra, calculus, and basic probability theory\\
+		& Some prior exposure to machine learning is recommended but not required\\
+		\bottomrule
+	\end{tabularx}
+	
+	\section*{Course Description}
+	This course provides a rigorous introduction to Scientific Machine Learning (SciML), focusing on the development, analysis, and application of machine learning techniques for solving complex problems governed by ordinary and partial differential equations (ODEs/PDEs). Bridging numerical analysis, scientific computing, and deep learning, SciML offers novel computational paradigms for challenges where traditional methods face limitations, such as high-dimensional problems, inverse problems, and systems with incomplete physical knowledge.
+	
+	We will delve into the mathematical foundations underpinning modern SciML solvers. Key topics include Physics-Informed Neural Networks (PINNs), Neural Ordinary Differential Equations (NODEs), and Operator Learning frameworks (e.g., DeepONets, Fourier Neural Operators), which learn mappings between infinite-dimensional function spaces. The course will explore the theoretical basis for these methods, including function approximation theory in relevant spaces (e.g., Sobolev spaces), the role of automatic differentiation for computing derivatives and residuals, and the specific optimization challenges encountered when training physics-informed models.
+	
+	Emphasis will be placed on formulating differential equations as learning problems, analyzing the properties of different SciML architectures and loss functions, understanding techniques for enforcing boundary conditions, and evaluating the convergence and accuracy of the resulting solutions. We will also cover methods for uncertainty quantification, transfer learning approaches, and explore the discovery of governing equations from data. Practical implementation will be demonstrated using modern frameworks like PyTorch, JAX, and TensorFlow, enabling students to apply these advanced computational techniques to challenging scientific and engineering problems.
+	
+	\section*{Learning Outcomes}
+	Upon successful completion of this course, students will be able to:
+	\begin{itemize}
+		\item Formulate scientific problems governed by ODEs/PDEs within machine learning frameworks; implement, train, and evaluate core methods like Physics-Informed Neural Networks (PINNs), Neural ODEs, and Operator Learning techniques, including appropriate handling of boundary conditions and sampling strategies.
+		\item Analyze the mathematical underpinnings of SciML methods, including relevant function approximation theory (e.g., Universal Approximation Theorems in Sobolev spaces) and the specific optimization challenges (loss landscapes, convergence properties) associated with physics-informed training.
+		\item Implement transfer learning approaches for domain adaptation in physical systems and apply few-shot learning techniques for rapid adaptation to new physical regimes with limited data.
+		\item Implement and interpret methods for uncertainty quantification (e.g., Bayesian Neural Networks, Gaussian Processes) and data-driven discovery of governing differential equations (e.g., SINDy) within scientific applications.
+		\item Critically assess the applicability, performance characteristics (accuracy, convergence, cost), and limitations of various SciML techniques in comparison to traditional numerical methods for solving differential equations.
+		\item Effectively employ deep learning libraries (PyTorch, JAX, TensorFlow) leveraging automatic differentiation and best practices for reproducible SciML research and development, culminating in substantial project implementations.
+	\end{itemize}
+	
+	\textbf{How Academic/Learning Goals Will Be Assessed:} These learning objectives will be assessed based on students' performance on homework assignments, comprehensive examination, and the final capstone project.
+	
+	\section*{Course Modules}
+	The following 12 modules provide a comprehensive technical foundation in SciML:
+	
+	\paragraph{Module 1: Foundations of Machine Learning for Scientific Computing}
+	Introduction to neural networks, optimization algorithms, and automatic differentiation for scientific applications. Covers Universal Approximation Theorem, gradient descent variants, and regularization techniques with emphasis on physics-based applications.
+	
+	\paragraph{Module 2: Mathematical Foundations for SciML}
+	Essential mathematical concepts including function spaces (Hilbert, Banach, Sobolev), differential equations theory, numerical analysis fundamentals, and inverse problems formulation.
+	
+	\paragraph{Module 3: Physics-Informed Neural Networks (PINNs)}
+	Comprehensive study of PINNs including mathematical formulation, boundary condition enforcement, training strategies, and advanced variants. Applications to forward and inverse ODE/PDE problems.
+	
+	\paragraph{Module 4: Neural Ordinary Differential Equations (Neural ODEs)}
+	Continuous-depth neural networks through ODE parameterization, adjoint method for memory-efficient backpropagation, and applications to time-series modeling and latent dynamics learning.
+	
+	\paragraph{Module 5: Differentiable Programming and Physics Simulation}
+	End-to-end differentiation through physics simulators, implementation of differentiable time-stepping schemes, and applications to inverse problems and parameter estimation.
+	
+	\paragraph{Module 6: Operator Learning I: DeepONet and Extensions}
+	DeepONet architectures for learning function-to-function mappings, Universal Approximation Theorem for operators, and Physics-Informed DeepONet with multi-fidelity learning approaches.
+	
+	\paragraph{Module 7: Operator Learning II: Fourier Neural Operators and Advanced Methods}
+	Fourier Neural Operators (FNOs) with spectral methods and advanced neural operators (Basis-to-Basis operator learning based on function encoders).
+	
+	\paragraph{Module 8: Graph Neural Networks (GNNs) for Scientific Simulation}
+	Physical systems as graphs, message passing neural networks, symmetries and equivariance, with applications to particle-based systems and fluid dynamics.
+	
+	\paragraph{Module 9: Transfer Learning and Few-Shot Learning in SciML} Domain adaptation across physical regimes, meta-learning for new physical systems, multi-task learning, and active learning for optimal experimental design.
+	
+	\paragraph{Module 10: Transformers in Scientific Machine Learning} Adaptation of transformer architectures for scientific data, spatio-temporal modeling with attention mechanisms and applications.
+	
+	\paragraph{Module 11: Equation Discovery and Symbolic Methods}
+	Sparse Identification of Nonlinear Dynamics (SINDy), symbolic regression, physics-guided discovery, and implementation workflows for discovering governing equations from data.
+	
+	\paragraph{Module 12: Advanced Generative Models and Uncertainty Quantification}
+	Normalizing flows, Bayesian Neural Networks, Gaussian Processes, and physics-constrained VAEs for uncertainty quantification in scientific applications.
+	
+	\section*{Assessment}
+	Your grade (G) will be computed based on the following formula:
+	\[ G = 0.30H + 0.30E + 0.40FP \]
+	where:
+	\begin{itemize}
+		\item \textbf{H (Homework - 30\%):} Weekly assignments combining theoretical analysis, mathematical derivations, and programming implementations
+		\item \textbf{E (Exam - 30\%):} Comprehensive examination covering theoretical foundations and practical applications (Date TBC)
+		\item \textbf{FP (Final Project - 40\%):} Comprehensive capstone project involving novel application, method development, or rigorous comparative analysis
+	\end{itemize}
+	
+	\textbf{Graduate Research Philosophy:} This assessment structure reflects the realities of graduate-level scientific research, where success depends on sustained investigation, iterative development, and the ability to synthesize theory with implementation. Students develop expertise through deep engagement with challenging problems rather than performance on isolated examinations.
+	
+	\textbf{Attendance and Final Grade:} Class attendance is expected and contributes to course success, but is not directly factored into the numerical grade calculation.
+	
+	
+	\subsection*{Assessment Details}
+	
+	\noindent\textbf{Homework Assignments (30\%):} Weekly assignments integrate theoretical analysis with practical implementation.
+	
+	\noindent\textbf{Exam (30\%):} A comprehensive examination covering:
+	\begin{itemize}
+		\item Theoretical foundations of SciML methods
+		\item Mathematical analysis of neural network approximation theory
+		\item Practical implementation considerations and optimization challenges
+		\item Comparative analysis of different SciML approaches
+		\item Date TBC
+	\end{itemize}
+	
+	\noindent\textbf{Final Project (40\%):} A comprehensive capstone project where students will:
+	\begin{itemize}
+		\item Identify a novel scientific problem or extend existing methods
+		\item Conduct literature review and problem formulation
+		\item Implement advanced SciML techniques from multiple modules
+		\item Compare with traditional numerical methods when applicable
+		\item Include uncertainty quantification or transfer learning components
+		\item Present results in conference-style paper and presentation
+		\item Code must be reproducible and well-documented
+	\end{itemize}
+	
+	\noindent\textbf{Resubmission Policy:} All assignments and projects may be resubmitted within 1 week of grading for full credit after addressing feedback. This encourages iterative learning, mastery of concepts, and mirrors the revision process central to research and publication.
+	
+	\noindent\textbf{Letter Grade Cutoffs:}
+	\begin{itemize}
+		\item A $\ge$ 94\%, A- $\ge$ 90\%
+		\item B+ $\ge$ 87\%, B $\ge$ 84\%, B- $\ge$ 80\%
+		\item C+ $\ge$ 77\%, C $\ge$ 74\%, C- $\ge$ 70\%
+		\item D+ $\ge$ 67\%, D $\ge$ 64\%, D- $\ge$ 60\%
+		\item F $<$ 60\%
+	\end{itemize}
+	
+	The scale shown above represents minimum bounds. Adjustments may be made based on class performance.
+	
+	\section*{Grace Policy (Time-Bank)}
+	Sometimes we have bad days, bad weeks, and bad semesters. In an effort to accommodate any unexpected, unfortunate personal crisis, I have built "time banks" into our course. You do not have to utilize this policy, but if you find yourself struggling with unexpected personal events, I encourage you to contact me as soon as possible.
+	
+	\textit{Each student will get a total of 7 days of NO QUESTIONS ASKED extension for homework and project deadlines. It is up to each student to use those days at once or for multiple assignments. These will be accounted for in increments of 1-day and should be requested through email (indicating proposed submission date) 24hrs before the original deadline.}
+	
+	\section*{Course Attendance}
+	Students are \textbf{expected to attend all class periods}. Those who fail to attend class regularly are inviting scholastic difficulty. Students are responsible for material covered in class, even if absent for authorized activities. \textit{It is crucial to communicate with your project team members; you are responsible for letting both the instructor and your team know if you cannot make it to class.}
+	\textbf{Excused Absence:} If you plan to miss class due to religious observance, please provide at least two weeks advance notice. 
+
+	\section*{Computing Resources}
+	\textbf{Cloud Access:} The class will use Google Colab for all assignments, in-class materials, and projects. Access directly at \href{https://colab.research.google.com/notebooks/intro.ipynb}{Google Colab}. 
+	
+	\section*{Academic Integrity}
+	Each student is expected to abide by the Stanford University Honor Code. If you use words or ideas that are not your own, you must cite your sources. Copying solutions from online sources (Chegg, CourseHero) is considered cheating.
+	
+	You are \textbf{welcome and encouraged to use AI/Large Language Models} (Gemini, Claude, etc.) for your assignments and projects. Please see acceptable AI tool use: \href{https://security.utexas.edu/ai-tools}{UT AI Tools Policy}. However, you must understand and be able to explain any code or solutions you submit.
+	
+	\subsection*{Collaboration Policy}
+	Students are encouraged to discuss course topics and collaborate on understanding concepts. However:
+	\begin{itemize}
+		\item All submitted work must be your own individual effort
+		\item You may discuss approaches but must implement solutions independently  
+		\item Identical code or solutions are not acceptable
+		\item Proper attribution must be given for any external resources used
+	\end{itemize}
+	
+	\subsection*{Sharing of Course Materials}
+	No materials used in this class, including, but not limited to, lecture hand-outs, videos, assessments (quizzes, exams, papers, projects, homework assignments), in-class materials, review sheets, and additional problem sets, may be shared online or with anyone outside of the class unless you have my explicit, written permission. Unauthorized sharing of materials promotes cheating. It is a violation of the University's Student Honor Code and an act of academic dishonesty. I am well aware of the sites used for sharing materials, and any materials found online that are associated with you, or any suspected unauthorized sharing of materials, will be reported to Student Conduct and Academic Integrity in the Office of the Dean of Students. These reports can result in sanctions, including failure in the course.
+	
+	\subsection*{Confidentiality of Class Recordings}
+	Class recordings are reserved only for students in this class for educational purposes and are protected under FERPA. The recordings should not be shared outside the class in any form. Violation of this restriction by a student could lead to Student Misconduct proceedings.
+	
+\end{document}
