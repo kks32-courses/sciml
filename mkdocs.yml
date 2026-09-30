@@ -111,6 +111,9 @@ nav:
   - Representation:
     - Finitely Many Numbers: 00-representation/representation.md
     - Kernels, Families, and Shapes That Move: 00-representation/kernels-and-families.md
+    - Function Spaces (notebook): 00-representation/function-spaces.ipynb
+    - Norms (notebook): 00-representation/norms.ipynb
+    - Projection (notebook): 00-representation/projection.ipynb
   - Multi-Layer Perceptron: 
     - MLP: 00-mlp/mlp.ipynb
     - Activation Function ReLU: 00-mlp/relu.md

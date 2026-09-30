@@ -46,6 +46,15 @@
 \DeclareMathOperator{\ReLU}{ReLU}
 \DeclareMathOperator{\sign}{sign}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\usetikzlibrary{arrows.meta,positioning,calc}
+% colors and readout chips shared with the representation deck
+\definecolor{ink}{HTML}{333333}
+\definecolor{sblue}{HTML}{2997C8}
+\definecolor{sorange}{HTML}{EF8354}
+\definecolor{sgreen}{HTML}{4F9D69}
+\definecolor{sred}{HTML}{D95D5D}
+\definecolor{muted}{HTML}{687078}
+\newcommand{\chip}[2]{\fcolorbox{gray!30}{white}{\parbox{3.4cm}{\raggedright\scriptsize\textcolor{muted}{#1}\\ \small\textbf{#2}}}}
 
 % Code listing style
 \lstset{
@@ -230,6 +239,52 @@ A hat function is three ReLU ramps, so the straight-segment reconstruction is al
 This lecture lets the kinks move.
 \end{frame}
 
+\begin{frame}{The Weierstrass approximation theorem}
+\begin{block}{Theorem (Weierstrass, 1885)}
+For every continuous $f$ on $[a,b]$ and every $\epsilon > 0$ there is a polynomial $p$ with $|f(x) - p(x)| < \epsilon$ for every $x$ in $[a,b]$.
+\end{block}
+\begin{center}
+\includegraphics[width=0.62\textwidth]{figs/bernstein-approximation.png}
+\end{center}
+\centering
+\chip{Bernstein $B_n f$ for $\sin(\pi x)$, largest gap}{$0.222$, $0.117$, $0.060$, $0.030$ at $n = 5, 10, 20, 40$}\quad
+\chip{what the theorem does not say}{the degree, the weights, or the slopes}
+\note{
+The representation lecture ended with this theorem.
+Polynomials come within any tolerance of every continuous function on an interval, and Bernstein's construction, $B_n f(x) = \sum_k f(k/n)\binom{n}{k}x^k(1-x)^{n-k}$, proves it by averaging readings with coin-flip weights.
+For $\sin(\pi x)$ the largest gap halves with each doubling of $n$.
+The theorem names no degree for a given tolerance and says nothing about slopes, and every universal approximation theorem for networks has the same form.
+}
+\end{frame}
+
+\begin{frame}{History of universal approximation theorems}
+\begin{center}
+\begin{tikzpicture}[scale=0.85, >={Stealth[length=2.5mm]}, font=\small, box/.style={draw, rounded corners, thick, minimum height=8mm, inner sep=5pt}]
+\node[box, draw=sblue, fill=sblue!12] (w) at (-3,0) {Weierstrass, 1885};
+\node[box, draw=sgreen, fill=sgreen!12] (s) at (3.6,0) {Stone--Weierstrass, 1937};
+\node[box, draw=sorange, fill=sorange!12] (k) at (10.2,0) {Kolmogorov, 1957};
+\node[box, draw=sred, fill=sred!12] (c) at (1.2,-3.0) {Cybenko, 1989};
+\node[box, draw=muted, fill=muted!12] (h) at (8.4,-3.0) {Hornik, 1991};
+\draw[->, thick, muted] (w) -- (s) node[midway, above=3pt, font=\scriptsize] {any separating algebra};
+\draw[->, thick, muted] (s) -- (k) node[midway, above=3pt, font=\scriptsize] {exact superposition};
+\draw[->, thick, muted] (s) -- (c) node[midway, left=4pt, font=\scriptsize] {sigmoid units};
+\draw[->, thick, muted] (c) -- (h) node[midway, below=3pt, font=\scriptsize] {continuous bounded nonconstant activation};
+\end{tikzpicture}
+\end{center}
+\medskip
+\centering
+\chip{what these theorems give}{existence of a representation or approximation}\quad\chip{what none of them gives}{a procedure that trains it}
+\note{
+Weierstrass in 1885 proved that polynomials come within any tolerance of every continuous function on an interval.
+Stone in 1937 extended the theorem to any algebra of continuous functions on a compact set that separates points and contains the constants, so the trigonometric polynomials and many other families are dense as well.
+Kolmogorov in 1957 wrote every continuous function of several variables exactly as a finite sum of compositions of continuous functions of one variable, a two-layer form whose inner functions are not neurons with a fixed activation and finitely many weights.
+
+Cybenko in 1989 proved that networks with one hidden layer of sigmoid units are dense in the continuous functions on a box.
+Hornik in 1991 extended uniform approximation to any continuous, bounded, nonconstant activation, and approximation in $L^p$ to any bounded nonconstant one, and under further smoothness he approximated the derivatives as well.
+These are existence results, and none of them by itself gives a procedure that trains the network to the approximation it promises.
+}
+\end{frame}
+
 \begin{frame}{Universal Approximation Theorem}
 \begin{block}{Theorem (Cybenko, 1989)}
 Let $\sigma$ be a continuous, bounded, non-constant, monotonically increasing function. 
@@ -267,6 +322,63 @@ A single hidden layer neural network can approximate any continuous function to 
     \item Adaptive placement of features
     \item No fixed polynomial structure
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Polynomial and neural network approximation of $\sin(\pi x)$}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{figs/polynomial-vs-nn-comparison}
+\end{center}
+\centering
+\chip{polynomial, ten numbers}{largest gap below $10^{-7}$}\quad
+\chip{sigmoid network, thirty-one numbers, one training run}{largest gap $0.0050$}
+\note{
+Put the two families on the same smooth target.
+A degree-nine polynomial fit by least squares, ten numbers, misses $\sin(\pi x)$ by less than $10^{-7}$.
+A network with ten sigmoid units in one hidden layer, thirty-one numbers trained by Adam for ten thousand steps, misses by $0.0050$.
+
+On this smooth target the least-squares polynomial's error is four orders of magnitude below what this one training run found.
+The comparison sets a best approximation in one family against one trained network in the other, so the network's number mixes representation error with optimization error, and it says nothing about the best ten-unit network.
+Sigmoid units have no breakpoints, and each one contributes a smooth step whose location and steepness are trained.
+}
+\end{frame}
+
+\begin{frame}{Polynomials and neural networks compared}
+\footnotesize
+\begin{tabular}{@{}p{3.2cm}p{5.2cm}p{5.2cm}@{}}
+\toprule
+& polynomials & one-hidden-layer ReLU networks \\
+\midrule
+shapes & global, every coefficient changes the curve everywhere & ramps, each unit changes the curve beyond its breakpoint \\
+placement & fixed by the degree & breakpoints are trained parameters \\
+failure on sparse data & Runge oscillations near the ends & a descent that stalls \\
+growth with dimension & $\binom{n + d}{d}$ coefficients at degree $n$ in $d$ variables & $m(d+2)+1$ parameters for $m$ units, and the $m$ needed for a given accuracy can still grow fast with $d$ \\
+structure & one sum & layers compose \\
+\bottomrule
+\end{tabular}
+\note{
+Put the two families side by side.
+A polynomial's shapes are global, so changing one coefficient changes the curve everywhere, while a ReLU unit changes the curve only on one side of its breakpoint, where it grows without bound.
+A polynomial's shapes are fixed by the degree, while a network's breakpoints are trained.
+On sparse data a high-degree polynomial oscillates near the ends of the interval, and a network fails in a different way, when gradient descent stalls.
+A polynomial of degree $n$ in $d$ variables has $\binom{n+d}{d}$ coefficients, and a network with $m$ units on $d$ inputs has $m(d+2)+1$ parameters, but the width needed for a given accuracy can still grow fast with the dimension.
+And networks compose layers, which a single polynomial sum does not.
+}
+\end{frame}
+
+\begin{frame}{Shallow and deep networks on a high-frequency function}
+\begin{center}
+\includegraphics[width=0.88\textwidth]{figs/high-freq-comparison}
+\end{center}
+\centering
+\chip{one hidden layer, a hundred units}{mean squared error $0.0421$}\quad
+\chip{four hidden layers}{mean squared error $0.0006$}
+\note{
+This target oscillates about five times across the interval, and both networks are trained by gradient descent on the blue readings.
+A one-hidden-layer network with a hundred units settles on a single broad arch, with mean squared error $0.0421$, and a four-hidden-layer network follows every oscillation, with $0.0006$.
+
+Universality promised a shallow network with enough units.
+In this single training run gradient descent did not find it for the shallow network and did find a good fit for the deep one, so the comparison is between what one optimizer found in each family.
+}
 \end{frame}
 
 %========================================================================================

@@ -143,7 +143,7 @@ gp_body = r'''
   <div class="readout"><span class="label">two standard deviations in the gap, largest</span><span class="num" id="gp-b">0.000</span></div>
   <div class="readout"><span class="label">error of the mean, relative L&#178;</span><span class="num" id="gp-e">0.0%</span></div>
 </div>
-<p class="lab-note">The posterior mean (green) is the ridge curve with &lambda; = &sigma;&#178;, and the shaded band is two standard deviations of the posterior. The band collapses at the sensors and swells in the unsensed stretch between 0.55 and 0.85. Try &ell; = 0.15, 0.075, and 0.31.</p>
+<p class="lab-note">The posterior mean (green) is the ridge curve with &lambda; = &sigma;&#178;, and the shaded band is two standard deviations of the posterior. The band narrows at the sensors, where the noise keeps it open, and swells in the unsensed stretch between 0.55 and 0.85. Try &ell; = 0.15, 0.075, and 0.31.</p>
 <script>
 (function(){''' + SOLVE + r'''
   const svg = document.getElementById("gp-plot");
@@ -285,7 +285,7 @@ labs = {
     "RKHS": embed_lab(lab_html("Point evaluation as an inner product",
                                "Weight three kernel copies and move the probe. The value at the probe is an inner product, and the slope never exceeds the norm over the length scale.", rkhs_body), 650),
     "GP": embed_lab(lab_html("Gaussian-process mean and band on the fin",
-                             "Change the length scale and the noise level. The band swells where no sensor reaches and collapses at the sensors.", gp_body), 560),
+                             "Change the length scale and the noise level. The band swells where no sensor reaches and narrows at the sensors.", gp_body), 560),
     "PARTICLES": embed_lab(lab_html("A fixed grid and moving carriers",
                                     "Move the material. The grid stays and re-interpolates, the carriers keep their values.", particle_body), 520),
     "SPLATS": embed_lab(lab_html("A field from Gaussian elements",
@@ -296,129 +296,387 @@ labs = {
 
 PAGE = r"""# Kernels, Families of Functions, and Shapes That Move
 
-So far we knew the function and asked how well a list of numbers could stand in for it.
-Now eight thermocouples on a cooling fin give eight noisy readings and nothing else, so the function is unknown and the readings may not identify it.
-Then a temperature front moves along a pipe, so the target is a whole family of functions, and one fixed set of shapes must serve every member.
+So far, the function is known and the question is how well a finite representation approximates it.
+For a cooling fin, only noisy temperature measurements are available.
+The unknown curve must now be inferred from those measurements and assumptions about its variation.
 
-## Eight readings and a similarity rule
+## Reconstructing temperature from scattered measurements
 
-These are the eight readings from the fin.
-Infinitely many curves pass near them.
-What do we know that the readings do not say?
-The fin conducts heat from its hot base along its length, so the temperature varies smoothly, nearby points should report similar values, and a reading should reach some distance along the fin before it stops telling us anything.
-A kernel says how far.
-$k(x, x') = \exp(-(x - x')^2/2\ell^2)$ assigns a similarity to every pair of locations, and its length scale $\ell$ states how far the temperature can change appreciably, an assumption about the fin that the readings will later test.
+Consider thermocouples measuring temperature at fixed locations along a cooling fin.
+Let $x \in [0,1]$ denote normalized distance along the fin, and let $y_i$ be the reading at $x_i$.
+The readings constrain the temperature at the sensors, but leave infinitely many possible curves between them.
+How should a reading influence the estimate at a neighboring location?
 
-Put one copy of the kernel at each sensor and add the copies with weights, $\hat f(x) = \sum_i \alpha_i k(x, x_i)$.
-Asking the sum to pass through every reading gives $\mathbf{K}\boldsymbol{\alpha} = \mathbf{y}$ with $K_{ij} = k(x_i, x_j)$, and for this kernel at distinct sites the matrix is symmetric positive definite, so the weights exist and are unique.
-Look at what the solve does.
-Two sensors a distance $\ell$ apart with equal readings have similarity $e^{-1/2} = 0.61$ and get weights $0.62$ each, because each neighbor already supplies part of what they share.
-At $\ell = 0.15$ the eight copies overlap, the weights alternate in sign up to $4.30$ and $-3.75$, and their sum passes through every reading and stays smooth between them.
-Shorten $\ell$ to $0.04$ and each weight is nearly its own reading, so the sum collapses between sensors, to $0.000$ at $x = 0.7$ where the true profile is $0.393$.
-A similarity that reaches too short a distance leaves the curve unconstrained between sensors.
+Heat conduction motivates a smooth temperature profile.
+Nearby locations should have similar temperatures, with less agreement expected as their separation grows.
+The squared-exponential kernel expresses this assumption through
+
+$$
+k(x,x') = \exp\!\left(-\frac{(x-x')^2}{2\ell^2}\right), \qquad \ell>0.
+$$
+
+Here $\ell$ sets the distance over which the similarity decreases.
+It is a parameter of the representation, whose suitability must be checked against the measurements.
+A short length scale permits rapid variation, while a long one favors gradual variation.
+
+A copy of this kernel centered at a sensor is a smooth function of position.
+A weighted sum of the copies gives the temperature estimate,
+
+$$
+\hat f(x) = \sum_i \alpha_i k(x,x_i).
+$$
+
+Each weight determines how much its copy contributes to the reconstructed curve.
+Because neighboring copies overlap, their weights generally differ from the readings.
+The weights must be chosen together.
+
+To interpolate the readings, evaluate the sum at each sensor and require $\hat f(x_i)=y_i$.
+With $K_{ij}=k(x_i,x_j)$, these equations form the linear system
+
+$$
+\mathbf{K}\boldsymbol{\alpha}=\mathbf{y}.
+$$
+
+For distinct sensor locations, the squared-exponential kernel gives a symmetric positive-definite matrix.
+The interpolation weights are therefore unique.
+This guarantee concerns agreement at the sensors, not accuracy between them.
+
+For a hand calculation, take two sensors separated by $\ell$, each with reading one.
+Their similarity is $\rho=e^{-1/2}$, and symmetry gives equal weights $\alpha$.
+At either sensor, the sum is $\alpha+\rho\alpha=1$, so each weight is $1/(1+\rho)$.
+The contribution from the neighboring copy reduces the weight needed at that sensor.
 
 @@KERNEL@@
 
-Could we have picked any similarity rule?
-Try one.
-Put sensors at $0$, $0.6\ell$, $1.2\ell$, and call two of them similar, with value one, when closer than $\ell$ and unrelated otherwise.
-The matrix has eigenvalues $1 - \sqrt2 = -0.414$, $1$, and $1 + \sqrt2$, and the weights $(1, -\sqrt2, 1)$ give $\mathbf{w}^\top\mathbf{K}\mathbf{w} = -1.66$.
-A negative value cannot be a squared length, so no inner product produces this rule.
-A kernel is positive definite when $\mathbf{w}^\top\mathbf{K}\mathbf{w} \ge 0$ for every choice of sites and weights.
-Whenever $k(x, x') = \phi(x)^\top\phi(x')$ for some list of features, $\mathbf{w}^\top\mathbf{K}\mathbf{w} = \|\sum_i w_i \phi(x_i)\|^2 \ge 0$, and every positive definite kernel has this form with the list allowed to be infinite.
-So a kernel method is linear regression on features we never write down.
+The interactive figure uses synthetic fin measurements, so a reference profile is available for comparison.
+At $\ell=0.15$, the interpolant at $x=0.7$ is $0.216$, against the reference value $0.393$.
+At $\ell=0.04$, the estimate there is below $0.001$, although every sensor reading is still reproduced.
+Agreement at the sensors alone does not validate the length scale.
 
-## A space where evaluation is an inner product
+## When a similarity defines an inner product
 
-Now make the kernel's geometry explicit.
-Declare the inner product of two kernel copies to be their similarity, $\langle k(x_1, \cdot), k(x_2, \cdot)\rangle_k = k(x_1, x_2)$, extend it to finite sums by linearity, and complete the collection.
-That is the reproducing kernel Hilbert space of the kernel.
-Take $f = \alpha_1 k(x_1, \cdot) + \alpha_2 k(x_2, \cdot)$ and pair it with the copy centered at $x$.
-The rule returns $\alpha_1 k(x_1, x) + \alpha_2 k(x_2, x)$, which is $f(x)$, and in general $f(x) = \langle f, k(x, \cdot)\rangle_k$ for every member of the space.
-Evaluating at a point is an inner product, continuous by the Cauchy-Schwarz inequality, which is what $L^2$ could not give us.
-Differentiate the identity and the slope is bounded too, $|f'(x)| \le \|f\|_k / \ell$, so a function that climbs by $1$ over $\ell/10$ has norm at least $10$.
-The norm measures roughness, and we are about to penalize it.
+The similarity between two locations should also describe the inner product of their kernel copies.
+An arbitrary similarity rule need not support such an interpretation.
+Consider a rule that assigns one to locations less than $\ell$ apart and zero otherwise.
+At the sites $0$, $0.6\ell$, and $1.2\ell$, it gives
+
+$$
+\mathbf{K}=
+\begin{pmatrix}
+1&1&0\\
+1&1&1\\
+0&1&1
+\end{pmatrix}.
+$$
+
+For the weights $\mathbf{w}=(1,-\sqrt{2},1)^\top$, the quadratic form is $\mathbf{w}^\top\mathbf{K}\mathbf{w}=4-4\sqrt{2}<0$.
+If the entries were inner products, this value would be the squared norm of a weighted sum.
+A squared norm cannot be negative, so this rule fails.
+
+A symmetric kernel is positive definite when every finite choice of sites and weights gives a nonnegative quadratic form.
+Here the convention permits zero, so the associated matrices are positive semidefinite.
+Strict positive definiteness requires a positive value for nonzero weights at distinct sites.
+The squared-exponential kernel satisfies this stronger condition.
+
+A kernel constructed from feature vectors $\Phi(x)$ has the required nonnegativity.
+If $k(x,x')=\langle\Phi(x),\Phi(x')\rangle$, then
+
+$$
+\mathbf{w}^\top\mathbf{K}\mathbf{w}
+=\left\|\sum_i w_i\Phi(x_i)\right\|^2\geq 0.
+$$
+
+The feature vectors may belong to an infinite-dimensional inner-product space.
+A positive-definite kernel admits such a feature representation, even when the features are not written explicitly.
+What function space does this inner product define?
+
+## Point evaluation in a kernel space
+
+For the squared-exponential kernel, a single copy has squared norm $k(x_i,x_i)=1$.
+Copies centered at $x_1$ and $x_2$ have inner product $\rho=k(x_1,x_2)$.
+Their sum has squared norm $2+2\rho$, while their difference has squared norm $2-2\rho$.
+Thus nearby copies are close in this norm.
+
+These calculations extend to every finite weighted sum by linearity.
+Their Cauchy sequences have terms that become arbitrarily close in this norm.
+Completing the sums includes the limits of those sequences.
+The resulting function space is the reproducing kernel Hilbert space $\mathcal{H}_k$.
+Its inner product satisfies
+
+$$
+\langle k(x_1,\cdot),k(x_2,\cdot)\rangle_k=k(x_1,x_2).
+$$
+
+This inner product differs from the integral of the product of two kernel copies.
+Its geometry is specified by the kernel values themselves.
+The norm in this geometry is denoted by $\|f\|_k$.
+
+To evaluate a weighted sum $f$, take its inner product with the copy centered at the evaluation point.
+For $f=\alpha_1k(x_1,\cdot)+\alpha_2k(x_2,\cdot)$, linearity gives $\alpha_1k(x_1,x)+\alpha_2k(x_2,x)$.
+This expression is the value $f(x)$.
+The same identity extends to every member of $\mathcal{H}_k$,
+
+$$
+f(x)=\langle f,k(x,\cdot)\rangle_k.
+$$
+
+The Cauchy-Schwarz inequality therefore bounds each point value by $|f(x)|\leq\|f\|_k\sqrt{k(x,x)}$.
+For the squared-exponential kernel, $k(x,x)=1$, so closeness in the RKHS norm implies closeness at every point.
+This makes point readings well-defined and continuous, which the $L^2$ norm alone does not provide.
+
+For this differentiable kernel, the reproducing identity also gives the slope bound $|f'(x)|\leq\|f\|_k/\ell$.
+A function that increases by one over a distance $\ell/10$ must have a slope of at least $10/\ell$ somewhere, so its RKHS norm is at least ten.
+The norm constrains both amplitude and variation.
+How can this constraint help when the readings contain noise?
 
 @@RKHS@@
 
-## Noise, a penalty, and a band
+## Fitting noisy measurements
 
-The interpolant reproduces every reading, noise included.
-How bad is that?
-At overlap $0.99$ the two-sensor matrix has eigenvalues $1.99$ and $0.01$, along $(1, 1)$ and $(1, -1)$.
-A reading pair $(1, 1)$ gives weights near one half each, and a noise pair $(\varepsilon, -\varepsilon)$, the difference between two nearly equal readings, gives weights $\pm\varepsilon/0.01$, a hundred times the noise.
-The curve itself moves by fourteen times the noise, since the function $\phi_1 - \phi_2$ has norm $0.14$.
-We have changed the question.
-Approximating a known function asked which member is closest.
-Recovering an unknown function from noisy readings asks whether the readings identify it, and interpolation answers by trusting every reading to the last digit.
+Interpolation reproduces the noise along with the measured temperature.
+The effect can be large when nearby kernel copies are nearly dependent.
+For two sensors with similarity $\rho=0.99$, the matrix eigenvalues are $1+\rho=1.99$ and $1-\rho=0.01$.
+They correspond to equal and opposite changes in the readings.
 
-So trade misfit against roughness and minimize $\sum_i (f(x_i) - y_i)^2 + \lambda\|f\|_k^2$ over the whole space.
-Any component of $f$ orthogonal to the span of the data's kernel copies changes no reading and raises the norm, so the minimizer lies in that span, and substituting gives $(\mathbf{K} + \lambda\mathbf{I})\boldsymbol{\alpha} = \mathbf{y}$, the interpolation solve with $\lambda$ added to the diagonal.
-At $\lambda = 0.1$ the small divisor rises from $0.01$ to $0.11$ and the amplification drops from a hundred to nine.
+Opposite measurement errors $(\varepsilon,-\varepsilon)$ change the interpolation weights by $(100\varepsilon,-100\varepsilon)$.
+The difference of the two kernel copies has RKHS norm $\sqrt{2-2\rho}$.
+Thus the reconstructed function changes by approximately $14.1|\varepsilon|$ in RKHS norm.
+Large coefficient changes and large function changes are related, but their magnitudes differ.
 
-The same computation reads as probability.
-Build two temperatures from independent standard normals, $f(x_1) = Z_1$ and $f(x_2) = \rho Z_1 + \sqrt{1 - \rho^2}\,Z_2$, so both have variance one and covariance $\rho$.
-Observe $f(x_1) = y$.
-That fixes $Z_1 = y$, and $f(x_2)$ is Gaussian with mean $\rho y$ and standard deviation $\sqrt{1 - \rho^2}$, which is $0.44$ at $\rho = 0.9$ and $0.95$ at $\rho = 0.3$.
-A Gaussian process makes any finite list of values jointly Gaussian with covariances $k(x_i, x_j)$, and this was the case $n = 2$.
-Condition it on the eight noisy readings and every location gets a Gaussian.
-Its mean is the ridge curve with $\lambda = \sigma^2$, and its variance is the prior's variance minus what the sensors explained.
-On the fin the two-standard-deviation band collapses at the sensors and swells in the unsensed stretch, to $0.90$ at $\ell = 0.15$ and to $1.99$ at $\ell = 0.075$.
-Let the readings choose $\ell$ by the marginal likelihood, the probability the model assigns to the data seen, and they pick $\ell = 0.31$, where the mean is within $3.2$ percent and the band in the gap is $0.12$.
-Remember what the band is.
-It is the model's own uncertainty, conditional on the kernel, the noise level, and the length scale.
+A regularized fit permits disagreement with noisy readings and penalizes the RKHS norm.
+For $\lambda>0$, kernel ridge regression minimizes
+
+$$
+\sum_i \bigl(f(x_i)-y_i\bigr)^2+\lambda\|f\|_k^2,
+\qquad f\in\mathcal{H}_k.
+$$
+
+The first term measures squared disagreement at the sensors.
+The second discourages the amplitude and variation needed to fit every fluctuation.
+The parameter $\lambda$ determines their relative importance.
+
+Any component orthogonal to the span of the sensors' kernel copies has zero value at every sensor.
+It changes none of the fitting errors and increases the norm, so the minimizer has no such component.
+The fit therefore remains a weighted kernel sum, with weights satisfying
+
+$$
+(\mathbf{K}+\lambda\mathbf{I})\boldsymbol{\alpha}=\mathbf{y}.
+$$
+
+Adding $\lambda$ to each eigenvalue reduces the amplification caused by small eigenvalues.
+In the two-sensor example, $\lambda=0.1$ changes the small divisor from $0.01$ to $0.11$.
+The coefficient amplification falls from $100$ to approximately $9.1$.
+Can the same kernel also describe uncertainty between the sensors?
+
+## Uncertainty from a Gaussian process
+
+A temperature at an unmeasured location can be described by a probability distribution.
+To see how a measurement changes that distribution, take independent standard Gaussian variables $Z_1$ and $Z_2$.
+Define temperatures at two locations by
+
+$$
+f(x_1)=Z_1,\qquad
+f(x_2)=\rho Z_1+\sqrt{1-\rho^2}\,Z_2.
+$$
+
+Both temperatures have mean zero and variance one, with covariance $\rho$.
+Observing $f(x_1)=y$ fixes $Z_1=y$.
+The remaining temperature has conditional mean $\rho y$ and standard deviation $\sqrt{1-\rho^2}$.
+Stronger correlation gives less remaining uncertainty.
+
+A Gaussian process extends this construction to any finite collection of locations.
+Assume a zero prior mean and covariance $k(x,x')$.
+The measured values are $y_i=f(x_i)+\varepsilon_i$, with independent Gaussian noise of variance $\sigma^2$.
+For $\mathbf{k}_x=(k(x,x_1),\ldots,k(x,x_m))^\top$, conditioning gives
+
+$$
+\begin{aligned}
+m(x)&=\mathbf{k}_x^\top(\mathbf{K}+\sigma^2\mathbf{I})^{-1}\mathbf{y},\\
+v(x)&=k(x,x)-\mathbf{k}_x^\top(\mathbf{K}+\sigma^2\mathbf{I})^{-1}\mathbf{k}_x.
+\end{aligned}
+$$
+
+The posterior mean $m$ equals the kernel ridge fit with $\lambda=\sigma^2$ for the unnormalized squared-error objective above.
+The posterior variance $v$ measures remaining uncertainty about the latent temperature, rather than a future noisy measurement.
+The subtracted term is the reduction in variance supplied by the sensors.
 
 @@GP@@
 
-## A family of functions and its width
+The shaded band is $m(x)\pm2\sqrt{v(x)}$, conditional on the selected kernel and noise model.
+With noise standard deviation $0.03$, its largest half-width in the unsensed stretch is $0.90$ at $\ell=0.15$ and $1.99$ at $\ell=0.075$.
+Shorter-range correlations leave greater uncertainty between the sensors.
+These are pointwise posterior bands, without a guarantee of simultaneous coverage of the whole curve.
 
-Now the target itself moves.
-Hot fluid pushes a temperature front along a pipe, one shape $T(x - ct)$ whose whole history is its position, and one description should cover every position at once.
-Thirty-two evenly spaced stations reach an error of $8.7$ percent, since wherever the front sits most of them record a flat line, while two edge positions, a width, an amplitude, and a shift rebuild the front at every time.
-The [kinks lab](representation.md#let-the-kinks-move) on the first page shows four ReLU kinks doing what the thirty-two stations cannot.
+The marginal likelihood scores how well a kernel and noise model explain the observed readings.
+Maximizing it over the tested length scales gives $\ell=0.31$ in this synthetic experiment.
+The resulting mean has relative $L^2$ error $3.2$ percent, and the maximum band half-width in the gap is $0.12$.
+These results depend on the model assumptions, which must be reconsidered if the temperature has a sharp transition.
 
-How well can any fixed basis do on a whole family?
-Translate a unit spike across three grid points, so the snapshots are three perpendicular unit vectors.
-For any plane through the origin the three squared distances to it add up to $3 - 2 = 1$, so the worst snapshot sits at distance at least $\sqrt{1/3} = 0.577$, whichever plane we choose.
-A family that depends on one number needs all three dimensions.
-The Kolmogorov $n$-width is the worst-case error of the best $n$-dimensional subspace, and a snapshot matrix's singular value decomposition gives a lower bound for it.
-Diffuse a steep-edged pulse and its $k$-th coefficient shrinks by $e^{-(2\pi k)^2 t}$, so four modes reach one percent.
-Translate the same pulse and the coefficient only changes phase, every frequency keeps its energy, and we need $103$ modes.
-Every translate of a sine lies in a two-dimensional span, so the difficulty is a sharp edge at every position, and the width says nothing about how few parameters the family depends on.
+## A moving front gives a family of functions
 
-## Shapes that move
+Now consider a hot region transported along a pipe.
+For constant flow speed $c$ and negligible diffusion, its temperature profile translates without changing shape.
+At each time, the profile is a function of position on the same interval.
+The reconstruction must describe the hot region wherever it moves.
 
-Nothing below contradicts the width.
-Each idea drops the hypothesis of one fixed subspace.
-Let the physics move the shapes first.
-Drop markers into the pipe and let each ride the flow with the temperature it started with.
-For a constant-velocity flow a value that rides its carrier is never interpolated, so the front returns after five round trips unchanged, while a first-order upwind grid keeps eight, eleven, and sixteen percent of the edge steepness at $100$, $200$, and $400$ points, since each step averages neighbors.
+The figure below shows the hot region in the pipe, its temperature profiles, and their reconstructions on one fixed grid.
+The edges move to new locations, while the grid nodes remain in place.
+The reconstruction joins the temperature values at those nodes with straight segments.
+
+![A hot region moves to the right along a pipe. Its temperature profiles share the same spatial interval. Straight-line reconstructions use the same fixed nodes at every time and differ from the steep edges between nodes.](figs/rep-flow-family.svg)
+
+The plotted profile has transition width $w=0.01$ and moves at normalized speed $c=1$.
+The fixed grid has $32$ nodes, with spacing $1/31$.
+At times $0$, $0.15$, and $0.30$, its relative $L^2$ reconstruction errors are $8.7$, $6.3$, and $9.6$ percent.
+The same grid represents some edge locations more accurately than others.
+
+Let $T_0$ denote the initial profile.
+Translation gives the profile at time $t$,
+
+$$
+T(x,t)=T_0(x-ct).
+$$
+
+Each time selects a different function of $x$, while $T_0$ and $c$ remain fixed.
+The collection $\mathcal{S}=\{T_0(\cdot-ct)\mid 0\leq t\leq0.30\}$ is a family parameterized by time.
+Knowing the initial shape and the translation rule specifies every member from that parameter.
+
+A fixed-grid representation uses hat functions $\phi_i$ centered at nodes $x_i$.
+Only their coefficients change with time,
+
+$$
+\hat T(x,t)=\sum_i T(x_i,t)\phi_i(x).
+$$
+
+Every reconstructed profile therefore belongs to the same linear span of the hats.
+Many nodes are needed when the edge width is small compared with their spacing.
+The [moving-nodes lab](representation.md#let-the-nodes-move) instead places its breakpoints near the edges.
+Does choosing a different fixed basis remove this difficulty for the whole family?
+
+## The limits of a fixed linear space
+
+A narrow pulse centered at separated locations gives profiles with little overlap.
+The finite-dimensional version is a unit spike translated across three grid points.
+Its snapshots are the perpendicular vectors $\mathbf{e}_1$, $\mathbf{e}_2$, and $\mathbf{e}_3$ in $\mathbb{R}^3$.
+These snapshots provide a calculation that applies to every plane through the origin.
+
+Let $P$ be the orthogonal projection onto such a plane.
+The squared projection lengths add to the plane's dimension, so the squared errors satisfy
+
+$$
+\sum_{j=1}^3\|\mathbf{e}_j-P\mathbf{e}_j\|_2^2=3-2=1.
+$$
+
+At least one error is therefore no smaller than $1/\sqrt{3}$.
+No choice of the plane can approximate all the snapshots more closely than this bound in Euclidean norm.
+Exact linear representation of the snapshots requires dimension three, although one position parameter selects the spike.
+
+For a family of functions, the Kolmogorov $n$-width asks how well the best fixed $n$-dimensional linear space approximates its worst member.
+Using the $L^2$ norm, it is
+
+$$
+d_n(\mathcal{S})=
+\inf_{\dim V=n}\ \sup_{f\in\mathcal{S}}\ \inf_{v\in V}\|f-v\|_{L^2}.
+$$
+
+The inner infimum chooses the closest member of $V$ for each target.
+The supremum chooses the hardest target in the family, and the outer infimum chooses the space.
+The space must be chosen once for the entire family.
+
+Motion alone does not imply a large width.
+Every translate of $\sin(kx)$ lies in the span of $\sin(kx)$ and $\cos(kx)$ by the angle-subtraction identity.
+A localized pulse with steep edges instead requires many frequencies, and translation does not reduce their magnitudes.
+For a periodic heat equation with unit diffusivity, those magnitudes decay by $e^{-(2\pi k)^2t}$, explaining why diffusion can reduce the required number of modes.
+
+A snapshot matrix's singular value decomposition minimizes average squared projection error over the sampled profiles.
+The width concerns the worst profile over the entire family.
+A small average error on snapshots therefore needs a separate check of poorly represented positions.
+Can the representation adapt to the target instead of using one fixed linear space?
+
+## Representations that adapt to the front
+
+The translated-template formula already gives an alternative to fixed-grid coefficients.
+It stores the initial shape and evaluates that shape at shifted coordinates.
+This representation assumes a known translation law, but its functions need not belong to one low-dimensional linear space.
+Other adaptive representations change their locations, shapes, or selected terms.
+
+### Move the locations with the flow
+
+A particle representation stores positions together with temperature values.
+For pure advection, each particle keeps its temperature while its position follows the flow.
+The field between particles is reconstructed from their values and an interpolation rule.
+Exact transport of stored values does not remove this reconstruction error.
+
+A first-order upwind grid scheme provides a useful comparison.
+For positive speed and $0<\nu=c\Delta t/h<1$, its update is
+
+$$
+T_i^{n+1}=(1-\nu)T_i^n+\nu T_{i-1}^n.
+$$
+
+Each step averages neighboring temperatures, which spreads a steep transition.
+This numerical diffusion comes from the update rule, separately from the fixed basis's approximation error.
+At $\nu=1$, the update shifts grid values without averaging.
 
 @@PARTICLES@@
 
-Or let an optimizer move them.
-Sixteen trained Gaussians, ninety-six parameters, reach a relative error of $0.0125$ on a field with two thin ridges, against $0.30$ for a fixed grid of one hundred coefficients, because two of them stretch into needles along the ridges.
-With fixed shapes the fit is a linear solve with the projection theorem's guarantee, and with trained centers and covariances it is a non-convex optimization without one.
+### Fit the locations and shapes
+
+A Gaussian element describes a localized field through its center, covariance, and amplitude.
+An anisotropic covariance permits a long, narrow shape aligned with a ridge.
+Fitting these parameters lets the elements concentrate where the field varies.
+The Gaussian-field figure illustrates the reconstruction as elements are added and their widths change.
 
 @@SPLATS@@
 
-Or keep every shape fixed and choose among them.
-Keep the $n$ largest Haar coefficients of the front, and different functions keep different coefficients, so the family is no longer one fixed subspace.
-Thirty-two selected coefficients represent the front with $1.3$ percent error against $5.1$ for the first thirty-two sines, at the storage of thirty-two values and thirty-two indices, and past about $128$ terms the sines resolve the edge width and win from there.
+With centers and covariances fixed, a quadratic fitting objective gives a linear system for the amplitudes.
+Fitting the centers and covariances as well generally makes the objective non-convex.
+The representation can adapt to localized features, but the fitting algorithm may stop at a poor local minimum.
 
-## Choosing for the fin
+### Select localized terms
 
-Suppose we did not know the fin's profile.
-Which of five descriptions of the same eight readings should we trust?
-Against the true profile they reach $6.5$ percent for straight segments, $23$ for a cubic by least squares, $31$ for the degree-seven polynomial through all eight readings, $11$ for the kernel interpolant at $\ell = 0.15$, and $3.2$ for the Gaussian-process mean at $\ell = 0.31$, the only one that also reports a band.
-In practice the true profile is unavailable, and three kinds of evidence remain.
-The known noise level rules out any description that reproduces the readings exactly, and three of the five do.
-Withhold each reading in turn, fit the other seven, and predict it, and the held-out errors are $0.095$, $0.310$, $3.57$, $0.112$, and $0.034$ against a noise level of $0.03$, the same ranking with no knowledge of the truth.
-The physics admits the smooth family, and the band's sensitivity to the length scale says what the gap assumes.
+A wavelet representation keeps its dictionary fixed and selects terms for each profile.
+For an orthonormal Haar expansion, retaining the $n$ largest coefficients minimizes the $L^2$ truncation error among selections of $n$ terms.
+For a front, the selected terms tend to be concentrated near the edges.
+As the edges move, different terms are selected.
+
+The selected functions belong to different dictionary subspaces, so the width's fixed-space restriction no longer describes this approximation.
+Storage must include the selected indices as well as the coefficient values.
+Resolution and truncation still limit accuracy, so adapting the selection does not guarantee a good reconstruction.
+
+## Choosing a representation for the fin
+
+For the fin, the unknown profile must be reconstructed from the same noisy measurements.
+The synthetic reference permits a direct comparison, but such a reference is unavailable in practice.
+The table compares relative $L^2$ error against that reference with prediction error obtained by withholding readings.
+
+| Representation and fitting principle | Relative $L^2$ error against reference | Held-out RMSE |
+| --- | --- | --- |
+| Straight segments | $6.5\%$ | $0.095$ |
+| Cubic polynomial, least squares | $23\%$ | $0.310$ |
+| Polynomial interpolation | $31\%$ | $3.57$ |
+| Kernel interpolation, $\ell=0.15$ | $11\%$ | $0.112$ |
+| Gaussian-process mean, $\ell=0.31$ | $3.2\%$ | $0.034$ |
+
+The held-out calculation removes each reading, fits the remaining readings, and predicts the omitted value.
+Its RMSE is measured in the normalized temperature units, against noise standard deviation $0.03$.
+The length scales remain fixed at values selected using all the readings, so this is a fixed-hyperparameter diagnostic.
+Testing the complete selection procedure requires choosing the length scale again within each fold.
+
+The table favors the Gaussian-process fit in this experiment, without establishing that it is best for every fin.
+The kernel specifies the possible functions and their geometry, while regularized fitting selects a function using the measurements.
+The posterior band adds uncertainty conditional on the same assumptions.
+The comparison below records the assumptions that should be checked for each representation.
 
 @@COMPARE@@
 
-The book's notebooks on [the cooling fin](https://sciml-book.github.io/sciml_notebook/kernels/the-fin.html) and [one front, every family](https://sciml-book.github.io/sciml_notebook/representations/one-front-every-family.html) run every computation on this page.
+For a moving front, a reconstruction must also be checked across its possible positions.
+A low-dimensional parameterization can describe a family that is difficult for one small fixed linear space.
+Choosing a representation therefore requires both a reconstruction rule and a clear statement of which functions it must approximate.
+
+The companion notebooks on [the cooling fin](https://sciml-book.github.io/sciml_notebook/kernels/the-fin.html) and [one front, every family](https://sciml-book.github.io/sciml_notebook/representations/one-front-every-family.html) contain the underlying experiments.
+The fin notebook compares interpolation, regularization, and uncertainty from the same measurements.
+The front notebook compares fixed and adaptive representations of the transported profile.
 """
 
 page = PAGE

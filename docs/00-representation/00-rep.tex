@@ -2,16 +2,21 @@
 % Representing Functions and Fields
 % The lecture before the multilayer perceptron, following Chapter 2 of the book.
 %
-% One slide per frame, no overlays. Three builds from this one source:
-%   00-rep.tex          complete  : every frame in its final state (for students)
-%   00-rep-handout.tex  handout   : every frame in its first state, to draw on in class
-%   00-rep-notes.tex    notes     : the complete slide with the lecture text beside it, Berkeley theme
-% The drivers set \repmode before \input{00-rep.tex}. The figures are drawn in pgfplots
-% from tables in data/ (build_slide_data.py, the same computations as the chapter scripts).
+%   latexmk -pdf 00-rep.tex                            complete: every frame in its final state
+%   latexmk -pdf -jobname=00-rep-handout 00-rep.tex    handout: every frame in its first state, to draw on
+%   latexmk -pdf -jobname=00-rep-notes 00-rep.tex      notes: the complete slide above the lecture text,
+%                                                      Berkeley theme
+% The figures are drawn in pgfplots from tables in data/ (build_slide_data.py, the same
+% computations as the chapter scripts). One slide per frame, no overlays:
 % \stepfrom{k}{...} appears from step k on, \steponly{k}{K}{...} only at step k of K.
 %**************************************************************************************
 
+\ifnum\pdfstrcmp{\jobname}{00-rep-handout}=0 \def\repmode{handout}\fi
+\ifnum\pdfstrcmp{\jobname}{00-rep-notes}=0 \def\repmode{notes}\fi
 \providecommand{\repmode}{complete}
+% the notes build counts each note as its own page, so PDF page labels would repeat (1, 1, 2, 2, ...);
+% without labels a viewer numbers the physical pages consecutively
+\PassOptionsToPackage{pdfpagelabels=false}{hyperref}
 \documentclass[aspectratio=169]{beamer}
 
 \usepackage{ifthen}
@@ -28,6 +33,8 @@
 
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -36,6 +43,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
 \usepgfplotslibrary{fillbetween}
+\usepgfplotslibrary{groupplots}
 \DeclareMathOperator{\ReLU}{ReLU}
 \DeclareMathOperator{\cond}{cond}
 
@@ -43,7 +51,7 @@
 \newif\ifrepfirst
 \ifthenelse{\equal{\repmode}{handout}}{\repfirsttrue}{}
 \ifthenelse{\equal{\repmode}{notes}}{%
-  \setbeameroption{show notes on second screen=right}%
+  \setbeameroption{show notes on second screen=bottom}%
   \setbeamertemplate{note page}[plain]%
   \setbeamerfont{note page}{size=\small}%
 }{}
@@ -74,8 +82,8 @@
 % a readout chip
 \newcommand{\chip}[2]{\fcolorbox{gray!30}{white}{\parbox{3.4cm}{\raggedright\scriptsize\textcolor{muted}{#1}\\ \small\textbf{#2}}}}
 
-\ifthenelse{\equal{\repmode}{notes}}{\title[Representation]{Representing Functions and Fields}}{\title[Representing Functions and Fields]{Representing Functions and Fields}}
-\subtitle{Finitely many numbers for a function, and what each choice loses}
+\ifthenelse{\equal{\repmode}{notes}}{\title[]{Representing Functions and Fields}}{\title[Representing Functions and Fields]{Representing Functions and Fields}}
+\subtitle{Finite representations and approximation error}
 \ifthenelse{\equal{\repmode}{notes}}{\author[]{Krishna Kumar}}{\author{Krishna Kumar}}
 \institute[UT Austin]{University of Texas at Austin \\ \medskip \textit{\url{krishnak@utexas.edu}}}
 \date{}
@@ -86,7 +94,42 @@
 \titlepage
 \end{frame}
 
-\begin{frame}{Representing a function as a discrete list and a rule}
+\begin{frame}{A taut string under a load, $\mathcal{L}u = f$}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.2cm, xmin=0, xmax=1, ymin=-16, ymax=40, xlabel=$x$, title={\scriptsize the load $f(x) = -u''(x)$}]
+\stepfrom{2}{\addplot[sorange, line width=1.6pt] table[x=x, y=f]{data/string_load.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.2cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.3, xlabel=$x$, title={\scriptsize the displacement $u(x)$, pinned at both ends}]
+\stepfrom{3}{\addplot[ink, line width=1.6pt] table[x=x, y=u]{data/string_load.dat};
+\addplot[only marks, mark=square*, mark size=2.5pt, muted] coordinates {(0,0) (1,0)};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\[
+-\frac{d^2u}{dx^2} = f(x), \quad u(0) = u(1) = 0, \qquad \mathcal{L} = -\frac{d^2}{dx^2}
+\]
+\stepfrom{3}{\[
+u(x) = 0.8\sin(\pi x) + 0.4\sin(2\pi x) + 0.2\sin(3\pi x)
+\]}
+\note{
+Consider a taut string pinned at $x = 0$ and $x = 1$.
+A distributed load $f(x)$ produces a displacement $u(x)$.
+For small slopes and unit tension, the displacement satisfies $-u'' = f$ with $u(0) = u(1) = 0$.
+In operator form, $\mathcal{L}u = f$, where $\mathcal{L} = -d^2/dx^2$.
+
+The test displacement is $u(x) = 0.8\sin(\pi x) + 0.4\sin(2\pi x) + 0.2\sin(3\pi x)$.
+Its load is $f = -u'' = \pi^2\bigl(0.8\sin(\pi x) + 1.6\sin(2\pi x) + 1.8\sin(3\pi x)\bigr)$.
+Solving for $u$, learning the map from $f$ to $u$, and inferring $f$ from measurements all require a finite representation.
+How should the numbers describe the function, and what determines the approximation error?
+}
+\end{frame}
+
+\begin{frame}{A finite list of numbers and a rule that rebuilds the function}
 \begin{center}
 \begin{tikzpicture}[node distance=1.6cm, >={Stealth[length=3mm]}, font=\small]
 \node[draw=sblue, rounded corners, fill=sblue!10, minimum height=1.6cm, text width=3.2cm, align=center] (list) {a short list of numbers\\[2pt] $(0.8,\ 0.4,\ 0.2)$ \\ or five readings};
@@ -103,10 +146,11 @@
 How well can finitely many numbers stand in for a function, and what decides the accuracy?
 \end{center}
 \note{
-The displacement of a string is a curve.
-A computer cannot store a curve, so every method in this course stores a short list of numbers and a rule that turns the list back into a curve, and the perceptron is one such choice.
-
-How well can finitely many numbers stand in for a function, and what decides the accuracy?
+A numerical representation stores finitely many numbers and a rule for evaluating a function from them.
+Station readings with linear interpolation give one representation.
+Coefficients on sine modes give another.
+Each can reproduce functions in its chosen family, but a general function requires an approximation.
+How does this choice determine the accuracy?
 }
 \end{frame}
 
@@ -115,7 +159,7 @@ How well can finitely many numbers stand in for a function, and what decides the
 \end{frame}
 
 %========================================================================================
-\repsection{Stations}{Readings at fixed stations}
+\repsection{Sampling}{Pointwise sampling}
 
 \begin{frame}{Sampling the displacement at fixed stations}
 \begin{columns}
@@ -123,37 +167,29 @@ How well can finitely many numbers stand in for a function, and what decides the
 \begin{tikzpicture}
 \begin{axis}[rep, height=6.4cm, xmin=0, xmax=1, ymin=-1.5, ymax=1.6, xlabel=$x$, ylabel=$u(x)$]
 \addplot[ink, dashed, line width=1.4pt] table[x=x, y=u]{data/string.dat};
-\stepfrom{2}{\addplot[only marks, mark=triangle*, mark size=3pt, sblue] table[x=x, y expr=-1.42]{data/readings5.dat};}
-\stepfrom{3}{\addplot[muted, dotted, line width=0.8pt, ycomb, mark=none] table[x=x, y=u]{data/readings5.dat};
-          \addplot[only marks, mark=*, mark size=2.2pt, sred] table[x=x, y=u]{data/readings5.dat};}
-\stepfrom{4}{\addplot[sblue, line width=1.8pt] table[x=x, y=v]{data/segments5.dat};}
-\stepfrom{5}{\addplot[only marks, mark=none, error bars/.cd, y dir=both, y explicit, error mark=none, error bar style={syellow, line width=3pt, opacity=0.75}]
-          table[x=x, y=v, y error plus expr={max(\thisrow{u}-\thisrow{v},0)}, y error minus expr={max(\thisrow{v}-\thisrow{u},0)}]{data/gaps5.dat};}
+\stepfrom{2}{\addplot[only marks, mark=triangle*, mark size=3pt, sblue] table[x=x, y expr=-1.42]{data/readings3.dat};}
+\stepfrom{3}{\addplot[muted, dotted, line width=0.8pt, ycomb, mark=none] table[x=x, y=u]{data/readings3.dat};
+          \addplot[only marks, mark=*, mark size=2.2pt, sred] table[x=x, y=u]{data/readings3.dat};}
+\stepfrom{4}{\addplot[sblue, line width=1.8pt] table[x=x, y=v]{data/segments3.dat};}
+\stepfrom{5}{\addplot[draw=none, mark=none, forget plot, error bars/.cd, y dir=both, y explicit, error mark=none, error bar style={syellow, line width=3pt, opacity=0.75}]
+          table[x=x, y=v, y error plus expr={max(\thisrow{u}-\thisrow{v},0)}, y error minus expr={max(\thisrow{v}-\thisrow{u},0)}]{data/gaps3.dat};}
 \end{axis}
 \end{tikzpicture}
 \column{0.3\textwidth}
-\stepfrom{3}{\chip{five readings}{$0$, $1.11$, $0.60$, $0.31$, $0$}\\[6pt]}
-\stepfrom{5}{\chip{worst miss, five sensors}{$0.22$, or $20.1$ percent}}
+\stepfrom{3}{\chip{three readings}{$0$, $0.60$, $0$}\\[6pt]}
+\stepfrom{5}{\chip{worst miss, three sensors}{$0.82$, or $73.5$ percent}}
 \vfill
 \live{readings-at-fixed-stations}
 \end{columns}
 \note{
-Here is a taut string, pulled sideways.
-The whole curve is its displacement, and we want to store it in a computer with a handful of numbers.
-How?
+Consider readings at $x = 0$, $\tfrac12$, and $1$.
+The displacement gives the values $0$, $0.60$, and $0$.
+These readings specify the heights at the sensors, but they leave the intervening displacement undetermined.
 
-The obvious move is to measure it.
-Put five sensors along the string, at $x = 0$, $\tfrac14$, $\tfrac12$, $\tfrac34$, $1$.
-
-They give us five readings, $0$, $1.11$, $0.60$, $0.31$, $0$.
-Everything between the sensors is unknown.
-
-So we guess.
-The simplest guess connects neighboring readings with straight lines, and we have a curve again.
-
-Now look where the guess is wrong.
-The lines miss the bends between sensors, and the worst miss is $0.22$, about a fifth of the largest displacement.
-Would more sensors fix this?
+Connecting neighboring readings with straight lines supplies values between the sensors.
+This interpolant never rises above $0.60$, while the displacement peaks at $1.11$ near $x = 0.23$.
+The largest pointwise error is $0.82$, or $73.5$ percent of the peak displacement.
+How much does adding sensors reduce this error?
 }
 \end{frame}
 
@@ -164,34 +200,43 @@ Would more sensors fix this?
 \begin{axis}[rep, height=6.2cm, xmin=0, xmax=1, ymin=-1.5, ymax=1.6, xlabel=$x$, ylabel=$u(x)$, legend pos=north east]
 \addplot[ink, dashed, line width=1.4pt] table[x=x, y=u]{data/string.dat};
 \addlegendentry{true curve}
-\addplot[sblue!45, line width=1.6pt] table[x=x, y=v]{data/segments5.dat};
-\addlegendentry{$m = 5$}
-\stepfrom{2}{\addplot[sblue!75, line width=1.6pt] table[x=x, y=v]{data/segments9.dat};
-          \addplot[only marks, mark=*, mark size=1.6pt, sblue!75] table[x=x, y=u]{data/readings9.dat};
+\addplot[sblue!30, line width=1.6pt] table[x=x, y=v]{data/segments3.dat};
+\addlegendentry{$m = 3$}
+\stepfrom{2}{\addplot[sblue!55, line width=1.6pt] table[x=x, y=v]{data/segments5.dat};
+          \addlegendentry{$m = 5$}}
+\stepfrom{3}{\addplot[sblue!80, line width=1.6pt] table[x=x, y=v]{data/segments9.dat};
           \addlegendentry{$m = 9$}}
-\stepfrom{3}{\addplot[sblue, line width=1.6pt] table[x=x, y=v]{data/segments17.dat};
+\stepfrom{4}{\addplot[sblue, line width=1.6pt] table[x=x, y=v]{data/segments17.dat};
           \addplot[only marks, mark=*, mark size=1.4pt, sblue] table[x=x, y=u]{data/readings17.dat};
           \addlegendentry{$m = 17$}}
 \end{axis}
 \end{tikzpicture}
 \column{0.3\textwidth}
-\chip{$m = 5$, $h = 1/4$}{20.1 percent}\\[4pt]
-\stepfrom{2}{\chip{$m = 9$, $h = 1/8$}{6.3 percent, a factor of 3.2}\\[4pt]}
-\stepfrom{3}{\chip{$m = 17$, $h = 1/16$}{1.6 percent, a factor of 4.0}\\[4pt]
-\chip{slope on log axes}{$-2.07$}}
+\chip{$m = 3$, $h = 1/2$}{73.5 percent}\\[4pt]
+\stepfrom{2}{\chip{$m = 5$, $h = 1/4$}{20.1 percent, a factor of 3.7}\\[4pt]}
+\stepfrom{3}{\chip{$m = 9$, $h = 1/8$}{6.3 percent, a factor of 3.2}\\[4pt]}
+\stepfrom{4}{\chip{$m = 17$, $h = 1/16$}{1.6 percent, a factor of 4.0}}
 \end{columns}
 \note{
-So we add sensors.
-Before adding any, guess how fast the miss should fall.
-Between two sensors a distance $h$ apart, the curve bends away from a straight line by about $u''h^2/8$ at the middle, so halving $h$ should cut the miss to a quarter.
+\begin{minipage}[t]{0.55\textwidth}
+Adding sensors reduces the distance $h$ between readings.
+For $u \in C^2[0,1]$, the linear interpolation error on each segment is bounded by $\|u''\|_\infty h^2/8$.
+Halving $h$ therefore quarters this bound.
 
-Nine sensors give $6.3$ percent, a factor of $3.2$ and short of four.
-At five sensors one segment spans more than a third of the shortest wavelength in the curve, so the bend inside it is far from a parabola and the estimate $u''h^2/8$ is too crude.
-The estimate applies once $h$ is small against that wavelength.
+The Taylor expansion gives the local estimate.
+A tangent approximates the curve with error $\tfrac12 u''(x_0)h^2$ to leading order.
+The chord error has midpoint magnitude about $|u''|h^2/8$ when the curvature changes little over the segment.
 
-Seventeen sensors give $1.6$ percent, a factor of $4.0$, and from here on every halving divides the miss by four, a slope of $-2.07$ on logarithmic axes.
-We can draw these gaps only because we know the curve.
-What else do the readings alone hide?
+Five, nine, and seventeen sensors give relative sup errors of $20.1$, $6.3$, and $1.6$ percent.
+The early segments are too long for the curvature to remain nearly constant.
+As the spacing decreases, the measured reduction approaches a factor of four.
+These errors can be computed because the test displacement is known.
+What do the readings determine when the displacement is unknown?
+\end{minipage}\hfill
+\begin{minipage}[t]{0.42\textwidth}
+\vspace{0pt}
+\includegraphics[width=\textwidth]{figs/taylor-tangent-sag.png}
+\end{minipage}
 }
 \end{frame}
 
@@ -215,15 +260,14 @@ What else do the readings alone hide?
 \live{readings-at-fixed-stations}
 \end{columns}
 \note{
-Suppose all we have is these seventeen readings.
-Which curves could have produced them?
+The seventeen stations are $x_i = i/16$.
+Adding $0.3\sin(16\pi x)$ changes the displacement between them.
+At every station the added wave is zero, so every reading remains unchanged.
 
-Take one.
-Add the wave $0.3\sin(16\pi x)$ to the displacement.
-At every station $16\pi x_i$ is a multiple of $\pi$, so the wave is zero there and not one reading changes, while the curve moves by $0.3$ at each crest, about a quarter of the largest displacement.
-
-Two functions that agree at every station are aliases on that grid, and the readings cannot tell them apart.
-Could a few numbers describe the whole curve at once, instead of one place each?
+The two displacements are aliases on this grid.
+Their difference reaches magnitude $0.3$ between stations, although their sampled values agree.
+A reconstruction needs assumptions about the displacement between measurements.
+Can coefficients on known shapes describe the curve without fixing measurement locations?
 }
 \end{frame}
 
@@ -234,9 +278,11 @@ Could a few numbers describe the whole curve at once, instead of one place each?
 \begin{axis}[rep, height=6.2cm, xmin=0, xmax=1, ymin=-0.05, ymax=0.3, xlabel=$x$, ylabel=$u(x)$, legend pos=north west]
 \addplot[ink, line width=1.4pt, domain=0:1, samples=201] {0.5*min(x, 1-x)};
 \addlegendentry{point load at mid-span}
-\stepfrom{2}{\addplot[sblue, line width=1.6pt] coordinates {(0,0) (0.375,0.1875) (0.625,0.1875) (1,0)};
+\addplot[only marks, mark=*, mark size=1.4pt, muted] coordinates {(0,0) (0.0625,0.03125) (0.125,0.0625) (0.1875,0.09375) (0.25,0.125) (0.3125,0.15625) (0.375,0.1875) (0.4375,0.21875) (0.5,0.25) (0.5625,0.21875) (0.625,0.1875) (0.6875,0.15625) (0.75,0.125) (0.8125,0.09375) (0.875,0.0625) (0.9375,0.03125) (1,0)};
+\addlegendentry{seventeen stations}
+\stepfrom{2}{\addplot[sblue, line width=1.6pt] coordinates {(0,0) (0.4375,0.21875) (0.5625,0.21875) (1,0)};
           \addlegendentry{segments with the mid-span station removed}
-          \addplot[only marks, mark=*, sred] coordinates {(0.375,0.1875) (0.625,0.1875)};}
+          \addplot[only marks, mark=*, sred] coordinates {(0.4375,0.21875) (0.5625,0.21875)};}
 \end{axis}
 \end{tikzpicture}
 \column{0.3\textwidth}
@@ -244,18 +290,21 @@ Could a few numbers describe the whole curve at once, instead of one place each?
 \chip{smooth displacement, same sensor removed}{$1.6$ to $1.7$ percent}}
 \end{columns}
 \note{
-A reading also means something only together with the place it was taken.
-Two lists from different grids cannot be compared entry by entry, and a sensor that fails leaves a hole for the rule to fill.
+A sampled representation needs the measurement locations as well as the values.
+Lists from different grids cannot be compared entry by entry.
+If a sensor fails, the interpolation rule must reconstruct a larger interval.
 
-Press on the string at mid-span, so it bends into two straight segments with a corner.
-Remove the sensor on the corner and the straight lines cut the peak off, so the worst miss jumps from zero to $12.5$ percent.
-Remove the same sensor from the smooth displacement and the miss barely moves, from $1.6$ to $1.7$ percent.
-Is there a description in which no number belongs to one place?
+A point load at mid-span produces two straight segments with a corner.
+Seventeen equally spaced stations reproduce this displacement without error because one station lies at the corner.
+Removing that station replaces the peak by a horizontal segment at height $0.21875$.
+The relative sup error increases from zero to $12.5$ percent.
+Removing the same station from the smooth test displacement changes this error from $1.6$ to $1.7$ percent.
+How can stored numbers describe shapes rather than values at particular locations?
 }
 \end{frame}
 
 %========================================================================================
-\repsection{Coefficients}{Coefficients on shapes}
+\repsection{Vectors}{Functions as vectors}
 
 \begin{frame}{Representing a function with coefficients on sine modes}
 \begin{columns}
@@ -283,19 +332,70 @@ Is there a description in which no number belongs to one place?
 \live{coefficients-on-shapes}
 \end{columns}
 \note{
-Here is a different idea.
-Instead of asking where the string is, ask what it is made of.
-The string vibrates in sine modes, and the plot shows the first one weighted by $0.8$.
+The test displacement is a weighted sum of sine modes.
+The first contribution is $0.8\sin(\pi x)$.
+Adding $0.4\sin(2\pi x)$ and $0.2\sin(3\pi x)$ reproduces the displacement at every $x$.
 
-Add the second mode, weighted by $0.4$.
-Add the third, weighted by $0.2$.
+The coefficients $(0.8,0.4,0.2)$ describe the curve without a sampling grid.
+At mid-span the second mode vanishes, while the first and third have values $1$ and $-1$.
+Thus $u(\tfrac12) = 0.8 - 0.2 = 0.6$.
+Every mode vanishes at both endpoints, so every such sum satisfies the pinned boundary conditions.
+}
+\end{frame}
 
-Add the three together and the displacement of the string appears.
-Three numbers, $(0.8, 0.4, 0.2)$, give the whole curve, with no grid anywhere.
+\begin{frame}{A three-parameter family of string displacements}
+\begin{center}
+\includegraphics[width=0.64\textwidth]{figs/rep-hero-a}
 
-Check it at mid-span.
-The second mode vanishes there, the first and third read $1$ and $-1$, so $u(\tfrac12) = 0.8 - 0.2 = 0.6$.
-And since every sine vanishes at both ends, every curve we can build this way is pinned.
+\stepfrom{2}{\includegraphics[width=0.64\textwidth]{figs/rep-hero-b}}
+\end{center}
+\centering
+\chip{the family}{$u = a_1\sin(\pi x) + a_2\sin(2\pi x) + a_3\sin(3\pi x)$}\quad
+\stepfrom{2}{\chip{one coefficient changes per panel}{$(-0.4, 0.4, 0.2)$, $(0.8, 0.9, 0.2)$, $(0.8, 0.4, 0.7)$}}
+\note{
+The top row shows each weighted mode and their pointwise sum.
+At mid-span their contributions are $0.8$, $0$, and $-0.2$.
+Their sum is the displacement value $0.6$.
+
+The bottom row changes one coefficient at a time.
+Each change adds a multiple of the corresponding mode to the original displacement.
+Because the modes extend across the interval, a coefficient change affects the curve across the interval.
+These coefficients give coordinates for the family of three-sine displacements.
+}
+\end{frame}
+
+\begin{frame}{Matching the displacement with three weights}
+\begin{columns}
+\column{0.7\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=6.4cm, xmin=0, xmax=1, ymin=-0.4, ymax=1.4, xlabel=$x$, ylabel=$u(x)$, legend pos=north east]
+\addplot[ink, line width=2pt] table[x=x, y=u]{data/string.dat};
+\addlegendentry{displacement, fixed}
+\steponly{1}{3}{\addplot[muted, dashed, line width=1.8pt, domain=0:1, samples=201] {0.5*sin(deg(pi*x))};
+                \addlegendentry{weights $(0.5, 0, 0)$}}
+\steponly{2}{3}{\addplot[muted, dashed, line width=1.8pt, domain=0:1, samples=201] {0.8*sin(deg(pi*x)) + 0.4*sin(deg(2*pi*x))};
+                \addlegendentry{weights $(0.8, 0.4, 0)$}}
+\steponly{3}{3}{\addplot[muted, dashed, line width=1.8pt, domain=0:1, samples=201] {0.8*sin(deg(pi*x)) + 0.4*sin(deg(2*pi*x)) + 0.2*sin(deg(3*pi*x))};
+                \addlegendentry{weights $(0.8, 0.4, 0.2)$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.3\textwidth}
+\steponly{1}{3}{\chip{relative sup, $L^2$, slope errors}{$68.5$, $58.8$, $81.5$ percent}\\[4pt]\chip{$L^2$ distance}{$0.381$}}
+\steponly{2}{3}{\chip{relative sup, $L^2$, slope errors}{$18.0$, $21.8$, $46.9$ percent}\\[4pt]\chip{$L^2$ distance}{$0.141$}}
+\steponly{3}{3}{\chip{relative sup, $L^2$, slope errors}{$0$, $0$, $0$}\\[4pt]\chip{solve, $a_k = 2\int_0^1 u \sin(k\pi x)\,dx$}{$(0.800, 0.400, 0.200)$}}
+\vfill
+\live{coefficients-on-shapes}
+\end{columns}
+\note{
+Now keep the displacement fixed and start with coefficients $(0.5,0,0)$.
+This approximation has relative sup error $68.5$ percent and $L^2$ error $0.381$.
+Setting the first two coefficients to $0.8$ and $0.4$ reduces the relative sup error to $18.0$ percent.
+The relative slope error remains $46.9$ percent because the third mode is missing.
+
+Setting the third coefficient to $0.2$ makes the error zero in every norm.
+The coefficient can also be recovered by integration.
+Products of distinct sine modes integrate to zero, while each squared mode integrates to $\tfrac12$.
+Consequently $a_k = 2\int_0^1 u(x)\sin(k\pi x)\,dx$ recovers $(0.800,0.400,0.200)$.
 }
 \end{frame}
 
@@ -316,11 +416,58 @@ And since every sine vanishes at both ends, every curve we can build this way is
 u + v = \sum_{i=1}^{3} (a_i + b_i)\,\phi_i, \qquad \alpha u = \sum_{i=1}^{3} (\alpha a_i)\,\phi_i
 \]
 \note{
-Look at what the three numbers are.
-On the left, $(0.8, 0.4, 0.2)$ is an arrow with three components.
-On the right, the same three numbers are the displacement.
+The list $(0.8,0.4,0.2)$ specifies a vector in $\mathbb{R}^3$.
+The same list specifies a function when its entries weight the three sine modes.
+Adding two such functions adds their coefficients, and scaling a function scales its coefficients.
+These operations keep the result in the same family.
 
-Add two displacements and their coefficients add, scale one and its coefficients scale, so the family is closed, the three modes are a basis, and a displacement is a point in a three-dimensional space of functions.
+This family is therefore a linear subspace of the functions on the interval.
+The sine modes are linearly independent, so they form a basis of this subspace.
+Each function has a unique coefficient list, and the subspace has dimension three.
+}
+\end{frame}
+
+\begin{frame}{Recovering the coefficients from three readings}
+\begin{columns}
+\column{0.52\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.35, xlabel=$x$, ylabel=$u(x)$]
+\addplot[ink, line width=1.6pt] table[x=x, y=u]{data/string.dat};
+\addplot[only marks, mark=*, mark size=2.8pt, sred] coordinates {(0.5,0.6)};
+\stepfrom{2}{\addplot[only marks, mark=*, mark size=2.8pt, sred] coordinates {(0.25,1.1071) (0.75,0.3071)};}
+\end{axis}
+\end{tikzpicture}
+\column{0.48\textwidth}
+\small
+\[
+\begin{pmatrix} y_1 \\ y_2 \\ y_3 \end{pmatrix}
+=
+\begin{pmatrix}
+1/\sqrt{2} & 1 & 1/\sqrt{2} \\
+1 & 0 & -1 \\
+1/\sqrt{2} & -1 & 1/\sqrt{2}
+\end{pmatrix}
+\begin{pmatrix} a_1 \\ a_2 \\ a_3 \end{pmatrix}
+\]
+\chip{mid-span alone, $y_2 = u(\tfrac12)$}{$a_1 - a_3 = 0.6$, nothing about $a_2$}\\[4pt]
+\stepfrom{2}{\chip{quarter spans, $y_1, y_3$}{$1.107$ and $0.307$}\\[4pt]}
+\stepfrom{3}{\chip{solved}{$a_2 = \tfrac{y_1 - y_3}{2} = 0.4$, $a_1 + a_3 = \tfrac{y_1 + y_3}{\sqrt2} = 1$, so $(0.8, 0.4, 0.2)$}}
+\end{columns}
+\note{
+Recovering coefficients from readings requires independent information about the modes.
+The mid-span reading gives $a_1-a_3=0.6$.
+It gives no information about $a_2$ because the second mode vanishes there.
+
+The quarter-span readings provide the missing information.
+At $x=1/4$ and $x=3/4$, the second mode has values $1$ and $-1$.
+The first and third modes both have value $1/\sqrt2$ at these locations.
+The measured displacements are $1.107$ and $0.307$.
+
+Subtracting the quarter-span equations gives $a_2=(y_1-y_3)/2=0.4$.
+Adding them gives $a_1+a_3=(y_1+y_3)/\sqrt2=1$.
+Together with $a_1-a_3=0.6$, these equations recover $(0.8,0.4,0.2)$.
+The measurement matrix has independent, orthogonal columns and condition number one.
+Endpoint readings add no information because all the modes vanish there.
 }
 \end{frame}
 
@@ -336,23 +483,24 @@ Add two displacements and their coefficients add, scale one and its coefficients
 \end{axis}
 \end{tikzpicture}
 \column{0.3\textwidth}
-\stepfrom{2}{\chip{closest three sines, root-mean-square miss}{$4.8$ percent}}
+\stepfrom{2}{\chip{closest three sines, relative $L^2$ error}{$4.8$ percent}}
 \end{columns}
 \note{
-So far every curve was smooth, because every sine is smooth.
-Now press on the string at one point.
-The point load bends it into two straight segments with a corner at mid-span.
+So far the displacement lies in the span of three smooth sine modes.
+A point load produces a displacement with a corner at mid-span.
+No finite sum of these smooth modes can reproduce that corner.
 
-No sum of three sines has a corner, so the best we can do is the closest sum, and it misses by $4.8$ percent in the root-mean-square sense.
-A fixed family represents its own members without error and approximates everything outside it, and the sensors did the same.
-Before we can say which sum is closest, we have to say how we measure an error.
+The closest three-sine approximation has relative $L^2$ error $4.8$ percent.
+A finite-dimensional representation is exact for its own members, but it approximates a general displacement outside that family.
+The word closest requires a measure of the error.
+Which measure matches the physical question?
 }
 \end{frame}
 
 %========================================================================================
 \repsection{Norms}{Norms and the meaning of error}
 
-\begin{frame}{Measuring error in the sup, $L^2$, and $H^1$ norms}
+\begin{frame}{Measuring value and slope errors}
 \begin{columns}[T]
 \column{0.33\textwidth}
 \begin{tikzpicture}
@@ -365,41 +513,77 @@ Before we can say which sum is closest, we have to say how we measure an error.
 \end{tikzpicture}
 \chip{largest gap, sup norm}{$0.22$}
 \column{0.33\textwidth}
-\stepfrom{2}{\begin{tikzpicture}
+\begin{tikzpicture}
 \begin{axis}[rep, height=5cm, xmin=0, xmax=1, ymin=0, ymax=0.06, xlabel=$x$, title={\scriptsize squared error $e^2$}]
-\addplot[name path=E2, ink, line width=1.2pt] table[x=x, y=e2]{data/error5.dat};
+\stepfrom{2}{\addplot[name path=E2, ink, line width=1.2pt] table[x=x, y=e2]{data/error5.dat};
 \addplot[name path=Z2, draw=none] {0};
-\addplot[syellow!70] fill between[of=E2 and Z2];
+\addplot[syellow!70] fill between[of=E2 and Z2];}
 \end{axis}
 \end{tikzpicture}
-\chip{root of the area, $L^2$ norm}{$0.093$}}
+\chip{root of the area, $L^2$ norm}{$0.093$}
 \column{0.33\textwidth}
-\stepfrom{3}{\begin{tikzpicture}
+\begin{tikzpicture}
 \begin{axis}[rep, height=5cm, xmin=0, xmax=1, ymin=-3.2, ymax=3.2, xlabel=$x$, title={\scriptsize slope error $e'$}]
-\addplot[sorange, line width=1.2pt] table[x=x, y=de]{data/error5.dat};
+\stepfrom{3}{\addplot[sorange, line width=1.2pt] table[x=x, y=de]{data/error5.dat};}
 \end{axis}
 \end{tikzpicture}
-\chip{root-mean-square slope, $H^1$ seminorm}{$1.20$}}
+\chip{root-mean-square slope, $H^1$ seminorm}{$1.20$}
 \end{columns}
 \vfill
 \hfill\live{coefficients-on-shapes}
 \note{
-The error of the five-sensor guess is $e = u - v$.
-How large is it?
-That depends on what we care about.
-If it is clearance under the string, only the worst gap matters, $0.22$, and that is the sup norm.
+The five-sensor interpolation error is $e=u-v$.
+For a clearance calculation, the largest pointwise gap matters.
+This gap is the sup norm $\|e\|_\infty=0.22$.
 
-If it is the overall misfit, all the gaps count at once.
-Their average fails, because positive and negative gaps cancel, so square first, integrate, and take the root.
-That is the $L^2$ norm, $0.093$.
+The $L^2$ norm measures the squared error integrated over the interval.
+Squaring prevents positive and negative errors from canceling.
+Taking the square root gives $\|e\|_{L^2}=0.093$, or $14$ percent of the displacement's $L^2$ norm.
 
-If it is the elastic energy, the values are the wrong thing to look at, since the energy is half the integral of the squared slope.
-The root of the integrated squared slope error is the $H^1$ seminorm, $1.20$, and half its square is the energy of the error, $0.72$.
-In relative terms the values are off by $14$ percent and the slopes by $42$.
+The string's elastic energy depends on its slope.
+The slope error has seminorm $|e|_{H^1}=\|e'\|_{L^2}=1.20$, or $42$ percent of the displacement's slope seminorm.
+The elastic energy of the error is $\tfrac12|e|_{H^1}^2=0.72$.
+An approximation can therefore have a small displacement error and a much larger relative slope error.
 }
 \end{frame}
 
-\begin{frame}{Disagreement between the sup, $L^2$, and $H^1$ norms}
+\begin{frame}{The $L^2$ distance}
+\begin{columns}
+\column{0.64\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.8cm, xmin=0, xmax=1, ymin=-0.4, ymax=1.35, xlabel=$x$, legend pos=north east]
+\addplot[sblue, line width=1.6pt] table[x=x, y=u]{data/slid_copy.dat};
+\addlegendentry{$u(x)$}
+\addplot[sorange, line width=1.6pt] table[x=x, y=g]{data/slid_copy.dat};
+\addlegendentry{$u(x - 0.08) + 0.15\sin(6\pi x)$}
+\stepfrom{2}{\addplot[name path=U, draw=none, forget plot] table[x=x, y=u]{data/slid_copy.dat};
+          \addplot[name path=G, draw=none, forget plot] table[x=x, y=g]{data/slid_copy.dat};
+          \addplot[syellow!55, forget plot] fill between[of=U and G];}
+\end{axis}
+\end{tikzpicture}
+\column{0.36\textwidth}
+\small
+\[
+\|u - g\|_{L^2} = \Bigl(\int_0^1 (u - g)^2\,dx\Bigr)^{1/2}
+\]
+\stepfrom{2}{\chip{$L^2$ distance}{$0.246$}\\[4pt]
+\chip{signed integral of the gap}{$0.0275$}}
+\vfill
+\href{https://sciml-book.github.io/sciml_notebook/representations/norms.html}{\scriptsize\textcolor{burntorange}{\underline{norms notebook}}}
+\end{columns}
+\note{
+The second curve is the displacement shifted $0.08$ to the right, with a small sixth mode added.
+The signed integral of their difference is $0.0275$.
+This integral does not measure distance because positive and negative differences cancel.
+
+The $L^2$ distance instead squares each difference, integrates, and takes the square root.
+For these curves it is $0.246$.
+The shaded area represents the squared differences before integration.
+The norms notebook varies the shift and the quadrature resolution to approximate the same integral.
+}
+\end{frame}
+
+\begin{frame}{The sup norm, $L^2$ norm, and slope seminorm can disagree}
 \begin{columns}[T]
 \column{0.6\textwidth}
 \begin{tikzpicture}
@@ -413,101 +597,516 @@ In relative terms the values are off by $14$ percent and the slopes by $42$.
 \end{axis}
 \end{tikzpicture}
 
-\stepfrom{3}{\begin{tikzpicture}
+\begin{tikzpicture}
 \begin{axis}[rep, width=0.5\linewidth, height=2.7cm, xmin=0, xmax=0.2, ymin=-0.07, ymax=0.07, title={\scriptsize the wiggle $0.05\sin(40\pi x)$}, ytick={-0.05,0,0.05}]
-\addplot[sblue, line width=1.1pt, domain=0:0.2, samples=401] {0.05*sin(deg(40*pi*x))};
+\stepfrom{3}{\addplot[sblue, line width=1.1pt, domain=0:0.2, samples=401] {0.05*sin(deg(40*pi*x))};}
 \end{axis}
 \end{tikzpicture}%
 \begin{tikzpicture}
 \begin{axis}[rep, width=0.5\linewidth, height=2.7cm, xmin=0, xmax=0.2, ymin=-7, ymax=7, title={\scriptsize its slope $2\pi\cos(40\pi x)$}, ytick={-6.28,0,6.28}, yticklabels={$-6.3$,$0$,$6.3$}]
-\addplot[sorange, line width=1.1pt, domain=0:0.2, samples=401] {2*pi*cos(deg(40*pi*x))};
+\stepfrom{3}{\addplot[sorange, line width=1.1pt, domain=0:0.2, samples=401] {2*pi*cos(deg(40*pi*x))};}
 \end{axis}
-\end{tikzpicture}}
+\end{tikzpicture}
 \column{0.4\textwidth}
 \chip{spike, base $0.04$}{sup $1$, $L^2$ $0.115$, energy $50$}\\[4pt]
 \stepfrom{2}{\chip{spike, base $0.01$}{sup $1$, $L^2$ $0.058$, energy $200$}\\[4pt]}
 \stepfrom{3}{\chip{$L^2$ distance, spike to shifted spike}{$\sqrt2 \times 0.115 = 0.163$}\\[4pt]
-\chip{wiggle $0.05\sin(40\pi x)$}{sup $0.05$, $L^2$ $0.035$, $H^1$ $4.44$}}
+\chip{wiggle $0.05\sin(40\pi x)$}{sup $0.05$, $L^2$ $0.035$, slope seminorm $4.44$}}
 \vfill
 \live{coefficients-on-shapes}
 \end{columns}
 \note{
-Can the three disagree by a lot?
-Take a spike of height one on a base of width $0.04$.
-Its sup norm is one.
-Its $L^2$ norm is $\sqrt{b/3} = 0.115$, and its slopes are $\pm 2/b$, so its elastic energy is $2/b = 50$.
+Consider a triangular spike of height one and base width $b=0.04$.
+Its sup norm is one, its $L^2$ norm is $\sqrt{b/3}=0.115$, and its elastic energy is $2/b=50$.
+Quartering the width leaves the sup norm unchanged, halves the $L^2$ norm to $0.058$, and increases the energy to $200$.
+Thus no uniform constant bounds the sup norm by the $L^2$ norm over this family.
 
-Quarter the base.
-The sup norm stays at one, the $L^2$ norm halves to $0.058$, and the energy climbs to $200$.
-No multiple of the $L^2$ norm bounds the sup norm, and a displacement of finite energy cannot contain a spike of zero width.
+Moving the spike until its support is disjoint from the original gives $L^2$ distance $\sqrt2\times0.115=0.163$.
+The squared distance is the sum of the two squared norms because the product of the spikes is zero.
+As the width tends to zero, the spike's energy diverges even though its $L^2$ norm tends to zero.
 
-Shift the spike by one and a half base widths, so it overlaps the original nowhere.
-The $L^2$ distance between the two is $\sqrt2 \times 0.115 = 0.163$, because the $L^2$ distance compares the two point by point and they never overlap.
-A small fast wiggle, $0.05\sin(40\pi x)$, is small in the sup and $L^2$ norms, $0.05$ and $0.035$, and its slope swings to $\pm 6.3$, so its $H^1$ seminorm is $4.44$.
+High frequency also increases the slope error.
+The wave $0.05\sin(40\pi x)$ has sup norm $0.05$ and $L^2$ norm $0.035$.
+Its slope has amplitude $6.3$ and $H^1$ seminorm $4.44$.
+These measures distinguish displacement amplitude from variation in space.
 }
 \end{frame}
 
 \begin{frame}{Definition of a norm and a seminorm}
 \begin{block}{Norm}
+For functions $u,v$ in a real vector space and a scalar $\alpha$, a norm satisfies
 \[
-\|u\| = 0 \text{ only for } u = 0, \qquad \|\alpha u\| = |\alpha|\,\|u\|, \qquad \|u + v\| \le \|u\| + \|v\| .
+\begin{aligned}
+&\|u\|\ge0,\qquad \|u\|=0 \iff u=0,\\
+&\|\alpha u\|=|\alpha|\,\|u\|,\qquad \|u+v\|\le\|u\|+\|v\|.
+\end{aligned}
 \]
 \end{block}
 \medskip
 \begin{block}{Seminorm}
+The slope seminorm vanishes on every constant function.
 \[
-|c|_{H^1} = \Bigl(\int_0^1 (c')^2\,dx\Bigr)^{1/2} = 0 \quad \text{for every constant } c, \qquad\text{and on the pinned string the only constant is } 0 .
+|c|_{H^1}=\|c'\|_{L^2}=0.
 \]
+Pinning excludes nonzero constants, so this seminorm is a norm on pinned finite-energy displacements.
 \end{block}
 \note{
-We have been calling three different rules a size.
-What do they share?
-Each gives the zero function size zero and nothing else size zero, each scales with the function, and each gives a sum at most the sum of the sizes.
-A rule with these three properties is a norm.
+Adding a constant to a displacement leaves its slope unchanged.
+The slope quantity $\|u'\|_{L^2}$ therefore assigns zero to every constant function.
+On a space containing nonzero constants, this quantity is a seminorm.
 
-The slope rule misses the first property, since a constant function has zero slope, so on its own it is a seminorm.
-On the pinned string the only constant allowed is zero, and there the slope rule is a norm after all.
+A norm assigns a nonnegative number to each function.
+Only the zero function has norm zero.
+Scaling a function by $\alpha$ multiplies its norm by $|\alpha|$, and the norm of a sum is at most the sum of the norms.
+The sup and $L^2$ measures satisfy these properties on their respective function spaces.
 
-So the phrase closest member of a family means nothing until we name the norm.
-Name $L^2$, and ask which sum of three sines is closest to the shape of the string under a uniform load, the parabola $x(1-x)$.
+For pinned displacements, zero slope implies a constant displacement, and the endpoint conditions force that constant to be zero.
+The slope seminorm is therefore a norm on the pinned finite-energy space.
+Each norm defines a distance by measuring the difference, $\|u-v\|$.
+The closest approximation depends on which of these distances is minimized.
+}
+\end{frame}
+
+\begin{frame}{Closest three-sine sums to the corner in the $L^2$ and sup norms}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-0.02, ymax=0.29, xlabel=$x$, title={\scriptsize the corner (black), closest in $L^2$ (blue) and in sup (orange)}]
+\addplot[ink, line width=1.6pt] table[x=x, y=u]{data/corner_sums.dat};
+\addplot[sblue, dashed, line width=1.4pt] table[x=x, y=vl2]{data/corner_sums.dat};
+\stepfrom{2}{\addplot[sorange, dashed, line width=1.4pt] table[x=x, y=vsup]{data/corner_sums.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-0.03, ymax=0.03, xlabel=$x$, title={\scriptsize the gap $u - v$}, scaled y ticks=false, yticklabel style={/pgf/number format/fixed}]
+\addplot[sblue, line width=1.3pt] table[x=x, y=el2]{data/corner_sums.dat};
+\stepfrom{2}{\addplot[sorange, line width=1.3pt] table[x=x, y=esup]{data/corner_sums.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\smallskip
+\centering
+\chip{$L^2$-closest, $(0.2026, 0, -0.0225)$}{sup $9.9$, $L^2$ $4.8$, slope $31.5$ percent}\quad
+\stepfrom{2}{\chip{sup-closest, $(0.2045, 0, -0.0318)$}{sup $5.5$, $L^2$ $6.7$, slope $33.9$ percent}}
+\note{
+The corner has different closest three-sine approximations in the $L^2$ and sup norms.
+Its $L^2$ projection has coefficients $c_k=2\sin(k\pi/2)/(k\pi)^2$, giving $(0.2026,0,-0.0225)$.
+Its relative errors are $9.9$ percent in sup, $4.8$ percent in $L^2$, and $31.5$ percent in the slope seminorm.
+
+Minimizing the largest gap gives coefficients $(0.2045,0,-0.0318)$.
+The relative errors become $5.5$ percent in sup, $6.7$ percent in $L^2$, and $33.9$ percent in the slope seminorm.
+Reducing the largest gap increases the errors measured by the other norms.
+
+The $L^2$ and energy projections coincide for these Dirichlet sine modes.
+Integration by parts multiplies both the projection numerator and denominator by $(k\pi)^2$, leaving each coefficient unchanged.
+Orthogonality in both inner products alone would not establish this equality.
+How does orthogonality determine the projection coefficients?
 }
 \end{frame}
 
 %========================================================================================
-\repsection{Projection}{Inner products, projection, and orthogonality}
+\repsection{Spaces}{Function spaces, $L^2$, $H^1$, and Hilbert spaces}
 
-\begin{frame}{The inner product as signed overlap}
+\begin{frame}{The space $L^2$ of square-integrable functions}
+\begin{columns}
+\column{0.58\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=0, ymax=6.2, xlabel=$x$, legend pos=north east]
+\addplot[sblue, line width=1.6pt] table[x=x, y=step]{data/l2_members.dat};
+\addlegendentry{step, in $L^2$}
+\stepfrom{2}{\addplot[sgreen, line width=1.6pt] table[x=x, y=cube]{data/l2_members.dat};
+          \addlegendentry{$x^{-1/3}$, in $L^2$}}
+\stepfrom{3}{\addplot[sred, dashed, line width=1.6pt] table[x=x, y=half]{data/l2_members.dat};
+          \addlegendentry{$x^{-1/2}$, not in $L^2$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.42\textwidth}
+\small
+\[
+\|f\|_{L^2}^2 = \int_0^1 f(x)^2\,dx < \infty
+\]
+\[
+\langle f, g\rangle = \int_0^1 f g\,dx
+\]
+\stepfrom{2}{\chip{$\int_0^1 (x^{-1/3})^2\,dx$}{$3$, finite although $x^{-1/3}$ is unbounded}\\[4pt]}
+\stepfrom{3}{\chip{$\int_0^1 (x^{-1/2})^2\,dx = \int_0^1 x^{-1}\,dx$}{diverges}\\[4pt]}
+\chip{two functions equal except at one point}{$L^2$ distance $0$}
+\end{columns}
+\note{
+The step has a finite integral of its square despite its jump.
+The function $x^{-1/3}$ also has a finite squared integral, $\int_0^1 x^{-2/3}\,dx=3$, despite being unbounded near zero.
+The function $x^{-1/2}$ fails this test because $\int_0^1 1/x\,dx$ diverges.
+These examples distinguish square integrability from continuity and boundedness.
+
+The measurable functions with finite squared integral define $L^2(0,1)$.
+Functions equal almost everywhere represent the same element of this space.
+Changing a value at one point leaves the $L^2$ distance zero, so point evaluation is not well defined on an arbitrary $L^2$ element.
+The inner product $\int_0^1 fg\,dx$ is well defined.
+What additional condition controls slopes?
+}
+\end{frame}
+
+\begin{frame}{The space $H^1$ of finite-energy functions}
 \begin{columns}[T]
 \column{0.5\textwidth}
 \begin{tikzpicture}
-\begin{axis}[rep, height=5cm, xmin=0, xmax=1, ymin=-0.6, ymax=0.6, xlabel=$x$, title={\scriptsize $\sin(\pi x)\,\sin(2\pi x)$, net area $0$}]
-\addplot[name path=P, ink, line width=1.3pt, domain=0:1, samples=201] {sin(deg(pi*x))*sin(deg(2*pi*x))};
-\addplot[name path=Z, draw=none, domain=0:1] {0};
-\addplot[sgreen!50] fill between[of=P and Z, split, every segment no 1/.style={fill=sred!50}];
+\begin{axis}[rep, height=3.9cm, xmin=0, xmax=1, ymin=-0.7, ymax=0.7, xlabel=$x$, title={\scriptsize the corner $\min(x, 1-x)/2$ and its slope, in $H^1_0$}]
+\addplot[ink, line width=1.6pt] table[x=x, y=u]{data/corner_slope.dat};
+\addplot[sorange, line width=1.4pt] table[x=x, y=du]{data/corner_slope.dat};
 \end{axis}
 \end{tikzpicture}
 \column{0.5\textwidth}
-\stepfrom{2}{\begin{tikzpicture}
-\begin{axis}[rep, height=5cm, xmin=0, xmax=1, ymin=-0.6, ymax=0.6, xlabel=$x$, title={\scriptsize $\sin(\pi x)\cdot 4x(1-x)$, net area $4 \times 0.129$}]
-\addplot[name path=Q, ink, line width=1.3pt, domain=0:1, samples=201] {sin(deg(pi*x))*4*x*(1-x)};
-\addplot[name path=Z2, draw=none, domain=0:1] {0};
-\addplot[sgreen!50] fill between[of=Q and Z2];
+\begin{tikzpicture}
+\begin{axis}[rep, height=3.9cm, xmin=0, xmax=1, ymin=-0.2, ymax=21, xlabel=$x$, title={\scriptsize ramps toward a step, and their slopes $1/w$}]
+\stepfrom{2}{\addplot[sblue!50, line width=1.4pt] table[x=x, y=dr]{data/ramp_w20.dat};
+\addplot[sblue, line width=1.4pt] table[x=x, y=dr]{data/ramp_w5.dat};}
 \end{axis}
-\end{tikzpicture}}
+\end{tikzpicture}
 \end{columns}
+\small
 \[
-\langle f, g\rangle = \int_0^1 f(x)\,g(x)\,dx
+\|u\|_{H^1}^2 = \int_0^1 u^2\,dx + \int_0^1 (u')^2\,dx, \qquad \langle u, v\rangle_{H^1} = \int_0^1 (u v + u' v')\,dx
+\]
+\centering
+\stepfrom{2}{\chip{ramp of width $w$, $\int (u')^2\,dx$}{$1/w$, so $5$ at $w = 0.2$ and $20$ at $w = 0.05$}\quad}
+\stepfrom{3}{\chip{in one dimension}{$|u(y) - u(x)| \le \sqrt{|y - x|}\,\|u'\|_{L^2}$}}
+\note{
+The point-load displacement is continuous and has slopes $\tfrac12$ and $-\tfrac12$ on the two halves of the interval.
+Its classical derivative fails at the corner, but the piecewise-constant slope is square integrable.
+Integration by parts still gives $\int u\psi'\,dx=-\int u'\psi\,dx$ for every smooth test function $\psi$ supported inside the interval.
+A derivative defined by this identity is a weak derivative.
+
+The functions in $L^2$ with a weak derivative in $L^2$ form the Sobolev space $H^1(0,1)$.
+Its squared norm is $\|u\|_{H^1}^2=\|u\|_{L^2}^2+\|u'\|_{L^2}^2$.
+The point-load displacement belongs to this space, whereas a step does not.
+A ramp of width $w$ has squared slope integral $1/w$, which grows without bound as it approaches a step.
+
+On an interval, the slope bound gives $|u(y)-u(x)|\le\sqrt{|y-x|}\,\|u'\|_{L^2}$.
+Every $H^1$ element therefore has a unique continuous representative.
+This conclusion does not extend to $H^1$ in higher dimensions.
+Imposing zero endpoint values gives the pinned space $H^1_0(0,1)$.
+}
+\end{frame}
+
+\begin{frame}{Equal $L^2$ norm, increasing slope seminorm}
+\begin{columns}
+\column{0.62\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=-1.6, ymax=1.6, xlabel=$x$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=3}]
+\addplot[sblue, line width=1.5pt] table[x=x, y=v]{data/mode1.dat};
+\addlegendentry{$k = 1$}
+\stepfrom{2}{\addplot[sorange, line width=1.3pt] table[x=x, y=v]{data/mode4.dat};
+          \addlegendentry{$k = 4$}}
+\stepfrom{3}{\addplot[sgreen, line width=1pt] table[x=x, y=v]{data/mode16.dat};
+          \addlegendentry{$k = 16$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.38\textwidth}
+\small
+\[
+\phi_k(x) = \sqrt2\,\sin(k\pi x)
+\]
+\[
+\|\phi_k\|_{L^2} = 1, \qquad |\phi_k|_{H^1} = k\pi
+\]
+\chip{$|\phi_k|_{H^1}$ at $k = 1$}{$3.14$}\\[4pt]
+\stepfrom{2}{\chip{$k = 4$}{$12.57$}\\[4pt]}
+\stepfrom{3}{\chip{$k = 16$}{$50.27$}\\[4pt]
+\chip{distance between two different modes}{$\sqrt2 = 1.414$}}
+\end{columns}
+\note{
+The normalized modes $\phi_k=\sqrt2\sin(k\pi x)$ all have $L^2$ norm one.
+Their slope seminorms are $k\pi$.
+For $k=1$, $4$, and $16$, these are $3.14$, $12.57$, and $50.27$.
+Increasing frequency leaves the displacement norm unchanged while increasing the slope seminorm.
+
+Distinct modes are orthogonal, so their $L^2$ distance is $\sqrt2$.
+The sequence of modes therefore has no $L^2$-convergent subsequence.
+A bound on displacement alone does not limit spatial oscillation.
+}
+\end{frame}
+
+\begin{frame}{Hilbert spaces and the nesting $H^1_0 \subset H^1 \subset L^2$}
+\begin{columns}
+\column{0.55\textwidth}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+\draw[sblue, thick, fill=sblue!6] (0,0) ellipse (3.2cm and 2.1cm);
+\node[sblue] at (0,1.75) {$L^2(0,1)$};
+\draw[sorange, thick, fill=sorange!8] (0,-0.25) ellipse (2.3cm and 1.45cm);
+\node[sorange] at (0,0.9) {$H^1(0,1)$};
+\draw[sgreen, thick, fill=sgreen!10] (0,-0.5) ellipse (1.4cm and 0.8cm);
+\node[sgreen, font=\scriptsize] at (0,-0.05) {$H^1_0(0,1)$};
+\node[font=\scriptsize, align=center] at (0,-0.65) {$\sin(\pi x)$, the corner};
+\node[font=\scriptsize, align=center] at (1.75,0.25) {$1 + x$};
+\node[font=\scriptsize, align=center] at (-2.55,0.05) {step};
+\node[font=\scriptsize, align=center] at (2.6,-0.55) {$x^{-1/3}$};
+\end{tikzpicture}
+\end{center}
+\column{0.45\textwidth}
+\small
+\begin{block}{Hilbert space}
+A vector space with an inner product in which every Cauchy sequence converges to a member of the space.
+\end{block}
+\chip{Hilbert spaces}{$\mathbb{R}^n$, $L^2(0,1)$, $H^1(0,1)$, $H^1_0(0,1)$}\\[4pt]
+\stepfrom{2}{\chip{not complete}{continuous functions with the $L^2$ distance}}
+\end{columns}
+\note{
+The pinned sine and point-load displacement belong to $H^1_0$.
+The line $1+x$ belongs to $H^1$ but fails the zero endpoint conditions.
+The step belongs to $L^2$ but lacks a square-integrable weak derivative.
+Thus $H^1_0\subset H^1\subset L^2$.
+
+Continuous ramps approaching a step form a Cauchy sequence in the $L^2$ norm.
+Their limit lies outside the continuous functions but inside $L^2$.
+A space is complete when every Cauchy sequence converges to an element of the space.
+A complete inner-product space is a Hilbert space.
+
+The spaces $L^2$, $H^1$, and $H^1_0$ are Hilbert spaces with the indicated inner products.
+Projection onto an infinite-dimensional trial space requires that linear subspace to be closed as well.
+These conditions guarantee a unique closest element.
+Completeness alone does not guarantee a minimizer over an arbitrary family.
+}
+\end{frame}
+
+\begin{frame}{The space $H^1_0$ and the Poincar\'e inequality}
+\begin{columns}
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.3cm, xmin=0, xmax=1, ymin=-0.1, ymax=1.2, xlabel=$x$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=3, font=\scriptsize}]
+\stepfrom{2}{\addplot[sblue, line width=1.6pt] table[x=x, y=sine]{data/poincare.dat};
+\addlegendentry{$\sin(\pi x)$}
+\addplot[ink, line width=1.6pt] table[x=x, y=corner]{data/poincare.dat};
+\addlegendentry{corner}}
+\stepfrom{3}{\addplot[sred, dashed, line width=1.6pt] table[x=x, y=one]{data/poincare.dat};
+\addlegendentry{$u = 1$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.52\textwidth}
+\small
+\[
+H^1_0(0,1) = \{\, u \in H^1(0,1) : u(0) = u(1) = 0 \,\}
+\]
+\[
+\|u\|_{L^2} \le \frac{1}{\pi}\,|u|_{H^1} \quad \text{for } u \in H^1_0(0,1)
+\]
+\stepfrom{3}{\[
+|u|_{H^1}^2 \le \|u\|_{H^1}^2 \le \Bigl(1 + \frac{1}{\pi^2}\Bigr)|u|_{H^1}^2 \quad \text{on } H^1_0
+\]}
+\end{columns}
+\vspace{4pt}
+\centering
+\stepfrom{2}{\chip{$\|u\|_{L^2}/|u|_{H^1}$ for $\sin(\pi x)$}{$0.3183 = 1/\pi$, equality}\quad
+\chip{for the corner}{$0.1443/0.5 = 0.2887$}\quad}
+\stepfrom{3}{\chip{$u = 1$, in $H^1$ only}{$|u|_{H^1} = 0$, the bound fails}}
+\note{
+For a pinned displacement, the endpoint values are zero.
+On the interval, an $H^1$ element has a unique continuous representative, so these values are well defined.
+The endpoint map $\gamma u=(u(0),u(1))$ is called the trace.
+Its kernel is $H^1_0(0,1)$.
+
+Pinning controls the displacement norm by the slope seminorm.
+Expanding in normalized sine modes gives $\|u\|_{L^2}^2=\sum c_k^2$ and $|u|_{H^1}^2=\sum(k\pi)^2c_k^2$.
+Since $k\ge1$, the second sum is at least $\pi^2$ times the first.
+This gives the Poincar\'e inequality $\|u\|_{L^2}\le |u|_{H^1}/\pi$.
+
+The lowest mode attains the ratio $1/\pi=0.3183$.
+The corner gives $0.2887$ and the three-sine displacement gives $0.2278$.
+Without pinning, the constant $u=1$ has zero slope and $L^2$ norm one, so the bound fails.
+
+On $H^1_0$, the inequality gives $|u|_{H^1}^2\le\|u\|_{H^1}^2\le(1+1/\pi^2)|u|_{H^1}^2$.
+The slope norm and full $H^1$ norm therefore define the same convergence.
+For a bounded Lipschitz domain, the trace and its zero kernel extend to higher dimensions.
+The Poincar\'e constant is then $1/\sqrt{\lambda_1}$, where $\lambda_1$ is the lowest Dirichlet eigenvalue.
+}
+\end{frame}
+
+\begin{frame}{The spaces $L^2$, $H^1$, and $H^1_0$ compared}
+\footnotesize
+\renewcommand{\arraystretch}{1.6}
+\begin{center}
+\begin{tabular}{l c c P{3.3cm} P{2.6cm} P{3.4cm}}
+\hline
+space & $u \in L^2$ & $\nabla u \in L^2$ & inner product & boundary values & role in $-\Delta u = f$ \\
+\hline
+$L^2(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{not required} & \stepfrom{2}{$\int_\Omega u v\,dx$} & \stepfrom{2}{no general trace or point evaluation} & \stepfrom{2}{square-integrable loads and value misfits} \\
+$H^1(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{yes} & \stepfrom{2}{$\int_\Omega (u v + \nabla u\cdot\nabla v)\,dx$} & \stepfrom{2}{trace exists, none imposed} & \stepfrom{2}{free (Neumann) boundaries, imposed through the weak form} \\
+$H^1_0(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{yes} & \stepfrom{2}{$\int_\Omega \nabla u\cdot\nabla v\,dx$} & \stepfrom{2}{$u = 0$ on $\partial\Omega$} & \stepfrom{2}{trial and test space for fixed (Dirichlet) boundaries} \\
+\hline
+\end{tabular}
+\end{center}
+\note{
+The table compares these spaces on a bounded Lipschitz domain $\Omega$.
+The square-integrable loads and integrated value errors use $L^2$.
+An arbitrary $L^2$ element has no well-defined point evaluation or boundary trace.
+The space $H^1$ adds square-integrable weak gradients and a boundary trace.
+
+The space $H^1_0$ imposes zero trace.
+It is the trial and test space for the pinned string and a membrane fixed at its boundary.
+With flux boundary conditions, the weak formulation instead uses functions whose boundary values are not prescribed.
+A purely Neumann Poisson problem also needs a compatibility condition and determines the solution only up to a constant.
+
+The $L^2$ inner product integrates $uv$.
+The $H^1$ inner product adds the product of the gradients.
+On $H^1_0$, Poincar\'e's inequality makes the gradient term alone an inner product.
+On all of $H^1$, nonzero constants prevent that conclusion.
+}
+\end{frame}
+
+\begin{frame}{Compactness from bounded energy}
+\begin{columns}
+\column{0.5\textwidth}
+\small
+\[
+u = \sum_{k \ge 1} c_k\,\sqrt2\sin(k\pi x), \qquad |u|_{H^1}^2 = \sum_{k \ge 1} (k\pi)^2 c_k^2
+\]
+\stepfrom{2}{\[
+|u|_{H^1} \le M \;\Longrightarrow\; \Bigl(\sum_{k > K} c_k^2\Bigr)^{1/2} \le \frac{M}{(K+1)\pi}
+\]}
+\column{0.5\textwidth}
+\chip{unit ball of $L^2$}{the modes stay $\sqrt2$ apart, no subsequence converges}\\[4pt]
+\stepfrom{2}{\chip{$M = 10$, tail beyond $K = 4$}{at most $0.637$}\\[4pt]
+\chip{$M = 10$, tail beyond $K = 16$}{at most $0.187$}\\[4pt]}
+\stepfrom{3}{\chip{Rellich, on a bounded interval}{a bounded sequence in $H^1_0$ has an $L^2$-convergent subsequence}}
+\end{columns}
+\note{
+In $\mathbb{R}^n$, every bounded sequence has a convergent subsequence.
+The normalized sine modes show why this fails in $L^2$.
+They all have norm one, yet distinct modes remain $\sqrt2$ apart.
+
+A bound on the slope seminorm also bounds the high-frequency coefficients.
+If $|u|_{H^1}\le M$, then $\sum_{k>K}c_k^2\le M^2/((K+1)\pi)^2$.
+Truncation after mode $K$ therefore gives $L^2$ error at most $M/((K+1)\pi)$.
+For $M=10$, this bound is $0.637$ after mode $4$ and $0.187$ after mode $16$.
+
+The bound makes the high-frequency remainder uniformly small.
+The finitely many remaining coefficients have convergent subsequences.
+Together these facts give an $L^2$-convergent subsequence for every bounded sequence in $H^1_0(0,1)$.
+This is the compact embedding expressed by Rellich's theorem on the interval.
+}
+\end{frame}
+
+\begin{frame}{Regularity from the load to the displacement}
+\begin{columns}[T]
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-0.6, ymax=0.6, xlabel=$x$, title={\scriptsize point load, $u \in H^1_0$}]
+\addplot[ink, line width=1.5pt] table[x=x, y=up]{data/reg_loads.dat};
+\addplot[sorange, line width=1.2pt] table[x=x, y=dup]{data/reg_loads.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-2.2, ymax=1.2, xlabel=$x$, title={\scriptsize step load, $u \in H^2$}]
+\stepfrom{2}{\addplot[ink, line width=1.5pt] table[x=x, y=us]{data/reg_loads.dat};
+\addplot[sorange, line width=1.2pt] table[x=x, y=dus]{data/reg_loads.dat};
+\addplot[sgreen, line width=1.2pt] table[x=x, y=ddus]{data/reg_loads.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-2.2, ymax=1.2, xlabel=$x$, title={\scriptsize uniform load, $u = x(1-x)$}]
+\stepfrom{3}{\addplot[ink, line width=1.5pt] table[x=x, y=uu]{data/reg_loads.dat};
+\addplot[sorange, line width=1.2pt] table[x=x, y=duu]{data/reg_loads.dat};
+\addplot[sgreen, line width=1.2pt] table[x=x, y=dduu]{data/reg_loads.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\centering
+{\scriptsize $u$ black, $u'$ orange, $u''$ green}\\[3pt]
+\chip{point load}{slope jumps, $c_k \sim 1/k^2$}\quad
+\stepfrom{2}{\chip{step load in $L^2$}{curvature jumps, $u'' \in L^2$}\quad}
+\stepfrom{3}{\chip{uniform load}{smooth inside, $c_k \sim 1/k^3$}}
+\note{
+The load determines the displacement's regularity through $-u''=f$.
+A point load is a distribution, and it gives a displacement with a corner.
+A square-integrable load gives $u''\in L^2$ and hence $u\in H^2$ on this interval.
+
+The step load gives a continuous slope and a curvature that jumps at mid-span.
+The uniform load $f=2$ gives the smooth parabola $x(1-x)$.
+The point-load corner belongs to $H^1_0$ but not to $H^2$.
+
+The equation also relates the sine coefficients.
+For each mode, it divides the load coefficient by $(k\pi)^2$ to obtain the displacement coefficient.
+This produces $1/k^2$ decay for the corner and $1/k^3$ decay for the parabola.
+The weak formulation requires only one weak derivative of the displacement, so continuous piecewise-linear hats are admissible.
+}
+\end{frame}
+
+\repsection{Projection}{Inner products, projection, and orthogonality}
+
+\begin{frame}{The inner product as signed overlap}
+\centering\scriptsize $f = \sin(\pi x)$ blue, $g$ orange, and below them $fg$, green where positive and red where negative
+\begin{columns}[T]
+\column{0.33\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[rep, width=\linewidth, height=2.95cm, xmin=0, xmax=1, ymin=-1.1, ymax=1.1, title={\scriptsize $g = \sin(2\pi x)$}, xticklabels={}]
+\addplot[sblue, line width=1.3pt, domain=0:1, samples=161] {sin(deg(pi*x))};
+\addplot[sorange, line width=1.3pt, domain=0:1, samples=161] {sin(deg(2*pi*x))};
+\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\begin{axis}[rep, width=\linewidth, height=2.95cm, xmin=0, xmax=1, ymin=-0.9, ymax=0.9, xlabel=$x$, title={\scriptsize $fg$, net area $0$}]
+\stepfrom{2}{\addplot[ybar, bar width=0.0625, fill=sgreen!55, draw=white, samples at={0.03125,0.09375,0.15625,0.21875,0.28125,0.34375,0.40625,0.46875,0.53125,0.59375,0.65625,0.71875,0.78125,0.84375,0.90625,0.96875}] {max(sin(deg(pi*x))*sin(deg(2*pi*x)),0)};
+\addplot[ybar, bar width=0.0625, fill=sred!55, draw=white, samples at={0.03125,0.09375,0.15625,0.21875,0.28125,0.34375,0.40625,0.46875,0.53125,0.59375,0.65625,0.71875,0.78125,0.84375,0.90625,0.96875}] {min(sin(deg(pi*x))*sin(deg(2*pi*x)),0)};
+\addplot[ink, line width=1.1pt, domain=0:1, samples=161] {sin(deg(pi*x))*sin(deg(2*pi*x))};}
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[rep, width=\linewidth, height=2.95cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.1, title={\scriptsize $g = x(1-x)$}, xticklabels={}]
+\addplot[sblue, line width=1.3pt, domain=0:1, samples=161] {sin(deg(pi*x))};
+\addplot[sorange, line width=1.3pt, domain=0:1, samples=161] {x*(1-x)};
+\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\begin{axis}[rep, width=\linewidth, height=2.95cm, xmin=0, xmax=1, ymin=-0.05, ymax=0.3, xlabel=$x$, title={\scriptsize $fg$, net area $0.129$}]
+\stepfrom{2}{\addplot[ybar, bar width=0.0625, fill=sgreen!55, draw=white, samples at={0.03125,0.09375,0.15625,0.21875,0.28125,0.34375,0.40625,0.46875,0.53125,0.59375,0.65625,0.71875,0.78125,0.84375,0.90625,0.96875}] {max(sin(deg(pi*x))*x*(1-x),0)};
+\addplot[ybar, bar width=0.0625, fill=sred!55, draw=white, samples at={0.03125,0.09375,0.15625,0.21875,0.28125,0.34375,0.40625,0.46875,0.53125,0.59375,0.65625,0.71875,0.78125,0.84375,0.90625,0.96875}] {min(sin(deg(pi*x))*x*(1-x),0)};
+\addplot[ink, line width=1.1pt, domain=0:1, samples=161] {sin(deg(pi*x))*x*(1-x)};}
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[rep, width=\linewidth, height=2.95cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.1, title={\scriptsize $g = f$}, xticklabels={}]
+\addplot[sblue, line width=1.3pt, domain=0:1, samples=161] {sin(deg(pi*x))};
+\addplot[sorange, line width=1.3pt, domain=0:1, samples=161] {sin(deg(pi*x))};
+\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\begin{axis}[rep, width=\linewidth, height=2.95cm, xmin=0, xmax=1, ymin=-0.05, ymax=1.1, xlabel=$x$, title={\scriptsize $fg$, net area $0.500$}]
+\stepfrom{2}{\addplot[ybar, bar width=0.0625, fill=sgreen!55, draw=white, samples at={0.03125,0.09375,0.15625,0.21875,0.28125,0.34375,0.40625,0.46875,0.53125,0.59375,0.65625,0.71875,0.78125,0.84375,0.90625,0.96875}] {max(sin(deg(pi*x))*sin(deg(pi*x)),0)};
+\addplot[ybar, bar width=0.0625, fill=sred!55, draw=white, samples at={0.03125,0.09375,0.15625,0.21875,0.28125,0.34375,0.40625,0.46875,0.53125,0.59375,0.65625,0.71875,0.78125,0.84375,0.90625,0.96875}] {min(sin(deg(pi*x))*sin(deg(pi*x)),0)};
+\addplot[ink, line width=1.1pt, domain=0:1, samples=161] {sin(deg(pi*x))*sin(deg(pi*x))};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\vspace{-2pt}
+\[
+\langle f, g\rangle = \int_0^1 f(x)\,g(x)\,dx \;\approx\; \frac{1}{16}\sum_{i=1}^{16} f(x_i)\,g(x_i)
 \]
 \note{
-The uniform load $f = 2$ bends the string into the parabola $x(1-x)$, and no sum of three sines equals it.
-In ordinary geometry a perpendicular dropped from the point onto the plane finds the closest point, and a perpendicular needs a dot product.
-For functions the dot product is the integral of the product, $\langle f, g\rangle = \int_0^1 f g\,dx$, the net signed area under $f(x)\,g(x)$.
+The uniform load $f=2$ produces the parabola $u=x(1-x)$.
+Finding its closest three-sine sum requires an inner product.
+For sampled functions, multiply matching values and weight them by the spacing.
+As the spacing tends to zero, this Riemann sum becomes $\langle f,g\rangle=\int_0^1 fg\,dx$.
 
-Try $\sin(\pi x)$ against $\sin(2\pi x)$.
-One is even about mid-span and the other odd, so the two halves cancel and the modes are orthogonal.
+The product is positive where the functions have the same sign and negative where their signs differ.
+The integral adds these signed contributions.
+For $\sin(\pi x)$ and $\sin(2\pi x)$, reflection about mid-span changes the product's sign.
+The contributions cancel, so the modes are orthogonal.
 
-Now the parabola against $\sin(\pi x)$.
-The two never oppose in sign, so the area is positive, $0.129$, which is $4/\pi^3$, and integrating $-u'' = 2$ by parts twice gives it without integrating the parabola at all.
+The first sine and the parabola are positive inside the interval.
+Their product integrates to $4/\pi^3=0.129$.
+The squared first sine integrates to $\tfrac12$, its squared $L^2$ norm.
+The weighted sixteen-sample sums approximate these integrals as $0.000$, $0.129$, and $0.500$ to three digits.
 }
 \end{frame}
 
@@ -538,14 +1137,17 @@ The two never oppose in sign, so the area is positive, $0.129$, which is $4/\pi^
 \stepfrom{3}{\chip{$c_1 = 8/\pi^3 = 0.258$}{error $0.87$ percent}\quad\chip{$c_1 = 0.31$, twenty percent high}{error norm $23$ times larger}}
 \hfill\live{coefficients-on-shapes}
 \note{
-Fix $c_2 = 0$ and $c_3 = 8/(27\pi^3)$, and slide $c_1$.
-The squared error is a quadratic in $c_1$, and its slope is $-2\langle u - v, \sin(\pi x)\rangle$.
+Keep $c_2=0$ and $c_3=8/(27\pi^3)$ while varying $c_1$.
+The squared $L^2$ error is a quadratic function of $c_1$.
+Its derivative is $-2\langle u-v,\sin(\pi x)\rangle$.
 
-The bottom of the bowl sits where that inner product vanishes, where the error is orthogonal to the mode.
-That gives $c_1 = 2\langle u, \sin(\pi x)\rangle = 8/\pi^3 = 0.258$, one division per coefficient because the modes are orthogonal to each other, and an error of $0.87$ percent.
+At the minimum, the error is orthogonal to the first mode.
+The coefficient is therefore $c_1=2\langle u,\sin(\pi x)\rangle=8/\pi^3=0.258$.
+The resulting three-mode approximation has relative $L^2$ error $0.87$ percent.
 
-Push $c_1$ twenty percent too high, to $0.31$.
-To the eye the curve looks as good, and its error norm is $23$ times larger, since the squared error rises from $2.5 \times 10^{-6}$ to $1.35 \times 10^{-3}$.
+Increasing $c_1$ by twenty percent changes it to approximately $0.31$.
+The squared $L^2$ error increases from $2.5\times10^{-6}$ to $1.35\times10^{-3}$.
+Its square root increases by a factor of $23$, although the curves appear similar at this plot scale.
 }
 \end{frame}
 
@@ -577,32 +1179,36 @@ To the eye the curve looks as good, and its error norm is $23$ times larger, sin
 \]}
 \end{columns}
 \note{
-Why is the perpendicular the best we can do?
-Write $u = v + e$ with $e$ orthogonal to every mode.
+Write the target as $u=v+e$, where $v$ belongs to the trial space and $e$ is orthogonal to it.
+Any other trial function is $v+w$ for some $w$ in that space.
+Its error is $e-w$.
+Orthogonality gives $\|e-w\|^2=\|e\|^2+\|w\|^2$.
 
-Move to any other combination $v + w$.
-The new error is $e - w$, and because $e$ is orthogonal to $w$, $\|e - w\|^2 = \|e\|^2 + \|w\|^2$.
-Every move away from $v$ adds its own squared length to the error, so $v$ is the closest combination and the only one.
-
-Take $w = -v$ and we get Pythagoras, $\|u\|^2 = \|v\|^2 + \|e\|^2$, which predicts the error before we draw anything.
-$\|u\|^2 = 1/30 = 0.033333$ and $\|v\|^2 = 0.033331$, so $\|e\|^2 = 2.5 \times 10^{-6}$, and the $0.87$ percent follows.
+The additional term is nonnegative and vanishes only when $w=0$.
+Thus $v$ is the unique closest trial function.
+Taking $w=-v$ gives the Pythagorean identity $\|u\|^2=\|v\|^2+\|e\|^2$.
+For the parabola, the squared $L^2$ norms are $0.033333$ and $0.033331$, leaving squared error $2.5\times10^{-6}$ and relative error $0.87$ percent.
 }
 \end{frame}
 
 \begin{frame}{The projection theorem}
 \begin{block}{Projection theorem}
-In a space with an inner product, a finite-dimensional family has one closest member to each target, and that member is the one whose error is orthogonal to the whole family.
+For each target in an inner-product space, a finite-dimensional linear subspace has a unique closest member.
+Its error is orthogonal to that subspace.
 \end{block}
 \bigskip
 \[
 \langle u - v, \phi_j\rangle = 0 \quad \text{for every shape } \phi_j, \qquad c_k = \frac{\langle u, \phi_k\rangle}{\langle \phi_k, \phi_k\rangle} \text{ when the shapes are orthogonal.}
 \]
 \note{
-Orthogonality gives one linear equation per shape, so the closest member is computed and never searched for, and when the shapes are orthogonal to one another each coefficient is a single division.
-The Fourier coefficients of a function are these divisions, one per mode.
+Orthogonality gives a linear system for the projection coefficients.
+An orthogonal basis reduces this system to one division per coefficient.
+Fourier coefficients are obtained this way in the $L^2$ inner product.
 
-For a family with infinitely many shapes the theorem needs two more hypotheses, a complete space and a family that contains its own limits.
-Is the inner product itself fixed, or a choice?
+The projection theorem guarantees a unique closest element in a closed linear subspace of a Hilbert space.
+Every finite-dimensional linear subspace is closed.
+A nonlinear family need not have a unique closest element, as the unit circle and the origin demonstrate.
+How does changing the inner product change the projection?
 }
 \end{frame}
 
@@ -623,22 +1229,46 @@ Is the inner product itself fixed, or a choice?
 \chip{closest in energy, heights}{$0.1875$, $0.25$, $0.1875$}\\[4pt]
 \stepfrom{2}{\chip{closest in $L^2$, heights}{$0.2009$, $0.2589$, $0.2009$}\\[4pt]
 \chip{$L^2$ error, $L^2$ against energy}{$3.3$ against $6.3$ percent}\\[4pt]
-\chip{$H^1$ error, $L^2$ against energy}{$26.0$ against $25.0$ percent}}
+\chip{relative slope error, $L^2$ against energy}{$26.0$ against $25.0$ percent}}
 \end{columns}
 \note{
-The inner product was our choice.
-The energy inner product $\int f'g'\,dx$ is another, and it gives another closest member.
-Keep the parabola and take a new family, straight segments with breaks at $0.25$, $0.5$, $0.75$.
-In energy the closest member passes through the parabola's own values, $0.1875$, $0.25$, $0.1875$, and it is the straight-segment guess from the first slides, because its slope error integrates to zero across every segment.
+Keep the parabola and use pinned piecewise-linear functions with breaks at $0.25$, $0.5$, and $0.75$.
+The energy inner product is $\int_0^1 f'g'\,dx$ on the pinned space.
+Its projection takes the nodal values $0.1875$, $0.25$, and $0.1875$.
+The slope error integrates to zero on each segment.
 
-In $L^2$ the closest member lifts the heights to $0.2009$, $0.2589$, $0.2009$, which opens small gaps at the stations and closes larger ones between them.
-Each is closer in the norm it minimizes.
-For the sines the two projections coincide, because the sines are orthogonal in both inner products.
+The $L^2$ projection instead takes the nodal values $0.2009$, $0.2589$, and $0.2009$.
+It reduces integrated value error by allowing nonzero error at the nodes.
+Each projection minimizes its own norm over the same trial space.
+
+For the Dirichlet sine basis, the two projections coincide.
+Integration by parts gives $\langle u',\phi_k'\rangle=(k\pi)^2\langle u,\phi_k\rangle$.
+The basis norm has the same factor, which cancels in the coefficient formula.
+Being orthogonal in both inner products would not by itself make the projections equal.
 }
 \end{frame}
 
 %========================================================================================
 \repsection{Bases}{Changing the basis}
+
+\begin{frame}{Five fixed families of shapes}
+\begin{center}
+\includegraphics[width=\textwidth]{figs/rep-basis-gallery}
+\end{center}
+\centering
+\chip{local}{hats, one per node}\quad\chip{global}{sine modes, Chebyshev polynomials}\quad\chip{smooth and local}{cubic B-splines}\quad\chip{local in position and scale}{wavelets}
+\note{
+The sine modes are one possible basis.
+Hat functions are supported on the segments adjacent to their nodes.
+Sine modes and Chebyshev polynomials extend across the interval.
+Cubic B-splines combine local support with greater smoothness.
+
+A coefficient changes the function only where its basis function is nonzero.
+Local bases therefore permit local changes, while global bases couple distant locations.
+Wavelets also distinguish scales of variation.
+The point-load displacement shows how matching the basis to a corner reduces the number of coefficients.
+}
+\end{frame}
 
 \begin{frame}{Piecewise-linear interpolation as a hat-function expansion}
 \begin{columns}
@@ -660,12 +1290,14 @@ u_h(x) = \sum_i u(x_i)\,\phi_i(x)
 \]}
 \end{columns}
 \note{
-Look again at the straight segments.
-They are a basis too.
-Take one shape per interior station, equal to one at its own station, zero at the others, and straight in between, a hat function.
+The piecewise-linear interpolant can be written in a basis.
+At each interior node, define a hat that equals one there, zero at the other nodes, and is linear between nodes.
+The hats are linearly independent and span the pinned piecewise-linear functions on this grid.
 
-Weight each hat by the reading at its station and add.
-The sum is the straight-segment guess, $u_h(x) = \sum_i u(x_i)\,\phi_i(x)$, so the readings are the coefficients, and the energy projection found this same curve a moment ago.
+Weighting each hat by its nodal reading gives $u_h(x)=\sum_i u(x_i)\phi_i(x)$.
+At a node, every term except that node's hat is zero.
+The sum therefore reproduces the readings and connects them by straight segments.
+On this one-dimensional pinned string, it is also the energy projection.
 }
 \end{frame}
 
@@ -685,19 +1317,115 @@ The sum is the straight-segment guess, $u_h(x) = \sum_i u(x_i)\,\phi_i(x)$, so t
 \column{0.3\textwidth}
 \stepfrom{2}{\chip{one hat on the corner}{one number, $0.25$, no error}\\[4pt]
 \chip{three hats, five stations}{$0.125$, $0.25$, $0.125$, no error}\\[4pt]}
-\stepfrom{3}{\chip{sines, three and thirty-three modes}{$4.8$ and $0.20$ percent}}
+\stepfrom{3}{\chip{relative $L^2$ error, three and thirty-three sines}{$4.8$ and $0.20$ percent}}
 \vfill
 \live{coefficients-on-shapes}
 \end{columns}
 \note{
-Back to the point load.
-Which shapes describe its corner with few numbers?
+The point-load corner matches a hat with its node at mid-span.
+Multiplying that hat by $0.25$ reproduces the displacement without error.
+On the five-station grid, the same displacement has hat coefficients $0.125$, $0.25$, and $0.125$.
 
-One hat whose node sits on the corner does it with one number, $0.25$.
-On the five-station grid three hats do it with $0.125$, $0.25$, $0.125$ and zero error.
+Its sine representation instead needs the infinite sequence $c_k=2\sin(k\pi/2)/(k\pi)^2$.
+Three modes leave relative $L^2$ error $4.8$ percent, and thirty-three leave $0.20$ percent.
+A basis with the correct corner can therefore represent this displacement with fewer coefficients than smooth sine modes.
+This advantage depends on placing the hat node at the corner.
+}
+\end{frame}
 
-The sines need the infinite list $c_k = 2\sin(k\pi/2)/(k\pi)^2$, which falls like $1/k^2$ and leaves $4.8$ percent after three modes and $0.20$ percent after thirty-three.
-A shape that shares the corner needs one number where smooth shapes need infinitely many.
+\begin{frame}{Galerkin's method with hat functions}
+\begin{columns}
+\column{0.52\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.2cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.35, xlabel=$x$, ylabel=$u(x)$, legend pos=north east]
+\addplot[ink, dashed, line width=1.4pt] table[x=x, y=u]{data/string.dat};
+\addlegendentry{exact $u$}
+\stepfrom{2}{\addplot[sblue, line width=1.6pt, mark=*, mark size=2pt] table[x=x, y=uh]{data/galerkin4.dat};
+          \addlegendentry{Galerkin $u_h$, four elements}}
+\end{axis}
+\end{tikzpicture}
+\column{0.48\textwidth}
+\small
+\[
+\int_0^1 u_h'\,\phi_i'\,dx = \int_0^1 f\,\phi_i\,dx \quad\text{for every hat } \phi_i
+\]
+\[
+\mathbf{K}\mathbf{u} = \mathbf{F}, \qquad K_{ii} = \frac{2}{h}, \quad K_{i,i\pm1} = -\frac{1}{h}
+\]
+\stepfrom{2}{\chip{largest nodal deviation, $4$ to $16$ elements}{$4.4 \times 10^{-16}$}\\[4pt]}
+\stepfrom{3}{\chip{error slopes on log axes, $L^2$ and energy}{$2.00$ and $1.00$}}
+\end{columns}
+\note{
+Galerkin's method determines the hat coefficients from the equation rather than from displacement readings.
+Hats lack classical second derivatives at their nodes, so they cannot satisfy $-u_h''=f$ pointwise there.
+Integration by parts gives the weak equation $\int u_h'v'\,dx=\int fv\,dx$.
+This equation requires only square-integrable first derivatives.
+
+Testing against each hat gives $\mathbf{K}\mathbf{u}=\mathbf{F}$.
+On the uniform grid, the hat slopes give $K_{ii}=2/h$ and $K_{i,i\pm1}=-1/h$.
+The error is orthogonal to the hat space in the energy inner product, so this solution is its energy projection.
+
+For this one-dimensional constant-coefficient equation with exact load integration, the Galerkin solution reproduces the exact nodal values.
+The Green's function centered at each grid node is a tent in the hat space, which proves the nodal equality.
+The measured largest nodal deviation is $4.4\times10^{-16}$ over four, eight, and sixteen elements.
+For the smooth test displacement, the $L^2$ and energy errors decrease as $h^2$ and $h$, respectively.
+The measured log-log slopes are $2.00$ and $1.00$.
+}
+\end{frame}
+
+\begin{frame}{Convergence of hat interpolation for continuous and discontinuous functions}
+\begin{columns}[T]
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=3.7cm, xmin=0, xmax=1, ymin=-0.3, ymax=1.35, xlabel=$x$, title={\scriptsize the string, five stations}]
+\stepfrom{2}{\foreach \i in {1,...,3} {\addplot[muted, dashed, line width=0.8pt, forget plot] table[x=x, y=h\i]{data/hats_string5.dat};}}
+\addplot[ink, line width=1.6pt] table[x=x, y=f]{data/hats_string5.dat};
+\stepfrom{2}{\addplot[sblue, line width=1.6pt] table[x=x, y=v]{data/hats_string5.dat};}
+\addplot[only marks, mark=*, mark size=2pt, sred] table[x=x, y=y]{data/hats_string5_nodes.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=3.7cm, xmin=0, xmax=1, ymin=-0.6, ymax=1.3, xlabel=$x$, title={\scriptsize a bump, seventeen stations}]
+\stepfrom{3}{\foreach \i in {1,...,15} {\addplot[muted, dashed, line width=0.6pt, forget plot] table[x=x, y=h\i]{data/hats_bump17.dat};}
+\addplot[ink, line width=1.6pt] table[x=x, y=f]{data/hats_bump17.dat};
+\addplot[sblue, line width=1.6pt] table[x=x, y=v]{data/hats_bump17.dat};
+\addplot[only marks, mark=*, mark size=1.4pt, sred] table[x=x, y=y]{data/hats_bump17_nodes.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=3.7cm, xmin=0, xmax=1, ymin=-0.15, ymax=1.25, xlabel=$x$, title={\scriptsize a square pulse, seventeen stations}]
+\stepfrom{4}{\foreach \i in {5,...,11} {\addplot[muted, dashed, line width=0.7pt, forget plot] table[x=x, y=h\i]{data/hats_pulse17.dat};}
+\addplot[ink, line width=1.6pt] table[x=x, y=f]{data/hats_pulse17.dat};
+\addplot[sblue, line width=1.6pt] table[x=x, y=v]{data/hats_pulse17.dat};
+\addplot[only marks, mark=*, mark size=1.6pt, sred] table[x=x, y=y]{data/hats_pulse17_nodes.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\[
+u_h(x) = \sum_i u(x_i)\,\phi_i(x), \qquad \phi_i(x_j) = \begin{cases} 1 & i = j \\ 0 & i \ne j \end{cases}
+\]
+\centering
+\stepfrom{2}{\chip{string, largest gap at $5$, $17$, $33$ stations}{$20.1$, $1.6$, $0.4$ percent}}\quad
+\stepfrom{3}{\chip{bump, largest gap at $9$, $33$, $65$ stations}{$13.4$, $2.1$, $0.5$ percent}}\quad
+\stepfrom{4}{\chip{pulse, largest gap and RMS gap at $17$}{$80$ and $23.3$ percent}}
+\hfill\live{hat-functions-as-a-basis}
+\note{
+Refining the hat grid approximates every continuous function on the interval uniformly.
+On each segment, the interpolant lies between its endpoint readings.
+Uniform continuity bounds the error by the function's variation over distances at most $h$.
+For a twice continuously differentiable function with $|u''|\le M$, the sharper bound is $Mh^2/8$.
+
+The smooth string displacement has relative sup errors $20.1$, $1.6$, and $0.4$ percent at five, seventeen, and thirty-three stations.
+The narrower bump requires smaller spacing.
+Its relative sup errors are $13.4$, $2.1$, and $0.5$ percent at nine, thirty-three, and sixty-five stations.
+
+The square pulse has jumps, so continuous hat sums cannot converge to it in the sup norm.
+Every continuous approximation has sup error at least half the jump magnitude.
+For the sampled interpolants shown, the relative sup error stays between $60$ and $80$ percent.
+Their relative $L^2$ error still decreases from $23.3$ percent at seventeen stations to $11.6$ percent at sixty-five.
+Thus convergence depends on both the target's regularity and the chosen norm.
 }
 \end{frame}
 
@@ -709,19 +1437,25 @@ A shape that shares the corner needs one number where smooth shapes need infinit
 \includegraphics[width=\textwidth]{figs/rep-coefficients}
 \end{figure}
 \column{0.3\textwidth}
-\chip{load $f = 2$}{$c_k = 8/(k\pi)$, slope $-1.0$}\\[4pt]
-\chip{kink}{$c_k = 2/(k\pi)^2$, slope $-2.0$}\\[4pt]
-\chip{parabola}{$c_k = 8/(k\pi)^3$, slope $-3.0$}
+\chip{load $f = 2$, odd $k$}{$|c_k| = 8/(k\pi)$, slope $-1.0$}\\[4pt]
+\chip{kink, odd $k$}{$|c_k| = 2/(k\pi)^2$, slope $-2.0$}\\[4pt]
+\chip{parabola, odd $k$}{$|c_k| = 8/(k\pi)^3$, slope $-3.0$}
 \end{columns}
 \note{
-How fast do coefficients fall?
-Put three functions on the sine modes.
-The load $f = 2$ has $c_k = 8/(k\pi)$, the kink $2/(k\pi)^2$, and the parabola $8/(k\pi)^3$, since $-u'' = f$ divides the load's coefficients by $(k\pi)^2$.
+The uniform load $f=2$ has sine coefficients $8/(k\pi)$ for odd $k$ and zero for even $k$.
+The point-load displacement has coefficients $2\sin(k\pi/2)/(k\pi)^2$.
+The parabola has coefficients $8/(k\pi)^3$ for odd $k$.
+The equation $-u''=f$ divides each load coefficient by $(k\pi)^2$.
 
-A sine series represents the odd continuation of the function, and each derivative that continuation keeps continuous gains one power of $k$, which is what the slopes $-1.0$, $-2.0$, $-3.0$ show.
+The nonzero magnitudes therefore decay as $1/k$, $1/k^2$, and $1/k^3$ in these examples.
+The load's odd periodic continuation jumps at the endpoints.
+The corner is continuous but has a slope jump, while the parabola's odd continuation has a continuous first derivative.
+Coefficient decay depends on the regularity of this continuation, including the boundary behavior.
 
-One mode leaves $44$ percent of the load and thirty-three still leave $11$, because every sine vanishes at the ends where the load does not.
-What happens beside a jump, where no derivative is continuous?
+One mode leaves relative $L^2$ error $44$ percent for the uniform load.
+Thirty-three modes still leave $11$ percent.
+The slow decay reflects the jumps in the continuation, rather than a pointwise endpoint error alone.
+What does a truncated series do near a jump?
 }
 \end{frame}
 
@@ -747,15 +1481,14 @@ What happens beside a jump, where no derivative is continuous?
 \stepfrom{3}{\chip{overshoot, $N = 129$}{$0.089$, toward $0.0895$}}
 \end{columns}
 \note{
-Sum the sine series of a step.
-With nine modes the sum overshoots the top of the step beside the jump.
+The truncated sine series overshoots the step near its jump.
+Increasing the number of modes narrows the oscillating region.
+The overshoot tends to about $0.0895$ times the jump magnitude.
 
-Add modes.
-The oscillation squeezes toward the jump, and the overshoot stays.
-
-The overshoot tends to $0.0895$ of the jump and never below it, so the series does not converge in the sup norm.
-It does converge in $L^2$, because the region of large error narrows.
-That is the Gibbs phenomenon.
+This nonvanishing overshoot is the Gibbs phenomenon.
+The series does not converge in the sup norm.
+It does converge in $L^2$ because the region of large error shrinks.
+Convergence in one norm therefore does not imply convergence in another.
 }
 \end{frame}
 
@@ -785,20 +1518,133 @@ That is the Gibbs phenomenon.
 \chip{five Gaussian bumps a third of a width apart}{$\cond \mathbf{G} = 2.4$ million}}
 \end{columns}
 \note{
-So far the shapes were orthogonal.
-Now take a family whose shapes overlap.
-Two unit shapes with overlap $\rho = \langle\phi_1, \phi_2\rangle = 0.99$ point almost the same way, and their Gram matrix has condition number $(1+\rho)/(1-\rho) = 199$.
-Where does that number show up?
+Consider two functions of norm one with inner product $\rho=0.99$.
+Their Gram matrix has eigenvalues $1+\rho$ and $1-\rho$.
+Its condition number is $(1+\rho)/(1-\rho)=199$.
 
-Their difference has length $\sqrt{2 - 2\rho} = 0.14$, so adding $0.1(\phi_1 - \phi_2)$ to a target moves the target by $0.014$ and the coefficients by $0.1$ and $-0.1$.
+The difference of the functions has norm $\sqrt{2-2\rho}=0.14$.
+Adding $0.1(\phi_1-\phi_2)$ changes the target by norm $0.014$ while changing the coefficients by $0.1$ and $-0.1$.
+The same coefficient magnitudes with equal signs change the target by norm $0.2$.
+The ratio is $\sqrt{199}=14.1$, so coefficient recovery is sensitive along the difference direction.
 
-Adding $0.1(\phi_1 + \phi_2)$ moves the target by $0.2$ for the same coefficient change, fourteen times more, and $14.1 = \sqrt{199}$.
-Neighboring hats overlap with $\rho = 1/4$, and five Gaussian bumps a third of a width apart reach a condition number of $2.4$ million.
+Overlap alone does not imply severe ill-conditioning.
+Neighboring normalized hats have inner product $1/4$.
+The five Gaussian bumps shown, separated by one third of their width, instead give Gram condition number $2.4$ million.
 }
 \end{frame}
 
 %========================================================================================
 \repsection{Convergence}{Convergence, density, and completeness}
+
+\begin{frame}{Bernstein basis polynomials of degree $0$ to $5$}
+\begin{center}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 2, horizontal sep=1.1cm, vertical sep=0.95cm}, width=4.4cm, height=2.45cm, xmin=0, xmax=1, ymin=0, ymax=1.08, axis lines=left, grid=major, grid style={gray!18}, tick label style={font=\tiny}, xtick={0,0.5,1}, ytick={0,0.5,1}, clip mode=individual]
+\nextgroupplot[title={\scriptsize $n = 0$}]
+\addplot[ink, line width=1.1pt, domain=0:1, samples=81] {factorial(0)/(factorial(0)*factorial(0-0))*x^0*(1-x)^(0-0)};
+\nextgroupplot[title={\scriptsize $n = 1$}]
+\addplot[ink, line width=1.1pt, domain=0:1, samples=81] {factorial(1)/(factorial(0)*factorial(1-0))*x^0*(1-x)^(1-0)};
+\addplot[sred, line width=1.1pt, domain=0:1, samples=81] {factorial(1)/(factorial(1)*factorial(1-1))*x^1*(1-x)^(1-1)};
+\nextgroupplot[title={\scriptsize $n = 2$}]
+\addplot[ink, line width=1.1pt, domain=0:1, samples=81] {factorial(2)/(factorial(0)*factorial(2-0))*x^0*(1-x)^(2-0)};
+\addplot[sred, line width=1.1pt, domain=0:1, samples=81] {factorial(2)/(factorial(1)*factorial(2-1))*x^1*(1-x)^(2-1)};
+\addplot[syellow!85!black, line width=1.1pt, domain=0:1, samples=81] {factorial(2)/(factorial(2)*factorial(2-2))*x^2*(1-x)^(2-2)};
+\nextgroupplot[title={\scriptsize $n = 3$}]
+\addplot[ink, line width=1.1pt, domain=0:1, samples=81] {factorial(3)/(factorial(0)*factorial(3-0))*x^0*(1-x)^(3-0)};
+\addplot[sred, line width=1.1pt, domain=0:1, samples=81] {factorial(3)/(factorial(1)*factorial(3-1))*x^1*(1-x)^(3-1)};
+\addplot[syellow!85!black, line width=1.1pt, domain=0:1, samples=81] {factorial(3)/(factorial(2)*factorial(3-2))*x^2*(1-x)^(3-2)};
+\addplot[sgreen, line width=1.1pt, domain=0:1, samples=81] {factorial(3)/(factorial(3)*factorial(3-3))*x^3*(1-x)^(3-3)};
+\nextgroupplot[title={\scriptsize $n = 4$}]
+\addplot[ink, line width=1.1pt, domain=0:1, samples=81] {factorial(4)/(factorial(0)*factorial(4-0))*x^0*(1-x)^(4-0)};
+\addplot[sred, line width=1.1pt, domain=0:1, samples=81] {factorial(4)/(factorial(1)*factorial(4-1))*x^1*(1-x)^(4-1)};
+\addplot[syellow!85!black, line width=1.1pt, domain=0:1, samples=81] {factorial(4)/(factorial(2)*factorial(4-2))*x^2*(1-x)^(4-2)};
+\addplot[sgreen, line width=1.1pt, domain=0:1, samples=81] {factorial(4)/(factorial(3)*factorial(4-3))*x^3*(1-x)^(4-3)};
+\addplot[sblue, line width=1.1pt, domain=0:1, samples=81] {factorial(4)/(factorial(4)*factorial(4-4))*x^4*(1-x)^(4-4)};
+\nextgroupplot[title={\scriptsize $n = 5$}]
+\addplot[ink, line width=1.1pt, domain=0:1, samples=81] {factorial(5)/(factorial(0)*factorial(5-0))*x^0*(1-x)^(5-0)};
+\addplot[sred, line width=1.1pt, domain=0:1, samples=81] {factorial(5)/(factorial(1)*factorial(5-1))*x^1*(1-x)^(5-1)};
+\addplot[syellow!85!black, line width=1.1pt, domain=0:1, samples=81] {factorial(5)/(factorial(2)*factorial(5-2))*x^2*(1-x)^(5-2)};
+\addplot[sgreen, line width=1.1pt, domain=0:1, samples=81] {factorial(5)/(factorial(3)*factorial(5-3))*x^3*(1-x)^(5-3)};
+\addplot[sblue, line width=1.1pt, domain=0:1, samples=81] {factorial(5)/(factorial(4)*factorial(5-4))*x^4*(1-x)^(5-4)};
+\addplot[violet, line width=1.1pt, domain=0:1, samples=81] {factorial(5)/(factorial(5)*factorial(5-5))*x^5*(1-x)^(5-5)};
+\end{groupplot}
+\end{tikzpicture}
+\end{center}
+\vspace{-6pt}
+\[
+B_{i,n}(t) = \binom{n}{i} t^i (1-t)^{n-i}, \qquad \sum_{i=0}^{n} B_{i,n}(t) = 1, \qquad B_{i,n}(t) \ge 0
+\]
+{\centering\scriptsize $B_{i,n}(t)$ is the probability of exactly $i$ heads in $n$ flips of a coin that lands heads with probability $t$\par}
+\note{
+For $n$ independent coin flips with head probability $t$, the probability of $i$ heads is $\binom ni t^i(1-t)^{n-i}$.
+The factor $\binom ni$ counts the possible orders of heads and tails.
+As a function of $t$, this probability is the Bernstein basis polynomial $B_{i,n}(t)$.
+The degree-zero basis is the constant one.
+
+The basis polynomials are nonnegative and sum to one at every $t$.
+For $n>0$, the interior members peak at $t=i/n$, while the endpoint members peak at zero and one.
+The identity $B_{i,n}(t)=B_{n-i,n}(1-t)$ pairs the basis functions by reflection.
+
+A sum $\sum_i\beta_iB_{i,n}(t)$ is therefore a weighted average of the coefficients.
+It stays between their minimum and maximum and takes the endpoint values $\beta_0$ and $\beta_n$.
+Using vector coefficients gives the B\'ezier curves used in vector graphics.
+Choosing the coefficients as function samples gives Bernstein's approximation construction.
+}
+\end{frame}
+
+\begin{frame}{Bernstein polynomials for the string displacement}
+\begin{columns}
+\column{0.66\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-0.1, ymax=1.35, xlabel=$x$, ylabel=$u(x)$, legend pos=north east]
+\addplot[ink, dashed, line width=1.4pt] table[x=x, y=u]{data/bern_disp8.dat};
+\addlegendentry{displacement}
+\addplot[only marks, mark=*, mark size=1.8pt, sred] table[x=t, y=r]{data/bern_disp8_probe.dat};
+\addlegendentry{readings $u(k/8)$}
+\stepfrom{3}{\foreach \k in {0,...,8} {\addplot[muted, dashed, line width=0.7pt, forget plot] table[x=x, y=w\k]{data/bern_disp8.dat};}
+          \addplot[sblue, line width=1.8pt] table[x=x, y=B]{data/bern_disp8.dat};
+          \addlegendentry{$B_8 u$, the sum of the gray curves}}
+\stepfrom{2}{\addplot[sred, dashed, line width=0.8pt, forget plot] coordinates {(0.25,-0.1) (0.25,1.35)};}
+\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+\begin{axis}[rep, height=2.8cm, xmin=0, xmax=1, ymin=0, ymax=0.35, xlabel={$k/8$}, ylabel={\scriptsize $P(k)$}, title={\scriptsize probability of $k$ heads in $8$ coins, $x = 0.25$}]
+\stepfrom{2}{\addplot[ybar, bar width=6pt, fill=sblue!60, draw=none] table[x=t, y=p]{data/bern_disp8_probe.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.34\textwidth}
+\small
+\[
+B_n u(x) = \sum_{k=0}^{n} u\!\left(\tfrac{k}{n}\right) b_{k,n}(x)
+\]
+\[
+b_{k,n}(x) = \tbinom{n}{k} x^k (1-x)^{n-k}
+\]
+\stepfrom{2}{\chip{$B_8 u(0.25)$, the weighted average}{$0.810$ against $u(0.25) = 1.107$}\\[4pt]}
+\stepfrom{3}{\chip{largest gap, $n = 8$, $32$, $128$}{$0.30$, $0.091$, $0.024$}\\[4pt]
+\chip{Voronovskaya, large $n$}{$3.18/n$}}
+\end{columns}
+\note{
+Take the displacement readings at $k/8$ for $k=0,\ldots,8$.
+At $x=0.25$, weight each reading by the probability of $k$ heads in eight flips with head probability $0.25$.
+The weights are nonnegative and sum to one.
+Their weighted average is $0.810$, compared with the displacement value $1.107$.
+
+At general $x$, this average is $B_nu(x)=\mathbb{E}[u(X/n)]$, where $X$ is binomial with parameters $n$ and $x$.
+The sampled position $X/n$ has mean $x$ and variance $x(1-x)/n$.
+Increasing $n$ concentrates the sampled positions near the evaluation point.
+
+For a smooth displacement, a Taylor expansion explains the error.
+The linear term averages to zero because $\mathbb{E}[X/n-x]=0$, even though the distribution is generally asymmetric.
+The leading quadratic term is $x(1-x)u''(x)/(2n)$.
+For this displacement, the sup error is $0.30$, $0.091$, and $0.024$ at $n=8$, $32$, and $128$, approaching the predicted $3.18/n$.
+
+No finite-degree polynomial equals this nonpolynomial displacement.
+Its three-sine representation is exact, whereas its Bernstein representation converges as the degree increases.
+At a corner, the Taylor argument changes.
+How does that change the rate?
+}
+\end{frame}
 
 \begin{frame}{Approximating a corner with Bernstein polynomials}
 \begin{columns}
@@ -819,18 +1665,19 @@ Neighboring hats overlap with $\rho = 1/4$, and five Gaussian bumps a third of a
 \end{axis}
 \end{tikzpicture}
 \column{0.3\textwidth}
-\chip{the three hills at mid-span}{$\tfrac14$, $\tfrac12$, $\tfrac14$}\\[4pt]
+\chip{Bernstein basis weights at mid-span}{$\tfrac14$, $\tfrac12$, $\tfrac14$}\\[4pt]
 \stepfrom{2}{\chip{readings of $|x - \tfrac12|$ at $0$, $\tfrac12$, $1$}{$\tfrac12$, $0$, $\tfrac12$}\\[4pt]
 \chip{$B_2 f$ at the corner}{$\tfrac14$ where $f = 0$}}
 \end{columns}
 \note{
-Can a family of smooth shapes get as close as we like to a corner?
-Try polynomials.
-The three quadratic Bernstein shapes are three hills, one at each wall and one at mid-span with height $\tfrac12$, and they add to one at every $x$.
+Consider the corner function $f(x)=|x-\tfrac12|$.
+Its readings at $0$, $\tfrac12$, and $1$ are $\tfrac12$, $0$, and $\tfrac12$.
+These are the coefficients of its degree-two Bernstein approximation.
 
-Weight each hill by a reading of the corner function $|x - \tfrac12|$ at $0$, $\tfrac12$, $1$, that is $\tfrac12$, $0$, $\tfrac12$, and add.
-At mid-span the hills weigh $\tfrac14$, $\tfrac12$, $\tfrac14$, so the sum reads $\tfrac14$ where the function is $0$.
-Every neighbor of the corner sits higher than the corner, so any average overshoots there, and the sum stays between the smallest and largest reading.
+At mid-span, the basis weights are $\tfrac14$, $\tfrac12$, and $\tfrac14$.
+The weighted sum is therefore $\tfrac14$, although the corner value is zero.
+Every sample away from the corner is larger than its value at the corner.
+A positive average of these samples gives a positive approximation error there.
 }
 \end{frame}
 
@@ -862,35 +1709,50 @@ B_n f(x) = \sum_{k=0}^{n} f\!\left(\tfrac{k}{n}\right)\binom{n}{k} x^k (1-x)^{n-
 \live{can-a-smooth-family-reach-a-corner}
 \end{columns}
 \note{
-Here is Bernstein's idea.
-Flip $n$ coins that land heads with probability $x$, and weight the reading $f(k/n)$ by the probability of exactly $k$ heads.
-Each hill is that probability, peaked at $k/n$.
+At the corner, the Bernstein error is $\mathbb{E}|X/n-\tfrac12|$ for head probability $\tfrac12$.
+The binomial standard deviation is proportional to $1/\sqrt n$.
+The mean absolute deviation gives the asymptotic estimate $0.4/\sqrt n$.
 
-With eight coins the hills narrow and the sum closes in.
-The gap at the corner is the average distance of the fraction of heads from one half, about $0.4/\sqrt{n}$, which predicts $0.141$ against the measured $0.137$.
+For $n=8$, this predicts $0.141$, compared with the measured sup error $0.137$.
+For $n=32$, it predicts $0.071$, compared with $0.070$.
+The largest error occurs at the corner.
 
-With thirty-two the gap is $0.070$ against a prediction of $0.071$.
-The hills narrow like $1/\sqrt{n}$ and so does the gap, and it always sits at the corner, where the function is least smooth.
+Both sides of the corner increase away from its minimum.
+Their contributions to the average therefore add rather than cancel.
+The error decreases as $1/\sqrt n$, so halving it asymptotically requires four times the degree.
+A smooth function can have a faster Bernstein rate because its linear Taylor term averages to zero.
 }
 \end{frame}
 
-\begin{frame}{Bernstein basis polynomials}
+\begin{frame}{The Weierstrass approximation theorem}
+\begin{block}{Theorem (Weierstrass, 1885)}
+For every continuous $f$ on $[a,b]$ and every $\epsilon > 0$ there is a polynomial $p$ with $|f(x) - p(x)| < \epsilon$ for every $x$ in $[a,b]$.
+\end{block}
 \begin{center}
-\includegraphics[width=0.8\textwidth]{figs/mlp-bernstein-approximation}
+\stepfrom{2}{\includegraphics[width=0.62\textwidth]{figs/mlp-bernstein-approximation}}
 \end{center}
-\[
-B_{k,n}(x) = \binom{n}{k} x^k (1-x)^{n-k}, \qquad B_n f(x) = \sum_{k=0}^{n} f\!\left(\tfrac{k}{n}\right) B_{k,n}(x)
-\]
 \centering
-\chip{largest gap, $n = 5, 10, 20, 40$}{$0.222$, $0.117$, $0.060$, $0.030$}\quad
-\chip{the basis}{nonnegative, sums to one, peaked at $k/n$}
+\stepfrom{2}{\chip{Bernstein $B_n f$ for $\sin(\pi x)$, largest gap}{$0.222$, $0.117$, $0.060$, $0.030$ at $n = 5, 10, 20, 40$}}\quad
+\chip{what the theorem does not say}{the degree, the weights, or the slopes}
 \note{
-Give Bernstein's construction the smooth target $\sin(\pi x)$.
-The basis shapes $B_{k,n}$ are nonnegative and add to one at every $x$, so $B_n f$ is a weighted average of the readings $f(k/n)$, and each shape peaks at its own reading's location $k/n$.
+The Weierstrass theorem guarantees a polynomial within any prescribed sup-norm tolerance of a continuous function on a closed interval.
+It does not specify that polynomial or its degree.
+Bernstein's formula provides one explicit sequence of such approximations.
 
-An average of readings of a concave function sits below it, so every $B_n f$ lies under the sine, and the gap at mid-span is largest.
-The largest gap is $0.222$ at $n = 5$, $0.117$ at $n = 10$, $0.060$ at $n = 20$, and $0.030$ at $n = 40$, so each doubling of $n$ roughly halves it.
-The convergence is uniform, which is the Weierstrass theorem proved by construction.
+The rate depends on the function's variation.
+Its modulus of continuity is $\omega_f(\delta)=\sup_{|x-y|\le\delta}|f(x)-f(y)|$.
+Continuity on the closed interval gives $\omega_f(\delta)\to0$ as $\delta\to0$, which is enough for convergence.
+Continuity alone does not guarantee a $1/\sqrt n$ rate.
+
+If $f$ is Lipschitz with constant $L$, then $|B_nf(x)-f(x)|\le L\,\mathbb{E}|X/n-x|\le L/(2\sqrt n)$.
+The corner has this regularity and attains the $n^{-1/2}$ order.
+If $f\in C^2[0,1]$, the zero mean of $X/n-x$ cancels the linear term.
+The remaining error is bounded by $\|f''\|_\infty/(8n)$.
+
+The sine example follows the faster $1/n$ rate.
+Its sup errors are $0.222$, $0.117$, $0.060$, and $0.030$ at degrees $5$, $10$, $20$, and $40$.
+Qualitative universal approximation theorems for networks similarly guarantee existence under their stated assumptions.
+Their existence statement alone does not determine a useful network size or a training procedure.
 }
 \end{frame}
 
@@ -904,11 +1766,15 @@ The convergence is uniform, which is the Weierstrass theorem proved by construct
 \chip{Voronovskaya at mid-span, $\pi^2/(8n)$}{$0.25$ and $0.012$}
 \end{columns}
 \note{
-For the corner the gap fell like $1/\sqrt{n}$.
-Give Bernstein a smooth target, $\sin(\pi x)$, and the error falls faster, along a slope of $-1$ on the log-log plot, from $0.22$ at $n = 5$ to $0.013$ at $n = 100$.
+For the corner, the Bernstein sup error decreases as $n^{-1/2}$.
+For the smooth target $\sin(\pi x)$, it decreases as $n^{-1}$.
+The measured error falls from $0.22$ at degree $5$ to $0.013$ at degree $100$.
 
-Voronovskaya's formula predicts the gap for a twice-differentiable target, $f - B_n f \approx -x(1-x)\,f''(x)/(2n)$, which at mid-span has size $\pi^2/(8n)$, $0.25$ at $n = 5$ and $0.012$ at $n = 100$.
-So $1/\sqrt{n}$ is the rate for a corner, and one more derivative gives one more power of $n$, as it did for the sine coefficients.
+Voronovskaya's formula gives $f-B_nf\approx-x(1-x)f''(x)/(2n)$.
+At mid-span, its magnitude is $\pi^2/(8n)$, predicting $0.25$ and $0.012$ at these degrees.
+The nonzero second derivative explains the leading $1/n$ error.
+The dashed $n^{-1/2}$ comparison is a bound for Lipschitz targets, not for every merely continuous target.
+Smoothness improves this example's rate, but Bernstein's construction remains much slower than the following least-squares fit.
 }
 \end{frame}
 
@@ -922,38 +1788,40 @@ So $1/\sqrt{n}$ is the rate for a corner, and one more derivative gives one more
 \chip{degrees $7$ and $9$, largest gap}{below $0.00005$}
 \end{columns}
 \note{
-Bernstein's polynomial is one polynomial of degree $n$, and a poor one.
-Fit $\sin(\pi x)$ by least squares on a hundred points instead.
-Degree $3$ misses by $0.0475$ in the sup norm, degree $5$ by $0.0011$, and degrees $7$ and $9$ by less than $0.00005$.
+The Bernstein construction does not minimize polynomial approximation error.
+A least-squares fit to $\sin(\pi x)$ at one hundred points gives much smaller errors at low degree.
+The measured sup errors are $0.0475$ at degree $3$, $0.0011$ at degree $5$, and below $0.00005$ at degrees $7$ and $9$.
 
-For a function analytic on the interval, like the sine, the best polynomial error falls geometrically in the degree, while Bernstein's falls like $1/n$.
-The theorem promised only that some polynomial reaches any tolerance, and the least-squares fit reaches it at a far lower degree than Bernstein's construction.
+The sine extends analytically beyond the interval, so its best polynomial errors decrease at least geometrically with degree.
+Its Bernstein errors instead have a leading $1/n$ term.
+The approximation family, the rule for selecting coefficients, and the convergence rate are separate choices.
 }
 \end{frame}
 
-\begin{frame}{Runge's phenomenon}
+\begin{frame}{High-degree interpolation of noisy data}
 \begin{columns}
 \column{0.72\textwidth}
 \includegraphics[width=\textwidth]{figs/mlp-polynomial-approx-sparse}
 \column{0.28\textwidth}
 \chip{degree $5$, least squares}{largest gap $0.023$}\\[4pt]
 \chip{degree $10$, least squares}{largest gap $0.031$}\\[4pt]
-\chip{degree $14$, through all fifteen readings}{training mean squared error $9 \times 10^{-27}$, largest gap $0.86$}
+\chip{degree $14$, through all fifteen noisy readings}{training mean squared error $9 \times 10^{-27}$, largest gap $0.86$}
 \end{columns}
 \note{
-Now fit fifteen scattered readings of the same sine, by least squares at degrees $5$ and $10$, and with the degree-$14$ polynomial through all fifteen points.
-The two least-squares fits miss by $0.023$ and $0.031$ in the sup norm.
-The interpolant reproduces every reading to twenty-six digits and misses by $0.86$ near the ends, where it swings between the data.
+Now use fifteen scattered sine readings with Gaussian noise of standard deviation $0.02$.
+Least-squares fits of degrees $5$ and $10$ have sup errors against the sine of $0.023$ and $0.031$.
+The degree-$14$ interpolant reproduces every noisy reading with a root-mean-square residual near $10^{-13}$.
+Its sup error against the sine is nevertheless $0.86$.
 
-Between readings a high-degree polynomial is free to oscillate, and it does, most near the ends of the interval.
-That is Runge's phenomenon, and the degree-seven polynomial through the eight fin readings failed the same way, $31$ percent against the truth.
+The interpolant oscillates strongly between readings near the ends.
+Exact agreement with noisy measurements can therefore give poor recovery of the underlying function.
+This experiment concerns noisy scattered data.
+Runge's example instead concerns divergence of equispaced interpolation even for noiseless data.
 }
 \end{frame}
 
-\begin{frame}{The Weierstrass approximation theorem and its limits}
-\begin{block}{Weierstrass (1885)}
-For every continuous $f$ on $[0,1]$ and every tolerance $\epsilon > 0$ there is a polynomial $p$ with $|f(x) - p(x)| < \epsilon$ at every point of the interval.
-\end{block}
+\begin{frame}{What the Weierstrass theorem does not say}
+
 \medskip
 \begin{columns}[T]
 \column{0.5\textwidth}
@@ -966,47 +1834,67 @@ For every continuous $f$ on $[0,1]$ and every tolerance $\epsilon > 0$ there is 
 \end{axis}
 \end{tikzpicture}
 \column{0.5\textwidth}
-\chip{Bernstein's error}{falls like $1/\sqrt{n}$}\\[4pt]
-\chip{best degree-$n$ polynomial}{falls like $1/n$}\\[4pt]
+\chip{Bernstein sup error for this corner}{falls like $1/\sqrt{n}$}\\[4pt]
+\chip{best degree-$n$ sup error for this corner}{falls like $1/n$}\\[4pt]
 \chip{the theorem names}{no polynomial, no degree, no slope}
 \end{columns}
 \note{
-So polynomials come as close as we like to every continuous function.
-Notice what the theorem does not say.
-It names neither the polynomial nor its degree, and it says nothing about slopes, since every $B_n f$ has slope zero at the corner where the slope of $f$ jumps from $-1$ to $1$.
-Bernstein's error falls like $1/\sqrt{n}$, the best degree-$n$ polynomial does better, like $1/n$, and the theorem names neither.
+The Weierstrass theorem concerns uniform error in function values.
+It makes no claim about approximation of derivatives.
+For the corner, the derivative is undefined at mid-span, although every Bernstein polynomial has a derivative there.
 
-Density is also different from having a closest member.
-Polynomials of a fixed degree contain their closest point, and the polynomials of all degrees have no closest member for the corner, since the distance can be made smaller than any positive number and is never zero.
+For this target, Bernstein's sup error decreases as $1/\sqrt n$ while the best degree-$n$ polynomial error decreases as $1/n$.
+The existence theorem does not distinguish these rates.
+It also does not guarantee a closest member among polynomials of all degrees.
+Their error infimum is zero, but no polynomial equals the corner.
 
-Universal approximation theorems for neural networks have the same form and the same silences.
+A fixed-degree polynomial space does have a unique $L^2$ projection.
+Density over increasing degrees and optimality within one fixed space answer different questions.
+Qualitative neural-network approximation theorems likewise require separate analysis of size, fitting, and stability.
 }
 \end{frame}
 
-\begin{frame}{History of universal approximation theorems}
-\begin{center}
-\begin{tikzpicture}[scale=0.85, >={Stealth[length=2.5mm]}, font=\small, box/.style={draw, rounded corners, thick, minimum height=8mm, inner sep=5pt}]
-\node[box, draw=sblue, fill=sblue!12] (w) at (-2,0) {Weierstrass, 1885};
-\node[box, draw=sgreen, fill=sgreen!12] (s) at (4,0) {Stone--Weierstrass, 1937};
-\node[box, draw=sorange, fill=sorange!12] (k) at (10,0) {Kolmogorov, 1957};
-\node[box, draw=sred, fill=sred!12] (c) at (2,-2.4) {Cybenko, 1989};
-\node[box, draw=muted, fill=muted!12] (h) at (8,-2.4) {Hornik, 1991};
-\draw[->, thick, muted] (w) -- (s) node[midway, above, font=\scriptsize] {any separating algebra};
-\draw[->, thick, muted] (s) -- (k) node[midway, above, font=\scriptsize] {several variables};
-\draw[->, thick, muted] (s) -- (c) node[midway, left, font=\scriptsize] {sigmoid units\ };
-\draw[->, thick, muted] (c) -- (h) node[midway, below, font=\scriptsize] {any bounded nonconstant activation};
-\end{tikzpicture}
-\end{center}
-\medskip
-\centering
-\chip{what every theorem on this line gives}{existence for any tolerance}\quad\chip{what none of them gives}{a rate, a width, a slope, or a training method}
+\begin{frame}{Polynomial density through vanishing moments}
+\begin{columns}
+\column{0.5\textwidth}
+\small
+\begin{tabular}{@{}rl@{}}
+\toprule
+moments forced to zero & response to $\sin(3\pi x)$ \\
+\midrule
+$0$ & $0.635$ \\
+$2$ & $0.565$ \\
+$4$ & $0.298$ \\
+$8$ & $1.2 \times 10^{-3}$ \\
+$16$ & $3.0 \times 10^{-9}$ \\
+$32$ & $6.9 \times 10^{-16}$ \\
+\bottomrule
+\end{tabular}
+\column{0.5\textwidth}
+\small
+\[
+\int_0^1 x^k\,d\mu(x) = 0 \quad\text{for every } k
+\]
+\[
+\Longrightarrow\quad \int_0^1 f\,d\mu = 0 \quad\text{for every continuous } f
+\]
+\chip{density criterion}{all polynomial moments zero implies the finite signed measure is zero}
+\end{columns}
 \note{
-Weierstrass in 1885 proved that polynomials come within any tolerance of every continuous function on an interval.
-Stone in 1937 extended the theorem to any algebra of continuous functions on a compact set that separates points and contains the constants, so the trigonometric polynomials and many other families are dense as well.
-Kolmogorov in 1957 wrote every continuous function of several variables as a finite sum of compositions of continuous functions of one variable, a two-layer form.
+On a finite grid, a weighted sum of samples assigns a scalar to each function.
+Adding or scaling functions adds or scales this scalar, so the weighted sum is a linear functional.
+The table chooses weights whose sums against successive monomials are zero.
+Their response to $\sin(3\pi x)$ decreases from $0.635$ to $1.2\times10^{-3}$ and then to numerical zero.
 
-Cybenko in 1989 proved that networks with one hidden layer of sigmoid units are dense in the continuous functions on a box, and Hornik in 1991 showed that any bounded nonconstant activation gives the same result.
-Every theorem on this line has the form Weierstrass gave it, existence for any tolerance, with no rate, no width, and nothing about slopes or training.
+The continuum version is $L(f)=\int f\,d\mu$, where $\mu$ is a finite signed measure.
+Its responses to monomials are the moments $\int x^k\,d\mu$.
+It is bounded in the sup norm, meaning $|L(f)|\le C\|f\|_\infty$ for a fixed constant $C$.
+
+If the polynomial span were not dense in $C[0,1]$, a separation theorem would give a bounded linear functional that vanishes on every polynomial but not on some continuous function.
+The Riesz representation theorem writes it as an integral against such a measure.
+Thus an independent proof that zero polynomial moments force $\mu=0$ proves density.
+The displayed implication states this criterion.
+The finite-grid table illustrates it but does not prove the infinite-dimensional result.
 }
 \end{frame}
 
@@ -1032,16 +1920,15 @@ Every theorem on this line has the form Weierstrass gave it, existence for any t
 \chip{$\|f_8 - f_{32}\|_{L^2}$}{$0.077$}}
 \end{columns}
 \note{
-A limit can lie outside a family in a second way.
-A continuous ramp of width $w$ sits at $L^2$ distance $\sqrt{w/12}$ from the step.
+A continuous ramp of width $w$ has $L^2$ distance $\sqrt{w/12}$ from the step.
+As $w$ tends to zero, this distance tends to zero.
+The triangle inequality also bounds the distance between two ramps by the sum of their distances to the step.
 
-Narrow the ramp.
-Every quartering of $w$ halves the distance to the step.
-
-The ramps also approach one another, $\|f_8 - f_{32}\| = 0.077$, a Cauchy sequence, and every ramp is continuous while the limit is the step.
-So the continuous functions with the $L^2$ distance are incomplete, and $L^2$, where every Cauchy sequence converges, is their completion.
-A complete space with an inner product is a Hilbert space.
-The string's displacements form $H^1_0$, the pinned functions of finite energy.
+The narrowing ramps therefore form a Cauchy sequence in $L^2$.
+Every ramp is continuous, but the limit is discontinuous.
+The continuous functions are incomplete under this norm.
+Their completion is $L^2$, where every Cauchy sequence has a limit.
+With its inner product, this complete space is a Hilbert space.
 }
 \end{frame}
 
@@ -1067,21 +1954,226 @@ The string's displacements form $H^1_0$, the pinned functions of finite energy.
 \]}
 \end{columns}
 \note{
-A sensor reads a value at a point, and $L^2$ cannot.
-The plot shows the displacement and a second function equal to it everywhere except at $x = 0.6$, where it reads $0.5$ higher.
-The two have $L^2$ distance zero, so in $L^2$ they are the same element, and an element of $L^2$ has no value at a point.
+The plotted functions differ only at $x=0.6$, where one value is $0.5$ higher.
+Their $L^2$ distance is zero.
+They represent the same $L^2$ element, so that element does not determine a unique point value.
 
-One derivative restores it.
-For a finite-energy displacement, $|u(y) - u(x)| = |\int_x^y u'(s)\,ds| \le \sqrt{y - x}\,|u|_{H^1}$, so values at nearby points differ by at most the square root of the separation times the slope norm, and every element of $H^1$ on an interval has one continuous representative.
-Our station readings were legitimate because the string had finite energy.
+For $u\in H^1(0,1)$, the weak derivative controls differences between values of its continuous representative.
+The integral identity and Cauchy-Schwarz inequality give $|u(y)-u(x)|\le\sqrt{|y-x|}\,\|u'\|_{L^2}$.
+This representative is unique, so point readings are well defined on the interval.
+The finite-energy string belongs to this space.
 
-Now eight thermocouples on a cooling fin give eight such values, with noise, and nothing else.
-How do eight readings become a curve everywhere?
+The cooling fin gives a different reconstruction problem.
+Its temperature is unknown, and only noisy readings are available.
+Which assumptions permit a temperature estimate between the sensors?
 }
 \end{frame}
 
 %========================================================================================
 \repsection{Kernels}{Kernels and point evaluation}
+
+\begin{frame}{Linear regression by least squares}
+\begin{columns}
+\column{0.6\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.8cm, xmin=-3.5, xmax=3.5, ymin=-1.6, ymax=1.6, xlabel=$x$, ylabel=$y$, legend pos=north west]
+\addplot[muted, dashed, line width=1pt] table[x=x, y=s]{data/reg_fits.dat};
+\addlegendentry{$\sin x$, unknown to the fit}
+\addplot[only marks, mark=*, mark size=2.2pt, sred] table[x=x, y=y]{data/reg_data.dat};
+\addlegendentry{twelve noisy readings}
+\stepfrom{2}{\addplot[sblue, line width=1.6pt] table[x=x, y=line]{data/reg_fits.dat};
+          \addlegendentry{line, features $1, x$}}
+\stepfrom{3}{\addplot[sgreen, line width=1.6pt] table[x=x, y=cubic]{data/reg_fits.dat};
+          \addlegendentry{cubic, features $1, x, x^2, x^3$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.4\textwidth}
+\small
+\[
+\hat y(x) = \sum_{j} w_j\,\phi_j(x), \qquad \min_{\mathbf{w}} \|\boldsymbol{\Phi}\mathbf{w} - \mathbf{y}\|^2
+\]
+\[
+\boldsymbol{\Phi}^\top\boldsymbol{\Phi}\,\mathbf{w} = \boldsymbol{\Phi}^\top\mathbf{y}
+\]
+\stepfrom{2}{\chip{line, RMSE at the data and against $\sin x$}{$0.484$ and $0.439$}\\[4pt]}
+\stepfrom{3}{\chip{cubic, the same two errors}{$0.119$ and $0.085$}}
+\end{columns}
+\note{
+The regression example uses twelve readings $y_i=\sin x_i+\varepsilon_i$ on $[-3,3]$.
+The noise has standard deviation $0.15$.
+A fit $\hat f=\sum_j w_j\phi_j$ chooses coefficients to minimize squared disagreement at these readings.
+
+Writing $\Phi_{ij}=\phi_j(x_i)$ gives the normal equations $\boldsymbol{\Phi}^{\top}\boldsymbol{\Phi}\mathbf{w}=\boldsymbol{\Phi}^{\top}\mathbf{y}$.
+The sampled residual is orthogonal to the columns of $\boldsymbol{\Phi}$ in the Euclidean data inner product.
+This is a projection of the measurement vector, rather than an $L^2$ projection of the unknown function.
+
+The line has RMSE $0.484$ at the readings and $0.439$ against the reference sine.
+The cubic reduces these errors to $0.119$ and $0.085$.
+Adding features can reduce training error, but it need not improve recovery between readings.
+What happens when the number of coefficients equals the number of measurements?
+}
+\end{frame}
+
+\begin{frame}{Ridge regression on many features}
+\begin{columns}
+\column{0.6\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.8cm, xmin=-3.5, xmax=3.5, ymin=-2.5, ymax=2.5, xlabel=$x$, ylabel=$y$, legend pos=north west]
+\addplot[muted, dashed, line width=1pt] table[x=x, y=s]{data/reg_fits.dat};
+\addlegendentry{$\sin x$}
+\addplot[only marks, mark=*, mark size=2.2pt, sred] table[x=x, y=y]{data/reg_data.dat};
+\addlegendentry{readings}
+\steponly{1}{2}{\addplot[sorange, line width=1.6pt] table[x=x, y=deg11]{data/reg_fits.dat};
+          \addlegendentry{degree $11$, least squares}}
+\steponly{2}{2}{\addplot[sorange!45, line width=1.2pt, forget plot] table[x=x, y=deg11]{data/reg_fits.dat};
+          \addplot[sblue, line width=1.6pt] table[x=x, y=deg11ridge]{data/reg_fits.dat};
+          \addlegendentry{degree $11$, ridge $\lambda = 10^{-3}$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.4\textwidth}
+\small
+\[
+\min_{\mathbf{w}} \|\boldsymbol{\Phi}\mathbf{w} - \mathbf{y}\|^2 + \lambda\|\mathbf{w}\|^2
+\]
+\[
+(\boldsymbol{\Phi}^\top\boldsymbol{\Phi} + \lambda\mathbf{I})\,\mathbf{w} = \boldsymbol{\Phi}^\top\mathbf{y}
+\]
+\chip{degree $11$, least squares}{error at the data $0$, largest weight $284$, swings to $29.5$}\\[4pt]
+\stepfrom{2}{\chip{degree $11$, ridge}{error against $\sin x$ $0.073$, largest weight $4.3$}}
+\end{columns}
+\note{
+Use the twelve features $1,x/3,\ldots,(x/3)^{11}$.
+Their least-squares fit interpolates all twelve readings.
+The largest coefficient is $284$, and the curve reaches $29.5$ outside the last sensor locations.
+Agreement with the noisy readings gives no guarantee of an accurate profile.
+
+Ridge regression adds the coefficient penalty $\lambda\|\mathbf{w}\|^2$.
+Its normal equations are $(\boldsymbol{\Phi}^{\top}\boldsymbol{\Phi}+\lambda\mathbf{I})\mathbf{w}=\boldsymbol{\Phi}^{\top}\mathbf{y}$.
+The positive diagonal term reduces amplification associated with small eigenvalues.
+
+At $\lambda=10^{-3}$, the largest coefficient falls to $4.3$.
+The RMSE against the sine falls to $0.073$.
+This penalty depends on the chosen feature scaling.
+Can an inner product specify the features and their penalty without listing every feature?
+}
+\end{frame}
+
+\begin{frame}{A kernel is an inner product of features}
+\begin{columns}
+\column{0.58\textwidth}
+\includegraphics[width=\textwidth]{figs/ka-feature-map}
+\column{0.42\textwidth}
+\small
+\[
+\phi(x_1, x_2) = (x_1,\ x_2,\ x_1^2 + x_2^2)
+\]
+\[
+k(\mathbf{x}, \mathbf{x}') = \phi(\mathbf{x})\cdot\phi(\mathbf{x}') = \mathbf{x}\cdot\mathbf{x}' + |\mathbf{x}|^2|\mathbf{x}'|^2
+\]
+\chip{a plane in feature space}{$x_3 = 1.96$ separates disc from ring, no errors}\\[4pt]
+\chip{$\mathbf{x} = (1, 0)$, $\mathbf{x}' = (0.5, 0.5)$}{both routes give $1.000$}
+\end{columns}
+\note{
+A disc and a surrounding ring cannot be separated by a line in the original plane.
+The feature map $\phi(x_1,x_2)=(x_1,x_2,x_1^2+x_2^2)$ adds squared radius as a coordinate.
+The plane $x_3=1.96$ separates the plotted feature vectors without classification errors.
+
+For these features, $\phi(\mathbf{x})\cdot\phi(\mathbf{x}')=\mathbf{x}\cdot\mathbf{x}'+|\mathbf{x}|^2|\mathbf{x}'|^2$.
+The inner product can therefore be computed directly from the original coordinates.
+Both calculations give $1.000$ for the displayed pair.
+A kernel is a function $k(\mathbf{x},\mathbf{x}')$ that supplies such feature inner products.
+
+The Gram matrix $K_{ij}=k(\mathbf{x}_i,\mathbf{x}_j)$ is positive semidefinite because it is a matrix of inner products.
+Methods written in terms of these inner products can use $k$ without constructing the feature vectors.
+The Gaussian kernel corresponds to an infinite-dimensional feature map.
+A general linear computation need not depend only on feature inner products.
+}
+\end{frame}
+
+\begin{frame}{Regression on Gaussian bump features}
+\begin{columns}
+\column{0.62\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.8cm, xmin=-3.1, xmax=3.1, ymin=-2, ymax=2, xlabel=$x$, legend pos=north west]
+\addplot[muted, line width=1.6pt] table[x=x, y=f]{data/bumps_m5.dat};
+\addlegendentry{target $\sin(1.5x) + 0.5\sin(4x)$}
+\steponly{1}{2}{\addplot[sblue, dashed, line width=1pt, forget plot] table[x=x, y=b0]{data/bumps_m5.dat};
+\addplot[sorange, dashed, line width=1pt, forget plot] table[x=x, y=b1]{data/bumps_m5.dat};
+\addplot[sgreen, dashed, line width=1pt, forget plot] table[x=x, y=b2]{data/bumps_m5.dat};
+\addplot[sred, dashed, line width=1pt, forget plot] table[x=x, y=b3]{data/bumps_m5.dat};
+\addplot[violet, dashed, line width=1pt, forget plot] table[x=x, y=b4]{data/bumps_m5.dat};
+          \addplot[sblue, line width=2pt] table[x=x, y=sum]{data/bumps_m5.dat};
+          \addlegendentry{sum of $5$ bumps, $\ell = 0.5$}
+          \addplot[only marks, mark=*, mark size=2pt, ink, forget plot] table[x=x, y=y]{data/bumps_m5_centers.dat};}
+\steponly{2}{2}{\foreach \j in {0,...,19} {\addplot[muted, dashed, line width=0.6pt, forget plot] table[x=x, y=b\j]{data/bumps_m20.dat};}
+          \addplot[sblue, line width=2pt] table[x=x, y=sum]{data/bumps_m20.dat};
+          \addlegendentry{sum of $20$ bumps, $\ell = 0.5$}
+          \addplot[only marks, mark=*, mark size=1.5pt, ink, forget plot] table[x=x, y=y]{data/bumps_m20_centers.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.38\textwidth}
+\small
+\[
+\hat f(x) = \sum_{j=1}^{m} w_j\, e^{-(x - c_j)^2/2\ell^2}
+\]
+\chip{$5$ bumps, $\ell = 0.5$}{RMSE $0.442$}\\[4pt]
+\stepfrom{2}{\chip{$20$ bumps, $\ell = 0.5$}{RMSE $0.002$}\\[4pt]
+\chip{$20$ bumps, narrow $\ell = 0.1$ and wide $\ell = 2$}{$0.191$ with gaps, $0.316$ blurred}}
+\end{columns}
+\note{
+Place Gaussian bump features at $m$ equally spaced centers on $[-3,3]$.
+Fit their amplitudes to $\sin(1.5x)+0.5\sin(4x)$.
+The least-squares objective includes a fixed small ridge penalty to stabilize the solve.
+
+Five bumps of width $0.5$ give RMSE $0.442$.
+Twenty bumps of the same width reduce it to $0.002$.
+At twenty bumps, width $0.1$ gives RMSE $0.191$, while width $2$ gives $0.316$.
+
+The narrow bumps leave poorly represented intervals between centers.
+The wide bumps are strongly correlated, and the fixed penalty suppresses the coefficients needed for the rapid variation.
+These errors depend on the spacing, width, target, and penalty together.
+The companion kernel-approximation notebook varies these choices.
+}
+\end{frame}
+
+\begin{frame}{Kernel ridge regression with copies at the data}
+\begin{columns}
+\column{0.6\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.8cm, xmin=-4, xmax=4, ymin=-1.6, ymax=1.6, xlabel=$x$, legend pos=north west]
+\addplot[muted, dashed, line width=1pt] table[x=x, y=s]{data/krr_copies.dat};
+\addlegendentry{$\sin x$}
+\stepfrom{2}{\foreach \i in {0,...,11} {\addplot[gray, dashed, line width=0.7pt, forget plot] table[x=x, y=c\i]{data/krr_copies.dat};}}
+\stepfrom{3}{\addplot[ink, line width=2pt] table[x=x, y=sum]{data/krr_copies.dat};
+          \addlegendentry{$\sum_i \alpha_i k(x, x_i)$}}
+\addplot[only marks, mark=*, mark size=2.2pt, sred] table[x=x, y=y]{data/reg_data.dat};
+\addlegendentry{twelve readings}
+\end{axis}
+\end{tikzpicture}
+\column{0.4\textwidth}
+\small
+\[
+\hat f(x) = \sum_{i=1}^{12} \alpha_i\, k(x, x_i), \qquad (\mathbf{K} + \lambda\mathbf{I})\,\boldsymbol{\alpha} = \mathbf{y}
+\]
+\stepfrom{2}{\chip{weights, $\ell = 1/\sqrt3$, $\lambda = 0.01$}{from $-0.632$ to $1.129$}\\[4pt]}
+\stepfrom{3}{\chip{RMSE at the readings and against $\sin x$}{$0.0051$ and $0.113$}}
+\end{columns}
+\note{
+Place a kernel copy at each reading and write $\hat f(x)=\sum_i\alpha_i k(x,x_i)$.
+Kernel ridge regression minimizes $\sum_i(f(x_i)-y_i)^2+\lambda\|f\|_k^2$ over the kernel's Hilbert space.
+The representer theorem gives a minimizer in the span of these copies.
+
+For this expansion, the data term is $\|\mathbf{K}\boldsymbol{\alpha}-\mathbf{y}\|^2$ and the squared RKHS norm is $\boldsymbol{\alpha}^{\top}\mathbf{K}\boldsymbol{\alpha}$.
+The coefficients satisfy $(\mathbf{K}+\lambda\mathbf{I})\boldsymbol{\alpha}=\mathbf{y}$.
+This is not ordinary ridge regression with a penalty $\|\boldsymbol{\alpha}\|^2$.
+
+At $\ell=1/\sqrt3$ and $\lambda=0.01$, the weights range from $-0.632$ to $1.129$.
+The sum has RMSE $0.0051$ against the readings and $0.113$ against the reference sine at those locations.
+The much smaller training residual indicates that the fitted function reproduces part of the measurement noise.
+For the cooling fin, the same reconstruction must be assessed without knowing the reference profile.
+}
+\end{frame}
+
 
 \begin{frame}{Kernels as similarity rules for scattered readings}
 \begin{columns}
@@ -1106,19 +2198,20 @@ k(x, x') = e^{-(x - x')^2/2\ell^2}
 \chip{$k$ at $3\ell$ apart}{$0.011$}}
 \end{columns}
 \note{
-These are the eight readings from the fin.
-Infinitely many curves pass near them.
-What do we know that the readings do not say?
+For the cooling fin, the temperature profile is unknown.
+The readings $y_i$ constrain it at locations $x_i\in[0,1]$, where $x$ is normalized distance along the fin.
+Infinitely many curves agree with these readings.
+How should a measurement affect the estimate at a neighboring location?
 
-The profile is smooth, so nearby points should report similar values, and a reading should constrain the temperature for some distance along the fin.
+Heat conduction motivates a smooth profile.
+The squared-exponential kernel $k(x,x')=\exp(-(x-x')^2/(2\ell^2))$ assigns greater similarity to nearby locations.
+The length scale $\ell$ sets the spatial decay of that similarity.
+Its suitability must be checked against the measurements.
 
-A kernel says how far.
-$k(x, x') = \exp(-(x - x')^2/2\ell^2)$ assigns a similarity to every pair of locations.
-Its copies centered at $0.30$ and $0.45$ sit one length scale apart, and their similarity is $e^{-1/2} = 0.61$.
-Two locations $3\ell$ apart have similarity $0.011$, so a reading constrains the temperature for about two length scales.
-
-Put one copy at each sensor, add them with weights, and choose the weights so the sum passes through every reading, $\mathbf{K}\boldsymbol{\alpha} = \mathbf{y}$.
-Which weights does that solve produce?
+Copies centered at $0.30$ and $0.45$ are one length scale apart and have kernel value $0.61$.
+At separation $3\ell$, the value falls to $0.011$.
+A weighted sum of the copies defines the estimate $\hat f(x)=\sum_i\alpha_i k(x,x_i)$.
+Because the copies overlap, their coefficients must be chosen together.
 }
 \end{frame}
 
@@ -1142,16 +2235,25 @@ Which weights does that solve produce?
 \mathbf{K}\boldsymbol{\alpha} = \mathbf{y}, \qquad K_{ij} = k(x_i, x_j)
 \]
 \chip{weights at $\ell = 0.15$}{alternate in sign, up to $4.30$ and $-3.75$}\\[4pt]
-\chip{two equal readings one $\ell$ apart}{$0.62$ each}\\[4pt]
+\chip{two equal readings one $\ell$ apart}{$1/(1+\rho) = 0.62$ each}\\[4pt]
+\chip{at $x = 0.7$, $\ell = 0.15$}{$0.216$ against the reference $0.393$}\\[4pt]
 \stepfrom{2}{\chip{sum at $x = 0.7$, $\ell = 0.04$}{$0.000$ against the true $0.393$}}
 \end{columns}
 \note{
-At $\ell = 0.15$ the eight copies overlap, and the solve gives them weights that alternate in sign, up to $4.30$ and $-3.75$.
-Two sensors a distance $\ell$ apart with equal readings get $0.62$ each, because each neighbor already supplies part of what they share.
-The weighted copies sum to a curve that passes through every reading and stays smooth between them.
+Requiring $\hat f(x_i)=y_i$ gives the interpolation system $\mathbf{K}\boldsymbol{\alpha}=\mathbf{y}$.
+For distinct sites, the squared-exponential kernel gives a symmetric positive-definite matrix.
+The coefficients are unique, but this guarantees only agreement at the sensors.
 
-Shorten $\ell$ to $0.04$ and each weight is nearly its own reading, so the sum collapses between sensors, to $0.000$ at $x = 0.7$ where the true profile is $0.393$.
-A similarity that reaches too short a distance leaves the curve unconstrained between sensors.
+For two sensors separated by $\ell$ with readings one, symmetry gives equal coefficients.
+At either site, $\alpha+\rho\alpha=1$, where $\rho=e^{-1/2}$.
+Thus each coefficient is $1/(1+\rho)=0.62$.
+A coefficient differs from its reading because the neighboring copy also contributes.
+
+The synthetic fin has a reference profile for checking the reconstruction.
+At $\ell=0.15$, the coefficients include $4.30$ and $-3.75$.
+The reconstructed value at $x=0.7$ is $0.216$, compared with the reference $0.393$.
+At $\ell=0.04$, it is below $0.001$, although every reading is still interpolated.
+Sensor agreement alone does not validate a length scale.
 }
 \end{frame}
 
@@ -1180,15 +2282,20 @@ k(x, x') = \phi(x)^\top\phi(x') \;\Rightarrow\; \mathbf{w}^\top\mathbf{K}\mathbf
 \]
 \end{columns}
 \note{
-Could we have picked any similarity rule?
-Try one.
-Put sensors at $0$, $0.6\ell$, $1.2\ell$, and call two of them similar, with value one, when closer than $\ell$ and unrelated otherwise.
-The matrix has eigenvalues $1 - \sqrt2 = -0.414$, $1$, and $1 + \sqrt2$, and the weights $(1, -\sqrt2, 1)$ give $\mathbf{w}^\top\mathbf{K}\mathbf{w} = -1.66$.
-A negative value cannot be a squared length, so no inner product produces this rule.
+Consider a proposed kernel equal to one at separations below $\ell$ and zero otherwise.
+At sites $0$, $0.6\ell$, and $1.2\ell$, it gives the displayed matrix.
+The vector $(1,-\sqrt2,1)$ gives quadratic form $4-4\sqrt2=-1.66$.
+Such a matrix cannot represent inner products because a squared norm cannot be negative.
 
-A kernel is positive definite when $\mathbf{w}^\top\mathbf{K}\mathbf{w} \ge 0$ for every choice of sites and weights.
-Whenever $k(x, x') = \phi(x)^\top\phi(x')$ for some list of features, $\mathbf{w}^\top\mathbf{K}\mathbf{w} = \|\sum_i w_i \phi(x_i)\|^2 \ge 0$, and every positive definite kernel has this form with the list allowed to be infinite.
-So a kernel method is linear regression on features we never write down.
+A symmetric positive-definite kernel requires nonnegative quadratic forms for every finite collection of sites and weights.
+This terminology permits positive-semidefinite Gram matrices.
+Strict positive definiteness requires a positive value for nonzero weights at distinct sites.
+The squared-exponential kernel has this stronger property.
+
+Feature inner products give $\mathbf{w}^{\top}\mathbf{K}\mathbf{w}=\|\sum_i w_i\Phi(x_i)\|^2\ge0$.
+Conversely, every positive-definite kernel admits a feature representation in a Hilbert space.
+The features may be infinite-dimensional.
+What geometry does this kernel give the reconstructed functions?
 }
 \end{frame}
 
@@ -1223,33 +2330,40 @@ f(x) = \langle f, k(x, \cdot)\rangle_k
 \chip{slope bound}{$|f'(x)| \le \|f\|_k/\ell$}}
 \end{columns}
 \note{
-Now make the kernel's geometry explicit.
-Declare the inner product of two kernel copies to be their similarity, $\langle k(x_1, \cdot), k(x_2, \cdot)\rangle_k = k(x_1, x_2)$, extend it by linearity, and complete the collection.
-That is the reproducing kernel Hilbert space, and its overlap differs from the $L^2$ overlap, $0.61$ against $0.78$ for two unit Gaussian bumps a distance $\ell$ apart.
+A squared-exponential copy has squared kernel norm $k(x_i,x_i)=1$.
+Two copies have kernel inner product $\rho=k(x_1,x_2)$.
+Their sum has squared norm $2+2\rho$, and their difference has squared norm $2-2\rho$.
+Nearby copies are therefore close in this norm.
 
-Take a member, three weighted copies with $\ell = 0.16$, $f = 0.8\,k(0.2, \cdot) - 0.45\,k(0.5, \cdot) + 0.65\,k(0.8, \cdot)$.
-Its squared norm is $\boldsymbol{\alpha}^\top\mathbf{K}\boldsymbol{\alpha} = 1.041$, the similarities of the centers weighted by the coefficients.
+Linearity defines the inner product of finite weighted sums.
+Completing these sums gives the reproducing kernel Hilbert space $\mathcal{H}_k$.
+Its defining identity is $\langle k(x_1,\cdot),k(x_2,\cdot)\rangle_k=k(x_1,x_2)$.
+This inner product is generally different from integrating the product of the two copies.
 
-Pair $f$ with the copy centered at $x^* = 0.72$, the dotted curve.
-The rule returns $0.8\,k(0.2, x^*) - 0.45\,k(0.5, x^*) + 0.65\,k(0.8, x^*)$, which is $f(x^*) = 0.403$, and in general $f(x) = \langle f, k(x, \cdot)\rangle_k$ for every member.
-Evaluating at a point is an inner product, continuous by Cauchy--Schwarz, $|f(x)| \le \|f\|_k\sqrt{k(x,x)} = 1.02$ here, which is what $L^2$ could not give us.
-Differentiate the identity and the slope is bounded too, $|f'(x)| \le \|f\|_k/\ell$, so a function that climbs by $1$ over $\ell/10$ has norm at least $10$.
-The norm measures roughness, and we are about to penalize it.
+Taking the inner product of a weighted sum with $k(x,\cdot)$ evaluates that sum at $x$.
+The identity extends to every member as $f(x)=\langle f,k(x,\cdot)\rangle_k$.
+For the illustrated function, $\|f\|_k^2=1.041$ and $f(0.72)=0.403$.
+Cauchy-Schwarz gives $|f(x)|\le\|f\|_k\sqrt{k(x,x)}$, with bound $1.02$ here.
+
+For this kernel, derivative evaluation also gives $|f'(x)|\le\|f\|_k/\ell$.
+Increasing by one across distance $\ell/10$ requires a slope of at least $10/\ell$ somewhere.
+Such a function must have RKHS norm at least ten.
+The norm therefore controls both amplitude and variation.
 }
 \end{frame}
 
 %========================================================================================
-\repsection{Noise and GPs}{Noisy observations, ridge regression, and Gaussian conditioning}
+\repsection{Noise}{Noisy observations, ridge regression, and Gaussian conditioning}
 
 \begin{frame}{Noise amplification in kernel interpolation}
 \begin{columns}
 \column{0.6\textwidth}
 \begin{tikzpicture}
 \begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.3, xlabel=$x$, legend pos=north east]
-\addplot[sblue, line width=1.3pt, domain=0:1, samples=201] {exp(-(x-0.47)^2/(2*0.15^2))};
-\addplot[sorange, line width=1.3pt, domain=0:1, samples=201] {exp(-(x-0.53)^2/(2*0.15^2))};
+\addplot[sblue, line width=1.3pt, domain=0:1, samples=201] {exp(-(x-0.4894)^2/(2*0.15^2))};
+\addplot[sorange, line width=1.3pt, domain=0:1, samples=201] {exp(-(x-0.5106)^2/(2*0.15^2))};
 \addlegendentry{two copies, overlap $0.99$}
-\stepfrom{2}{\addplot[sred, line width=1.6pt, domain=0:1, samples=201] {7*(exp(-(x-0.47)^2/(2*0.15^2)) - exp(-(x-0.53)^2/(2*0.15^2)))};
+\stepfrom{2}{\addplot[sred, line width=1.6pt, domain=0:1, samples=201] {7*(exp(-(x-0.4894)^2/(2*0.15^2)) - exp(-(x-0.5106)^2/(2*0.15^2)))};
           \addlegendentry{$7(\phi_1 - \phi_2)$}}
 \end{axis}
 \end{tikzpicture}
@@ -1257,19 +2371,17 @@ The norm measures roughness, and we are about to penalize it.
 \chip{eigenvalues of $\mathbf{K}$, overlap $0.99$}{$1.99$ along $(1,1)$, $0.01$ along $(1,-1)$}\\[4pt]
 \chip{readings $(1, 1)$}{weights near $\tfrac12$ each}\\[4pt]
 \stepfrom{2}{\chip{noise $(\varepsilon, -\varepsilon)$}{weights $\pm\varepsilon/0.01$, a hundred times the noise}\\[4pt]
-\chip{$\|\phi_1 - \phi_2\|$}{$0.14$, so the curve moves fourteen times the noise}}
+\chip{RKHS norm of the perturbation}{$14.1|\varepsilon|$, distinct from pointwise error}}
 \end{columns}
 \note{
-The interpolant reproduces every reading, noise included.
-How bad is that?
-At overlap $0.99$ the two-sensor matrix has eigenvalues $1.99$ and $0.01$, along $(1,1)$ and $(1,-1)$, and a reading pair $(1,1)$ gives weights near one half each.
+For two nearby sensors with similarity $\rho=0.99$, the kernel matrix has eigenvalues $1.99$ and $0.01$.
+Equal changes in the readings use the first eigenvalue.
+Opposite changes use the small eigenvalue and are strongly amplified.
 
-A noise pair $(\varepsilon, -\varepsilon)$, the difference between two nearly equal readings, gives weights $\pm\varepsilon/0.01$, a hundred times the noise.
-The hundredfold is in the coefficients along $\phi_1 - \phi_2$, whose function has norm $0.14$, so the curve moves by fourteen times the noise while its coefficients move by a hundred.
-
-We have changed the question.
-Approximating a known function asked which member is closest.
-Recovering an unknown function from noisy readings asks whether the readings identify it, and interpolation answers by trusting every reading to the last digit.
+Measurement errors $(\varepsilon,-\varepsilon)$ change the interpolation coefficients by $(100\varepsilon,-100\varepsilon)$.
+The reconstructed perturbation is $100\varepsilon(\phi_1-\phi_2)$.
+Its RKHS norm is about $14.1|\varepsilon|$ because $\|\phi_1-\phi_2\|_k=\sqrt{2-2\rho}$.
+This is a function-norm change, not a pointwise error of fourteen times the noise.
 }
 \end{frame}
 
@@ -1284,7 +2396,7 @@ Recovering an unknown function from noisy readings asks whether the readings ide
 \]
 \medskip
 \centering
-\chip{$\lambda = 0.1$, small divisor}{$0.01 \to 0.11$}\quad\chip{amplification}{a hundred $\to$ nine}
+\chip{$\lambda = 0.1$, small divisor}{$0.01 \to 0.11$}\quad\chip{amplification}{$100$ to $9.1$}
 \column{0.5\textwidth}
 \begin{figure}
 \centering
@@ -1292,13 +2404,19 @@ Recovering an unknown function from noisy readings asks whether the readings ide
 \end{figure}
 \end{columns}
 \note{
-So add a roughness penalty to the misfit and minimize $\sum_i (f(x_i) - y_i)^2 + \lambda\|f\|_k^2$ over the whole space.
-Any component of $f$ orthogonal to the span of the data's kernel copies changes no reading and raises the norm, so the minimizer lies in that span, and substituting gives $(\mathbf{K} + \lambda\mathbf{I})\boldsymbol{\alpha} = \mathbf{y}$, the interpolation solve with the identity added to the diagonal.
-At $\lambda = 0.1$ the small divisor rises from $0.01$ to $0.11$ and the amplification drops from a hundred to nine.
+Kernel ridge regression permits disagreement with noisy readings and penalizes the RKHS norm.
+Its objective is $\sum_i(f(x_i)-y_i)^2+\lambda\|f\|_k^2$ for $\lambda>0$.
+The parameter $\lambda$ balances sensor fit against the amplitude and variation measured by the kernel norm.
 
-The figure shows twenty noisy sine samples across nine decades of $\lambda$.
-Near-interpolation reaches ninety times the best error, the minimum sits near $10^{-1}$, and over-smoothing rises beyond it.
-The matched weight $\lambda = \sigma^2 = 10^{-2}$ is one decade below this sample's minimum, and in practice we choose $\lambda$ by predicting held-out readings.
+A component orthogonal to the sensor copies has zero value at every sensor.
+Removing that component leaves the data term unchanged and reduces the squared norm.
+The minimizer therefore lies in the span of the copies and satisfies $(\mathbf{K}+\lambda\mathbf{I})\boldsymbol{\alpha}=\mathbf{y}$.
+
+In the two-sensor example, $\lambda=0.1$ increases the small divisor from $0.01$ to $0.11$.
+The corresponding coefficient amplification decreases from $100$ to about $9.1$.
+The regularization sweep measures error against the known sine, with its minimum near $\lambda=10^{-1}$.
+In practice, prediction of held-out readings provides a criterion when the reference function is unknown.
+Can the model also quantify uncertainty between sensors?
 }
 \end{frame}
 
@@ -1321,14 +2439,34 @@ f(x_2) \mid f(x_1) = y \;\sim\; \mathcal{N}\bigl(\rho y,\ 1 - \rho^2\bigr)
 \chip{$\rho = 0.3$}{mean $0.3y$, standard deviation $0.95$}
 \end{columns}
 \note{
-The same computation reads as probability.
-Build two temperatures from independent standard normals, $f(x_1) = Z_1$ and $f(x_2) = \rho Z_1 + \sqrt{1 - \rho^2}\,Z_2$, so both have variance one and covariance $\rho$.
+Consider centered function values at two locations.
+Let $Z_1$ and $Z_2$ be independent standard Gaussian variables, and set $f(x_1)=Z_1$ and $f(x_2)=\rho Z_1+\sqrt{1-\rho^2}Z_2$.
+The values have mean zero, variance one, and covariance $\rho$.
 
-Observe $f(x_1) = y$.
-That fixes $Z_1 = y$, and $f(x_2) = \rho y + \sqrt{1-\rho^2}\,Z_2$ is Gaussian with mean $\rho y$ and standard deviation $\sqrt{1-\rho^2}$.
-At $\rho = 0.9$ the slice has mean $0.9$ and standard deviation $0.44$, at $\rho = 0.3$ it keeps mean $0.3$ and standard deviation $0.95$.
+A noiseless observation $f(x_1)=y$ fixes $Z_1=y$.
+The conditional value at $x_2$ has mean $\rho y$ and standard deviation $\sqrt{1-\rho^2}$.
+This deviation is $0.44$ at $\rho=0.9$ and $0.95$ at $\rho=0.3$.
+Stronger correlation gives less remaining uncertainty.
+A Gaussian process specifies such joint Gaussian distributions at every finite collection of locations.
+}
+\end{frame}
 
-A Gaussian process makes any finite list of values jointly Gaussian with covariances $k(x_i, x_j)$, and this is the case $n = 2$.
+\begin{frame}{Prior draws from three kernels}
+\begin{center}
+\includegraphics[width=0.66\textwidth]{figs/kernel-gallery}
+\end{center}
+\centering
+\chip{mean absolute slope of the draws}{$5.2$, $8.9$, and $20$}\quad\chip{Gaussian-process model}{the prior specifies a mean and a covariance kernel}
+\note{
+A Gaussian-process prior specifies a mean function and a covariance kernel.
+The displayed draws use zero mean and different kernels.
+Squared-exponential draws are smooth, Mat\'ern-$3/2$ draws have rougher slopes, and periodic draws repeat.
+
+At the plotted parameters, the mean absolute slopes over five hundred draws are $5.2$, $8.9$, and $20$.
+These values describe these particular prior settings.
+Conditioning the prior on measurements gives a posterior distribution.
+Its mean is a weighted sum of kernel copies, but it is not a typical random draw.
+A posterior mean and a prior sample have different mathematical roles.
 }
 \end{frame}
 
@@ -1355,54 +2493,126 @@ A Gaussian process makes any finite list of values jointly Gaussian with covaria
 \column{0.3\textwidth}
 \chip{mean}{$\mathbf{k}(x)^\top(\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{y}$}\\[4pt]
 \chip{variance}{$k(x,x) - \mathbf{k}(x)^\top(\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{k}(x)$}\\[4pt]
-\steponly{1}{2}{\chip{$\ell = 0.15$}{error $10$ percent, band in the gap $0.90$}}
-\steponly{2}{2}{\chip{$\ell = 0.31$}{error $3.2$ percent, band in the gap $0.12$}\\[4pt]
+\steponly{1}{2}{\chip{$\ell = 0.15$}{error $10$ percent, half-width in the gap $0.90$}}
+\steponly{2}{2}{\chip{$\ell = 0.31$}{error $3.2$ percent, half-width in the gap $0.12$}\\[4pt]
 \chip{value at $x = 0.7$}{$0.389$ against the true $0.393$}}
 \end{columns}
 \note{
-Condition the prior on the eight noisy readings and every location gets a Gaussian.
-Its mean is $\mathbf{k}(x)^\top(\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{y}$, the ridge curve with $\lambda = \sigma^2$, and at $\ell = 0.15$ it is off by $10$ percent.
-Its variance is $k(x,x) - \mathbf{k}(x)^\top(\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{k}(x)$, the prior's variance minus what the sensors explained.
-The two-standard-deviation band collapses at the sensors and swells to $0.90$ in the unsensed stretch, where the nearest sensor correlates with $x = 0.7$ at only $0.53$.
+Assume a zero-mean Gaussian-process prior and readings $y_i=f(x_i)+\varepsilon_i$ with independent noise of variance $\sigma^2$.
+Define $\mathbf{k}_x$ by $(\mathbf{k}_x)_i=k(x,x_i)$.
+Conditioning gives mean $m(x)=\mathbf{k}_x^\top(\mathbf{K}+\sigma^2\mathbf{I})^{-1}\mathbf{y}$.
+The latent-function variance is $v(x)=k(x,x)-\mathbf{k}_x^\top(\mathbf{K}+\sigma^2\mathbf{I})^{-1}\mathbf{k}_x$.
 
-Let the readings choose $\ell$ by the marginal likelihood, the probability the model assigns to the data seen.
-They pick $\ell = 0.31$, where the mean is within $3.2$ percent, the band in the gap is $0.12$, and the value at $x = 0.7$ is $0.389$ against the true $0.393$.
-Remember what the band is.
-It is the model's own uncertainty, conditional on the kernel, the noise level, and the length scale.
+The mean equals kernel ridge regression with $\lambda=\sigma^2$ for the unnormalized data objective.
+The variance excludes the noise of a future measurement.
+The band $m(x)\pm2\sqrt{v(x)}$ is pointwise and conditional on the chosen kernel and noise parameters.
+
+With noise standard deviation $0.03$, the largest half-width in the unsensed interval is $0.90$ at $\ell=0.15$ and $1.99$ at $\ell=0.075$.
+Shorter correlations leave greater uncertainty between these sensors.
+The tested marginal-likelihood maximum selects $\ell=0.31$.
+For this synthetic reference, the mean then has relative $L^2$ error $3.2$ percent and maximum gap half-width $0.12$.
+These results do not guarantee simultaneous coverage or account for uncertainty in the selected parameters.
+}
+\end{frame}
+
+\begin{frame}{Choosing the length scale by marginal likelihood}
+\begin{columns}
+\column{0.6\textwidth}
+\includegraphics[width=\textwidth]{figs/lml-selection}
+\column{0.4\textwidth}
+\chip{log marginal likelihood at $\ell = 0.31$}{$1.7$, the maximum}\\[4pt]
+\chip{at $\ell = 0.15$ and $0.075$}{$-3.5$ and $-7.9$}\\[4pt]
+\chip{length-scale selection}{the posterior band conditions on the selected value}
+\end{columns}
+\note{
+The readings have a joint Gaussian density under the prior-plus-noise model.
+The marginal likelihood evaluates that density as a function of the length scale and noise parameters.
+Its log contains a quadratic data-fit term and a log-determinant term for the covariance.
+
+For this fin experiment, the log marginal likelihood is $1.7$ at $\ell=0.31$.
+It is $-3.5$ at $\ell=0.15$ and $-7.9$ at $\ell=0.075$.
+The tested maximum therefore selects $0.31$.
+The curve is broad with these few readings, so selecting one length scale does not remove parameter uncertainty.
+The plotted posterior bands condition on that selection.
+}
+\end{frame}
+
+\begin{frame}{Conditioning a kernel prior on $\mathcal{L}u = f$}
+\begin{columns}
+\column{0.62\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.35, xlabel=$x$, ylabel=$u(x)$, legend pos=north east]
+\addplot[ink, dashed, line width=1.6pt] table[x=x, y=u]{data/gp_poisson.dat};
+\addlegendentry{exact $u$}
+\stepfrom{2}{\addplot[sblue, line width=1.6pt] table[x=x, y=mu]{data/gp_poisson.dat};
+          \addlegendentry{posterior mean}}
+\addplot[only marks, mark=triangle*, mark size=2.2pt, sorange] table[x=x, y=y]{data/gp_poisson_colloc.dat};
+\addlegendentry{$25$ points where $f$ is known}
+\end{axis}
+\end{tikzpicture}
+\column{0.38\textwidth}
+\small
+\[
+\operatorname{cov}(u, f) = \mathcal{L}_{x'} k
+\]
+\[
+\operatorname{cov}(f, f) = \mathcal{L}_x \mathcal{L}_{x'} k
+\]
+\stepfrom{2}{\chip{relative $L^2$ error of the mean}{$3.2 \times 10^{-7}$}\\[4pt]
+\chip{condition number of the observation covariance}{$1.4 \times 10^{12}$}}
+\end{columns}
+\note{
+Now place a squared-exponential prior with $\ell=0.2$ on the string displacement.
+Applying the linear operator $\mathcal{L}=-d^2/dx^2$ to the covariance gives joint Gaussian distributions for displacement values and load values.
+Condition on the known load at twenty-five points and the zero endpoint values.
+
+A linear solve gives the posterior mean.
+For the test displacement, its relative $L^2$ error is $3.2\times10^{-7}$.
+The differential constraints are imposed at the selected points, so this result is not an exact global PDE solution.
+Its accuracy depends on the kernel, constraint locations, and numerical solve.
+
+The observation covariance has condition number $1.4\times10^{12}$.
+This limits numerical stability in the experiment.
+Closed-form Gaussian conditioning applies to linear observations and differential operators.
+Nonlinear differential constraints require additional approximation or inference.
 }
 \end{frame}
 
 %========================================================================================
 \repsection{Families}{Approximating a family of functions}
 
-\begin{frame}{Approximating a family of functions with a fixed basis}
+\begin{frame}{A moving front gives a family of functions}
 \begin{columns}
-\column{0.7\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=6.2cm, xmin=0, xmax=1, ymin=-0.2, ymax=1.25, xlabel=$x$, ylabel=$T(x)$, legend pos=north east]
-\addplot[only marks, mark=|, mark size=3pt, sblue] table[x=x, y=y]{data/stations32.dat};
-\addlegendentry{32 stations}
-\steponly{1}{2}{\addplot[ink, dashed, line width=1.2pt] table[x=x, y=T]{data/front0.dat};
-         \addplot[sblue, line width=1.4pt] table[x=x, y=seg]{data/front0.dat};
-         \addlegendentry{segments, front at shift $0$}}
-\steponly{2}{2}{\addplot[ink, dashed, line width=1.2pt] table[x=x, y=T]{data/front30.dat};
-         \addplot[sblue, line width=1.4pt] table[x=x, y=seg]{data/front30.dat};
-         \addlegendentry{segments, front at shift $0.30$}}
-\end{axis}
-\end{tikzpicture}
-\column{0.3\textwidth}
-\chip{32 stations, shift $0$}{$8.7$ percent}\\[4pt]
-\steponly{2}{2}{\chip{32 stations, shift $0.15$}{$6.3$ percent}\\[4pt]
-\chip{32 stations, shift $0.30$}{$9.6$ percent}\\[4pt]}
-\chip{station spacing}{three times the edge width}\\[4pt]
-\chip{numbers that rebuild the front at every time}{two edges, a width, an amplitude, a shift}
+\column{0.42\textwidth}
+\centering
+\includegraphics[height=0.8\textheight]{figs/rep-flow-family}
+\column{0.58\textwidth}
+\small
+\[
+T(x, t) = T_0(x - ct), \qquad \mathcal{S} = \{T_0(\cdot - ct) \mid 0 \le t \le 0.30\}
+\]
+\stepfrom{2}{\[
+\hat T(x, t) = \sum_i T(x_i, t)\,\phi_i(x)
+\]}
+\stepfrom{2}{\chip{relative $L^2$ error, $32$ nodes, times $0$, $0.15$, $0.30$}{$8.7$, $6.3$, $9.6$ percent}\\[4pt]
+\chip{edge width against node spacing}{$0.01$ against $1/31$}}
 \end{columns}
 \note{
-Now the target itself moves.
-Hot fluid pushes a temperature front along a pipe, one shape $T(x - ct)$ whose whole history is its position, and we want one description for every position at once.
+Consider a hot region transported along a pipe at constant speed $c$ with negligible diffusion.
+Its profile translates without changing shape.
+At every time, the temperature is a function of position on the same interval.
+The representation must approximate this profile at every translated location.
 
-Thirty-two stations have a spacing three times the edge width, and wherever the front sits most of them record a flat line, so the error is $8.7$ percent at shift $0$, $6.3$ at $0.15$, and $9.6$ at $0.30$.
-Two edge positions, a width, an amplitude, and a shift rebuild the front at every time, five numbers against thirty-two, once a number may mean where or how wide instead of how much at station $x_i$.
+The figure compares the pipe, temperature profiles, and reconstructions on one fixed grid.
+The transition width is $w=0.01$, the speed is $c=1$, and the grid has thirty-two nodes with spacing $1/31$.
+At times $0$, $0.15$, and $0.30$, the relative $L^2$ reconstruction errors are $8.7$, $6.3$, and $9.6$ percent.
+The same grid gives different errors as the edges move between nodes.
+
+The translation rule is $T(x,t)=T_0(x-ct)$.
+Knowing $T_0$ and $c$ specifies this family from the single parameter $t$.
+A fixed hat basis instead represents every snapshot in the same linear span by changing its coefficients.
+A one-parameter family need not lie in a one-dimensional linear space.
+Does another fixed basis approximate the entire family more efficiently?
 }
 \end{frame}
 
@@ -1421,22 +2631,26 @@ Two edge positions, a width, an amplitude, and a shift rebuild the front at ever
 \column{0.6\textwidth}
 \begin{block}{Kolmogorov $n$-width}
 \[
-d_n(\mathcal{M}) = \min_{\dim V = n} \; \max_{f \in \mathcal{M}} \; \min_{v \in V} \|f - v\|
+d_n(\mathcal{M}) = \inf_{\dim V = n} \; \sup_{f \in \mathcal{M}} \; \inf_{v \in V} \|f - v\|
 \]
 \end{block}
 \medskip
 \chip{three unit spikes, squared distances to any plane}{sum to $3 - 2 = 1$}\quad\chip{worst spike}{at least $\sqrt{1/3} = 0.577$}
 \end{columns}
 \note{
-How well can any fixed basis do on a whole family?
-Translate a unit spike across three grid points, so the snapshots are three perpendicular unit vectors.
-For any plane through the origin the three squared distances to it add up to $3 - 2 = 1$, so the worst snapshot sits at distance at least $\sqrt{1/3} = 0.577$, whichever plane we choose.
-A family that depends on one number needs all three dimensions.
+Consider the unit spikes $\mathbf{e}_1$, $\mathbf{e}_2$, and $\mathbf{e}_3$ in Euclidean $\mathbb{R}^3$.
+Project them onto any plane through the origin.
+Their squared projection lengths sum to the plane's dimension, two.
+Their squared errors therefore sum to one, so at least one error is at least $1/\sqrt3=0.577$.
 
-The Kolmogorov $n$-width is the worst-case error of the best $n$-dimensional subspace.
-Read it from the inside out.
-The innermost minimum is the projection theorem, the maximum takes the hardest member, and the outer minimum designs the subspace with full knowledge of the family.
-No fixed basis of size $n$ has a smaller worst-case error.
+No plane approximates every spike more accurately than this lower bound.
+An exact linear representation needs dimension three, although a position parameter identifies each spike.
+A moving localized profile has the same distinction between parameter count and linear-span dimension.
+
+The Kolmogorov $n$-width measures worst-case error in a specified norm.
+For each fixed $n$-dimensional subspace, it takes the largest distance over the family.
+It then takes the infimum over all such subspaces.
+The space is chosen once for the entire family, rather than separately for each profile.
 }
 \end{frame}
 
@@ -1448,51 +2662,183 @@ No fixed basis of size $n$ has a smaller worst-case error.
 \includegraphics[width=\textwidth]{figs/nwidth}
 \end{figure}
 \column{0.3\textwidth}
-\chip{diffusing pulse, one percent}{four modes}\\[4pt]
-\chip{translating pulse, one percent}{$103$ modes}\\[4pt]
+\chip{diffusing pulse, SVD, one percent relative Frobenius error}{four modes}\\[4pt]
+\chip{translating pulse, same measure}{$103$ modes}\\[4pt]
 \chip{coefficient $k$ under diffusion}{shrinks by $e^{-(2\pi k)^2 t}$}\\[4pt]
 \chip{coefficient $k$ under translation}{changes phase only}
 \end{columns}
 \note{
-Sample a family into a snapshot matrix, and its singular value decomposition gives the best subspace in the root-mean-square sense, a lower bound for the width.
+Translation alone does not force a large width.
+Every translate of $\sin(kx)$ belongs to the span of $\sin(kx)$ and $\cos(kx)$.
+A narrow pulse with steep edges instead contains many frequencies.
+Translation changes their phases without reducing their magnitudes.
 
-Diffuse a steep-edged pulse and its $k$-th coefficient shrinks by $e^{-(2\pi k)^2 t}$, the high coefficients vanish, and four modes reach one percent.
-Translate the same pulse and the coefficient only changes phase, every frequency keeps its energy, and we need $103$ modes.
+For the periodic heat equation with unit diffusivity, each Fourier coefficient decreases by $e^{-(2\pi k)^2t}$.
+In the sampled experiments, four modes approximate the diffusion snapshots to one percent relative Frobenius error.
+The translating pulse requires $103$ modes for the same metric.
 
-Every translate of a sine lies in a two-dimensional span, so the difficulty is a sharp edge at every position, and the width says nothing about how few parameters the family depends on.
+The snapshot SVD minimizes summed squared projection error over the sampled profiles.
+The reported relative error is $\|\mathbf{X}-P\mathbf{X}\|_F/\|\mathbf{X}\|_F$.
+Kolmogorov width instead concerns the worst member of the full family.
+A small snapshot-average error therefore does not establish a small worst-case width.
+Can the representation change its locations or selected terms with the profile?
 }
 \end{frame}
 
 %========================================================================================
-\repsection{Adaptive shapes}{Adaptive representations}
+\repsection{Adaptive}{Adaptive representations}
 
-\begin{frame}{Adaptive representations with particles, splats, and selection}
-\begin{columns}[T]
-\column{0.33\textwidth}
-\includegraphics[width=0.95\textwidth]{figs/particles-vs-grid}
-\chip{markers after five round trips}{front unchanged}\\[4pt]
-\chip{upwind grid, edge steepness kept}{eight to sixteen percent}
-\column{0.33\textwidth}
-\includegraphics[width=0.95\textwidth]{figs/gaussian-splat}
-\chip{sixteen trained Gaussians, $96$ parameters}{error $0.0125$}\\[4pt]
-\chip{fixed grid, $100$ coefficients}{error $0.30$}
-\column{0.33\textwidth}
-\includegraphics[width=0.95\textwidth]{figs/rep-nterm}
-\chip{thirty-two largest Haar coefficients}{$1.3$ percent}\\[4pt]
-\chip{first thirty-two sines}{$5.1$ percent}
+\begin{frame}{Particle positions and values under advection}
+\begin{columns}
+\column{0.62\textwidth}
+\includegraphics[width=\textwidth]{figs/particles-vs-grid}
+\column{0.38\textwidth}
+\chip{markers after five round trips}{the front returns unchanged}\\[4pt]
+\chip{upwind grid at $100$, $200$, $400$ points}{keeps $8$, $11$, and $16$ percent of the edge steepness}
 \end{columns}
 \note{
-None of the three contradicts the width.
-Each drops its hypothesis of one fixed subspace.
+The translated-template formula stores the initial shape and evaluates it at shifted coordinates.
+It assumes a known translation law.
+Its functions need not belong to one low-dimensional linear space.
+Other adaptive representations change their locations, shapes, or selected terms.
 
-Let the physics move the shapes.
-Markers ride the flow with their values, so the front returns after five round trips unchanged, while an upwind grid keeps eight to sixteen percent of the edge steepness, since each step averages neighbors.
+A particle representation stores positions and temperature values.
+Under pure advection, the values remain constant while the positions follow the flow.
+The stored profile returns unchanged after five round trips in this experiment.
+Interpolation between particles still introduces reconstruction error.
 
-Let an optimizer move them.
-Sixteen trained Gaussians, ninety-six parameters, reach $0.0125$ on the two-ridge field against $0.30$ for a fixed grid of one hundred coefficients, and the fit is non-convex with no guarantee.
+The first-order upwind comparison uses $T_i^{n+1}=(1-\nu)T_i^n+\nu T_{i-1}^n$ for positive speed and $0<\nu=c\Delta t/h<1$.
+Each update averages neighboring values and widens the transition.
+The grid retains $8$, $11$, and $16$ percent of the initial edge steepness at $100$, $200$, and $400$ points.
+This numerical diffusion comes from the update rule, separately from representation error.
+At $\nu=1$, the update shifts grid values without averaging.
+}
+\end{frame}
 
-Or keep the shapes and choose among them.
-The thirty-two largest Haar coefficients represent the front with $1.3$ percent error against $5.1$ for thirty-two sines, storing values and indices.
+\begin{frame}{Gaussian splats with trainable centers and shapes}
+\begin{columns}
+\column{0.62\textwidth}
+\includegraphics[width=\textwidth]{figs/gaussian-splat}
+\column{0.38\textwidth}
+\chip{sixteen trained Gaussians, $96$ parameters}{relative $L^2$ error $0.0125$}\\[4pt]
+\chip{fixed grid, $100$ coefficients}{relative $L^2$ error $0.30$}
+\end{columns}
+\note{
+A Gaussian element has a center, covariance, and amplitude.
+An anisotropic covariance permits a long, narrow shape aligned with a ridge.
+Fitting these parameters places the elements near the field's localized variation.
+Sixteen trained Gaussians with ninety-six parameters give relative $L^2$ error $0.0125$, compared with $0.30$ for the hundred-coefficient grid.
+
+With centers and covariances fixed, quadratic amplitude fitting gives a linear system.
+Training the locations and shapes generally makes the objective non-convex.
+This permits adaptation to the target but introduces the possibility of a poor local minimum.
+}
+\end{frame}
+
+\begin{frame}{Selecting coefficients from a fixed dictionary}
+\begin{columns}
+\column{0.62\textwidth}
+\includegraphics[width=\textwidth]{figs/rep-nterm}
+\column{0.38\textwidth}
+\chip{relative $L^2$ error, $n=16$, sines, stations, Haar}{$12.8$, $19.3$, $3.2$ percent}\\[4pt]
+\chip{relative $L^2$ error, $n=32$, Haar against sines}{$1.3$ against $5.1$ percent}\\[4pt]
+\chip{smaller relative $L^2$ error for sines}{near $n = 128$}
+\end{columns}
+\note{
+An orthonormal Haar dictionary permits a different form of adaptation.
+Retaining the $n$ largest coefficients minimizes the $L^2$ truncation error among its $n$-term selections.
+For the moving front, the selected terms concentrate near the edges.
+Their indices change as the edges move.
+
+At $n=16$, the relative $L^2$ errors are $12.8$ percent for sine truncation, $19.3$ percent for station interpolation, and $3.2$ percent for Haar selection.
+At $n=32$, Haar selection gives $1.3$ percent compared with $5.1$ percent for sines.
+Near $n=128$, the sine truncation resolves the edge width and becomes more accurate in this experiment.
+
+Different profiles select different dictionary subspaces.
+The fixed-space restriction in Kolmogorov width therefore does not describe this adaptive approximation.
+Storage includes the selected indices as well as the coefficient values.
+The underlying resolution and omitted coefficients still limit accuracy.
+}
+\end{frame}
+
+\begin{frame}{Movable hat nodes on a traveling front}
+\begin{columns}
+\column{0.7\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=6.2cm, xmin=0, xmax=1, ymin=-0.25, ymax=1.25, xlabel=$x$, ylabel=$T(x)$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=2}]
+\addplot[only marks, mark=|, mark size=3pt, sblue] table[x=x, y=y]{data/stations32.dat};
+\addlegendentry{32 stations}
+\steponly{1}{2}{\addplot[muted, dotted, line width=0.9pt, forget plot] table[x=x, y=h1]{data/front_hats0.dat};
+         \addplot[muted, dotted, line width=0.9pt, forget plot] table[x=x, y=h4]{data/front_hats0.dat};
+         \addplot[muted, dashed, line width=1.1pt, forget plot] table[x=x, y=h2]{data/front_hats0.dat};
+         \addplot[muted, dashed, line width=1.1pt, forget plot] table[x=x, y=h3]{data/front_hats0.dat};
+         \addplot[ink, dashed, line width=1.2pt, forget plot] table[x=x, y=T]{data/front0.dat};
+         \addplot[sblue, line width=1.4pt, forget plot] table[x=x, y=seg]{data/front0.dat};
+         \addplot[sorange, line width=1.6pt] table[x=x, y=net]{data/front0.dat};
+         \addlegendentry{four movable nodes}
+         \foreach \e/\l in {0.15/a, 0.45/b} {
+           \edef\tmp{\noexpand\draw[ink, line width=1pt] (axis cs:\e,-0.13) -- (axis cs:\e,-0.03) node[above, font=\noexpand\tiny] {$\l$};
+             \noexpand\draw[sorange, <->, >={Stealth[length=1.5mm]}] (axis cs:\e-0.02,-0.08) -- (axis cs:\e,-0.08);
+             \noexpand\draw[sorange, <->, >={Stealth[length=1.5mm]}] (axis cs:\e,-0.08) -- (axis cs:\e+0.02,-0.08);}\tmp}
+         \node[sorange, font=\tiny] at (axis cs:0.16,-0.16) {$d$};
+         \addplot[only marks, mark=triangle*, mark size=3pt, sorange] coordinates {(0.13,-0.2) (0.17,-0.2) (0.43,-0.2) (0.47,-0.2)};}
+\steponly{2}{2}{\addplot[muted, dotted, line width=0.9pt, forget plot] table[x=x, y=h1]{data/front_hats30.dat};
+         \addplot[muted, dotted, line width=0.9pt, forget plot] table[x=x, y=h4]{data/front_hats30.dat};
+         \addplot[muted, dashed, line width=1.1pt, forget plot] table[x=x, y=h2]{data/front_hats30.dat};
+         \addplot[muted, dashed, line width=1.1pt, forget plot] table[x=x, y=h3]{data/front_hats30.dat};
+         \addplot[ink, dashed, line width=1.2pt, forget plot] table[x=x, y=T]{data/front30.dat};
+         \addplot[sblue, line width=1.4pt, forget plot] table[x=x, y=seg]{data/front30.dat};
+         \addplot[sorange, line width=1.6pt] table[x=x, y=net]{data/front30.dat};
+         \addlegendentry{four nodes, moved with the front}
+         \foreach \e/\l in {0.45/a, 0.75/b} {
+           \edef\tmp{\noexpand\draw[ink, line width=1pt] (axis cs:\e,-0.13) -- (axis cs:\e,-0.03) node[above, font=\noexpand\tiny] {$\l$};
+             \noexpand\draw[sorange, <->, >={Stealth[length=1.5mm]}] (axis cs:\e-0.02,-0.08) -- (axis cs:\e,-0.08);
+             \noexpand\draw[sorange, <->, >={Stealth[length=1.5mm]}] (axis cs:\e,-0.08) -- (axis cs:\e+0.02,-0.08);}\tmp}
+         \node[sorange, font=\tiny] at (axis cs:0.46,-0.16) {$d$};
+         \addplot[only marks, mark=triangle*, mark size=3pt, sorange] coordinates {(0.43,-0.2) (0.47,-0.2) (0.73,-0.2) (0.77,-0.2)};}
+\end{axis}
+\end{tikzpicture}
+\column{0.3\textwidth}
+\chip{nodes}{$a - d$, $a + d$, $b - d$, $b + d$, with $d = 0.02$}\\[4pt]
+\steponly{1}{2}{\chip{32 stations}{$8.7$ percent}\\[4pt]\chip{four nodes}{$4.9$ percent}}
+\steponly{2}{2}{\chip{32 stations, front shifted by $0.3$}{$9.6$ percent}\\[4pt]\chip{four nodes, moved with the front}{$4.9$ percent}}
+\vfill
+\live{let-the-nodes-move}
+\end{columns}
+\note{
+Place hat nodes near the front edges at $a-d$, $a+d$, $b-d$, and $b+d$.
+Here $a$ and $b$ are the edge locations and $d=0.02$.
+The nodal values are $0$, $1$, $1$, and $0$.
+The piecewise-linear sum rises across the first edge, stays at one, and falls across the second.
+
+The relative $L^2$ error is $4.9$ percent, compared with $8.7$ percent for thirty-two fixed stations.
+Increasing $d$ to $0.06$ gives error $19.8$ percent.
+The placement and ramp width both affect the fit.
+
+After translation, the fixed-station error becomes $9.6$ percent.
+Moving the nodes with the edges retains $4.9$ percent.
+A general movable-node representation stores positions as well as coefficients.
+Here the known front shape fixes the nodal values, and the translation rule supplies the position changes.
+Four movable nodes are therefore not an unrestricted four-number description of an arbitrary function.
+}
+\end{frame}
+
+\begin{frame}{Fixed nodes and moving nodes}
+\begin{center}
+\includegraphics[width=0.62\textwidth]{figs/rep-front-kinks}
+\end{center}
+\centering
+\chip{fixed nodes}{a linear solve, with the projection theorem's guarantee}\quad
+\chip{moving nodes}{a generally non-convex fit, without the projection guarantee}
+\note{
+Fixed hat nodes define a finite-dimensional linear space.
+Projection in a specified function inner product gives its unique closest function.
+The coefficients follow from a linear system when the hats are independent.
+
+Training the node positions generally makes the fitting objective non-convex.
+The representation can then place its resolution near localized features.
+The projection theorem no longer guarantees a unique global minimizer.
+The approximation benefit and optimization difficulty must both be assessed.
 }
 \end{frame}
 
@@ -1510,225 +2856,249 @@ The thirty-two largest Haar coefficients represent the front with $1.3$ percent 
 \scriptsize
 \begin{tabular}{@{}lrr@{}}
 \toprule
-description & error vs truth & held-out \\
+description & relative $L^2$ (\%) & LOO RMSE, fixed $\ell$ \\
 \midrule
-straight segments & $6.5$ percent & $0.095$ \\
+straight segments & $6.5$ & $0.095$ \\
 cubic, least squares & $23$ & $0.310$ \\
 degree-7 interpolation & $31$ & $3.57$ \\
 kernel interpolant, $\ell = 0.15$ & $11$ & $0.112$ \\
 Gaussian-process mean, $\ell = 0.31$ & $3.2$ & $0.034$ \\
 \midrule
-noise level & & $0.03$ \\
+noise standard deviation & & $0.03$ \\
 \bottomrule
 \end{tabular}
 \end{columns}
 \note{
-Suppose we did not know the profile.
-What would still tell us which description to trust?
+The fin comparison uses the same noisy readings for every method.
+Because the experiment is synthetic, its reference profile permits a relative $L^2$ error calculation.
+In practice, held-out prediction provides a check when that reference is unavailable.
 
-The noise level rules out the three exact interpolants.
-Withholding each reading and predicting it from the other seven ranks the five the same way, with the Gaussian-process mean near the noise level a perfect predictor would score.
-The physics admits the smooth family.
+The leave-one-out calculation omits each reading, fits the rest, and predicts the omitted value.
+Its RMSE is measured against the omitted readings.
+The noise standard deviation $0.03$ provides a scale for interpreting this error.
+
+The length scales remain fixed at values selected from the full dataset.
+These scores therefore diagnose fixed-hyperparameter fits.
+Evaluating the full selection procedure requires selecting the parameters again within each training fold.
+The Gaussian-process fit performs best in this experiment, without establishing that it is best for every fin.
 }
 \end{frame}
 
 \begin{frame}{Stored numbers, shape placement, and assumption for each family}
-\scriptsize
-\begin{tabular}{@{}p{3.1cm}p{3.6cm}p{2.7cm}p{4.6cm}@{}}
+\tiny
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{2.6cm}p{3.5cm}p{2.3cm}p{4.2cm}p{2.4cm}@{}}
 \toprule
-family & stores & shapes placed by & assumes \\
+family & stores & shapes placed by & assumes & typical use \\
 \midrule
-stations & values at fixed points & the analyst & linear variation between stations \\
-hats & nodal values & the analyst and a mesher & piecewise-linear variation \\
-sine modes & global coefficients & the analyst & a smooth odd periodic continuation \\
-kernels and Gaussian processes & weights at the data sites & the data & smoothness at a length scale \\
-particles & positions and carried values & the dynamics & values move with their carriers \\
-Gaussian splats & centers, covariances, amplitudes & the optimizer & a smooth field with concentrated features \\
-neural fields & network weights & the optimizer & the network's smoothness bias \\
+stations, grid & values at fixed points & analyst & linear variation between stations & smooth fields, fixed geometry \\
+mesh hats & nodal values & analyst and mesher & piecewise-linear variation & complex geometry \\
+sine modes & global coefficients & analyst & smooth odd periodic continuation & smooth pinned fields \\
+B-splines, NURBS & coefficients at fixed knots & analyst and CAD & smoothness across knots & engineered shapes \\
+wavelets & selected coefficients and indices & analyst, data selects & few active scales per location & localized features \\
+POD modes & coefficients on data-derived modes & the snapshot data & a family near a low-dimensional subspace & near-linear families \\
+sparse dictionary & few atoms and their indices & the optimizer & few active atoms & few active features \\
+particles, SPH, MPM & positions and field values & the dynamics & material motion determines positions & advection, large deformation \\
+Gaussian splats & centers, covariances, amplitudes & the optimizer & smooth field with concentrated features & concentrated features \\
+level sets & values of an implicit function & analyst and physics & interface as a zero set & moving interfaces \\
+kernels, GP & weights, sites, kernel parameters & analyst and data & regularity set by the kernel & scattered data \\
+neural fields & network weights & the optimizer & the network's smoothness bias & later chapters \\
+latent decoders & codes and a decoder & the optimizer & a low-dimensional nonlinear manifold & later chapters \\
 \bottomrule
 \end{tabular}
 \note{
-Look back at every description we built, and ask what it stores, who places its shapes, and what it assumes about the field.
+The table separates stored numbers, shape placement, and assumptions.
+A uniform grid supplies its locations by a rule.
+Particles require current positions, selected wavelets require indices, and POD coordinates require stored modes.
+These reconstruction requirements must be included when comparing storage.
 
-A family applies where its assumption is true, and when a fit goes wrong that assumption is the first thing to check.
-For stations it is aliasing, for sines the overshoot beside a jump, for kernels a length scale wrong for the field, and for splats a descent that stalls.
+Each representation also has limits.
+Sampling permits aliases, sine truncation oscillates near jumps, and an unsuitable kernel length scale distorts the reconstruction.
+Training adaptive shapes can stop at a poor local minimum.
+The string tests approximation of known functions, while the fin tests reconstruction from incomplete, noisy observations.
 }
 \end{frame}
 
 %========================================================================================
-\repsection{Hats to networks}{From hats to a network}
+\repsection{Fields}{From functions to fields}
 
-\begin{frame}{Piecewise-linear interpolation as a one-hidden-layer ReLU network}
-\begin{columns}
-\column{0.55\textwidth}
+\begin{frame}{A membrane under a load, $-\Delta u = f$}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\centering
 \begin{tikzpicture}
-\begin{axis}[rep, height=5.4cm, xmin=0, xmax=1, ymin=-2.2, ymax=2.2, xlabel=$x$, legend pos=north west]
-\addplot[sorange, dashed, line width=1.3pt] table[x=x, y=r1]{data/hat_ramps.dat};
-\addlegendentry{$\ReLU(x - x_{i-1})/h$}
-\stepfrom{2}{\addplot[sorange, dashed, line width=1.3pt] table[x=x, y=r2]{data/hat_ramps.dat};
-          \addlegendentry{$-2\,\ReLU(x - x_i)/h$}}
-\stepfrom{3}{\addplot[sorange, dashed, line width=1.3pt] table[x=x, y=r3]{data/hat_ramps.dat};
-          \addlegendentry{$\ReLU(x - x_{i+1})/h$}}
-\stepfrom{4}{\addplot[sgreen, line width=2.2pt] table[x=x, y=hat]{data/hat_ramps.dat};
-          \addlegendentry{their sum, the hat $\phi_i$}}
+\begin{axis}[width=5.4cm, height=5.4cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\scriptsize the load $f(x, y)$}, colorbar, colorbar style={width=0.18cm, tick label style={font=\tiny}}]
+\stepfrom{2}{\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/membrane_f.dat};}
 \end{axis}
 \end{tikzpicture}
-\column{0.45\textwidth}
-\begin{center}
-\begin{tikzpicture}[>={Stealth[length=2mm]}, font=\tiny, node distance=3mm]
-\node[circle, draw=ink, minimum size=5.5mm] (x) at (0,0) {$x$};
-\foreach \i/\y in {1/0.9, 2/0.45, 3/0, 4/-0.45, 5/-0.9} {
-  \node[circle, draw=sorange, fill=sorange!15, minimum size=5.5mm, inner sep=1pt] (u\i) at (2.2,\y) {$\ReLU$};
-  \draw[->, muted] (x) -- (u\i);
-}
-\node[circle, draw=sblue, fill=sblue!15, minimum size=5.5mm] (s) at (4.4,0) {$\sum$};
-\foreach \i in {1,...,5} {\draw[->, muted] (u\i) -- (s);}
-\node[right=of s] (out) {$u_h(x)$};
-\draw[->, ink] (s) -- (out);
-\node[muted, above=1pt of u1] {breakpoints at the stations, $x = -b/w$};
-\node[muted, below=1pt of u5] {output weights from the readings};
-\end{tikzpicture}
-\end{center}
-\stepfrom{4}{\centering\chip{bound $Mh^2/8$ at five stations}{$0.0156$, met with equality by the parabola}}
-\vfill
-\live{hats-are-relus}
-\end{columns}
-\note{
-One last look at the hat.
-The first ramp, $\ReLU(x - x_{i-1})/h$, starts at the station to the left.
-Subtract twice the ramp that starts at $x_i$.
-Add the ramp that starts at $x_{i+1}$.
-
-The three ramps sum to the hat.
-So the straight-segment guess, a sum of hats weighted by readings, is a network with one hidden layer of ReLU units whose breakpoints sit at the stations.
-Its bound $Mh^2/8$ is a universal approximation theorem with a rate, and the parabola meets it with equality, $0.0156$ at five stations.
-}
-\end{frame}
-
-\begin{frame}{Movable ReLU breakpoints on a traveling front}
-\begin{columns}
-\column{0.7\textwidth}
+\column{0.5\textwidth}
+\centering
 \begin{tikzpicture}
-\begin{axis}[rep, height=6.2cm, xmin=0, xmax=1, ymin=-0.25, ymax=1.25, xlabel=$x$, ylabel=$T(x)$, legend pos=north east]
-\addplot[only marks, mark=|, mark size=3pt, sblue] table[x=x, y=y]{data/stations32.dat};
-\addlegendentry{32 stations}
-\steponly{1}{2}{\addplot[ink, dashed, line width=1.2pt] table[x=x, y=T]{data/front0.dat};
-         \addplot[sblue, line width=1.4pt] table[x=x, y=seg]{data/front0.dat};
-         \addplot[sorange, line width=1.6pt] table[x=x, y=net]{data/front0.dat};
-         \addlegendentry{four breakpoints}
-         \addplot[only marks, mark=triangle*, mark size=3pt, sorange] coordinates {(0.13,-0.2) (0.17,-0.2) (0.43,-0.2) (0.47,-0.2)};}
-\steponly{2}{2}{\addplot[ink, dashed, line width=1.2pt] table[x=x, y=T]{data/front30.dat};
-         \addplot[sblue, line width=1.4pt] table[x=x, y=seg]{data/front30.dat};
-         \addplot[sorange, line width=1.6pt] table[x=x, y=net]{data/front30.dat};
-         \addlegendentry{four breakpoints, moved with the front}
-         \addplot[only marks, mark=triangle*, mark size=3pt, sorange] coordinates {(0.43,-0.2) (0.47,-0.2) (0.73,-0.2) (0.77,-0.2)};}
+\begin{axis}[width=5.4cm, height=5.4cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\scriptsize the displacement $u(x, y)$, pinned on the edge}, colorbar, colorbar style={width=0.18cm, tick label style={font=\tiny}}]
+\stepfrom{3}{\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/membrane_u.dat};}
 \end{axis}
 \end{tikzpicture}
-\column{0.3\textwidth}
-\chip{breakpoint of $\ReLU(wx + b)$}{$x = -b/w$}\\[4pt]
-\steponly{1}{2}{\chip{32 stations}{$8.7$ percent}\\[4pt]\chip{four breakpoints}{$4.9$ percent}}
-\steponly{2}{2}{\chip{32 stations, front shifted by $0.3$}{$9.6$ percent}\\[4pt]\chip{four breakpoints, moved with the front}{$4.9$ percent}}
-\vfill
-\live{let-the-kinks-move}
 \end{columns}
+\small
+\[
+-\Delta u = -\Bigl(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2}\Bigr) = f \text{ on the unit square}, \qquad u = 0 \text{ on its edge}
+\]
+\stepfrom{3}{\[
+u = 0.8\sin(\pi x)\sin(\pi y) + 0.4\sin(2\pi x)\sin(\pi y) + 0.2\sin(\pi x)\sin(3\pi y)
+\]}
 \note{
-A unit $\ReLU(wx + b)$ has its breakpoint at $x = -b/w$, so the breakpoints are parameters we can place.
-Put four of them $0.02$ on either side of each edge.
-They rebuild the front at $4.9$ percent, against $8.7$ for thirty-two stations.
+A scalar field assigns a value to each point of a spatial domain.
+A vector field assigns a vector, such as displacement in a solid.
+The string example extends to a membrane on the unit square with zero boundary displacement.
+Its load and displacement satisfy $-\Delta u=f$.
 
-Now move the front.
-The stations stay where we put them and their error rises to $9.6$ percent, while the four breakpoints follow the edges and keep $4.9$.
-The breakpoints use four numbers where the stations use thirty-two.
+The test field is $u=0.8\sin(\pi x)\sin(\pi y)+0.4\sin(2\pi x)\sin(\pi y)+0.2\sin(\pi x)\sin(3\pi y)$.
+Applying $-\Delta$ multiplies mode $(j,k)$ by $(j^2+k^2)\pi^2$.
+The measured displacement peak is $0.900$ and the load peak is $34.61$.
+As on the string, a numerical field representation needs stored numbers and an evaluation rule.
 }
 \end{frame}
 
-\begin{frame}{Polynomial and neural network approximation of $\sin(\pi x)$}
+\begin{frame}{Readings on a grid and bilinear reconstruction}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=5.4cm, height=5.4cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\scriptsize the field $u$ and the $5 \times 5$ stations}, point meta min=-0.1, point meta max=0.9]
+\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/membrane_u.dat};
+\addplot3[only marks, mark=*, mark size=1.3pt, sred] table[x=x, y=y, z expr=1]{data/membrane_nodes5.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.5\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=5.4cm, height=5.4cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\scriptsize bilinear reconstruction from $25$ readings}, point meta min=-0.1, point meta max=0.9]
+\stepfrom{2}{\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/membrane_bilinear5.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\centering
+\stepfrom{2}{\chip{$5 \times 5$, $25$ values}{largest gap $22.2$ percent}\quad}
+\stepfrom{3}{\chip{$9 \times 9$, $81$ values}{$7.1$ percent}\quad
+\chip{$17 \times 17$, $289$ values}{$1.9$ percent}}
+\note{
+Record the membrane displacement at a grid of five nodes in each direction.
+Inside each cell, bilinear interpolation combines its four corner readings.
+The reconstructed surface is linear along every coordinate-parallel line within a cell.
+The relative sup error from these twenty-five readings is $22.2$ percent.
+
+Nine nodes per direction give eighty-one values and error $7.1$ percent.
+Seventeen per direction give $289$ values and error $1.9$ percent.
+The smooth-field interpolation error approaches second-order convergence as the spacing decreases.
+
+The value count grows with dimension.
+Seventeen nodes per direction require $17$ values on a line, $289$ on a plate, and $4{,}913$ in a solid.
+For a tensor grid with $m$ nodes per direction in dimension $d$, storage is $m^d$.
+Maintaining spatial resolution therefore requires many more values in higher dimensions.
+}
+\end{frame}
+
+\begin{frame}{Sine modes and hats in two dimensions}
+\begin{columns}[T]
+\column{0.24\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=3.6cm, height=3.6cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\tiny $\sin(\pi x)\sin(\pi y)$}, xtick=\empty, ytick=\empty, xlabel={}, ylabel={}]
+\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/mode2d_11.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.24\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=3.6cm, height=3.6cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\tiny $\sin(2\pi x)\sin(\pi y)$}, xtick=\empty, ytick=\empty, xlabel={}, ylabel={}]
+\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/mode2d_21.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.24\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=3.6cm, height=3.6cm, axis equal image, view={0}{90}, colormap/viridis, xmin=0, xmax=1, ymin=0, ymax=1, tick label style={font=\tiny}, label style={font=\tiny}, xlabel=$x$, ylabel=$y$, title={\tiny $\sin(\pi x)\sin(3\pi y)$}, xtick=\empty, ytick=\empty, xlabel={}, ylabel={}]
+\addplot3[surf, shader=interp, mesh/rows=41] table[x=x, y=y, z=z]{data/mode2d_13.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.28\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=4.2cm, height=3.9cm, view={35}{35}, colormap/viridis, xmin=0.2, xmax=0.8, ymin=0.2, ymax=0.8, zmin=0, zmax=1, tick label style={font=\tiny}, title={\tiny a hat on a triangle mesh}, xtick=\empty, ytick=\empty, ztick={0,1}]
+\stepfrom{2}{\addplot3[surf, mesh/rows=41, faceted color=black!30] table[x=x, y=y, z=z]{data/hat2d.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\small
+\[
+u(x, y) = \sum_{j, k} a_{jk}\,\sin(j\pi x)\sin(k\pi y), \qquad u_h(x, y) = \sum_i u(\mathbf{x}_i)\,\phi_i(x, y)
+\]
+\centering
+\chip{the membrane's weights}{$a_{11} = 0.8$, $a_{21} = 0.4$, $a_{13} = 0.2$}\quad
+\stepfrom{2}{\chip{a hat $\phi_i$}{one at its node, zero at the others, linear on each triangle}}
+\note{
+On the square, sine modes become products $\sin(j\pi x)\sin(k\pi y)$.
+The test membrane uses three such products with coefficients $0.8$, $0.4$, and $0.2$.
+These modes are orthogonal and vanish along the boundary.
+Their coefficients follow from the corresponding $L^2$ inner products.
+
+On a triangle mesh, a hat equals one at its node and zero at all other nodes.
+It is linear on each adjacent triangle.
+Weighting the hats by known nodal readings gives a piecewise-planar interpolant.
+Boundary-fitted triangular meshes also accommodate irregular domains.
+
+Galerkin's method instead determines the coefficients from $\int\nabla u_h\cdot\nabla\phi_i\,dx=\int f\phi_i\,dx$.
+This is the same weak-form construction used for the string.
+In two dimensions, it does not generally reproduce the exact solution's nodal values.
+Interpolation from known readings and solving for unknown coefficients remain different tasks.
+}
+\end{frame}
+
+\begin{frame}{What changes in two and three dimensions}
 \begin{center}
-\includegraphics[width=0.8\textwidth]{figs/mlp-polynomial-vs-nn-comparison}
+\includegraphics[width=0.72\textwidth]{figs/gaussian-splat}
 \end{center}
 \centering
-\chip{polynomial, ten numbers}{largest gap below $10^{-7}$}\quad
-\chip{network, thirty-one numbers}{largest gap $0.0050$}
+\chip{$17$ stations per direction}{$17$ on a line, $289$ on a plate, $4{,}913$ in a solid}\quad
+\stepfrom{2}{\chip{a kernel needs only a distance}{$e^{-|\mathbf{x} - \mathbf{x}'|^2/2\ell^2}$, unchanged}}\\[4pt]
+\stepfrom{3}{\chip{$H^1$ in two or more dimensions}{finite energy, yet possibly unbounded}\quad
+\chip{vector fields}{constraints such as $\nabla \cdot \mathbf{u} = 0$}}
 \note{
-Put the two families on the same smooth target.
-A degree-nine polynomial fit by least squares, ten numbers, misses $\sin(\pi x)$ by less than $10^{-7}$.
-A network with ten sigmoid units in one hidden layer, thirty-one numbers trained by Adam for ten thousand steps, misses by $0.0050$.
+The Gaussian kernel extends to spatial points through $k(\mathbf{x},\mathbf{x}')=\exp(-|\mathbf{x}-\mathbf{x}'|^2/(2\ell^2))$.
+The formula permits scattered sites in any dimension.
+It does not remove the need for more measurements to resolve a higher-dimensional field.
+The illustrated two-ridge field uses sixteen trained Gaussian elements.
 
-On a smooth target on a fixed interval the polynomial's error is four orders of magnitude smaller, and the network's parameters go to placing breakpoints the target never needed.
-A polynomial is a sum of global shapes with fixed placement, it oscillates near the ends of the interval, and the number of its coefficients grows fast with the dimension.
-A network is a sum of local ramps with movable breakpoints, composed across layers, and its advantage lies where the polynomial fails, at concentrated or moving features, at scattered data, and in many dimensions.
-}
-\end{frame}
+Grid storage grows as a power of dimension.
+Seventeen nodes per direction require $17$, $289$, or $4{,}913$ values in one, two, or three dimensions.
+Adaptive representations can reduce this count when the field has localized structure.
 
-\begin{frame}{Polynomials and neural networks compared}
-\footnotesize
-\begin{tabular}{@{}p{3.2cm}p{5.2cm}p{5.2cm}@{}}
-\toprule
-& polynomials & one-hidden-layer networks \\
-\midrule
-shapes & global, every coefficient changes the curve everywhere & local ramps, each unit changes the curve beyond its breakpoint \\
-placement & fixed by the degree & breakpoints are trained parameters \\
-failure on sparse data & Runge oscillations near the ends & a descent that stalls \\
-growth with dimension & coefficients grow like $\binom{n + d}{d}$ in $d$ dimensions & parameters set by width and depth \\
-structure & one sum & layers compose \\
-\bottomrule
-\end{tabular}
-\note{
-Put the two families side by side.
-A polynomial's shapes are global, so changing one coefficient changes the curve everywhere, while a ReLU unit changes the curve only beyond its breakpoint.
-A polynomial's shapes are fixed by the degree, while a network's breakpoints are trained.
-On sparse data a high-degree polynomial oscillates near the ends of the interval, and a network fails in a different way, when gradient descent stalls.
-A polynomial of degree $n$ in $d$ variables has $\binom{n+d}{d}$ coefficients, while a network's parameter count is set by its width and depth.
-And networks compose layers, which a single polynomial sum does not.
-}
-\end{frame}
-
-\begin{frame}{Shallow and deep networks on a high-frequency function}
-\begin{center}
-\includegraphics[width=0.88\textwidth]{figs/mlp-high-freq-comparison}
-\end{center}
-\centering
-\chip{one hidden layer, a hundred units}{mean squared error $0.0421$}\quad
-\chip{four hidden layers}{mean squared error $0.0006$}
-\note{
-This target oscillates about five times across the interval, and both networks are trained by gradient descent on the blue readings.
-A one-hidden-layer network with a hundred units settles on a single broad arch, with mean squared error $0.0421$, and a four-hidden-layer network follows every oscillation, with $0.0006$.
-
-Universality promised a shallow network with enough units.
-Training did not find it on this target, and depth did, and what depth adds is the next lecture's subject.
-}
-\end{frame}
-
-\begin{frame}{From fixed shapes to trainable breakpoints}
-\begin{center}
-\includegraphics[width=0.62\textwidth]{figs/rep-front-kinks}
-\end{center}
-\centering
-\chip{fixed breakpoints}{a linear solve, with the projection theorem's guarantee}\quad
-\chip{moving breakpoints}{gradient descent, with no guarantee}
-\note{
-A perceptron chooses between two problems.
-Fixed breakpoints give a linear problem, one solve, and the projection theorem's guarantee that the solve finds the closest member of the family.
-
-Moving breakpoints give a non-convex problem, gradient descent, and no such guarantee, the choice the splats already made.
-The gain is on fields whose features sit in a few places, the loss is the guarantee, and the width of a family says how much a fixed basis had to lose.
-
-The next lecture builds the perceptron from this unit and trains the breakpoints.
-Does universality survive other activations and more dimensions, and with which silences?
+The function-space assumptions also change.
+On an interval, $H^1$ gives a continuous representative.
+In higher dimensions, finite energy alone need not define point values.
+Sensors that average over a small region instead define bounded measurements on $L^2$.
+Vector fields may also require constraints such as $\nabla\cdot\mathbf{u}=0$ for incompressible flow.
 }
 \end{frame}
 
 \begin{frame}{Summary}
 \tableofcontents
 \note{
-We stored a function as a list of numbers and a rule, readings joined by segments or coefficients on shapes, and a fixed family was exact on its members and approximate outside them.
-We measured error in a norm the physics chose, and two functions could be close in one norm and far apart in another without bound.
-We found the closest member of a family by making the error orthogonal to the family, one linear solve, and saw that the inner product was a choice.
-Coefficients on a basis fell at a rate set by the smoothness of the function relative to the shapes, and a jump left an overshoot that never converged away in the sup norm.
-Weierstrass gave density with no rate, and existence of a closest member needed a complete space and a closed family.
-$L^2$ had no point values and $H^1$ restored them in one dimension, so kernels could turn scattered readings into a curve with a norm that measures roughness and a band conditional on the model.
-A family of functions had a width that bounded every fixed basis at once, and particles, trained shapes, and selection dropped the fixed-basis hypothesis in three ways.
-A hat is three ReLU ramps, so the straight-segment guess was already a network, and training moves its breakpoints.
+A representation specifies stored numbers and a rule for evaluating a function.
+The string examples compare sampled values with coefficients on fixed shapes.
+A fixed finite-dimensional family represents its own members without error and approximates a general function outside it.
+The error norm determines which features matter.
+
+Projection gives a unique closest function in a closed linear subspace of a Hilbert space.
+Density instead asks whether increasing the representation can make the error arbitrarily small.
+Neither density nor exact sensor agreement guarantees stable reconstruction from noise.
+Kernels specify a function geometry, regularization controls fitting, and Gaussian-process conditioning supplies model-dependent uncertainty.
+
+A family of profiles must be approximated across its full parameter range.
+Kolmogorov width measures the limitation of one fixed linear space.
+Moving nodes, trained shapes, and selected dictionary terms change the admissible representation with the target.
+These choices can reduce approximation error while adding storage or optimization requirements.
+In higher dimensions, the same questions apply, but measurement counts and function-space assumptions change.
 }
 \end{frame}
 

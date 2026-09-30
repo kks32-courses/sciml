@@ -336,3 +336,9 @@ CLAUDE.md
 
 ## mkdocs build output
 site/
+
+## Python bytecode
+__pycache__/
+
+# PowerPoint decks stay local
+*.pptx
