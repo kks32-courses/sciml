@@ -108,6 +108,9 @@ extra_css:
 
 nav:
   - Home: index.md
+  - Representation:
+    - Finitely Many Numbers: 00-representation/representation.md
+    - Kernels, Families, and Shapes That Move: 00-representation/kernels-and-families.md
   - Multi-Layer Perceptron: 
     - MLP: 00-mlp/mlp.ipynb
     - Activation Function ReLU: 00-mlp/relu.md

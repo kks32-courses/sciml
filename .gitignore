@@ -333,3 +333,6 @@ CLAUDE.md
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
+
+## mkdocs build output
+site/

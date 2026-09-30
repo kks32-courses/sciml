@@ -84,7 +84,7 @@ def generate_bernstein_approximation():
         plt.plot(x, y_bernstein, 'r--', linewidth=2, label=f'Bernstein n={n}')
         
         error = np.max(np.abs(y_true - y_bernstein))
-        plt.title(f'n = {n}\\nError: {error:.4f}')
+        plt.title(f'n = {n}\nError: {error:.4f}')
         plt.xlabel('x')
         if i == 0:
             plt.ylabel('y')
@@ -195,7 +195,7 @@ def generate_polynomial_vs_nn():
     plt.subplot(1, 3, 3)
     errors_comparison = {
         'Polynomial\n(10 params)': np.max(np.abs(y_true - y_poly)),
-        'Neural Net\n(21 params)': np.max(np.abs(y_true - y_nn))
+        f'Neural Net\n({nn_params} params)': np.max(np.abs(y_true - y_nn))
     }
     bars = plt.bar(errors_comparison.keys(), errors_comparison.values(), 
                    color=['blue', 'red'], alpha=0.7)
