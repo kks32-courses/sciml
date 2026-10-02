@@ -1,0 +1,281 @@
+{
+  "seed": 32,
+  "noise_std": 0.04,
+  "training_observations": 15,
+  "ad_graph": {
+    "inputs": [
+      2.0,
+      3.0
+    ],
+    "intermediates": [
+      2.0,
+      3.0,
+      4.0,
+      7.0
+    ],
+    "output": 7.0,
+    "reverse_seed": 1.0,
+    "local_derivatives": {
+      "dy_dw4": 1.0,
+      "dw4_dw3": 1.0,
+      "dw4_dw2": 1.0,
+      "dw3_dw1": 4.0
+    },
+    "gradient": [
+      4.0,
+      1.0
+    ],
+    "figures": [
+      "figs/ad1.png",
+      "figs/ad2.png",
+      "figs/ad3.png",
+      "figs/ad4.png",
+      "figs/ad5.png",
+      "figs/ad6.png",
+      "figs/ad7.png"
+    ]
+  },
+  "affine_coefficients": [
+    0.6692518917940896,
+    -0.0192187272503341
+  ],
+  "affine_reference_rmse": 0.308943607487332,
+  "interpolation": {
+    "3": {
+      "knots": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "values": [
+        0.0,
+        1.0,
+        1.2246467991473532e-16
+      ],
+      "slopes": [
+        2.0,
+        -1.9999999999999998
+      ],
+      "slope_jumps": [
+        -4.0
+      ],
+      "sampled_sup_error": 0.21051355504332836,
+      "curvature_bound": 0.30842513753404244
+    },
+    "5": {
+      "knots": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "values": [
+        0.0,
+        0.7071067811865475,
+        1.0,
+        0.7071067811865476,
+        1.2246467991473532e-16
+      ],
+      "slopes": [
+        2.82842712474619,
+        1.1715728752538102,
+        -1.1715728752538097,
+        -2.82842712474619
+      ],
+      "slope_jumps": [
+        -1.6568542494923797,
+        -2.34314575050762,
+        -1.6568542494923801
+      ],
+      "sampled_sup_error": 0.0703775269938185,
+      "curvature_bound": 0.07710628438351061
+    },
+    "9": {
+      "knots": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "values": [
+        0.0,
+        0.3826834323650898,
+        0.7071067811865475,
+        0.9238795325112867,
+        1.0,
+        0.9238795325112867,
+        0.7071067811865476,
+        0.3826834323650899,
+        1.2246467991473532e-16
+      ],
+      "slopes": [
+        3.0614674589207183,
+        2.5953867905716614,
+        1.7341820105979142,
+        0.6089637399097061,
+        -0.6089637399097061,
+        -1.7341820105979133,
+        -2.5953867905716614,
+        -3.0614674589207183
+      ],
+      "slope_jumps": [
+        -0.4660806683490568,
+        -0.8612047799737472,
+        -1.1252182706882081,
+        -1.2179274798194122,
+        -1.1252182706882072,
+        -0.8612047799737481,
+        -0.4660806683490568
+      ],
+      "sampled_sup_error": 0.01884626931773592,
+      "curvature_bound": 0.019276571095877652
+    }
+  },
+  "finite_difference": {
+    "nodes": 9,
+    "nodal_values": [
+      0.0,
+      0.3876394685723094,
+      0.7162643420150177,
+      0.9358444623383686,
+      1.0129507467218795,
+      0.9358444623383687,
+      0.7162643420150178,
+      0.38763946857230946,
+      0.0
+    ],
+    "reference_grid_rmse": 0.004138077575896533
+  },
+  "bernstein": {
+    "5": 0.22190678597413116,
+    "10": 0.11651481632053373,
+    "20": 0.05988074937453558,
+    "40": 0.03037942537378946
+  },
+  "clean_comparison": {
+    "training_points": 100,
+    "evaluation_points": 2001,
+    "polynomial_degree": 9,
+    "polynomial_sampled_sup_error": 8.233693736780358e-08,
+    "sigmoid_width": 10,
+    "sigmoid_parameters": 31,
+    "sigmoid_iterations": 10000,
+    "sigmoid_sampled_sup_error": 0.009636559433603838,
+    "seed": 32,
+    "learning_rate": 0.01
+  },
+  "data_fit": {
+    "activation": "tanh",
+    "width": 12,
+    "parameters": 37,
+    "optimizer": "Adam",
+    "iterations": 4000,
+    "learning_rate": 0.01,
+    "training_rmse": 0.03659102707316248,
+    "reference_grid_rmse": 0.022380047595371405,
+    "reference_grid_slope_rmse": 0.30413481660559555,
+    "reference_grid_pde_residual_rms": 3.2705137759295413,
+    "reference_grid_points": 2001
+  },
+  "square_activation": {
+    "2": 0.05031424710385447,
+    "4": 0.0013036331658954348
+  },
+  "derivative_counterexample": {
+    "sup_value_error": 0.01,
+    "l2_derivative_error": 2.221441469079183,
+    "sampled_l2_derivative_error": 2.2214414690791844
+  },
+  "tent_composition": [
+    {
+      "compositions": 1,
+      "affine_intervals_on_unit_interval": 2,
+      "interior_breakpoints": 1
+    },
+    {
+      "compositions": 2,
+      "affine_intervals_on_unit_interval": 4,
+      "interior_breakpoints": 3
+    },
+    {
+      "compositions": 3,
+      "affine_intervals_on_unit_interval": 8,
+      "interior_breakpoints": 7
+    },
+    {
+      "compositions": 4,
+      "affine_intervals_on_unit_interval": 16,
+      "interior_breakpoints": 15
+    }
+  ],
+  "xor": {
+    "linear_threshold_accuracy": 0.75,
+    "relu_values": [
+      0.0,
+      1.0,
+      1.0,
+      0.0
+    ]
+  },
+  "parity": {
+    "verified_dimensions": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "shallow_relu_units": "n"
+  },
+  "one_sample_gradient": {
+    "x": 0.5,
+    "target": 1.0,
+    "z": 0.5,
+    "h": 0.5,
+    "prediction": 0.5,
+    "loss": 0.125,
+    "dc": -0.5,
+    "dv": -0.25,
+    "db": -0.5,
+    "dw": -0.25,
+    "new_v_with_step_0.1": 1.025
+  },
+  "parameter_counts": {
+    "one_hidden_100": 301,
+    "four_hidden_20": 1321
+  },
+  "old_rmse_reduction_percent": 33.42618384401114,
+  "penalty_geometry": {
+    "loss_center": [
+      1.4,
+      1.4
+    ],
+    "loss_semi_axes": [
+      1.0,
+      0.5
+    ],
+    "l1_minimizer": [
+      0.0,
+      1.0
+    ],
+    "l1_level": 1.6124515496597098,
+    "l2_minimizer": [
+      0.43491900258889715,
+      0.9004695781574628
+    ],
+    "l2_level": 1.3890658375140976
+  }
+}

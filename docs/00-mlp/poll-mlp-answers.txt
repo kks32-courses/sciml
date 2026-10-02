@@ -1,0 +1,7 @@
+Answers to poll-mlp.txt, in order, with the slide behind each.
+
+1. A straight line only. Composing affine maps gives one affine map, (W2 W1) x + (W2 b1 + b2), at any depth ("Composition of affine layers").
+2. Continuous and piecewise linear. Each ReLU term adds one kink, a change of slope, and no jump ("A piecewise-linear interpolant as a sum of ReLU terms").
+3. The location of the kink. The kink sits at x = -b/w, and the output weight sets the slope change there ("The breakpoint of a ReLU unit").
+4. No straight line separates the two classes. A single neuron thresholds one affine score, so its boundary is a line, and the class-one corners (0,1), (1,0) share their midpoint with the class-zero corners (0,0), (1,1) ("The XOR problem").
+5. A wide enough network comes as close as you like. The theorem is about existence for some width. It names no width, no training method, and nothing about generalization ("Cybenko's theorem").

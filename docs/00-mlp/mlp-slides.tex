@@ -1,6 +1,7 @@
 %**************************************************************************************
-% Neural Networks and Function Approximation - COMPREHENSIVE REORGANIZED VERSION
-% All content from original preserved, just reorganized according to reorganized_presentation.md
+% Neural Networks and Function Approximation
+% Build:  latexmk -pdf mlp-slides.tex
+% Data:   python build_mlp_checks.py writes data/*.dat, data/mlp-checks.json, data/readouts.tex
 %**************************************************************************************
 
 \documentclass[aspectratio=169]{beamer}
@@ -27,18 +28,22 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage[labelsep=space,tableposition=top]{caption}
-\renewcommand{\figurename}{Fig.} 
-\usepackage{caption,subcaption}
+\renewcommand{\figurename}{Fig.}
+\usepackage{subcaption}
 \usepackage{xcolor}
-\usepackage{transparent}
 \usepackage{hyperref}
 \usepackage{tikz}
 \usepackage{listings}
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usetikzlibrary{shapes,arrows,positioning,calc}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,calc}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
+\pgfplotsset{mlpplot/.style={
+  width=\linewidth,height=4.2cm,axis lines=left,grid=major,
+  grid style={gray!18},tick label style={font=\scriptsize},
+  label style={font=\scriptsize},title style={font=\scriptsize},
+  legend style={font=\scriptsize,draw=none,fill=none},
+  every axis plot/.append style={line width=1.2pt}}}
+\input{data/readouts.tex}
 
 % Define math operators
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -46,7 +51,6 @@
 \DeclareMathOperator{\ReLU}{ReLU}
 \DeclareMathOperator{\sign}{sign}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
-\usetikzlibrary{arrows.meta,positioning,calc}
 % colors and readout chips shared with the representation deck
 \definecolor{ink}{HTML}{333333}
 \definecolor{sblue}{HTML}{2997C8}
@@ -59,14 +63,14 @@
 % Code listing style
 \lstset{
     language=Python,
-    basicstyle=\tiny\ttfamily,
+    basicstyle=\scriptsize\ttfamily,
     keywordstyle=\color{blue},
     commentstyle=\color{gray},
     stringstyle=\color{green!70!black},
     showstringspaces=false,
     frame=single,
     breaklines=true,
-    numbers=left,
+    numbers=none,
     numberstyle=\tiny
 }
 
@@ -98,866 +102,629 @@
 %========================================================================================
 \section{Part I: Motivation and Problem Setup}
 
-\begin{frame}{The Central Challenge}
-\begin{block}{Core Question}
-Can we build a machine that learns to approximate any continuous function from data?
-\end{block}
+\begin{frame}{A displacement from noisy readings}
+Here is a taut string, observed at a few positions $x_i$ with noise,
+\[
+y_i=u(x_i)+\varepsilon_i .
+\]
+We want the whole displacement $u(x)$, including the stretches between the readings.
+A coordinate network $\hat u(x;\theta)$ takes a position $x$ and returns a displacement.
+\bigskip
 
-\vspace{0.5em}
-
-\textbf{Applications in Scientific Machine Learning:}
-\begin{itemize}
-    \item Solving partial differential equations (PDEs) without meshes
-    \item Learning constitutive models from experimental data
-    \item Discovering governing equations from observations
-    \item Building surrogate models for optimization
-    \item Uncertainty quantification in complex systems
-\end{itemize}
-
-\vspace{0.5em}
-
-\textbf{What we'll explore:}
-\begin{itemize}
-    \item Mathematical foundations (Weierstrass → Universal Approximation)
-    \item Building blocks (perceptron → deep networks)
-    \item Training algorithms (gradient descent → backpropagation)
-    \item Practical considerations (architecture, regularization)
-\end{itemize}
+The parameters $\theta$ decide which function the network returns.
+How should we choose them?
 \end{frame}
 
-\begin{frame}{The Benchmark Problem: 1D Poisson Equation}
-\begin{columns}
+\begin{frame}{The Poisson equation for the string}
+\begin{columns}[T]
+\column{0.46\textwidth}
+For unit tension and small slopes, the pinned string satisfies
+\[
+-\frac{d^2u}{dx^2}=f(x),\qquad u(0)=u(1)=0.
+\]
+With the load $f(x)=\pi^2\sin(\pi x)$, the displacement is
+\[
+u(x)=\sin(\pi x).
+\]
+This known solution lets us check every approximation in the lecture.
 \column{0.5\textwidth}
-\textbf{Problem formulation:}
-\begin{equation}
-\begin{cases}
--\nabla^2 u = f & \text{in } \Omega \\
-u = g & \text{on } \partial\Omega
-\end{cases}
-\end{equation}
-
-\textbf{1D case:}
-$$-\frac{d^2u}{dx^2} = f(x), \quad u(0) = u(1) = 0$$
-For the source term $f(x) = \pi^2 \sin(\pi x)$
-
-\textbf{Analytical solution:} $u(x) = \sin(\pi x)$
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/poisson-analytical-solution.png}
-\caption{Analytical solution showing parabolic profile}
-\end{figure}
-\end{columns}
-
-\vspace{0.3cm}
-\textbf{Challenge:} Can we learn this solution from sparse, noisy measurements?
-\end{frame}
-
-\begin{frame}{The Function Approximation Challenge}
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{figs/sparse-data-challenge.png}
-\caption{Learning from sparse data: 15 noisy measurements to reconstruct continuous solution}
-\end{figure}
-
-\end{frame}
-
-\begin{frame}{The Function Approximation Challenge}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Given:}
-\begin{itemize}
-    \item Sparse measurements (e.g., 15 points)
-    \item Noisy observations
-    \item Unknown functional form
-    \item Potentially high dimensions
-\end{itemize}
-
-\column{0.5\textwidth}
-\textbf{Goal:}
-\begin{itemize}
-    \item Reconstruct continuous solution
-    \item Quantify uncertainty
-    \item Generalize to new domains
-    \item Handle complex geometries
-\end{itemize}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=5cm,xmin=0,xmax=1,ymin=0,ymax=1.15,xlabel={$x$},ylabel={$u(x)$}]
+\addplot[ink] table[x=x,y=u]{data/profile.dat};
+\end{axis}
+\end{tikzpicture}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Traditional Methods: Finite Differences}
-\begin{columns}
-\column{0.45\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/finite-difference-methods.png}
-\caption{Finite difference discretization}
-\end{figure}
+\begin{frame}{Fifteen noisy readings}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.82\textwidth,height=5cm,xmin=0,xmax=1,ymin=-0.1,ymax=1.25,xlabel={$x$},ylabel={displacement},legend pos=north east]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference $\sin(\pi x)$}
+\addplot[only marks,sorange,mark=*] table[x=x,y=y]{data/observations.dat};
+\addlegendentry{15 readings}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+The readings carry noise with standard deviation $0.04$.
+In a real fitting problem the dashed reference is unknown.
+What decides the curve between the readings?
+\end{frame}
 
-\column{0.55\textwidth}
-\textbf{The approach:}
-\begin{itemize}
-    \item Discretize domain into grid
-    \item Approximate derivatives: \\
-    $\frac{d^2u}{dx^2} \approx \frac{u_{i+1} - 2u_i + u_{i-1}}{h^2}$
-    \item Solve linear system: $Au = b$
-\end{itemize}
-
-\textbf{Limitations:}
-\begin{itemize}
-    \item Fixed grid resolution
-    \item Curse of dimensionality ($O(N^d)$)
-    \item Poor for irregular domains
-    \item Cannot learn from data
-    \item No continuous representation
-\end{itemize}
+\begin{frame}{The data loss}
+\begin{columns}[T]
+\column{0.48\textwidth}
+The data are positions and measured displacements,
+\[
+\mathcal D=\{(x_i,y_i)\}_{i=1}^{n}.
+\]
+A network proposes a candidate function $\hat u(x;\theta)$.
+Its architecture decides which candidates exist.
+\column{0.48\textwidth}
+The data loss compares predicted and measured values,
+\[
+\mathcal L_{\text{data}}(\theta)
+=\frac1n\sum_{i=1}^{n}\bigl(\hat u(x_i;\theta)-y_i\bigr)^2.
+\]
+Readings held out of the fit test the curve between the readings.
+A small training loss alone says nothing about the curve there.
 \end{columns}
 \end{frame}
 
-\begin{frame}{Finite Difference Results}
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{figs/fd-poisson.png}
-\caption{Finite difference solution: accurate but discrete, requires mesh}
-\end{figure}
+\begin{frame}{Finite differences for the Poisson equation}
+Finite differences take a different route and use the equation itself.
+At grid spacing $h$, each interior node gives
+\[
+-\frac{u_{i+1}-2u_i+u_{i-1}}{h^2}=f(x_i).
+\]
+With $u_0=u_N=0$, these relations form a linear system for the nodal displacements.
+\bigskip
 
-\textbf{Key observation:} We need a flexible, continuous, learnable representation
+Finite differences need the equation, the load, and the boundary values.
+Data fitting needs measured displacements instead.
+\end{frame}
+
+\begin{frame}{The finite-difference solution between nodes}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.8\textwidth,height=4.8cm,xmin=0,xmax=1,ymin=0,ymax=1.15,xlabel={$x$},ylabel={displacement},legend style={at={(0.5,0.04)},anchor=south}]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference}
+\addplot[sblue] table[x=x,y=fd9]{data/profile.dat};
+\addlegendentry{nine nodes, joined by lines}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Nine nodal values, joined by straight lines, give a continuous curve with root-mean-square error $0.0041$.
+The solve uses the exact load and no measurements.
+A network is another rule that builds a continuous curve from a few numbers.
 \end{frame}
 
 %========================================================================================
-% PART II: MATHEMATICAL FOUNDATIONS
+% PART II: BUILDING NEURAL NETWORKS
 %========================================================================================
-\section{Part II: Universal Approximation}
+\section{Part II: Building Neural Networks}
 
-\begin{frame}{From Finitely Many Numbers to a Network}
-The representation lecture stored a function as a short list of numbers and a rule that rebuilds the curve, readings at stations joined by straight lines, or coefficients on a few fixed shapes.
-Each choice approximates every function outside its own family, and the error is measured in a norm the physics chooses.
-Weierstrass's theorem says polynomials reach every continuous function, and Bernstein's coin flips build the polynomial, with no word about the degree, the weights, or the slopes.
+\begin{frame}{A single neuron}
+\begin{columns}[T]
+\column{0.48\textwidth}
+A neuron forms an affine combination of its inputs and applies an activation $\sigma$,
+\[
+z=\mathbf w^T\mathbf x+b,\qquad h=\sigma(z).
+\]
+The weights scale the inputs, and the bias shifts the sum.
+For the string, the input is the single coordinate $x$.
+\medskip
 
-\vspace{0.5em}
-A hat function is three ReLU ramps, so the straight-segment reconstruction is already a one-hidden-layer ReLU network with its kinks at the stations.
-This lecture lets the kinks move.
+For classification with $\mathbf w\ne0$, a sigmoid thresholded at $1/2$ splits the inputs along the hyperplane $\mathbf w^T\mathbf x+b=0$.
+\column{0.48\textwidth}
+\includegraphics[width=\linewidth,height=5cm,keepaspectratio]{figs/perceptron.png}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Linear and nonlinear decision boundaries}
+A threshold on an affine score splits the plane along a straight line,
+\[
+\hat y(\mathbf x)=\mathbf 1\{\mathbf w^T\mathbf x+b>0\}.
+\]
+\begin{center}
+\includegraphics[width=0.9\textwidth,height=3.5cm,keepaspectratio]{figs/why-activation-panels.png}
+\end{center}
+On the left, the straight boundary leaves points of both classes on each side.
+On the right, a curved boundary separates them.
+Regression meets the same limit, since an affine function cannot follow a curved displacement.
+\end{frame}
+
+\begin{frame}{An affine fit to the sine}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.8\textwidth,height=4.8cm,xmin=0,xmax=1,ymin=-0.1,ymax=1.25,xlabel={$x$},legend pos=north east]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference}
+\addplot[only marks,sorange,mark=*,mark size=1.6pt] table[x=x,y=y]{data/observations.dat};
+\addlegendentry{readings}
+\addplot[sblue] table[x=x,y=affine]{data/profile.dat};
+\addlegendentry{best line}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+The best line through the fifteen readings stays near $0.66$, with root-mean-square error $0.31$ against the sine.
+An affine function has one slope, and the sine needs slopes from $\pi$ down to $-\pi$.
+Would more affine layers help?
+\end{frame}
+
+\begin{frame}{Composition of affine layers}
+Without activations, two layers evaluate
+\begin{align*}
+h_1&=W_1x+b_1,\\
+h_2&=W_2h_1+b_2=(W_2W_1)x+(W_2b_1+b_2).
+\end{align*}
+The product $W_2W_1$ and the bias $W_2b_1+b_2$ define one affine map.
+The same collapse happens at any depth.
+\bigskip
+
+A nonlinear activation between the layers stops this collapse.
+The network can then represent functions whose slope changes.
+\end{frame}
+
+\begin{frame}{Activation functions}
+A nonlinear activation bends the affine combination.
+\begin{columns}[T]
+\column{0.31\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.6cm,xmin=-4,xmax=4,ymin=-0.1,ymax=1.1,xlabel={$z$},title={sigmoid},xtick={-4,0,4},ytick={0,1}]
+\addplot[sblue,domain=-4:4,samples=101]{1/(1+exp(-x))};
+\end{axis}
+\end{tikzpicture}
+\column{0.31\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.6cm,xmin=-4,xmax=4,ymin=-1.1,ymax=1.1,xlabel={$z$},title={$\tanh$},xtick={-4,0,4},ytick={-1,0,1}]
+\addplot[sorange,domain=-4:4,samples=101]{tanh(x)};
+\end{axis}
+\end{tikzpicture}
+\column{0.31\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.6cm,xmin=-4,xmax=4,ymin=-0.1,ymax=4.1,xlabel={$z$},title={ReLU},xtick={-4,0,4},ytick={0,2,4}]
+\addplot[sgreen,domain=-4:4,samples=101]{max(0,x)};
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\medskip
+ReLU adds a ramp after a breakpoint, while sigmoid and $\tanh$ add smooth steps.
+The output layer stays affine, so the displacement can take either sign.
+\end{frame}
+
+\begin{frame}{A network with one hidden layer}
+\begin{columns}[T]
+\column{0.44\textwidth}
+\includegraphics[width=\linewidth,height=5cm,keepaspectratio]{figs/single-layer-nn1.png}
+\column{0.52\textwidth}
+Each hidden unit evaluates a shape with its own parameters,
+\[
+h_j(x)=\sigma(w_jx+b_j).
+\]
+The output combines those shapes,
+\[
+\hat u(x;\theta)=c+\sum_{j=1}^{M}v_jh_j(x).
+\]
+With $w_j,b_j$ fixed, fitting $v_j$ and $c$ is linear least squares.
+Training $w_j,b_j$ as well moves the shapes, and the fit becomes nonlinear.
+\end{columns}
+\end{frame}
+
+\begin{frame}{The XOR problem}
+XOR assigns the same class to opposite corners of the unit square,
+\[
+(0,0)\mapsto0,\quad (0,1)\mapsto1,\quad
+(1,0)\mapsto1,\quad (1,1)\mapsto0.
+\]
+\begin{center}
+\includegraphics[width=0.8\textwidth,height=4cm,keepaspectratio]{figs/xor-problem.png}
+\end{center}
+Both diagonals share the midpoint $(1/2,1/2)$.
+An affine score that is positive at both class-one corners is positive at that midpoint.
+If it is also negative at both class-zero corners, it is negative there too, so no line separates the classes.
+\end{frame}
+
+\begin{frame}{The best linear classifier for XOR}
+Predict one when $x_1+x_2>1/2$.
+The resulting predictions are
+\[
+\begin{array}{c|c|c}
+(x_1,x_2)&\text{XOR label}&\text{linear prediction}\\ \hline
+(0,0)&0&0\\
+(0,1)&1&1\\
+(1,0)&1&1\\
+(1,1)&0&1
+\end{array}
+\]
+The best accuracy over affine thresholds is therefore $3/4$.
+A logistic fit on these four points can settle at probability $1/2$ everywhere and reach only $50$ percent, so training can fall short of the best line.
+\end{frame}
+
+\begin{frame}{XOR with two ReLU units}
+Let $s=x_1+x_2$ for Boolean inputs.
+The network computes
+\[
+h_1=\ReLU(s),\qquad h_2=\ReLU(s-1),\qquad
+\hat y=h_1-2h_2.
+\]
+\begin{columns}[T]
+\column{0.28\textwidth}
+\[
+\begin{array}{c|ccc}
+s&0&1&2\\ \hline
+h_1&0&1&2\\
+h_2&0&0&1\\
+\hat y&0&1&0
+\end{array}
+\]
+\column{0.68\textwidth}
+\small
+With Boolean inputs, $s=x_1+x_2$ takes only three values.
+The input $(0,0)$ gives $s=0$, $(0,1)$ and $(1,0)$ both give $s=1$, and $(1,1)$ gives $s=2$.
+Those are the three columns.
+\smallskip
+
+$\ReLU(z)=\max(0,z)$ passes positive numbers through unchanged and turns negative numbers into $0$, so $h_2=\ReLU(-1)=0$ at $s=0$.
+\smallskip
+
+For the column $s=2$, the input $(1,1)$ gives $h_1=\ReLU(2)=2$, $h_2=\ReLU(2-1)=1$, and $\hat y=2-2(1)=0$.
+\end{columns}
+\medskip
+The output is linear in the hidden features $h_1,h_2$.
+Those features are nonlinear in the inputs $x_1,x_2$.
+\end{frame}
+
+\begin{frame}{The XOR features and the decision band}
+\begin{columns}[T]
+\column{0.54\textwidth}
+The feature map $\phi(x_1,x_2)=(\ReLU(s),\ReLU(s-1))$ with $s=x_1+x_2$ sends
+\[
+\begin{gathered}
+(0,0)\mapsto(0,0),\qquad (1,1)\mapsto(2,1),\\
+(0,1),\,(1,0)\mapsto(1,0).
+\end{gathered}
+\]
+In feature coordinates an affine threshold separates the labels,
+\[
+\hat y_{\text{class}}=\mathbf 1\{h_1-2h_2>1/2\}.
+\]
+In the input plane this rule keeps the green band $1/2<x_1+x_2<3/2$, which holds the class-one corners.
+\column{0.42\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=4.7cm,height=4.7cm,xmin=-0.5,xmax=1.5,ymin=-0.5,ymax=1.5,xlabel={$x_1$},ylabel={$x_2$},xtick={0,1},ytick={0,1}]
+\fill[sgreen!22] (axis cs:-0.5,1) -- (axis cs:1,-0.5) -- (axis cs:1.5,-0.5) -- (axis cs:1.5,0) -- (axis cs:0,1.5) -- (axis cs:-0.5,1.5) -- cycle;
+\addplot[sgreen!70!black,domain=-0.5:1,samples=2] {0.5-x};
+\addplot[sgreen!70!black,domain=0:1.5,samples=2] {1.5-x};
+\addplot[only marks,mark=*,mark size=3pt,sred] coordinates {(0,0) (1,1)};
+\addplot[only marks,mark=square*,mark size=3pt,sblue] coordinates {(0,1) (1,0)};
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{The XOR construction in code}
+The explicit ReLU parameters can be checked at all four inputs without any training.
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([0, 1, 1, 0])
+s = X.sum(axis=1)
+h1 = np.maximum(s, 0)
+h2 = np.maximum(s - 1, 0)
+prediction = h1 - 2 * h2
+assert np.array_equal(prediction, y)
+\end{lstlisting}
+Training a network to find such weights is a separate experiment in the companion notebook.
+\end{frame}
+
+\begin{frame}{Ramps and triangles from ReLU units}
+A ReLU ramp is zero before its breakpoint and rises after it.
+Subtracting a shifted ramp flattens it into a plateau, and a third ramp brings it back to zero,
+\begin{align*}
+r(x)&=\ReLU(x)-\ReLU(x-1),\\
+t(x)&=\ReLU(x)-2\ReLU(x-1)+\ReLU(x-2).
+\end{align*}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.4cm,xmin=-0.5,xmax=2.5,ymin=-0.1,ymax=1.2,xlabel={$x$},title={ramp followed by a plateau, $r(x)$}]
+\addplot[sblue,domain=-0.5:2.5,samples=101]{max(0,x)-max(0,x-1)};
+\end{axis}
+\end{tikzpicture}
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.4cm,xmin=-0.5,xmax=2.5,ymin=-0.1,ymax=1.2,xlabel={$x$},title={triangle, $t(x)$}]
+\addplot[sorange,domain=-0.5:2.5,samples=101]{max(0,x)-2*max(0,x-1)+max(0,x-2)};
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\end{frame}
+
+\begin{frame}{A piecewise-linear interpolant as a sum of ReLU terms}
+A piecewise-linear curve changes slope only at its nodes, and each slope change is one ReLU term,
+\[
+p(x)=a+s_0x+\sum_{j=1}^{N}(s_j-s_{j-1})\ReLU(x-t_j).
+\]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.76\textwidth,height=3.9cm,xmin=0,xmax=1,ymin=0,ymax=1.15,xlabel={$x$},legend style={at={(0.5,0.04)},anchor=south}]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference}
+\addplot[sblue] table[x=x,y=linear5]{data/profile.dat};
+\addlegendentry{five-node interpolant}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Five nodes on the sine give three interior breakpoints, so three ReLU terms and four affine pieces.
+\end{frame}
+
+\begin{frame}{The breakpoint of a ReLU unit}
+For $h(x)=\ReLU(wx+b)$ with $w\ne0$, the breakpoint sits at $t=-b/w$, and the unit is active where $wx+b>0$.
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.76\textwidth,height=3.9cm,xmin=0,xmax=1,ymin=-0.05,ymax=0.85,xlabel={$x$},ylabel={$h(x)$},title={$w=1$},legend pos=north west,legend columns=3]
+\addplot[sblue,domain=0:1,samples=101]{max(0,x-0.25)};
+\addlegendentry{$b=-1/4$}
+\addplot[sorange,domain=0:1,samples=101]{max(0,x-0.5)};
+\addlegendentry{$b=-1/2$}
+\addplot[sgreen,domain=0:1,samples=101]{max(0,x-0.75)};
+\addlegendentry{$b=-3/4$}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+At $w=1$, changing $b$ slides the breakpoint, and the output weight sets the slope change there.
+Training moves the breakpoints, with no promise that it finds the best places.
+\end{frame}
+
+\begin{frame}{Networks with several outputs}
+A shared hidden representation can predict several components,
+\[
+\hat{\mathbf u}(\mathbf x;\theta)
+=W_{\text{out}}\mathbf h(\mathbf x)+\mathbf c.
+\]
+\begin{center}
+\includegraphics[width=0.7\textwidth,height=3.8cm,keepaspectratio]{figs/multioutput-perceptrons.png}
+\end{center}
+The output components may be displacements, velocities, or stresses.
+Predicting a mean and a variance needs a likelihood and a matching loss.
+\end{frame}
+
+%========================================================================================
+% PART III: APPROXIMATION AND EXPRESSIVITY
+%========================================================================================
+\section{Part III: Approximation and Expressivity}
+
+\begin{frame}{Sup, $L^2$, and $H^1$ errors}
+To say that a network approximates $u$, we must say how we measure the gap,
+\[
+\|u-\hat u\|_\infty=\max_{x\in[0,1]}|u(x)-\hat u(x)|,\qquad
+\|u-\hat u\|_{L^2}^2=\int_0^1|u-\hat u|^2\,dx.
+\]
+\begin{itemize}
+\item $C([0,1])$ with the sup norm is a Banach space, a complete normed space.
+\item $L^2(0,1)$ is a Hilbert space, complete in the norm of its inner product.
+\item Approximation in $H^1(0,1)$ also requires the weak derivatives to be close in $L^2$.
+\end{itemize}
+Each density theorem below states its space, its norm, and its assumption on the activation.
 \end{frame}
 
 \begin{frame}{The Weierstrass approximation theorem}
-\begin{block}{Theorem (Weierstrass, 1885)}
-For every continuous $f$ on $[a,b]$ and every $\epsilon > 0$ there is a polynomial $p$ with $|f(x) - p(x)| < \epsilon$ for every $x$ in $[a,b]$.
+\begin{block}{Weierstrass's theorem}
+For every continuous $f$ on $[a,b]$ and every $\epsilon>0$, some polynomial $p$ satisfies
+$|f(x)-p(x)|<\epsilon$ throughout the interval.
 \end{block}
 \begin{center}
-\includegraphics[width=0.62\textwidth]{figs/bernstein-approximation.png}
-\end{center}
-\centering
-\chip{Bernstein $B_n f$ for $\sin(\pi x)$, largest gap}{$0.222$, $0.117$, $0.060$, $0.030$ at $n = 5, 10, 20, 40$}\quad
-\chip{what the theorem does not say}{the degree, the weights, or the slopes}
-\note{
-The representation lecture ended with this theorem.
-Polynomials come within any tolerance of every continuous function on an interval, and Bernstein's construction, $B_n f(x) = \sum_k f(k/n)\binom{n}{k}x^k(1-x)^{n-k}$, proves it by averaging readings with coin-flip weights.
-For $\sin(\pi x)$ the largest gap halves with each doubling of $n$.
-The theorem names no degree for a given tolerance and says nothing about slopes, and every universal approximation theorem for networks has the same form.
-}
-\end{frame}
-
-\begin{frame}{History of universal approximation theorems}
-\begin{center}
-\begin{tikzpicture}[scale=0.85, >={Stealth[length=2.5mm]}, font=\small, box/.style={draw, rounded corners, thick, minimum height=8mm, inner sep=5pt}]
-\node[box, draw=sblue, fill=sblue!12] (w) at (-3,0) {Weierstrass, 1885};
-\node[box, draw=sgreen, fill=sgreen!12] (s) at (3.6,0) {Stone--Weierstrass, 1937};
-\node[box, draw=sorange, fill=sorange!12] (k) at (10.2,0) {Kolmogorov, 1957};
-\node[box, draw=sred, fill=sred!12] (c) at (1.2,-3.0) {Cybenko, 1989};
-\node[box, draw=muted, fill=muted!12] (h) at (8.4,-3.0) {Hornik, 1991};
-\draw[->, thick, muted] (w) -- (s) node[midway, above=3pt, font=\scriptsize] {any separating algebra};
-\draw[->, thick, muted] (s) -- (k) node[midway, above=3pt, font=\scriptsize] {exact superposition};
-\draw[->, thick, muted] (s) -- (c) node[midway, left=4pt, font=\scriptsize] {sigmoid units};
-\draw[->, thick, muted] (c) -- (h) node[midway, below=3pt, font=\scriptsize] {continuous bounded nonconstant activation};
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.8\textwidth,height=3.6cm,xmin=0,xmax=1,ymin=0,ymax=1.1,xlabel={$x$},legend style={at={(1.02,0.5)},anchor=west}]
+\addplot[ink,dashed] table[x=x,y=u]{data/bernstein.dat};
+\addlegendentry{$\sin(\pi x)$}
+\addplot[sred] table[x=x,y=b5]{data/bernstein.dat};
+\addlegendentry{$n=5$}
+\addplot[sorange] table[x=x,y=b10]{data/bernstein.dat};
+\addlegendentry{$n=10$}
+\addplot[sgreen] table[x=x,y=b20]{data/bernstein.dat};
+\addlegendentry{$n=20$}
+\addplot[sblue] table[x=x,y=b40]{data/bernstein.dat};
+\addlegendentry{$n=40$}
+\end{axis}
 \end{tikzpicture}
 \end{center}
-\medskip
-\centering
-\chip{what these theorems give}{existence of a representation or approximation}\quad\chip{what none of them gives}{a procedure that trains it}
-\note{
-Weierstrass in 1885 proved that polynomials come within any tolerance of every continuous function on an interval.
-Stone in 1937 extended the theorem to any algebra of continuous functions on a compact set that separates points and contains the constants, so the trigonometric polynomials and many other families are dense as well.
-Kolmogorov in 1957 wrote every continuous function of several variables exactly as a finite sum of compositions of continuous functions of one variable, a two-layer form whose inner functions are not neurons with a fixed activation and finitely many weights.
-
-Cybenko in 1989 proved that networks with one hidden layer of sigmoid units are dense in the continuous functions on a box.
-Hornik in 1991 extended uniform approximation to any continuous, bounded, nonconstant activation, and approximation in $L^p$ to any bounded nonconstant one, and under further smoothness he approximated the derivatives as well.
-These are existence results, and none of them by itself gives a procedure that trains the network to the approximation it promises.
-}
-\end{frame}
-
-\begin{frame}{Universal Approximation Theorem}
-\begin{block}{Theorem (Cybenko, 1989)}
-Let $\sigma$ be a continuous, bounded, non-constant, monotonically increasing function. 
-Then finite sums of the form:
-$$G(x) = \sum_{i=1}^{N} \alpha_i \sigma(w_i^T x + b_i)$$
-are dense in $C([0,1]^n)$ under the supremum norm.
-\end{block}
-
-\vspace{0.5cm}
-
-\textbf{In plain English:}
-A single hidden layer neural network can approximate any continuous function to arbitrary accuracy, given enough neurons.
-
-\vspace{0.3cm}
-
-\textbf{Key points:}
-\begin{itemize}
-    \item Existence guarantee, not constructive
-    \item Says nothing about number of neurons needed
-    \item Doesn't tell us how to find the weights
-\end{itemize}
-\end{frame}
-
-\begin{frame}{UAT Visualization}
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{figs/uat-approximation-progression.png}
-\caption{Neural network approximation with increasing width: 2, 10, and 50 neurons}
-\end{figure}
-
-\textbf{Observations:}
-\begin{itemize}
-    \item More neurons → better approximation
-    \item Each neuron adds a "bump" or feature
-    \item Adaptive placement of features
-    \item No fixed polynomial structure
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Polynomial and neural network approximation of $\sin(\pi x)$}
-\begin{center}
-\includegraphics[width=0.8\textwidth]{figs/polynomial-vs-nn-comparison}
-\end{center}
-\centering
-\chip{polynomial, ten numbers}{largest gap below $10^{-7}$}\quad
-\chip{sigmoid network, thirty-one numbers, one training run}{largest gap $0.0050$}
-\note{
-Put the two families on the same smooth target.
-A degree-nine polynomial fit by least squares, ten numbers, misses $\sin(\pi x)$ by less than $10^{-7}$.
-A network with ten sigmoid units in one hidden layer, thirty-one numbers trained by Adam for ten thousand steps, misses by $0.0050$.
-
-On this smooth target the least-squares polynomial's error is four orders of magnitude below what this one training run found.
-The comparison sets a best approximation in one family against one trained network in the other, so the network's number mixes representation error with optimization error, and it says nothing about the best ten-unit network.
-Sigmoid units have no breakpoints, and each one contributes a smooth step whose location and steepness are trained.
-}
+Bernstein polynomials make the theorem concrete for $\sin(\pi x)$.
+Doubling $n$ roughly halves the largest gap, which is $0.222$, $0.117$, $0.060$, and $0.030$ at $n=5$, $10$, $20$, and $40$.
+The theorem promises that a polynomial exists, and it names no degree for a given $\epsilon$.
 \end{frame}
 
 \begin{frame}{Polynomials and neural networks compared}
 \footnotesize
-\begin{tabular}{@{}p{3.2cm}p{5.2cm}p{5.2cm}@{}}
+\begin{tabular}{@{}p{0.18\linewidth}p{0.36\linewidth}p{0.39\linewidth}@{}}
 \toprule
-& polynomials & one-hidden-layer ReLU networks \\
+& polynomials & one-hidden-layer ReLU networks\\
 \midrule
-shapes & global, every coefficient changes the curve everywhere & ramps, each unit changes the curve beyond its breakpoint \\
-placement & fixed by the degree & breakpoints are trained parameters \\
-failure on sparse data & Runge oscillations near the ends & a descent that stalls \\
-growth with dimension & $\binom{n + d}{d}$ coefficients at degree $n$ in $d$ variables & $m(d+2)+1$ parameters for $m$ units, and the $m$ needed for a given accuracy can still grow fast with $d$ \\
-structure & one sum & layers compose \\
+shapes & fixed global basis & shifted ramps\\
+fitting & linear in basis coefficients & linear in output coefficients when hidden parameters are fixed\\
+locations & prescribed basis & trainable breakpoints\\
+parameters & $\binom{n+d}{d}$ at degree $n$ in $d$ variables & $m(d+2)+1$ for $m$ units and a scalar output\\
+limitations & conditioning and sample placement & optimization and insufficient observations\\
 \bottomrule
 \end{tabular}
-\note{
-Put the two families side by side.
-A polynomial's shapes are global, so changing one coefficient changes the curve everywhere, while a ReLU unit changes the curve only on one side of its breakpoint, where it grows without bound.
-A polynomial's shapes are fixed by the degree, while a network's breakpoints are trained.
-On sparse data a high-degree polynomial oscillates near the ends of the interval, and a network fails in a different way, when gradient descent stalls.
-A polynomial of degree $n$ in $d$ variables has $\binom{n+d}{d}$ coefficients, and a network with $m$ units on $d$ inputs has $m(d+2)+1$ parameters, but the width needed for a given accuracy can still grow fast with the dimension.
-And networks compose layers, which a single polynomial sum does not.
-}
+\medskip
+
+\normalsize
+Neither count says how large a degree or a width a tolerance needs.
 \end{frame}
 
-\begin{frame}{Shallow and deep networks on a high-frequency function}
+\begin{frame}{History of universal approximation theorems}
 \begin{center}
-\includegraphics[width=0.88\textwidth]{figs/high-freq-comparison}
+\begin{tikzpicture}[font=\small,
+  box/.style={draw, rounded corners, thick, minimum height=8mm, inner sep=4pt, align=center},
+  what/.style={font=\scriptsize, align=center, text width=2.3cm, anchor=north}]
+\draw[->, thick, muted] (-0.4,0) -- (13.6,0) node[right, font=\scriptsize] {year};
+\foreach \x in {0.8,3.6,6.4,9.2,12.0} \fill[ink] (\x,0) circle (2pt);
+\node[box, draw=sblue, fill=sblue!12] at (0.8,1) {Weierstrass\\1885};
+\node[what] at (0.8,-0.3) {polynomials are dense in $C([a,b])$};
+\node[box, draw=sgreen, fill=sgreen!12] at (3.6,1) {Stone\\1937};
+\node[what] at (3.6,-0.3) {algebras that separate points are dense};
+\node[box, draw=sorange, fill=sorange!12] at (6.4,1) {Kolmogorov\\1957};
+\node[what] at (6.4,-0.3) {exact superposition of one-variable functions};
+\node[box, draw=sred, fill=sred!12] at (9.2,1) {Cybenko\\1989};
+\node[what] at (9.2,-0.3) {one layer of sigmoid units is dense};
+\node[box, draw=muted, fill=muted!12] at (12.0,1) {Hornik\\1991};
+\node[what] at (12.0,-0.3) {any bounded nonconstant continuous activation};
+\end{tikzpicture}
 \end{center}
+\bigskip
 \centering
-\chip{one hidden layer, a hundred units}{mean squared error $0.0421$}\quad
-\chip{four hidden layers}{mean squared error $0.0006$}
-\note{
-This target oscillates about five times across the interval, and both networks are trained by gradient descent on the blue readings.
-A one-hidden-layer network with a hundred units settles on a single broad arch, with mean squared error $0.0421$, and a four-hidden-layer network follows every oscillation, with $0.0006$.
-
-Universality promised a shallow network with enough units.
-In this single training run gradient descent did not find it for the shallow network and did find a good fit for the deep one, so the comparison is between what one optimizer found in each family.
-}
+\chip{what these theorems give}{existence of an approximation}\quad\chip{what none of them gives}{a procedure that trains it}
 \end{frame}
 
-%========================================================================================
-% PART III: BUILDING NEURAL NETWORKS
-%========================================================================================
-\section{Part III: Building Neural Networks}
+\begin{frame}{Cybenko's theorem}
+Let $\sigma$ be a continuous sigmoid with limits $0$ and $1$ at negative and positive infinity.
+A one-hidden-layer network forms sums
+\[
+G(\mathbf x)=\sum_{j=1}^{N}\alpha_j
+\sigma(\mathbf w_j^T\mathbf x+b_j).
+\]
+For every $f\in C([0,1]^d)$ and $\epsilon>0$, some width and parameters satisfy
+\[
+\max_{\mathbf x\in[0,1]^d}|f(\mathbf x)-G(\mathbf x)|<\epsilon.
+\]
+The width may grow as the tolerance shrinks.
+The theorem gives no procedure for finding the weights from data.
+{\scriptsize Cybenko (1989).}
+\end{frame}
 
-\begin{frame}{The Perceptron: Building Block of Neural Networks}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Mathematical model:}
-\begin{equation}
-\hat{y} = \sigma(\mathbf{w}^T\mathbf{x} + b)
-\end{equation}
+\begin{frame}{The proof of Cybenko's theorem}
+Consider the span $S$ of all shifted and scaled continuous sigmoid units.
+If its closure were a proper subspace of $C([0,1])$, Hahn--Banach would supply a nonzero bounded functional with
+\[
+\Lambda(g)=0\qquad\text{for every }g\in S.
+\]
+The Riesz representation theorem writes that functional as
+\[
+\Lambda(g)=\int_0^1g(x)\,d\mu(x).
+\]
+Cybenko's sigmoid argument forces the signed measure $\mu$ to vanish.
+This contradicts the choice of a nonzero functional, so the closure of $S$ is all of $C([0,1])$.
+\end{frame}
 
-where:
+\begin{frame}{Approximating a step function}
+Let $H(x)=0$ for $x<1/2$, $H(x)=1$ for $x>1/2$, and $H(1/2)=1/2$.
+Smooth transitions converge pointwise to this function,
+\[
+g_k(x)=\frac{1}{1+\exp[-k(x-1/2)]}.
+\]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.76\textwidth,height=3.6cm,xmin=0,xmax=1,ymin=-0.1,ymax=1.1,xlabel={$x$},legend pos=north west]
+\addplot[ink,dashed,forget plot] coordinates {(0,0) (0.5,0)};
+\addplot[ink,dashed,forget plot] coordinates {(0.5,1) (1,1)};
+\addplot[sorange,domain=0:1,samples=101]{1/(1+exp(-12*(x-0.5)))};
+\addlegendentry{$k=12$}
+\addplot[sblue,domain=0:1,samples=201]{1/(1+exp(-60*(x-0.5)))};
+\addlegendentry{$k=60$}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+The transition narrows, but every continuous function misses $H$ by at least $1/2$ somewhere.
+The $L^2$ error of $g_k$ goes to zero.
+\end{frame}
+
+\begin{frame}{Leshno's theorem for non-polynomial activations}
+For a continuous non-polynomial activation, trainable affine arguments and output coefficients give dense one-hidden-layer families in $C([0,1]^d)$.
+\begin{columns}[T]
+\column{0.48\textwidth}
 \begin{itemize}
-    \item $\mathbf{x} \in \mathbb{R}^n$: input features
-    \item $\mathbf{w} \in \mathbb{R}^n$: weights
-    \item $b \in \mathbb{R}$: bias
-    \item $\sigma(\cdot)$: activation function
-    \item $\hat{y}$: output/prediction
+\item Sigmoid and $\tanh$ are smooth and bounded.
+\item Their derivatives become small in saturated regions.
 \end{itemize}
-
-\textbf{Geometric interpretation:}
+\column{0.48\textwidth}
 \begin{itemize}
-    \item Linear decision boundary
-    \item Hyperplane: $\mathbf{w}^T\mathbf{x} + b = 0$
-    \item Normal vector: $\mathbf{w}$
-    \item Distance from origin: $|b|/\|\mathbf{w}\|$
+\item ReLU is continuous, non-polynomial, and unbounded.
+\item Its derivative jumps at zero.
 \end{itemize}
+\end{columns}
+\medskip
+The theorem says nothing about derivatives.
+The PDE decides how many derivatives the network must approximate.
 
+{\scriptsize Leshno et al. (1993), with continuity as a sufficient regularity assumption.}
+\end{frame}
+
+\begin{frame}{Networks with square activations}
+\begin{columns}[T]
 \column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/perceptron.png}
-\caption{Perceptron model: linear combination followed by activation}
-\end{figure}
+With $\sigma(z)=z^2$ and one hidden layer, any width gives
+\[
+\hat u(x)=c+\sum_{j=1}^{M}v_j(w_jx+b_j)^2,
+\]
+a polynomial of degree at most two.
+More units change the coefficients and never raise the degree.
+\medskip
+
+With $L$ square layers the degree is at most $2^L$.
+Adding layers raises the possible degree.
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=4.2cm,xmin=0,xmax=1,ymin=-0.1,ymax=1.15,xlabel={$x$},legend style={at={(0.5,1.03)},anchor=south},legend columns=3]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{$\sin(\pi x)$}
+\addplot[sorange] table[x=x,y=quad2]{data/profile.dat};
+\addlegendentry{best degree 2}
+\addplot[sblue] table[x=x,y=quart4]{data/profile.dat};
+\addlegendentry{best degree 4}
+\end{axis}
+\end{tikzpicture}
+\chip{one square layer, best in $L^2$}{largest gap $\QuadGap$}\\[3pt]
+\chip{two square layers, best in $L^2$}{largest gap $\QuartGap$}
 \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Linear Perceptron Implementation}
-\begin{lstlisting}[language=Python]
-import numpy as np
-
-class LinearPerceptron:
-    def __init__(self, input_dim):
-        # Initialize weights randomly
-        self.w = np.random.randn(input_dim) * 0.01
-        self.b = np.random.randn() * 0.01
-    
-    def forward(self, x):
-        """Compute output for input x"""
-        return np.dot(x, self.w) + self.b
-    
-    def sigmoid(self, z):
-        """Sigmoid activation function"""
-        return 1 / (1 + np.exp(-z))
-    
-    def predict(self, x):
-        """Make binary prediction"""
-        z = self.forward(x)
-        return self.sigmoid(z) > 0.5
-    
-    def train(self, X, y, lr=0.01, epochs=100):
-        """Train using gradient descent"""
-        for epoch in range(epochs):
-            # Forward pass
-            z = self.forward(X)
-            y_pred = self.sigmoid(z)
-            
-            # Compute loss (binary cross-entropy)
-            loss = -np.mean(y * np.log(y_pred + 1e-8) + 
-                           (1-y) * np.log(1-y_pred + 1e-8))
-            
-            # Backward pass (gradient computation)
-            dz = y_pred - y
-            dw = X.T @ dz / len(y)
-            db = np.mean(dz)
-            
-            # Update parameters
-            self.w -= lr * dw
-            self.b -= lr * db
-            
-            if epoch % 10 == 0:
-                print(f"Epoch {epoch}, Loss: {loss:.4f}")
-\end{lstlisting}
+\begin{frame}{An interpolation error bound}
+For a twice continuously differentiable $u$, piecewise-linear interpolation with maximum spacing $h$ satisfies
+\[
+\|u-I_hu\|_\infty
+\leq\frac{h^2}{8}\max_{x\in[0,1]}|u''(x)|.
+\]
+For $u(x)=\sin(\pi x)$, the curvature bound is $\pi^2$.
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.74\textwidth,height=3.2cm,xmin=0,xmax=1,ymin=0,ymax=1.1,xlabel={$x$},legend style={at={(0.5,0.04)},anchor=south},legend columns=3]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference}
+\addplot[sorange] table[x=x,y=linear3]{data/profile.dat};
+\addlegendentry{3 nodes}
+\addplot[sblue] table[x=x,y=linear9]{data/profile.dat};
+\addlegendentry{9 nodes}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+With $9$ nodes, $h=1/8$ and the bound is $\pi^2/512=0.0193$, while the measured largest gap is $0.0188$.
+Halving $h$ divides the bound by four.
 \end{frame}
 
-\begin{frame}{Training a Linear Model}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Gradient Descent:}
-\begin{align}
-\mathcal{L} &= \frac{1}{2}\sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \\
-\frac{\partial \mathcal{L}}{\partial w_j} &= -\sum_{i=1}^{n} (y_i - \hat{y}_i) x_{ij} \\
-w_j &\leftarrow w_j - \eta \frac{\partial \mathcal{L}}{\partial w_j}
-\end{align}
-
-\textbf{Learning process:}
-\begin{itemize}
-    \item Start with random weights
-    \item Compute predictions
-    \item Calculate error
-    \item Update weights in direction of negative gradient
-    \item Repeat until convergence
-\end{itemize}
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/sgd.png}
-\caption{Gradient descent trajectory in weight space}
-\end{figure}
-\end{columns}
-\end{frame}
-
-\begin{frame}{Linear Models Work for Linearly Separable Data}
-\begin{figure}
-\centering
-% Linear separable figure not available
-\includegraphics[width=0.8\textwidth]{figs/perceptron.png}
-\caption{Linear perceptron successfully classifies linearly separable data}
-\end{figure}
-
-\textbf{Success cases:} Simple classification problems and  Linear regression
-\end{frame}
-
-\begin{frame}{The Critical Limitation: Linear Models Fail}
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{figs/linear-network-failure.png}
-\caption{Linear models cannot approximate nonlinear functions like $\sin(\pi x)$}
-\end{figure}
-
-\textbf{Fundamental problem:} Composition of linear functions is still linear!
-$$f(x) = W_3(W_2(W_1 x)) = (W_3 W_2 W_1) x = W x$$
-\end{frame}
-
-\begin{frame}{The Solution: Activation Functions}
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{figs/activation-functions.png}
-\caption{Common activation functions and their derivatives}
-\end{figure}
-
-\textbf{Why activation functions are essential:}
-\begin{itemize}
-    \item Break linearity: $\sigma(W_2 \sigma(W_1 x)) \neq \sigma((W_2 W_1) x)$
-    \item Enable composition of features
-    \item Create decision boundaries of arbitrary complexity
-    \item Universal approximation requires nonlinearity
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Why Nonlinearity Matters}
-\begin{figure}
-\centering
-\includegraphics[width=0.6\textwidth]{figs/why-activation.png}
-\caption{Without activation functions, deep networks collapse to linear models}
-\end{figure}
-
-\begin{align}
-\text{Without } \sigma: \quad & h_1 = W_1 x + b_1 \\
-& h_2 = W_2 h_1 + b_2 = W_2(W_1 x + b_1) + b_2 \\
-& = (W_2 W_1) x + (W_2 b_1 + b_2) = W x + b
-\end{align}
-
-Still just a linear transformation!
-\end{frame}
-
-
-\begin{frame}{Single Hidden Layer Networks}
-	\begin{columns}
-	\column{0.45\textwidth}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.8\textwidth]{figs/single-layer-nn1.png}
-		\caption{Single hidden layer network with multiple neurons}
-	\end{figure}
-	\column{0.65\textwidth}
-	\textbf{Architecture:}
-	\begin{align}
-		h_i &= \sigma(w_i^T x + b_i) \quad i = 1, \ldots, M \\
-		y &= \sum_{i=1}^{M} v_i h_i + c
-	\end{align}
-	
-	\textbf{Capabilities:}
-	\begin{itemize}
-		\item Universal approximation with enough neurons
-		\item Each neuron adds a "feature" or "basis function"
-		\item Output is weighted combination of features
-	\end{itemize}
-			
-	\end{columns}
-\end{frame}
-
-
-\begin{frame}{Function Spaces: The Mathematical Setting}
-	\begin{columns}
-		\column{0.5\textwidth}
-		\textbf{Banach Spaces:}
-		\begin{itemize}
-			\item Complete normed vector spaces
-			\item $C([0,1])$ with $\|f\|_\infty = \max_x |f(x)|$
-			\item $L^p([0,1])$ with $\|f\|_p = \left(\int |f|^p\right)^{1/p}$
-		\end{itemize}
-		
-		\textbf{Hilbert Spaces:}
-		\begin{itemize}
-			\item Inner product spaces
-			\item $L^2([0,1])$ with $\langle f,g \rangle = \int fg$
-			\item Orthogonal projections
-			\item Energy minimization
-		\end{itemize}
-		
-		\column{0.5\textwidth}
-		\textbf{Density Results:}
-		
-		A set $S$ is \textit{dense} in $X$ if:
-		$$\forall f \in X, \forall \epsilon > 0, \exists g \in S: \|f - g\| < \epsilon$$
-		
-		\vspace{0.5cm}
-		
-		Neural networks are dense in:
-		\begin{itemize}
-			\item $C([0,1])$ - continuous functions
-			\item $L^p([0,1])$ - integrable functions
-			\item $H^1([0,1])$ - Sobolev spaces
-		\end{itemize}
-		
-		\textbf{Implication:} Can approximate solutions to PDEs!
-	\end{columns}
-\end{frame}
-
-
-
-\begin{frame}{Constructive Proof: Building Functions with ReLU}
-	\textbf{ReLU (Rectified Linear Unit):}
-	$$\ReLU(x) = \max(0, x)$$
-	
-	\textbf{Building blocks:}
-	\begin{align}
-		\text{Bump function: } & \ReLU(x-a) - \ReLU(x-b) \\
-		\text{Triangle: } & \ReLU(x) - 2\ReLU(x-1) + \ReLU(x-2) \\
-		\text{Step approx: } & \frac{1}{h}[\ReLU(x) - \ReLU(x-h)]
-	\end{align}
-	
-	\begin{figure}
-		\centering
-		% ReLU building blocks figure not available
-		\includegraphics[width=0.7\textwidth]{figs/relu-decomposition-sinpi.png}
-		\caption{Constructing complex functions from ReLU units}
-	\end{figure}
-\end{frame}
-
-\begin{frame}{ReLU Networks: Piecewise Linear Approximation}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.85\textwidth]{figs/relu-decomposition-sinpi.png}
-		\caption{ReLU network approximating $\sin(\pi x)$ as piecewise linear function}
-	\end{figure}
-	
-	\textbf{Key insights:}
-	\begin{itemize}
-		\item Each ReLU creates a "kink" or breakpoint
-		\item $N$ neurons → up to $N$ linear pieces
-		\item Adaptive placement of breakpoints via training
-		\item Universal approximation through piecewise linear functions
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{The Role of Bias: Controlling Breakpoints}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.8\textwidth]{figs/bias-breakpoints-detailed.png}
-		\caption{Bias parameters control where ReLU units activate}
-	\end{figure}
-	
-	\textbf{For neuron $h = \ReLU(wx + b)$:}
-	\begin{itemize}
-		\item Activates when $wx + b = 0$
-		\item Breakpoint at $x = -b/w$
-		\item Bias shifts the activation threshold
-		\item Network learns optimal breakpoint locations
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Proof Strategy: Hahn-Banach Argument}
-	\begin{columns}[t]
-		\column{0.35\textwidth}
-		\textbf{Strategy:}
-		\begin{enumerate}
-			\item Assume neural networks are NOT dense
-			\item Apply Hahn-Banach theorem
-			\item Find separating functional
-			\item Show functional must be zero
-			\item Reach contradiction
-		\end{enumerate}
-		
-		\column{0.65\textwidth}
-		\begin{figure}
-			\centering
-			\includegraphics[width=0.8\textwidth]{figs/contradiction-visualization.png}
-			\caption{Proof by contradiction using functional analysis}
-		\end{figure}
-	\end{columns}
-\end{frame}
-
-\begin{frame}{The Continuity Requirement}
-	\vspace{-1em}
-	\begin{columns}
-		\column{0.5\textwidth}
-		\textbf{What UAT guarantees:}
-		\begin{itemize}
-			\item Continuous functions \checkmark
-			\item Smooth functions \checkmark
-			\item Piecewise continuous \checkmark (away from jumps)
-		\end{itemize}
-		
-		\textbf{What UAT doesn't guarantee:}
-		\begin{itemize}
-			\item Discontinuous functions $\times$
-			\item Delta functions $\times$
-			\item Step functions $\times$ (pointwise)
-		\end{itemize}
-		
-		\column{0.5\textwidth}
-		\begin{figure}
-			\centering
-			\includegraphics[width=0.8\textwidth]{figs/step-function-discontinuity.png}
-			\caption{Neural networks approximate discontinuities in $L^2$, not pointwise}
-		\end{figure}
-	\end{columns}
-	
-	\vspace{0.1em}
-	
-	\textbf{Practical implications:}
-	\begin{itemize}
-		\item Shocks in fluid dynamics: approximate in weak sense
-		\item Material interfaces: use phase field methods
-		\item Classification boundaries: sigmoid approximation
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Which Activations Work? -- Requirements for UAT}
-	\begin{itemize}
-		\item Non-polynomial
-		\item Non-constant
-		\item Bounded (for some theorems)
-		\item Continuous (for some theorems)
-	\end{itemize}
-	
-	\vspace{0.5cm}
-	
-	\textbf{Common choices:}
-	\begin{columns}
-		\column{0.5\textwidth}
-		\textbf{Sigmoid:} $\sigma(x) = \frac{1}{1+e^{-x}}$
-		\begin{itemize}
-			\item Smooth, bounded
-			\item Vanishing gradients
-			\item Historical choice
-		\end{itemize}
-		
-		\textbf{Tanh:} $\tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
-		\begin{itemize}
-			\item Zero-centered
-			\item Bounded [-1, 1]
-			\item Still saturates
-		\end{itemize}
-		
-		\column{0.5\textwidth}
-		\textbf{ReLU:} $\ReLU(x) = \max(0, x)$
-		\begin{itemize}
-			\item Simple, efficient
-			\item No saturation
-			\item Dead neurons problem
-		\end{itemize}
-		
-		\textbf{Modern variants:}
-		\begin{itemize}
-			\item Leaky ReLU: $\max(0.01x, x)$
-			\item ELU, SELU, Swish
-			\item GELU (Transformers)
-		\end{itemize}
-	\end{columns}
-\end{frame}
-
-\begin{frame}{Parabolic Activations Don't Work}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.8\textwidth]{figs/parabolic-failure.png}
-		\caption{Polynomial activations fail: networks collapse to polynomials}
-	\end{figure}
-	
-	\textbf{Why $\sigma(x) = x^2$ fails:}
-	\begin{itemize}
-		\item Composition of polynomials is polynomial
-		\item Limited to polynomial approximation
-		\item No universal approximation property
-		\item Cannot represent arbitrary continuous functions
-	\end{itemize}
-\end{frame}
-
-
-
-\begin{frame}{The XOR Problem: Historical Crisis}
-	\begin{columns}
-		\column{0.5\textwidth}
-		\textbf{XOR Truth Table:}
-		\begin{center}
-			\begin{tabular}{cc|c}
-				$x_1$ & $x_2$ & XOR \\
-				\hline
-				0 & 0 & 0 \\
-				0 & 1 & 1 \\
-				1 & 0 & 1 \\
-				1 & 1 & 0 \\
-			\end{tabular}
-		\end{center}
-		
-		\vspace{0.5cm}
-		
-		\textbf{The problem:}
-		\begin{itemize}
-			\item No single line can separate the classes
-			\item Points (0,1) and (1,0): class 1
-			\item Points (0,0) and (1,1): class 0
-			\item Diagonally opposite points same class
-		\end{itemize}
-		
-		\column{0.5\textwidth}
-		\begin{figure}
-			\centering
-			\includegraphics[width=\textwidth]{figs/xor-problem.png}
-			\caption{XOR problem: not linearly separable}
-		\end{figure}
-	\end{columns}
-	
-	\vspace{0.3cm}
-	\textbf{Historical impact:} Minsky \& Papert (1969) → First AI Winter
-\end{frame}
-
-\begin{frame}[fragile]{XOR Implementation: Failure of Linear Model}
-	\begin{lstlisting}[language=Python]
-		import numpy as np
-		import matplotlib.pyplot as plt
-		
-		# XOR dataset
-		X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-		y = np.array([0, 1, 1, 0])
-		
-		# Train linear perceptron
-		perceptron = LinearPerceptron(input_dim=2)
-		perceptron.train(X, y, lr=0.1, epochs=1000)
-		
-		# Results after training:
-		# The linear model achieves at best 50% accuracy
-		# It can only correctly classify 2 out of 4 points
-		
-		# Visualization shows no linear boundary exists
-		# that can separate XOR classes
-	\end{lstlisting}
-	
-	\textbf{Result:} Linear model fails completely on XOR
-	\begin{itemize}
-		\item Best accuracy: 50\% (random guessing!)
-		\item Cannot learn the pattern
-		\item Need nonlinearity
-	\end{itemize}
-\end{frame}
-
-\begin{frame}{Multi-Layer Networks: Solving XOR}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Architecture:}
-\begin{itemize}
-    \item Input layer: 2 neurons ($x_1, x_2$)
-    \item Hidden layer: 2 neurons
-    \item Output layer: 1 neuron
-    \item Activation: Sigmoid/ReLU
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{How it works:}
-\begin{itemize}
-    \item Hidden neuron 1: $(x_1 \text{ OR } x_2)$
-    \item Hidden neuron 2: $(x_1 \text{ AND } x_2)$
-    \item Output: $h_1 \text{ AND NOT } h_2$
-\end{itemize}
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/single-layer-nn1.png}
-\caption{Two-layer network architecture for XOR}
-\end{figure}
-\end{columns}
-\end{frame}
-
-\begin{frame}{XOR Solution: Decision Boundaries}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{figs/xor-decision-boundaries.png}
-\caption{Hidden layer creates linearly separable feature space}
-\end{figure}
-
-\textbf{Key insight:} Hidden layer transforms the input space!
-\begin{itemize}
-    \item Original space: Not linearly separable
-    \item Hidden space: Linearly separable
-    \item Each hidden neuron creates a decision boundary
-    \item Output combines these boundaries
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{XOR Solution: Implementation}
-\begin{lstlisting}[language=Python]
-class TwoLayerNetwork:
-    def __init__(self, input_dim, hidden_dim, output_dim):
-        # Initialize weights
-        self.W1 = np.random.randn(input_dim, hidden_dim) * 0.5
-        self.b1 = np.zeros(hidden_dim)
-        self.W2 = np.random.randn(hidden_dim, output_dim) * 0.5
-        self.b2 = np.zeros(output_dim)
-    
-    def sigmoid(self, z):
-        return 1 / (1 + np.exp(-z))
-    
-    def forward(self, X):
-        # Hidden layer
-        self.z1 = X @ self.W1 + self.b1
-        self.a1 = self.sigmoid(self.z1)
-        
-        # Output layer
-        self.z2 = self.a1 @ self.W2 + self.b2
-        self.a2 = self.sigmoid(self.z2)
-        
-        return self.a2
-    
-    def backward(self, X, y, lr=0.1):
-        m = len(y)
-        
-        # Output layer gradients
-        dz2 = self.a2 - y.reshape(-1, 1)
-        dW2 = self.a1.T @ dz2 / m
-        db2 = np.sum(dz2, axis=0) / m
-        
-        # Hidden layer gradients
-        da1 = dz2 @ self.W2.T
-        dz1 = da1 * self.a1 * (1 - self.a1)  # sigmoid derivative
-        dW1 = X.T @ dz1 / m
-        db1 = np.sum(dz1, axis=0) / m
-        
-        # Update weights
-        self.W2 -= lr * dW2
-        self.b2 -= lr * db2
-        self.W1 -= lr * dW1
-        self.b1 -= lr * db1
-\end{lstlisting}
-\end{frame}
-
-
-\begin{frame}{Multi-Output Networks}
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{figs/multioutput-perceptrons.png}
-\caption{Networks can have multiple outputs for multi-task learning}
-\end{figure}
-
-\textbf{Applications:}
-\begin{itemize}
-    \item Multi-class classification (softmax output)
-    \item Multi-task learning
-    \item Vector field prediction (PDEs)
-    \item Uncertainty quantification (mean + variance)
-\end{itemize}
+\begin{frame}{Interpolants of the sine with 3, 5, and 9 nodes}
+Joining closer samples of the sine gives a concrete approximating sequence.
+Each interpolant is an affine term plus ReLU terms.
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.8\textwidth,height=4.4cm,xmin=0,xmax=1,ymin=0,ymax=1.15,xlabel={$x$},legend style={at={(0.5,0.04)},anchor=south},legend columns=4]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference}
+\addplot[sorange] table[x=x,y=linear3]{data/profile.dat};
+\addlegendentry{3 nodes}
+\addplot[sblue] table[x=x,y=linear5]{data/profile.dat};
+\addlegendentry{5 nodes}
+\addplot[sgreen] table[x=x,y=linear9]{data/profile.dat};
+\addlegendentry{9 nodes}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+The largest gaps are $0.211$, $0.070$, and $0.019$ for $3$, $5$, and $9$ nodes.
+Here we place the breakpoints by hand. Can training place them?
 \end{frame}
 
 %========================================================================================
@@ -965,504 +732,454 @@ class TwoLayerNetwork:
 %========================================================================================
 \section{Part IV: Training Neural Networks}
 
-\begin{frame}{The Training Process}
-\begin{columns}
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{figs/training-convergence.png}
-\caption{Training loss decreases over iterations}
-\end{figure}
-\column{0.5\textwidth}
-\textbf{Training loop:}
+\begin{frame}{The training loop}
+\begin{columns}[T]
+\column{0.52\textwidth}
+For measured displacements, training minimizes the data loss
+\[
+\mathcal L_{\text{data}}(\theta)
+=\frac1n\sum_i\bigl(\hat u(x_i;\theta)-y_i\bigr)^2.
+\]
+{\small
 \begin{enumerate}
-    \item Initialize weights randomly
-    \item Forward pass: compute predictions
-    \item Compute loss: $\mathcal{L}(y, \hat{y})$
-    \item Backward pass: compute gradients
-    \item Update weights: $w \leftarrow w - \eta \nabla_w \mathcal{L}$
-    \item Repeat until convergence
-\end{enumerate}
+\item Evaluate the network at the readings.
+\item Compute the residuals and the loss.
+\item Compute the parameter gradients by AD.
+\item Update the parameters and check validation error.
+\end{enumerate}}
+A stopping rule ends training, with no guarantee of a global minimum.
+\column{0.44\textwidth}
+\includegraphics[width=\linewidth,height=4.3cm,keepaspectratio]{figs/training-convergence.png}
 
+{\scriptsize Training loss for widths $5$ to $50$ falls quickly, flattens, and then spikes.}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Computing Gradients: Three Approaches}
-\begin{columns}
-\column{0.33\textwidth}
-\textbf{Symbolic:}
-\begin{itemize}
-    \item Manipulate expressions
-    \item Exact derivatives
-    \item Expression swell
-\end{itemize}
-
-Example:
-$$\frac{d}{dx}[x^2 \sin(x)]$$
-$$= 2x\sin(x) + x^2\cos(x)$$
-
-\column{0.33\textwidth}
-\textbf{Numerical:}
-\begin{itemize}
-    \item Finite differences
-    \item Approximation
-    \item Round-off errors
-\end{itemize}
-
-$$f'(x) \approx \frac{f(x+h) - f(x)}{h}$$
-
-Error: $O(h) + O(1/h)$
-
-\column{0.34\textwidth}
-\textbf{Automatic:}
-\begin{itemize}
-    \item Chain rule
-    \item Machine precision
-    \item Efficient
-\end{itemize}
-
-Decompose into elementary ops, apply chain rule
-\end{columns}
-
-\vspace{0.5cm}
-
-\textbf{For neural networks:} Automatic differentiation (backpropagation) is the only viable option
-\end{frame}
-
-\begin{frame}{Automatic Differentiation: The Key Innovation}
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{figs/ad1.png}
-\caption{Computational graph for automatic differentiation}
-\end{figure}
-
-\textbf{Key idea:} 
-\begin{itemize}
-    \item Decompose function into elementary operations
-    \item Each operation has known derivative
-    \item Apply chain rule systematically
-    \item Store intermediate values for efficiency
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Forward Mode vs Reverse Mode AD}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Forward Mode:}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/ad3.png}
-\end{figure}
-\begin{itemize}
-    \item Compute $\dot{y} = \frac{\partial y}{\partial x_i}$
-    \item Propagate derivatives forward
-    \item One pass per input dimension
-    \item Good for: $\mathbb{R}^n \to \mathbb{R}^m$, $n \ll m$
-\end{itemize}
-
-\column{0.5\textwidth}
-\textbf{Reverse Mode:}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/ad7.png}
-\end{figure}
-\begin{itemize}
-    \item Compute $\bar{x} = \frac{\partial L}{\partial x}$
-    \item Propagate gradients backward
-    \item One pass for all gradients
-    \item Good for: $\mathbb{R}^n \to \mathbb{R}$, $n \gg 1$
-\end{itemize}
-\end{columns}
-\end{frame}
-
-\begin{frame}{Backpropagation = Reverse Mode AD}
-\textbf{Why reverse mode for neural networks?}
-\begin{itemize}
-    \item Loss is scalar: $\mathcal{L}: \mathbb{R}^n \to \mathbb{R}$
-    \item Many parameters (thousands to billions)
-    \item Need all gradients $\frac{\partial \mathcal{L}}{\partial w_i}$
-    \item Reverse mode: ONE backward pass gets ALL gradients!
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{The algorithm:}
-\begin{enumerate}
-    \item \textbf{Forward pass:} Compute and store all activations
-    \item \textbf{Backward pass:} Starting from loss, propagate gradients
-\end{enumerate}
-
-\begin{align}
-\text{Forward: } & a^{(l)} = \sigma(W^{(l)} a^{(l-1)} + b^{(l)}) \\
-\text{Backward: } & \delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma'(z^{(l)})
-\end{align}
-\end{frame}
-
-\begin{frame}{Backpropagation: Mathematical Details of Forward Pass}
-\begin{align*}
-z^{(1)} &= W^{(1)} x + b^{(1)} \\
-a^{(1)} &= \sigma(z^{(1)}) \\
-z^{(2)} &= W^{(2)} a^{(1)} + b^{(2)} \\
-\hat{y} &= \sigma(z^{(2)}) \\
-\mathcal{L} &= \frac{1}{2}\|\hat{y} - y\|^2
-\end{align*}
-\end{frame}
-
-\begin{frame}{Backpropagation: Mathematical Details of Backward Pass}
-\begin{align*}
-\delta^{(2)} &= (\hat{y} - y) \odot \sigma'(z^{(2)}) \\
-\nabla_{W^{(2)}} \mathcal{L} &= \delta^{(2)} (a^{(1)})^T \\
-\nabla_{b^{(2)}} \mathcal{L} &= \delta^{(2)} \\
-\delta^{(1)} &= (W^{(2)})^T \delta^{(2)} \odot \sigma'(z^{(1)}) \\
-\nabla_{W^{(1)}} \mathcal{L} &= \delta^{(1)} x^T \\
-\nabla_{b^{(1)}} \mathcal{L} &= \delta^{(1)}
-\end{align*}
-\end{frame}
-
-\begin{frame}[fragile]{Backpropagation Implementation}
+\begin{frame}[fragile]{A logistic classifier in code}
+The sigmoid turns an affine score into a class probability.
+Binary cross-entropy gives the gradients used in \texttt{train}.
 \begin{lstlisting}[language=Python]
-def backpropagation(X, y, W1, b1, W2, b2):
-    """
-    Compute gradients using backpropagation
-    """
-    m = X.shape[0]
-    
-    # Forward pass
-    z1 = X @ W1 + b1
-    a1 = sigmoid(z1)
-    z2 = a1 @ W2 + b2
-    a2 = sigmoid(z2)
-    
-    # Compute loss
-    loss = 0.5 * np.sum((a2 - y)**2) / m
-    
-    # Backward pass
-    # Output layer
-    delta2 = (a2 - y) * sigmoid_derivative(z2)
-    dW2 = a1.T @ delta2 / m
-    db2 = np.sum(delta2, axis=0, keepdims=True) / m
-    
-    # Hidden layer
-    delta1 = (delta2 @ W2.T) * sigmoid_derivative(z1)
-    dW1 = X.T @ delta1 / m
-    db1 = np.sum(delta1, axis=0, keepdims=True) / m
-    
-    return dW1, db1, dW2, db2, loss
+import numpy as np
 
-def sigmoid_derivative(z):
-    s = sigmoid(z)
-    return s * (1 - s)
+class LogisticClassifier:
+    def __init__(self, input_dim):
+        self.w = np.zeros(input_dim)
+        self.b = 0.0
+    def probability(self, X):
+        z = X @ self.w + self.b
+        return 1 / (1 + np.exp(-z))
+    def predict(self, X):
+        return self.probability(X) > 0.5
+    def train(self, X, y, lr=0.01, epochs=100):
+        for _ in range(epochs):
+            error = self.probability(X) - y
+            self.w -= lr * (X.T @ error) / len(y)
+            self.b -= lr * error.mean()
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Gradient Descent Variants}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Batch Gradient Descent:}
-\begin{itemize}
-    \item Use entire dataset
-    \item Exact gradient
-    \item Slow for large datasets
-\end{itemize}
-$$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta_t; \mathcal{D})$$
+\begin{frame}{Affine regression}
+For regression, the output is the predicted number itself, $\hat y_i=\mathbf w^T\mathbf x_i+b$.
+The squared-error loss and its gradient are
+\begin{align*}
+\mathcal L&=\frac{1}{2n}\sum_{i=1}^{n}(\hat y_i-y_i)^2,\\
+\frac{\partial\mathcal L}{\partial w_j}
+&=\frac1n\sum_{i=1}^{n}(\hat y_i-y_i)x_{ij},\\
+\frac{\partial\mathcal L}{\partial b}
+&=\frac1n\sum_{i=1}^{n}(\hat y_i-y_i).
+\end{align*}
+Gradient descent moves each parameter against its gradient.
+\end{frame}
 
-\textbf{Stochastic GD (SGD):}
-\begin{itemize}
-    \item One sample at a time
-    \item Noisy gradient
-    \item Fast but unstable
-\end{itemize}
-$$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta_t; x_i)$$
-
-\textbf{Mini-batch GD:}
-\begin{itemize}
-    \item Best of both worlds
-    \item Batch size: 32-512 typical
-\end{itemize}
-$$\theta_{t+1} = \theta_t - \eta \nabla_\theta \mathcal{L}(\theta_t; \mathcal{B})$$
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/sgd.png}
-\caption{SGD trajectory: noisy but effective}
-\end{figure}
+\begin{frame}{Symbolic, numerical, and automatic differentiation}
+\begin{columns}[T]
+\column{0.31\textwidth}
+Symbolic differentiation forms an expression.
+For $q(x)=x^2\sin x$, it gives
+\[
+q'(x)=2x\sin x+x^2\cos x.
+\]
+\column{0.34\textwidth}
+Finite differences approximate a derivative,
+\[
+f'(x)\approx\frac{f(x+h)-f(x)}{h}.
+\]
+For a smooth function, the forward-difference error includes
+\[
+O(h)+O(\varepsilon_{\text{mach}}/h).
+\]
+\column{0.31\textwidth}
+Automatic differentiation applies the chain rule to the executed operations.
+It computes the program's derivatives up to floating-point error.
 \end{columns}
+\medskip
+Reverse-mode AD computes the gradient of a scalar loss with respect to many parameters in one sweep.
 \end{frame}
 
-\begin{frame}{Modern Optimizers}
-\textbf{Momentum:}
-\begin{align}
-v_{t+1} &= \beta v_t + (1-\beta) g_t \\
-\theta_{t+1} &= \theta_t - \eta v_{t+1}
-\end{align}
-Accelerates convergence, reduces oscillations
-
-\vspace{0.3cm}
-
-\textbf{Adam (Adaptive Moment Estimation):}
-\begin{align}
-m_t &= \beta_1 m_{t-1} + (1-\beta_1) g_t \quad \text{(1st moment)} \\
-v_t &= \beta_2 v_{t-1} + (1-\beta_2) g_t^2 \quad \text{(2nd moment)} \\
-\hat{m}_t &= m_t / (1 - \beta_1^t) \quad \text{(bias correction)} \\
-\hat{v}_t &= v_t / (1 - \beta_2^t) \\
-\theta_t &= \theta_{t-1} - \eta \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)
-\end{align}
-
-\textbf{Benefits:} Adaptive learning rates per parameter, works well in practice
+\begin{frame}{The computational graph for $y=x_1^2+x_2$}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad1.png}
+\end{center}
+The graph evaluates a square, then adds $x_2$.
 \end{frame}
 
-\begin{frame}{Loss Functions for Different Problems}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Regression:}
-\begin{itemize}
-    \item MSE: $\mathcal{L} = \frac{1}{n}\sum (y_i - \hat{y}_i)^2$
-    \item MAE: $\mathcal{L} = \frac{1}{n}\sum |y_i - \hat{y}_i|$
-    \item Huber: Robust to outliers
-\end{itemize}
+\begin{frame}{Name the intermediate values}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad2.png}
+\end{center}
+Each $w_i$ names a stored intermediate value.
+\end{frame}
 
-\textbf{Classification:}
-\begin{itemize}
-    \item Cross-entropy: \\
-    $\mathcal{L} = -\sum y_i \log(\hat{y}_i)$
-    \item Hinge loss (SVM)
-    \item Focal loss (imbalanced)
-\end{itemize}
+\begin{frame}{Evaluate the graph forward}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad3.png}
+\end{center}
+At $x_1=2$ and $x_2=3$, the square gives $4$ and the output is $7$.
+\end{frame}
 
-\column{0.5\textwidth}
-\textbf{Physics-Informed:}
-\begin{itemize}
-    \item PDE residual: \\
-    $\mathcal{L}_{PDE} = \|\mathcal{N}[u_\theta]\|^2$
-    \item Boundary conditions: \\
-    $\mathcal{L}_{BC} = \|u_\theta|_{\partial\Omega} - g\|^2$
-    \item Initial conditions: \\
-    $\mathcal{L}_{IC} = \|u_\theta|_{t=0} - u_0\|^2$
-\end{itemize}
+\begin{frame}{Differentiate each operation}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad4.png}
+\end{center}
+The addition has local derivatives $1$ and $1$, while the square has derivative $2w_1$.
+\end{frame}
 
-\textbf{Total loss:}
-$$\mathcal{L} = \lambda_1 \mathcal{L}_{data} + \lambda_2 \mathcal{L}_{PDE} + \lambda_3 \mathcal{L}_{BC}$$
+\begin{frame}{Start the reverse pass at the output}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad5.png}
+\end{center}
+Starting with $\partial y/\partial y=1$, propagate output sensitivities toward the inputs.
+\end{frame}
+
+\begin{frame}{Multiply derivatives along the path to $x_1$}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad6.png}
+\end{center}
+The chain rule gives $\partial y/\partial x_1=1\cdot1\cdot2x_1=2x_1$.
+\end{frame}
+
+\begin{frame}{Collect the derivatives with respect to both inputs}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/ad7.png}
+\end{center}
+The gradient of $y$ with respect to $(x_1,x_2)$ is $(4,1)$ at $(2,3)$.
+\end{frame}
+
+\begin{frame}{Forward mode on the same graph}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=5cm,keepaspectratio]{figs/forward-mode-ad.png}
+\end{center}
+Forward mode carries a tangent $\dot w_i=\partial w_i/\partial x_1$ with each value, seeded with $\dot w_1=1$ and $\dot w_2=0$.
+One forward sweep gives $\dot y=4=\partial y/\partial x_1$, and a second sweep seeded at $x_2$ gives $\partial y/\partial x_2=1$.
+The reverse pass gave both derivatives in one sweep.
+\end{frame}
+
+\begin{frame}{Forward mode and reverse mode}
+For $F:\mathbb R^n\to\mathbb R^m$, let $J$ denote its Jacobian.
+AD computes products with that Jacobian.
+\begin{columns}[T]
+\column{0.48\textwidth}
+Forward mode propagates a chosen input direction $\mathbf v$,
+\[
+J\mathbf v.
+\]
+The full Jacobian takes one forward sweep per input direction.
+\column{0.48\textwidth}
+Reverse mode propagates a chosen output weighting $\mathbf a$,
+\[
+J^T\mathbf a.
+\]
+A scalar loss needs one reverse sweep for its whole parameter gradient.
 \end{columns}
+\medskip
+Training has one scalar loss and many parameters, so it uses reverse mode.
 \end{frame}
 
-\begin{frame}{Training Challenges: Overfitting}
-\begin{figure}
+\begin{frame}{Backpropagation}
+A scalar loss depends on many network parameters.
+A forward pass stores the intermediate values needed by the chain rule.
+A reverse pass accumulates their sensitivities to the loss,
+\[
+\mathbf z^{(l)}=W^{(l)}\mathbf a^{(l-1)}+\mathbf b^{(l)},\qquad
+\mathbf a^{(l)}=\sigma(\mathbf z^{(l)}).
+\]
+For componentwise activations, the hidden-layer sensitivities satisfy
+\[
+\boldsymbol\delta^{(l)}
+=(W^{(l+1)})^T\boldsymbol\delta^{(l+1)}
+\odot\sigma'(\mathbf z^{(l)}),
+\]
+where $\odot$ denotes componentwise multiplication.
+\end{frame}
+
+\begin{frame}{The forward pass for one reading}
+For one observation, take $x=1/2$ and $y=1$.
+A one-unit model evaluates
+\[
+z=wx+b,\qquad h=\ReLU(z),\qquad \hat y=vh+c.
+\]
+At $w=v=1$ and $b=c=0$, the intermediate values are
+\[
+z=h=\tfrac12,\qquad \hat y=\tfrac12.
+\]
+The squared-error loss is
+\[
+\ell=\tfrac12(\hat y-y)^2=\tfrac18.
+\]
+The backward pass reuses these intermediate values.
+\end{frame}
+
+\begin{frame}{The backward pass for one reading}
+The forward pass gives $\hat y-y=-1/2$ and $\ReLU'(z)=1$.
+The chain rule gives
+\begin{align*}
+\frac{\partial\ell}{\partial c}&=\hat y-y=-\tfrac12,\\
+\frac{\partial\ell}{\partial v}&=(\hat y-y)h=-\tfrac14,\\
+\frac{\partial\ell}{\partial b}&=(\hat y-y)v\ReLU'(z)=-\tfrac12,\\
+\frac{\partial\ell}{\partial w}&=(\hat y-y)v\ReLU'(z)x=-\tfrac14.
+\end{align*}
+For step size $\eta=0.1$, the output weight updates from $1$ to $1.025$.
+The larger output weight raises the predicted displacement toward $y=1$.
+\end{frame}
+
+\begin{frame}[fragile]{Backpropagation in code}
+The output is linear and the hidden activation is $\tanh$.
+The code computes gradients of half the mean squared error.
+\begin{lstlisting}[language=Python]
+import numpy as np
+
+def backpropagation(X, y, W1, b1, W2, b2):
+    y = np.asarray(y).reshape(-1, 1)
+    n = len(y)
+    h = np.tanh(X @ W1 + b1)
+    prediction = h @ W2 + b2
+    error = prediction - y
+    loss = 0.5 * np.mean(error ** 2)
+    delta2 = error / n
+    dW2 = h.T @ delta2
+    db2 = delta2.sum(axis=0)
+    delta1 = (delta2 @ W2.T) * (1 - h ** 2)
+    dW1 = X.T @ delta1
+    db1 = delta1.sum(axis=0)
+    return dW1, db1, dW2, db2, loss
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Full-data and mini-batch gradients}
+A full-data update differentiates the loss on all observations,
+\[
+\theta_{t+1}=\theta_t-\eta\nabla_\theta\mathcal L_{\mathcal D}(\theta_t).
+\]
+A mini-batch update uses a subset $\mathcal B_t$,
+\[
+\theta_{t+1}=\theta_t-\eta\nabla_\theta\mathcal L_{\mathcal B_t}(\theta_t).
+\]
+Uniform random batches give unbiased estimates of the full-data gradient.
+Their sampling noise depends on the batch size.
+Fifteen field readings fit in one full-data batch.
+\end{frame}
+
+\begin{frame}{The step size in gradient descent}
+\begin{center}
+\includegraphics[width=\textwidth,height=4.8cm,keepaspectratio]{figs/sgd.png}
+\end{center}
+Here is gradient descent $x_{t+1}=x_t-\eta f'(x_t)$ on a function with two minima, from the same start.
+A step of $\eta=0.14$ overshoots and oscillates, and a step of $\eta=0.0005$ creeps into the nearer minimum.
+A step of $\eta=0.07$ reaches the deeper minimum.
+\end{frame}
+
+\begin{frame}{Momentum and Adam}
+Momentum averages recent gradients $g_t=\nabla_\theta\mathcal L(\theta_t)$,
+\[
+v_t=\beta v_{t-1}+(1-\beta)g_t,\qquad
+\theta_{t+1}=\theta_t-\eta v_t.
+\]
+Adam also averages squared gradients componentwise,
+\begin{align*}
+m_t&=\beta_1m_{t-1}+(1-\beta_1)g_t,\\
+s_t&=\beta_2s_{t-1}+(1-\beta_2)g_t^2,\\
+\hat m_t&=m_t/(1-\beta_1^t),\qquad
+\hat s_t=s_t/(1-\beta_2^t),\\
+\theta_{t+1}&=\theta_t-\eta\,\hat m_t/(\sqrt{\hat s_t}+\epsilon).
+\end{align*}
+The averages start at zero, and the hats correct that bias.
+\end{frame}
+
+\begin{frame}{Trained ReLU networks of width 2, 10, and 50}
+\begin{center}
+\includegraphics[width=\textwidth,height=4.9cm,keepaspectratio]{figs/uat-approximation-progression.png}
+\end{center}
+Now the network places its own breakpoints.
+Each panel is the best of five Adam runs on $100$ samples of $\sin(\pi x)$.
+The largest gap on $200$ points falls from $0.158$ at width $2$ to $0.030$ at width $10$ and $0.017$ at width $50$.
+\end{frame}
+
+\begin{frame}{Polynomial and neural network approximation of $\sin(\pi x)$}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.8\textwidth,height=4.2cm,xmin=0,xmax=1,ymin=0,ymax=1.15,xlabel={$x$},legend style={at={(0.5,0.04)},anchor=south},legend columns=3]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{reference}
+\addplot[sblue] table[x=x,y=poly9]{data/profile.dat};
+\addlegendentry{degree-nine polynomial}
+\addplot[sorange] table[x=x,y=sigmoid10]{data/profile.dat};
+\addlegendentry{ten sigmoid units}
+\end{axis}
+\end{tikzpicture}
+\end{center}
 \centering
-\includegraphics[width=0.6\textwidth]{figs/training-validation-fit.png}
-\caption{Overfitting: model memorizes training data, fails to generalize}
-\end{figure}
+\chip{polynomial, ten coefficients}{largest sampled gap $\PolynomialGap$}\quad
+\chip{network, thirty-one parameters}{largest sampled gap $\SigmoidGap$}
+\smallskip
 
-\textbf{Signs of overfitting:}
+\raggedright
+Both fit the same $100$ clean samples.
+For one smooth function of one variable, the polynomial beats this trained network by five orders of magnitude.
+\end{frame}
+
+\begin{frame}{Training error and validation error}
+\begin{center}
+\includegraphics[width=0.65\textwidth,height=3.8cm,keepaspectratio]{figs/training-validation-fit.png}
+\end{center}
+A falling training loss can come with a rising validation loss.
 \begin{itemize}
-    \item Training loss $\downarrow$, validation loss $\uparrow$
-    \item Large gap between training and validation performance
-    \item Model too complex for data
+\item Keep the validation readings out of the fit.
+\item Choose validation points that match the intended prediction task.
+\item Check derivatives separately when the task uses derivatives.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Regularization: Preventing Overfitting}
-\begin{block}{The Problem}
-Models that are too complex memorize training data instead of learning patterns
-\end{block}
-
-\vspace{0.5em}
-
-\textbf{Regularization adds a penalty term to the loss:}
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{data}} + \lambda \cdot \mathcal{R}(\theta)$$
-
-\vspace{0.5em}
-
-\textbf{Classical methods:}
+\begin{frame}{Regularization}
+Sparse observations leave many functions with similar data loss.
+A penalty adds a preference among their parameters,
+\[
+\mathcal L_{\text{total}}(\theta)
+=\mathcal L_{\text{data}}(\theta)+\lambda\mathcal R(\theta).
+\]
 \begin{itemize}
-    \item \textbf{L1 regularization}: Promotes sparsity (feature selection)
-    \item \textbf{L2 regularization}: Prevents large weights (weight decay)
-    \item Early stopping: Stop training before overfitting
-    \item Data augmentation: Artificially expand training set
+\item L1 penalties can favor sparse coefficients.
+\item L2 penalties discourage large parameter magnitudes.
+\item Early stopping also changes the fitted result.
 \end{itemize}
-
-\textbf{Modern methods:}
-\begin{itemize}
-    \item Dropout: Randomly disable neurons during training
-    \item Batch/Layer normalization: Stabilize internal distributions
-    \item Mixup, Cutout: Advanced data augmentation
-\end{itemize}
+Validation decides whether a choice improves prediction.
+Small weights alone do not guarantee a smooth or accurate field.
 \end{frame}
 
-\begin{frame}{L1 vs L2 Regularization: Geometric Intuition}
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{figs/l1-l2-regularization.png}
-\caption{L1 (diamond) vs L2 (circle) constraint regions and their effect on optimal solutions}
-\end{figure}
-
-\textbf{Key insight:} The shape of the constraint region determines sparsity!
+\begin{frame}{L1 and L2 constraint sets}
+\begin{center}
+\begin{tikzpicture}[scale=0.92]
+\begin{scope}
+\draw[->,muted] (-1.4,0)--(3.2,0) node[right] {$w_1$};
+\draw[->,muted] (0,-1.3)--(0,2.5) node[above] {$w_2$};
+\draw[sblue,thick,fill=sblue!10] (1,0)--(0,1)--(-1,0)--(0,-1)--cycle;
+\foreach \s in {0.5,1.0} \draw[sorange!55] (1.4,1.4) ellipse [x radius=\s, y radius=0.5*\s];
+\draw[sorange,thick] (1.4,1.4) ellipse [x radius=\PenaltyLoneLevel, y radius=0.5*\PenaltyLoneLevel];
+\fill[ink] (1.4,1.4) circle (1.6pt) node[above right, font=\scriptsize] {$\hat{\mathbf w}$};
+\fill[sred] (0,1) circle (2.4pt) node[above left, font=\scriptsize] {$(0,1)$};
+\node[font=\small] at (0.9,-1.75) {$|w_1|+|w_2|\le1$};
+\end{scope}
+\begin{scope}[xshift=7cm]
+\draw[->,muted] (-1.4,0)--(3.2,0) node[right] {$w_1$};
+\draw[->,muted] (0,-1.3)--(0,2.5) node[above] {$w_2$};
+\draw[sorange!55] (1.4,1.4) ellipse [x radius=0.5, y radius=0.25];
+\draw[sorange,thick] (1.4,1.4) ellipse [x radius=\PenaltyLtwoLevel, y radius=0.5*\PenaltyLtwoLevel];
+\draw[sblue,thick,fill=sblue!10] (0,0) circle (1);
+\fill[ink] (1.4,1.4) circle (1.6pt) node[above right, font=\scriptsize] {$\hat{\mathbf w}$};
+\fill[sred] (\PenaltyLtwoX,\PenaltyLtwoY) circle (2.4pt) node[below right, font=\scriptsize] {$(\PenaltyLtwoX,\PenaltyLtwoY)$};
+\node[font=\small] at (0.9,-1.75) {$w_1^2+w_2^2\le1$};
+\end{scope}
+\end{tikzpicture}
+\end{center}
+Both panels use the loss $(w_1-1.4)^2+4(w_2-1.4)^2$, whose contours are ellipses around $\hat{\mathbf w}=(1.4,1.4)$.
+The constrained minimizer is where the smallest contour first meets the constraint set.
+The diamond is met at its corner $(0,1)$, so $w_1=0$, while the circle is met where both coefficients are nonzero.
 \end{frame}
 
-\begin{frame}{L1 Regularization (Lasso)}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Mathematical form:}
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{data}} + \lambda \sum_{i=1}^{n} |w_i|$$
+\begin{frame}{The L1 penalty}
+The L1-penalized objective is
+\[
+\mathcal L_{\text{total}}=\mathcal L_{\text{data}}+\lambda\sum_i|w_i|.
+\]
+For $w_i\ne0$, the penalty derivative is $\lambda\sign(w_i)$.
+At zero, its subdifferential is $[-\lambda,\lambda]$.
+\medskip
 
-\textbf{Gradient:}
-$$\frac{\partial \mathcal{R}_{L1}}{\partial w_i} = \text{sign}(w_i)$$
-
-\textbf{Key properties:}
-\begin{itemize}
-    \item Creates sparse models (many weights = 0)
-    \item Automatic feature selection
-    \item Non-differentiable at zero
-    \item Diamond-shaped constraint region
-\end{itemize}
-
-\column{0.5\textwidth}
-\textbf{When to use L1:}
-\begin{itemize}
-    \item High-dimensional data
-    \item Many irrelevant features
-    \item Need interpretability
-    \item Want feature selection
-\end{itemize}
-
-\vspace{0.5em}
-
-\textbf{Effect on weights:}
-\begin{itemize}
-    \item Small weights → pushed to exactly 0
-    \item Large weights → reduced by constant amount
-    \item Result: sparse weight matrix
-\end{itemize}
-\end{columns}
+A proximal step uses soft thresholding,
+\[
+w_i^{\text{new}}=\sign(z_i)\max(|z_i|-\eta\lambda,0),
+\]
+where $z_i$ is the result of a data-loss gradient step.
+Ordinary gradient steps on $|w_i|$ rarely land on zero.
 \end{frame}
 
-\begin{frame}{L2 Regularization (Ridge)}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Mathematical form:}
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{data}} + \lambda \sum_{i=1}^{n} w_i^2$$
-
-\textbf{Gradient:}
-$$\frac{\partial \mathcal{R}_{L2}}{\partial w_i} = 2w_i$$
-
-\textbf{Key properties:}
-\begin{itemize}
-    \item Shrinks all weights uniformly
-    \item Weights approach but don't reach zero
-    \item Smooth, differentiable everywhere
-    \item Circular constraint region
-\end{itemize}
-
-\column{0.5\textwidth}
-\textbf{When to use L2:}
-\begin{itemize}
-    \item Multicollinearity present
-    \item All features potentially relevant
-    \item Need stable solution
-    \item Prevent weight explosion
-\end{itemize}
-
-\vspace{0.5em}
-
-\textbf{Effect on weights:}
-\begin{itemize}
-    \item All weights decay proportionally
-    \item Large weights penalized more
-    \item Result: small but non-zero weights
-\end{itemize}
-\end{columns}
+\begin{frame}{The L2 penalty}
+The squared L2 penalty gives
+\[
+\mathcal L_{\text{total}}=\mathcal L_{\text{data}}+\lambda\sum_iw_i^2,\qquad
+\frac{\partial(\lambda\mathcal R)}{\partial w_i}=2\lambda w_i.
+\]
+A gradient step on the penalty alone shrinks every coefficient by the same factor,
+\[
+w_i^{\text{new}}=(1-2\eta\lambda)w_i.
+\]
+For linear least squares with every coefficient penalized and $\lambda>0$, the penalized coefficients are unique.
+For a network the fit stays nonconvex, and permuting hidden units leaves both the prediction and the penalty unchanged.
 \end{frame}
 
-\begin{frame}{Comparison: L1 vs L2 Regularization}
-\begin{table}
-\centering
+\begin{frame}{L1 and L2 penalties compared}
 \small
-\begin{tabular}{lcc}
+\begin{tabular}{@{}p{0.27\linewidth}p{0.30\linewidth}p{0.35\linewidth}@{}}
 \toprule
-\textbf{Feature} & \textbf{L1 (Lasso)} & \textbf{L2 (Ridge)} \\
+property & L1 penalty & squared L2 penalty\\
 \midrule
-Penalty term & $\sum |w_i|$ & $\sum w_i^2$ \\
-Constraint shape & Diamond & Circle \\
-Feature selection & Yes & No \\
-Sparsity & High & Low \\
-Solution uniqueness & May not be unique & Always unique \\
-Computational cost & Higher (subgradient) & Lower (gradient) \\
-Robustness to outliers & More robust & Less robust \\
-Multicollinearity & Can be unstable & Handles well \\
+penalized quantity & $\sum_i|w_i|$ & $\sum_iw_i^2$\\
+regularity & nondifferentiable at zero & differentiable\\
+linear coefficient fit & may have sparse optima & unique if all coefficients are penalized and $\lambda>0$\\
+neural parameter fit & generally nonconvex & generally nonconvex\\
+response outliers & influence depends on data loss & influence depends on data loss\\
 \bottomrule
 \end{tabular}
-\end{table}
+\medskip
 
-\vspace{0.5em}
-
-\textbf{Elastic Net:} Combines both L1 and L2
-$$\mathcal{R}_{\text{elastic}} = \alpha \sum |w_i| + (1-\alpha) \sum w_i^2$$
-Best of both worlds: feature selection + stability
+A penalty acts on the coefficients.
+Robustness to outlying readings comes from the data loss, for example an absolute-value loss on the residuals.
 \end{frame}
 
-\begin{frame}[fragile]{Implementing Regularization in Neural Networks}
+\begin{frame}[fragile]{A weight penalty in code}
+This example penalizes the weight matrices and leaves the biases unpenalized.
 \begin{lstlisting}[language=Python]
 import torch
-import torch.nn as nn
+from torch import nn
 
 class RegularizedNet(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, 
-                 reg_type='l2', lambda_reg=0.01):
+    def __init__(self, input_dim, hidden_dim, output_dim,
+                 reg_type="l2", lambda_reg=0.01):
         super().__init__()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, output_dim)
-        self.reg_type = reg_type
-        self.lambda_reg = lambda_reg
-    
+        self.reg_type, self.lambda_reg = reg_type, lambda_reg
+    def forward(self, X):
+        return self.fc2(torch.tanh(self.fc1(X)))
     def regularization_loss(self):
-        reg_loss = 0
-        for param in self.parameters():
-            if self.reg_type == 'l1':
-                reg_loss += torch.sum(torch.abs(param))
-            elif self.reg_type == 'l2':
-                reg_loss += torch.sum(param ** 2)
-        return self.lambda_reg * reg_loss
-    
-    def total_loss(self, data_loss):
-        return data_loss + self.regularization_loss()
+        weights = (self.fc1.weight, self.fc2.weight)
+        if self.reg_type == "l1":
+            penalty = sum(w.abs().sum() for w in weights)
+        else:
+            penalty = sum(w.square().sum() for w in weights)
+        return self.lambda_reg * penalty
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Choosing the Regularization Parameter $\lambda$}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Too small $\lambda$:}
+\begin{frame}{Choosing the penalty parameter $\lambda$}
+The penalty parameter balances agreement with the readings against the parameter preference.
+\begin{center}
+\includegraphics[width=0.62\textwidth,height=3.6cm,keepaspectratio]{figs/overfitting-demo.png}
+\end{center}
 \begin{itemize}
-    \item Insufficient regularization
-    \item Model still overfits
-    \item High variance
+\item Fit candidate values of $\lambda$ on the same training readings.
+\item Compare their validation errors in a stated metric.
+\item Keep separate test readings for the final assessment.
 \end{itemize}
-
-\vspace{0.5em}
-
-\textbf{Too large $\lambda$:}
-\begin{itemize}
-    \item Over-regularization
-    \item Model underfits
-    \item High bias
-\end{itemize}
-
-\vspace{0.5em}
-
-\textbf{Finding optimal $\lambda$:}
-\begin{itemize}
-    \item Cross-validation
-    \item Grid search: $\lambda \in [10^{-4}, 10^{-3}, ..., 10^2]$
-    \item Validation curves
-\end{itemize}
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/overfitting-demo.png}
-\caption{Effect of regularization strength on model complexity}
-\end{figure}
-\end{columns}
 \end{frame}
 
 %========================================================================================
@@ -1470,128 +1187,58 @@ class RegularizedNet(nn.Module):
 %========================================================================================
 \section{Part V: Architecture Design}
 
-\begin{frame}{Width vs Depth Trade-offs}
-\begin{figure}
-\centering
-\includegraphics[width=0.92\textwidth]{figs/shallow-vs-deep-sin100x.png}
-\end{figure}
-
-\vspace{-0.5em}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Shallow (Wide) Networks:}
-\begin{itemize}
-    \item 100 neurons, 1 hidden layer
-    \item Universal approximator
-    \item May need exponential width
-    \item RMSE: 0.718 for $\sin(100x)$
-\end{itemize}
-
-\column{0.5\textwidth}
-\textbf{Deep (Narrow) Networks:}
-\begin{itemize}
-    \item 20 neurons $\times$ 4 layers
-    \item Compositional efficiency
-    \item Better feature hierarchy
-    \item RMSE: 0.478 (50\% better!)
-\end{itemize}
+\begin{frame}{Composing a triangle with itself}
+Consider the triangle
+\[
+T(x)=2\ReLU(x)-4\ReLU(x-\tfrac12)+2\ReLU(x-1).
+\]
+Composing $T$ with itself repeats this shape on smaller intervals.
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.8cm,xmin=0,xmax=1,ymin=0,ymax=1.1,xlabel={$x$},title={$T(x)$}]
+\addplot[sblue] table[x=x,y=tent1]{data/depth.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=3.8cm,xmin=0,xmax=1,ymin=0,ymax=1.1,xlabel={$x$},title={$T\circ T\circ T\circ T(x)$}]
+\addplot[sorange] table[x=x,y=tent4]{data/depth.dat};
+\end{axis}
+\end{tikzpicture}
 \end{columns}
+Each composition splits every affine piece in two, so four copies of $T$ give $2^4=16$ pieces on $[0,1]$.
 \end{frame}
 
-\begin{frame}{Network Architecture Comparison}
-\begin{figure}
-\centering
-\includegraphics[width=0.65\textwidth]{figs/network-architectures-transparent.png}
-\end{figure}
+\begin{frame}{Breakpoint counts and parity}
+For $T^{\circ k}$, the number of interior breakpoints is $2^k-1$.
+A one-hidden-layer scalar-input ReLU sum needs at least that many units, one per breakpoint.
+The composition uses three units per copy of $T$, so $3k$ in all.
+\medskip
 
-\begin{itemize}
-    \item \textbf{Parameters:} Deep network has more total parameters but better efficiency
-    \item \textbf{Shallow:} 100 input-to-hidden + 100 hidden-to-output = 200 weights
-    \item \textbf{Deep:} $20 + 20 \times 20 \times 3 + 20 = 1240$ weights
-    \item \textbf{Key difference:} Compositional structure in deep networks
-\end{itemize}
+Parity is a different story.
+On Boolean inputs, let $s=\sum_{j=1}^{n}x_j$.
+A shallow ReLU network with $n$ units represents parity as
+\[
+q(s)=\ReLU(s)+2\sum_{j=1}^{n-1}(-1)^j\ReLU(s-j).
+\]
+With the sum $s$ as its input, parity gives no separation between shallow and deep networks.
 \end{frame}
 
-\begin{frame}{Why Depth Helps: Theoretical Insights}
-\textbf{Exponential expressivity:}
-\begin{itemize}
-    \item Shallow network needs $O(2^n)$ neurons
-    \item Deep network needs $O(n)$ layers
-    \item Each layer can double the number of linear regions
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{Example: Representing parity function}
-\begin{itemize}
-    \item Shallow: Needs $2^{n-1}$ hidden units
-    \item Deep: Needs $O(n)$ units total
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{Hierarchical composition:}
-\begin{itemize}
-    \item Layer 1: Edges and gradients
-    \item Layer 2: Simple patterns
-    \item Layer 3: Complex features
-    \item Layer 4: High-level concepts
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Approximation Quality vs Network Width}
-\begin{columns}
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/width-quality.png}
-\caption{More neurons improve approximation quality}
-\end{figure}
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/width-vs-error.png}
-\caption{Error decreases with network width}
-\end{figure}
-
-
-\textbf{Empirical observations:}
-\begin{itemize}
-    \item Error $\sim O(1/\sqrt{N})$ for $N$ neurons
-    \item Diminishing returns after certain width
-    \item Optimal width depends on function complexity
-    \item Trade-off: accuracy vs computational cost
-\end{itemize}
-\end{columns}
-\end{frame}
-
-
-
-\begin{frame}{Sobolev Spaces and Derivatives}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Definition:}
-$$H^1([0,1]) = \{f : \|f\|_{H^1} < \infty\}$$
-where
-$$\|f\|_{H^1}^2 = \|f\|_{L^2}^2 + \|f'\|_{L^2}^2$$
-
-\textbf{Why important for PDEs:}
-\begin{itemize}
-    \item PDEs involve derivatives
-    \item Need to approximate $u$ AND $\nabla u$
-    \item Weak solutions live in Sobolev spaces
-\end{itemize}
-
-\column{0.5\textwidth}
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{figs/derivative-approximation.png}
-\caption{Neural networks approximate both function and derivative}
-\end{figure}
-\end{columns}
-
-\textbf{Key result:} Neural networks are dense in $H^s$ for any $s \geq 0$
+\begin{frame}{Parameter counts for a shallow and a deep network}
+\begin{center}
+\includegraphics[width=0.9\textwidth,height=3.8cm,keepaspectratio]{figs/network-architectures-transparent.png}
+\end{center}
+For scalar input and output, the parameter counts are
+\[
+\begin{array}{l|r|r|r}
+\text{hidden architecture}&\text{weights}&\text{biases}&\text{total}\\ \hline
+100&200&101&301\\
+20,20,20,20&1240&81&1321
+\end{array}
+\]
+The deep network has more than four times the parameters of the shallow one.
+A fair test of depth fixes the parameter count, the data, and the training.
 \end{frame}
 
 %========================================================================================
@@ -1599,203 +1246,171 @@ $$\|f\|_{H^1}^2 = \|f\|_{L^2}^2 + \|f'\|_{L^2}^2$$
 %========================================================================================
 \section{Part VI: Practical Considerations and Summary}
 
-\begin{frame}{Physics-Informed Neural Networks (PINNs)}
-\textbf{Key idea:} Embed physics directly into the loss function
-
-\vspace{0.5cm}
-
-For PDE: $\mathcal{N}[u] = f$ in $\Omega$, $u = g$ on $\partial\Omega$
-
-\vspace{0.5cm}
-
-\textbf{Loss function:}
-$$\mathcal{L} = \underbrace{\lambda_1 \|\mathcal{N}[u_\theta] - f\|^2}_{\text{PDE residual}} + 
-\underbrace{\lambda_2 \|u_\theta|_{\partial\Omega} - g\|^2}_{\text{Boundary}} + 
-\underbrace{\lambda_3 \|u_\theta - u_{data}\|^2}_{\text{Data}}$$
-
-\textbf{Advantages:}
-\begin{itemize}
-    \item Mesh-free
-    \item Handles high dimensions
-    \item Incorporates physics and data
-    \item Inverse problems
-\end{itemize}
-
-\textbf{Challenges:}
-\begin{itemize}
-    \item Balancing loss terms
-    \item Sampling collocation points
-    \item Training stability
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Implementation Best Practices}
-\begin{columns}
-\column{0.5\textwidth}
-\textbf{Initialization:}
-\begin{itemize}
-    \item Xavier/He initialization
-    \item Scale with $1/\sqrt{n_{in}}$
-    \item Avoid symmetry
-\end{itemize}
-
-\textbf{Architecture:}
-\begin{itemize}
-    \item Start simple (2-3 layers)
-    \item Width: 50-200 neurons typical
-    \item Add depth for complexity
-    \item Skip connections help
-\end{itemize}
-
-\textbf{Training:}
-\begin{itemize}
-    \item Learning rate: 1e-3 to 1e-4
-    \item Use Adam optimizer
-    \item Batch normalization
-    \item Gradient clipping
-\end{itemize}
-
-\column{0.5\textwidth}
-\textbf{Debugging:}
-\begin{itemize}
-    \item Check gradient flow
-    \item Monitor activation statistics
-    \item Visualize loss landscape
-    \item Start with simple problems
-\end{itemize}
-
-\textbf{Common pitfalls:}
-\begin{itemize}
-    \item Vanishing/exploding gradients
-    \item Dead ReLUs
-    \item Overfitting
-    \item Poor initialization
-    \item Unbalanced data
-\end{itemize}
-
-\textbf{Tools:}
-\begin{itemize}
-    \item PyTorch, TensorFlow
-    \item JAX for scientific computing
-    \item DeepXDE for PINNs
-\end{itemize}
+\begin{frame}{Value error and slope error}
+\begin{columns}[T]
+\column{0.52\textwidth}
+Add a small fast oscillation to any reference $u$,
+\[
+\hat u(x)=u(x)+0.01\sin(100\pi x).
+\]
+The value and slope errors are
+\[
+\begin{gathered}
+\|\hat u-u\|_\infty=0.01,\\
+\left\|\frac{d\hat u}{dx}-\frac{du}{dx}\right\|_{L^2}
+=\frac{\pi}{\sqrt2}\approx2.22.
+\end{gathered}
+\]
+The $H^1$ norm adds the slope error to the value error.
+AD computes $d\hat u/dx$ to rounding error, and $d\hat u/dx$ can still be far from $du/dx$.
+\column{0.44\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.92\linewidth,height=2.9cm,xmin=0,xmax=1,ymin=-0.015,ymax=0.015,title={value error $\hat u-u$},scaled y ticks=false,yticklabel style={/pgf/number format/fixed},ytick={-0.01,0,0.01}]
+\addplot[sblue,line width=0.6pt] table[x=x,y=error]{data/derivative-error.dat};
+\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,width=0.92\linewidth,height=2.9cm,xmin=0,xmax=1,ymin=-3.6,ymax=3.6,xlabel={$x$},title={slope error $\hat u'-u'$},ytick={-3,0,3}]
+\addplot[sorange,line width=0.6pt] table[x=x,y=slope_error]{data/derivative-error.dat};
+\end{axis}
+\end{tikzpicture}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Key Takeaways}
-\begin{block}{Mathematical Foundations}
-\begin{itemize}
-    \item Weierstrass (1885) → UAT (1989): continuous functions are learnable
-    \item Neural networks are universal approximators in multiple function spaces
-    \item Density results provide theoretical guarantees
-\end{itemize}
-\end{block}
+\begin{frame}{A network fitted to the readings alone}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=4.2cm,xmin=0,xmax=1,ymin=-0.1,ymax=1.2,xlabel={$x$},title={values},legend style={at={(0.5,0.04)},anchor=south},legend columns=2]
+\addplot[ink,dashed] table[x=x,y=u]{data/profile.dat};
+\addlegendentry{$u$}
+\addplot[sblue] table[x=x,y=trained]{data/profile.dat};
+\addlegendentry{$\hat u$}
+\addplot[only marks,sorange,mark=*,mark size=1.4pt] table[x=x,y=y]{data/observations.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[mlpplot,height=4.2cm,xmin=0,xmax=1,ymin=-4.5,ymax=4.5,xlabel={$x$},title={slopes},legend pos=north east]
+\addplot[ink,dashed] table[x=x,y=slope]{data/profile.dat};
+\addlegendentry{$u'$}
+\addplot[sblue] table[x=x,y=trained_slope]{data/profile.dat};
+\addlegendentry{$\hat u'$}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\centering
+\chip{RMSE in $u$}{\ReferenceRMSE}\quad
+\chip{RMSE in $u'$}{\SlopeRMSE}\quad
+\chip{RMS of the residual $-\hat u''-f$}{\ResidualRMS}
+\smallskip
 
-\begin{block}{Building Blocks}
-\begin{itemize}
-    \item Nonlinearity is absolutely essential (XOR problem)
-    \item Hidden layers create new feature spaces
-    \item Activation functions enable complex decision boundaries
-\end{itemize}
-\end{block}
-
+\raggedright
+A $\tanh$ network with $12$ units, fitted to the fifteen readings alone, matches the values far better than the slopes or the equation.
+How can the known equation enter the fit?
 \end{frame}
 
-
-\begin{frame}{Key Takeaways}
-
-\begin{block}{Training and Optimization}
-\begin{itemize}
-    \item Backpropagation = reverse mode automatic differentiation
-    \item Modern optimizers (Adam) handle complex landscapes
-    \item Regularization prevents overfitting
-\end{itemize}
-\end{block}
-
-\begin{block}{Architecture Design}
-\begin{itemize}
-    \item Depth provides exponential expressivity gains
-    \item Width controls approximation quality
-    \item Problem-specific design choices matter
-\end{itemize}
-\end{block}
+\begin{frame}{The data loss and the residual loss}
+For displacement observations, squared error measures value mismatch.
+For the known Poisson equation, the residual measures equation mismatch,
+\begin{align*}
+\mathcal L_{\text{data}}
+&=\frac1n\sum_i(\hat u(x_i;\theta)-y_i)^2,\\
+r(x;\theta)&=-\frac{d^2\hat u}{dx^2}(x;\theta)-f(x),\\
+\mathcal L_{\text{PDE}}
+&=\frac1m\sum_{k=1}^{m}r(z_k;\theta)^2.
+\end{align*}
+The residual points $z_k$ need not coincide with the observation positions $x_i$.
+The boundary values need terms of their own.
 \end{frame}
 
-\begin{frame}{The Path Forward}
+\begin{frame}{The PINN loss for the string}
+For the pinned string, define the Poisson residual
+\[
+r(x;\theta)=-\frac{d^2\hat u}{dx^2}(x;\theta)-\pi^2\sin(\pi x).
+\]
+A sampled objective can combine residuals, boundaries, and observations,
+\begin{align*}
+\mathcal L(\theta)
+&=\frac{\lambda_r}{m}\sum_{k=1}^{m}r(z_k;\theta)^2
++\lambda_b\bigl(\hat u(0;\theta)^2+\hat u(1;\theta)^2\bigr)
++\frac{\lambda_d}{n}\sum_{i=1}^{n}(\hat u(x_i;\theta)-y_i)^2.
+\end{align*}
+AD differentiates $\hat u$ with respect to $x$ for the residual and $\mathcal L$ with respect to $\theta$ for training.
+A ReLU network has $d^2\hat u/dx^2=0$ away from its breakpoints, so its residual there equals $-\pi^2\sin(\pi x)$.
+Smooth activations such as $\tanh$ supply the second derivative the residual needs.
+\end{frame}
+
+\begin{frame}{Three losses for one field}
+The same coordinate representation can be used with different information,
+\[
+\hat u(x;\theta).
+\]
 \begin{center}
-\begin{tikzpicture}[scale=0.9]
-    % Historical
-    \node[draw, rectangle, fill=blue!20] (w) at (0,3) {Weierstrass (1885)};
-    \node[draw, rectangle, fill=blue!20] (u) at (4,3) {UAT (1989)};
-    \node[draw, rectangle, fill=green!20] (b) at (8,3) {Backprop (1986)};
-    
-    % Modern
-    \node[draw, rectangle, fill=yellow!20] (d) at (2,1) {Deep Learning};
-    \node[draw, rectangle, fill=yellow!20] (p) at (6,1) {PINNs};
-    \node[draw, rectangle, fill=yellow!20] (t) at (10,1) {Transformers};
-    
-    % Future
-    \node[draw, rectangle, fill=red!20] (s) at (4,-1) {Scientific ML};
-    \node[draw, rectangle, fill=red!20] (f) at (8,-1) {Foundation Models};
-    
-    % Connections
-    \draw[->] (w) -- (u);
-    \draw[->] (u) -- (b);
-    \draw[->] (u) -- (d);
-    \draw[->] (b) -- (d);
-    \draw[->] (d) -- (p);
-    \draw[->] (b) -- (t);
-    \draw[->] (d) -- (s);
-    \draw[->] (p) -- (s);
-    \draw[->] (t) -- (f);
-    \draw[->] (s) -- (f);
+\begin{tikzpicture}[node distance=0.6cm,>=Stealth,
+box/.style={draw,rounded corners,text width=3.5cm,align=center,minimum height=1.2cm,font=\small}]
+\node[box,fill=sblue!10] (data) {displacement observations\\$\mathcal L_{\text{data}}$};
+\node[box,fill=sorange!10,right=of data] (physics) {known equation and boundaries\\$\mathcal L_{\text{PDE}}+\mathcal L_{\text{BC}}$};
+\node[box,fill=sgreen!10,right=of physics] (both) {physics and observations\\combined objective};
 \end{tikzpicture}
 \end{center}
+The network is the same in all three, and only the loss changes.
+\end{frame}
 
-\vspace{0.5cm}
-
-\textbf{Current frontiers:}
+\begin{frame}{A checklist for fitting a field}
+\begin{columns}[T]
+\column{0.48\textwidth}
 \begin{itemize}
-    \item Neural operators for PDEs
-    \item Geometric deep learning
-    \item Equivariant networks
-    \item Uncertainty quantification
-    \item Multi-scale methods
+\item Scale coordinates and measured quantities consistently.
+\item Choose activation regularity for the required derivatives.
+\item Check gradients on a small worked problem.
+\item Record seeds and optimization settings.
 \end{itemize}
+\column{0.48\textwidth}
+\begin{itemize}
+\item Monitor training and validation errors.
+\item Evaluate PDE residuals on points outside the training set.
+\item Check boundary values and derivative errors.
+\item Compare against a simpler representation.
+\end{itemize}
+\end{columns}
+\medskip
+Batch normalization makes one coordinate's prediction depend on the other points in the batch, which corrupts coordinate derivatives.
+\end{frame}
+
+\begin{frame}{Summary of the approximation results}
+Approximation theorems concern the represented family, for a stated target class and error measure.
+\begin{itemize}
+\item Polynomials and suitable neural families approximate continuous targets uniformly.
+\item No continuous network approximates a jump uniformly to arbitrary accuracy.
+\item Derivative approximation needs further assumptions on the activation and the function space.
+\end{itemize}
+Finitely many readings do not identify a continuous target.
+Training and validation answer questions that density does not.
+\end{frame}
+
+\begin{frame}{Summary of training and architecture}
+Training chooses parameters within a representation, using the gradients of the chosen objective.
+\begin{itemize}
+\item Reverse-mode AD computes a scalar loss's parameter gradient.
+\item Regularization changes which fits the objective prefers.
+\item Depth can reduce representation size for specified compositional targets.
+\item Validation checks the fitted result on the intended prediction task.
+\end{itemize}
+Neither density nor a gradient computation guarantees that training recovers the field.
 \end{frame}
 
 \begin{frame}{Summary}
-\begin{center}
-\Large{We've journeyed from Weierstrass to modern deep learning}
-\end{center}
-
-\vspace{0.5cm}
-
-\textbf{Key insights:}
+The network represents a displacement as a parameterized function.
+Hidden parameters change its shapes, while output coefficients combine them.
 \begin{itemize}
-    \item Neural networks provide a universal, flexible function approximation framework
-    \item Mathematical foundations (UAT) guarantee approximation capabilities
-    \item Nonlinearity + depth = expressivity
-    \item Automatic differentiation enables efficient training
-    \item Applications span from simple classification to solving PDEs
+\item ReLU terms construct changing slopes and piecewise-linear approximations.
+\item A loss specifies agreement with data, physics, or both.
+\item The chain rule supplies parameter gradients for training.
+\item Approximation claims require a function class, an architecture, and a norm.
+\item Values, derivatives, and residuals require separate checks.
 \end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{For Scientific ML:}
-\begin{itemize}
-    \item Mesh-free PDE solvers
-    \item Data-driven discovery
-    \item Multi-physics modeling
-    \item Uncertainty quantification
-\end{itemize}
-
-\vspace{0.5cm}
-
-\begin{center}
-\textbf{The universal approximation theorem tells us neural networks CAN work. \\
-Backpropagation tells us HOW to make them work.}
-\end{center}
+For the Poisson equation, a smooth coordinate network supplies the derivatives that the strong residual needs.
 \end{frame}
 
 \begin{frame}

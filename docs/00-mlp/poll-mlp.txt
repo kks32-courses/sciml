@@ -1,0 +1,29 @@
+Stacking ten linear layers with no activation between them gives a network that can represent
+A straight line only
+A polynomial of degree 10
+A curve with ten bends
+Any continuous function
+
+A sum of ReLU units, c + sum_j v_j ReLU(x - t_j), is always
+Smooth
+Continuous and piecewise linear
+A polynomial
+A step function
+
+In a ReLU unit ReLU(w x + b), changing the bias b moves
+The slope after the kink
+The location of the kink
+The height of the output
+Nothing about the shape
+
+A single neuron cannot represent XOR because
+XOR has only four points
+Its inputs are Boolean
+No straight line separates the two classes
+A single neuron has too few parameters
+
+The universal approximation theorem guarantees that
+Ten units are enough for most functions
+Gradient descent finds the best weights
+The network is accurate between the data points
+A wide enough network comes as close as you like

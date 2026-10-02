@@ -705,9 +705,6 @@ How does orthogonality determine the projection coefficients?
 }
 \end{frame}
 
-%========================================================================================
-\repsection{Spaces}{Function spaces, $L^2$, $H^1$, and Hilbert spaces}
-
 \begin{frame}{The space $L^2$ of square-integrable functions}
 \begin{columns}
 \column{0.58\textwidth}
@@ -743,294 +740,7 @@ The measurable functions with finite squared integral define $L^2(0,1)$.
 Functions equal almost everywhere represent the same element of this space.
 Changing a value at one point leaves the $L^2$ distance zero, so point evaluation is not well defined on an arbitrary $L^2$ element.
 The inner product $\int_0^1 fg\,dx$ is well defined.
-What additional condition controls slopes?
-}
-\end{frame}
-
-\begin{frame}{The space $H^1$ of finite-energy functions}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=3.9cm, xmin=0, xmax=1, ymin=-0.7, ymax=0.7, xlabel=$x$, title={\scriptsize the corner $\min(x, 1-x)/2$ and its slope, in $H^1_0$}]
-\addplot[ink, line width=1.6pt] table[x=x, y=u]{data/corner_slope.dat};
-\addplot[sorange, line width=1.4pt] table[x=x, y=du]{data/corner_slope.dat};
-\end{axis}
-\end{tikzpicture}
-\column{0.5\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=3.9cm, xmin=0, xmax=1, ymin=-0.2, ymax=21, xlabel=$x$, title={\scriptsize ramps toward a step, and their slopes $1/w$}]
-\stepfrom{2}{\addplot[sblue!50, line width=1.4pt] table[x=x, y=dr]{data/ramp_w20.dat};
-\addplot[sblue, line width=1.4pt] table[x=x, y=dr]{data/ramp_w5.dat};}
-\end{axis}
-\end{tikzpicture}
-\end{columns}
-\small
-\[
-\|u\|_{H^1}^2 = \int_0^1 u^2\,dx + \int_0^1 (u')^2\,dx, \qquad \langle u, v\rangle_{H^1} = \int_0^1 (u v + u' v')\,dx
-\]
-\centering
-\stepfrom{2}{\chip{ramp of width $w$, $\int (u')^2\,dx$}{$1/w$, so $5$ at $w = 0.2$ and $20$ at $w = 0.05$}\quad}
-\stepfrom{3}{\chip{in one dimension}{$|u(y) - u(x)| \le \sqrt{|y - x|}\,\|u'\|_{L^2}$}}
-\note{
-The point-load displacement is continuous and has slopes $\tfrac12$ and $-\tfrac12$ on the two halves of the interval.
-Its classical derivative fails at the corner, but the piecewise-constant slope is square integrable.
-Integration by parts still gives $\int u\psi'\,dx=-\int u'\psi\,dx$ for every smooth test function $\psi$ supported inside the interval.
-A derivative defined by this identity is a weak derivative.
-
-The functions in $L^2$ with a weak derivative in $L^2$ form the Sobolev space $H^1(0,1)$.
-Its squared norm is $\|u\|_{H^1}^2=\|u\|_{L^2}^2+\|u'\|_{L^2}^2$.
-The point-load displacement belongs to this space, whereas a step does not.
-A ramp of width $w$ has squared slope integral $1/w$, which grows without bound as it approaches a step.
-
-On an interval, the slope bound gives $|u(y)-u(x)|\le\sqrt{|y-x|}\,\|u'\|_{L^2}$.
-Every $H^1$ element therefore has a unique continuous representative.
-This conclusion does not extend to $H^1$ in higher dimensions.
-Imposing zero endpoint values gives the pinned space $H^1_0(0,1)$.
-}
-\end{frame}
-
-\begin{frame}{Equal $L^2$ norm, increasing slope seminorm}
-\begin{columns}
-\column{0.62\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=-1.6, ymax=1.6, xlabel=$x$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=3}]
-\addplot[sblue, line width=1.5pt] table[x=x, y=v]{data/mode1.dat};
-\addlegendentry{$k = 1$}
-\stepfrom{2}{\addplot[sorange, line width=1.3pt] table[x=x, y=v]{data/mode4.dat};
-          \addlegendentry{$k = 4$}}
-\stepfrom{3}{\addplot[sgreen, line width=1pt] table[x=x, y=v]{data/mode16.dat};
-          \addlegendentry{$k = 16$}}
-\end{axis}
-\end{tikzpicture}
-\column{0.38\textwidth}
-\small
-\[
-\phi_k(x) = \sqrt2\,\sin(k\pi x)
-\]
-\[
-\|\phi_k\|_{L^2} = 1, \qquad |\phi_k|_{H^1} = k\pi
-\]
-\chip{$|\phi_k|_{H^1}$ at $k = 1$}{$3.14$}\\[4pt]
-\stepfrom{2}{\chip{$k = 4$}{$12.57$}\\[4pt]}
-\stepfrom{3}{\chip{$k = 16$}{$50.27$}\\[4pt]
-\chip{distance between two different modes}{$\sqrt2 = 1.414$}}
-\end{columns}
-\note{
-The normalized modes $\phi_k=\sqrt2\sin(k\pi x)$ all have $L^2$ norm one.
-Their slope seminorms are $k\pi$.
-For $k=1$, $4$, and $16$, these are $3.14$, $12.57$, and $50.27$.
-Increasing frequency leaves the displacement norm unchanged while increasing the slope seminorm.
-
-Distinct modes are orthogonal, so their $L^2$ distance is $\sqrt2$.
-The sequence of modes therefore has no $L^2$-convergent subsequence.
-A bound on displacement alone does not limit spatial oscillation.
-}
-\end{frame}
-
-\begin{frame}{Hilbert spaces and the nesting $H^1_0 \subset H^1 \subset L^2$}
-\begin{columns}
-\column{0.55\textwidth}
-\begin{center}
-\begin{tikzpicture}[font=\small]
-\draw[sblue, thick, fill=sblue!6] (0,0) ellipse (3.2cm and 2.1cm);
-\node[sblue] at (0,1.75) {$L^2(0,1)$};
-\draw[sorange, thick, fill=sorange!8] (0,-0.25) ellipse (2.3cm and 1.45cm);
-\node[sorange] at (0,0.9) {$H^1(0,1)$};
-\draw[sgreen, thick, fill=sgreen!10] (0,-0.5) ellipse (1.4cm and 0.8cm);
-\node[sgreen, font=\scriptsize] at (0,-0.05) {$H^1_0(0,1)$};
-\node[font=\scriptsize, align=center] at (0,-0.65) {$\sin(\pi x)$, the corner};
-\node[font=\scriptsize, align=center] at (1.75,0.25) {$1 + x$};
-\node[font=\scriptsize, align=center] at (-2.55,0.05) {step};
-\node[font=\scriptsize, align=center] at (2.6,-0.55) {$x^{-1/3}$};
-\end{tikzpicture}
-\end{center}
-\column{0.45\textwidth}
-\small
-\begin{block}{Hilbert space}
-A vector space with an inner product in which every Cauchy sequence converges to a member of the space.
-\end{block}
-\chip{Hilbert spaces}{$\mathbb{R}^n$, $L^2(0,1)$, $H^1(0,1)$, $H^1_0(0,1)$}\\[4pt]
-\stepfrom{2}{\chip{not complete}{continuous functions with the $L^2$ distance}}
-\end{columns}
-\note{
-The pinned sine and point-load displacement belong to $H^1_0$.
-The line $1+x$ belongs to $H^1$ but fails the zero endpoint conditions.
-The step belongs to $L^2$ but lacks a square-integrable weak derivative.
-Thus $H^1_0\subset H^1\subset L^2$.
-
-Continuous ramps approaching a step form a Cauchy sequence in the $L^2$ norm.
-Their limit lies outside the continuous functions but inside $L^2$.
-A space is complete when every Cauchy sequence converges to an element of the space.
-A complete inner-product space is a Hilbert space.
-
-The spaces $L^2$, $H^1$, and $H^1_0$ are Hilbert spaces with the indicated inner products.
-Projection onto an infinite-dimensional trial space requires that linear subspace to be closed as well.
-These conditions guarantee a unique closest element.
-Completeness alone does not guarantee a minimizer over an arbitrary family.
-}
-\end{frame}
-
-\begin{frame}{The space $H^1_0$ and the Poincar\'e inequality}
-\begin{columns}
-\column{0.48\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=4.3cm, xmin=0, xmax=1, ymin=-0.1, ymax=1.2, xlabel=$x$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=3, font=\scriptsize}]
-\stepfrom{2}{\addplot[sblue, line width=1.6pt] table[x=x, y=sine]{data/poincare.dat};
-\addlegendentry{$\sin(\pi x)$}
-\addplot[ink, line width=1.6pt] table[x=x, y=corner]{data/poincare.dat};
-\addlegendentry{corner}}
-\stepfrom{3}{\addplot[sred, dashed, line width=1.6pt] table[x=x, y=one]{data/poincare.dat};
-\addlegendentry{$u = 1$}}
-\end{axis}
-\end{tikzpicture}
-\column{0.52\textwidth}
-\small
-\[
-H^1_0(0,1) = \{\, u \in H^1(0,1) : u(0) = u(1) = 0 \,\}
-\]
-\[
-\|u\|_{L^2} \le \frac{1}{\pi}\,|u|_{H^1} \quad \text{for } u \in H^1_0(0,1)
-\]
-\stepfrom{3}{\[
-|u|_{H^1}^2 \le \|u\|_{H^1}^2 \le \Bigl(1 + \frac{1}{\pi^2}\Bigr)|u|_{H^1}^2 \quad \text{on } H^1_0
-\]}
-\end{columns}
-\vspace{4pt}
-\centering
-\stepfrom{2}{\chip{$\|u\|_{L^2}/|u|_{H^1}$ for $\sin(\pi x)$}{$0.3183 = 1/\pi$, equality}\quad
-\chip{for the corner}{$0.1443/0.5 = 0.2887$}\quad}
-\stepfrom{3}{\chip{$u = 1$, in $H^1$ only}{$|u|_{H^1} = 0$, the bound fails}}
-\note{
-For a pinned displacement, the endpoint values are zero.
-On the interval, an $H^1$ element has a unique continuous representative, so these values are well defined.
-The endpoint map $\gamma u=(u(0),u(1))$ is called the trace.
-Its kernel is $H^1_0(0,1)$.
-
-Pinning controls the displacement norm by the slope seminorm.
-Expanding in normalized sine modes gives $\|u\|_{L^2}^2=\sum c_k^2$ and $|u|_{H^1}^2=\sum(k\pi)^2c_k^2$.
-Since $k\ge1$, the second sum is at least $\pi^2$ times the first.
-This gives the Poincar\'e inequality $\|u\|_{L^2}\le |u|_{H^1}/\pi$.
-
-The lowest mode attains the ratio $1/\pi=0.3183$.
-The corner gives $0.2887$ and the three-sine displacement gives $0.2278$.
-Without pinning, the constant $u=1$ has zero slope and $L^2$ norm one, so the bound fails.
-
-On $H^1_0$, the inequality gives $|u|_{H^1}^2\le\|u\|_{H^1}^2\le(1+1/\pi^2)|u|_{H^1}^2$.
-The slope norm and full $H^1$ norm therefore define the same convergence.
-For a bounded Lipschitz domain, the trace and its zero kernel extend to higher dimensions.
-The Poincar\'e constant is then $1/\sqrt{\lambda_1}$, where $\lambda_1$ is the lowest Dirichlet eigenvalue.
-}
-\end{frame}
-
-\begin{frame}{The spaces $L^2$, $H^1$, and $H^1_0$ compared}
-\footnotesize
-\renewcommand{\arraystretch}{1.6}
-\begin{center}
-\begin{tabular}{l c c P{3.3cm} P{2.6cm} P{3.4cm}}
-\hline
-space & $u \in L^2$ & $\nabla u \in L^2$ & inner product & boundary values & role in $-\Delta u = f$ \\
-\hline
-$L^2(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{not required} & \stepfrom{2}{$\int_\Omega u v\,dx$} & \stepfrom{2}{no general trace or point evaluation} & \stepfrom{2}{square-integrable loads and value misfits} \\
-$H^1(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{yes} & \stepfrom{2}{$\int_\Omega (u v + \nabla u\cdot\nabla v)\,dx$} & \stepfrom{2}{trace exists, none imposed} & \stepfrom{2}{free (Neumann) boundaries, imposed through the weak form} \\
-$H^1_0(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{yes} & \stepfrom{2}{$\int_\Omega \nabla u\cdot\nabla v\,dx$} & \stepfrom{2}{$u = 0$ on $\partial\Omega$} & \stepfrom{2}{trial and test space for fixed (Dirichlet) boundaries} \\
-\hline
-\end{tabular}
-\end{center}
-\note{
-The table compares these spaces on a bounded Lipschitz domain $\Omega$.
-The square-integrable loads and integrated value errors use $L^2$.
-An arbitrary $L^2$ element has no well-defined point evaluation or boundary trace.
-The space $H^1$ adds square-integrable weak gradients and a boundary trace.
-
-The space $H^1_0$ imposes zero trace.
-It is the trial and test space for the pinned string and a membrane fixed at its boundary.
-With flux boundary conditions, the weak formulation instead uses functions whose boundary values are not prescribed.
-A purely Neumann Poisson problem also needs a compatibility condition and determines the solution only up to a constant.
-
-The $L^2$ inner product integrates $uv$.
-The $H^1$ inner product adds the product of the gradients.
-On $H^1_0$, Poincar\'e's inequality makes the gradient term alone an inner product.
-On all of $H^1$, nonzero constants prevent that conclusion.
-}
-\end{frame}
-
-\begin{frame}{Compactness from bounded energy}
-\begin{columns}
-\column{0.5\textwidth}
-\small
-\[
-u = \sum_{k \ge 1} c_k\,\sqrt2\sin(k\pi x), \qquad |u|_{H^1}^2 = \sum_{k \ge 1} (k\pi)^2 c_k^2
-\]
-\stepfrom{2}{\[
-|u|_{H^1} \le M \;\Longrightarrow\; \Bigl(\sum_{k > K} c_k^2\Bigr)^{1/2} \le \frac{M}{(K+1)\pi}
-\]}
-\column{0.5\textwidth}
-\chip{unit ball of $L^2$}{the modes stay $\sqrt2$ apart, no subsequence converges}\\[4pt]
-\stepfrom{2}{\chip{$M = 10$, tail beyond $K = 4$}{at most $0.637$}\\[4pt]
-\chip{$M = 10$, tail beyond $K = 16$}{at most $0.187$}\\[4pt]}
-\stepfrom{3}{\chip{Rellich, on a bounded interval}{a bounded sequence in $H^1_0$ has an $L^2$-convergent subsequence}}
-\end{columns}
-\note{
-In $\mathbb{R}^n$, every bounded sequence has a convergent subsequence.
-The normalized sine modes show why this fails in $L^2$.
-They all have norm one, yet distinct modes remain $\sqrt2$ apart.
-
-A bound on the slope seminorm also bounds the high-frequency coefficients.
-If $|u|_{H^1}\le M$, then $\sum_{k>K}c_k^2\le M^2/((K+1)\pi)^2$.
-Truncation after mode $K$ therefore gives $L^2$ error at most $M/((K+1)\pi)$.
-For $M=10$, this bound is $0.637$ after mode $4$ and $0.187$ after mode $16$.
-
-The bound makes the high-frequency remainder uniformly small.
-The finitely many remaining coefficients have convergent subsequences.
-Together these facts give an $L^2$-convergent subsequence for every bounded sequence in $H^1_0(0,1)$.
-This is the compact embedding expressed by Rellich's theorem on the interval.
-}
-\end{frame}
-
-\begin{frame}{Regularity from the load to the displacement}
-\begin{columns}[T]
-\column{0.33\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-0.6, ymax=0.6, xlabel=$x$, title={\scriptsize point load, $u \in H^1_0$}]
-\addplot[ink, line width=1.5pt] table[x=x, y=up]{data/reg_loads.dat};
-\addplot[sorange, line width=1.2pt] table[x=x, y=dup]{data/reg_loads.dat};
-\end{axis}
-\end{tikzpicture}
-\column{0.33\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-2.2, ymax=1.2, xlabel=$x$, title={\scriptsize step load, $u \in H^2$}]
-\stepfrom{2}{\addplot[ink, line width=1.5pt] table[x=x, y=us]{data/reg_loads.dat};
-\addplot[sorange, line width=1.2pt] table[x=x, y=dus]{data/reg_loads.dat};
-\addplot[sgreen, line width=1.2pt] table[x=x, y=ddus]{data/reg_loads.dat};}
-\end{axis}
-\end{tikzpicture}
-\column{0.33\textwidth}
-\begin{tikzpicture}
-\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-2.2, ymax=1.2, xlabel=$x$, title={\scriptsize uniform load, $u = x(1-x)$}]
-\stepfrom{3}{\addplot[ink, line width=1.5pt] table[x=x, y=uu]{data/reg_loads.dat};
-\addplot[sorange, line width=1.2pt] table[x=x, y=duu]{data/reg_loads.dat};
-\addplot[sgreen, line width=1.2pt] table[x=x, y=dduu]{data/reg_loads.dat};}
-\end{axis}
-\end{tikzpicture}
-\end{columns}
-\centering
-{\scriptsize $u$ black, $u'$ orange, $u''$ green}\\[3pt]
-\chip{point load}{slope jumps, $c_k \sim 1/k^2$}\quad
-\stepfrom{2}{\chip{step load in $L^2$}{curvature jumps, $u'' \in L^2$}\quad}
-\stepfrom{3}{\chip{uniform load}{smooth inside, $c_k \sim 1/k^3$}}
-\note{
-The load determines the displacement's regularity through $-u''=f$.
-A point load is a distribution, and it gives a displacement with a corner.
-A square-integrable load gives $u''\in L^2$ and hence $u\in H^2$ on this interval.
-
-The step load gives a continuous slope and a curvature that jumps at mid-span.
-The uniform load $f=2$ gives the smooth parabola $x(1-x)$.
-The point-load corner belongs to $H^1_0$ but not to $H^2$.
-
-The equation also relates the sine coefficients.
-For each mode, it divides the load coefficient by $(k\pi)^2$ to obtain the displacement coefficient.
-This produces $1/k^2$ decay for the corner and $1/k^3$ decay for the parabola.
-The weak formulation requires only one weak derivative of the displacement, so continuous piecewise-linear hats are admissible.
+What does this inner product measure about two functions?
 }
 \end{frame}
 
@@ -1330,6 +1040,168 @@ Its sine representation instead needs the infinite sequence $c_k=2\sin(k\pi/2)/(
 Three modes leave relative $L^2$ error $4.8$ percent, and thirty-three leave $0.20$ percent.
 A basis with the correct corner can therefore represent this displacement with fewer coefficients than smooth sine modes.
 This advantage depends on placing the hat node at the corner.
+Hats have slopes but no second derivatives, so in which space does the string equation make sense for them?
+}
+\end{frame}
+
+\begin{frame}{The space $H^1$ of finite-energy functions}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=3.9cm, xmin=0, xmax=1, ymin=-0.7, ymax=0.7, xlabel=$x$, title={\scriptsize the corner $\min(x, 1-x)/2$ and its slope, in $H^1_0$}]
+\addplot[ink, line width=1.6pt] table[x=x, y=u]{data/corner_slope.dat};
+\addplot[sorange, line width=1.4pt] table[x=x, y=du]{data/corner_slope.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.5\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=3.9cm, xmin=0, xmax=1, ymin=-0.2, ymax=21, xlabel=$x$, title={\scriptsize ramps toward a step, and their slopes $1/w$}]
+\stepfrom{2}{\addplot[sblue!50, line width=1.4pt] table[x=x, y=dr]{data/ramp_w20.dat};
+\addplot[sblue, line width=1.4pt] table[x=x, y=dr]{data/ramp_w5.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\small
+\[
+\|u\|_{H^1}^2 = \int_0^1 u^2\,dx + \int_0^1 (u')^2\,dx, \qquad \langle u, v\rangle_{H^1} = \int_0^1 (u v + u' v')\,dx
+\]
+\centering
+\stepfrom{2}{\chip{ramp of width $w$, $\int (u')^2\,dx$}{$1/w$, so $5$ at $w = 0.2$ and $20$ at $w = 0.05$}\quad}
+\stepfrom{3}{\chip{in one dimension}{$|u(y) - u(x)| \le \sqrt{|y - x|}\,\|u'\|_{L^2}$}}
+\note{
+The point-load displacement is continuous and has slopes $\tfrac12$ and $-\tfrac12$ on the two halves of the interval.
+Its classical derivative fails at the corner, but the piecewise-constant slope is square integrable.
+Integration by parts still gives $\int u\psi'\,dx=-\int u'\psi\,dx$ for every smooth test function $\psi$ supported inside the interval.
+A derivative defined by this identity is a weak derivative.
+
+The functions in $L^2$ with a weak derivative in $L^2$ form the Sobolev space $H^1(0,1)$.
+Its squared norm is $\|u\|_{H^1}^2=\|u\|_{L^2}^2+\|u'\|_{L^2}^2$.
+The point-load displacement belongs to this space, whereas a step does not.
+A ramp of width $w$ has squared slope integral $1/w$, which grows without bound as it approaches a step.
+A crack makes the displacement jump, so a cracked displacement is not in $H^1$.
+A continuous approximation can have a small $L^2$ error against it, while its $H^1$ error is infinite.
+
+On an interval, the slope bound gives $|u(y)-u(x)|\le\sqrt{|y-x|}\,\|u'\|_{L^2}$.
+Every $H^1$ element therefore has a unique continuous representative.
+This conclusion does not extend to $H^1$ in higher dimensions.
+Imposing zero endpoint values gives the pinned space $H^1_0(0,1)$.
+}
+\end{frame}
+
+\begin{frame}{The nesting $H^1_0 \subset H^1 \subset L^2$}
+\begin{columns}
+\column{0.55\textwidth}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+\draw[sblue, thick, fill=sblue!6] (0,0) ellipse (3.2cm and 2.1cm);
+\node[sblue] at (0,1.75) {$L^2(0,1)$};
+\draw[sorange, thick, fill=sorange!8] (0,-0.25) ellipse (2.3cm and 1.45cm);
+\node[sorange] at (0,0.9) {$H^1(0,1)$};
+\draw[sgreen, thick, fill=sgreen!10] (0,-0.5) ellipse (1.4cm and 0.8cm);
+\node[sgreen, font=\scriptsize] at (0,-0.05) {$H^1_0(0,1)$};
+\node[font=\scriptsize, align=center] at (0,-0.65) {$\sin(\pi x)$, the corner};
+\node[font=\scriptsize, align=center] at (1.75,0.25) {$1 + x$};
+\node[font=\scriptsize, align=center] at (-2.55,0.05) {step};
+\node[font=\scriptsize, align=center] at (2.6,-0.55) {$x^{-1/3}$};
+\end{tikzpicture}
+\end{center}
+\column{0.45\textwidth}
+\small
+\chip{$1 + x$}{slope $1$, but $u(0) = 1$}\\[4pt]
+\chip{the step}{ramps toward it have $\int (u')^2\,dx = 1/w$}\\[4pt]
+\chip{$x^{-1/3}$}{$\int_0^1 (u')^2\,dx = \int_0^1 \tfrac19 x^{-8/3}\,dx$ diverges}
+\end{columns}
+\note{
+The pinned sine and point-load displacement belong to $H^1_0$.
+The line $1+x$ belongs to $H^1$ but fails the zero endpoint conditions.
+The step belongs to $L^2$ but lacks a square-integrable weak derivative.
+Thus $H^1_0\subset H^1\subset L^2$.
+Pinning removes $1+x$ from $H^1_0$.
+What does pinning give the slope seminorm?
+}
+\end{frame}
+
+\begin{frame}{The space $H^1_0$ and the Poincar\'e inequality}
+\begin{columns}
+\column{0.48\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.3cm, xmin=0, xmax=1, ymin=-0.1, ymax=1.2, xlabel=$x$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=3, font=\scriptsize}]
+\stepfrom{2}{\addplot[sblue, line width=1.6pt] table[x=x, y=sine]{data/poincare.dat};
+\addlegendentry{$\sin(\pi x)$}
+\addplot[ink, line width=1.6pt] table[x=x, y=corner]{data/poincare.dat};
+\addlegendentry{corner}}
+\stepfrom{3}{\addplot[sred, dashed, line width=1.6pt] table[x=x, y=one]{data/poincare.dat};
+\addlegendentry{$u = 1$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.52\textwidth}
+\small
+\[
+H^1_0(0,1) = \{\, u \in H^1(0,1) : u(0) = u(1) = 0 \,\}
+\]
+\[
+\|u\|_{L^2} \le \frac{1}{\pi}\,|u|_{H^1} \quad \text{for } u \in H^1_0(0,1)
+\]
+\stepfrom{3}{\[
+|u|_{H^1}^2 \le \|u\|_{H^1}^2 \le \Bigl(1 + \frac{1}{\pi^2}\Bigr)|u|_{H^1}^2 \quad \text{on } H^1_0
+\]}
+\end{columns}
+\vspace{4pt}
+\centering
+\stepfrom{2}{\chip{$\|u\|_{L^2}/|u|_{H^1}$ for $\sin(\pi x)$}{$0.3183 = 1/\pi$, equality}\quad
+\chip{for the corner}{$0.1443/0.5 = 0.2887$}\quad}
+\stepfrom{3}{\chip{$u = 1$, in $H^1$ only}{$|u|_{H^1} = 0$, the bound fails}}
+\note{
+For a pinned displacement, the endpoint values are zero.
+On the interval, an $H^1$ element has a unique continuous representative, so these values are well defined.
+The endpoint map $\gamma u=(u(0),u(1))$ is called the trace.
+Its kernel is $H^1_0(0,1)$.
+
+Pinning controls the displacement norm by the slope seminorm.
+Expanding in normalized sine modes gives $\|u\|_{L^2}^2=\sum c_k^2$ and $|u|_{H^1}^2=\sum(k\pi)^2c_k^2$.
+Since $k\ge1$, the second sum is at least $\pi^2$ times the first.
+This gives the Poincar\'e inequality $\|u\|_{L^2}\le |u|_{H^1}/\pi$.
+
+The lowest mode attains the ratio $1/\pi=0.3183$.
+The corner gives $0.2887$ and the three-sine displacement gives $0.2278$.
+Without pinning, the constant $u=1$ has zero slope and $L^2$ norm one, so the bound fails.
+
+On $H^1_0$, the inequality gives $|u|_{H^1}^2\le\|u\|_{H^1}^2\le(1+1/\pi^2)|u|_{H^1}^2$.
+The slope norm and full $H^1$ norm therefore define the same convergence.
+For a bounded Lipschitz domain, the trace and its zero kernel extend to higher dimensions.
+The Poincar\'e constant is then $1/\sqrt{\lambda_1}$, where $\lambda_1$ is the lowest Dirichlet eigenvalue.
+}
+\end{frame}
+
+\begin{frame}{The spaces $L^2$, $H^1$, and $H^1_0$ compared}
+\footnotesize
+\renewcommand{\arraystretch}{1.6}
+\begin{center}
+\begin{tabular}{l c c P{3.3cm} P{2.6cm} P{3.4cm}}
+\hline
+space & $u \in L^2$ & $\nabla u \in L^2$ & inner product & boundary values & role in $-\Delta u = f$ \\
+\hline
+$L^2(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{not required} & \stepfrom{2}{$\int_\Omega u v\,dx$} & \stepfrom{2}{no general trace or point evaluation} & \stepfrom{2}{square-integrable loads and value misfits} \\
+$H^1(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{yes} & \stepfrom{2}{$\int_\Omega (u v + \nabla u\cdot\nabla v)\,dx$} & \stepfrom{2}{trace exists, none imposed} & \stepfrom{2}{free (Neumann) boundaries, imposed through the weak form} \\
+$H^1_0(\Omega)$ & \stepfrom{2}{yes} & \stepfrom{2}{yes} & \stepfrom{2}{$\int_\Omega \nabla u\cdot\nabla v\,dx$} & \stepfrom{2}{$u = 0$ on $\partial\Omega$} & \stepfrom{2}{trial and test space for fixed (Dirichlet) boundaries} \\
+\hline
+\end{tabular}
+\end{center}
+\note{
+The table compares these spaces on a bounded Lipschitz domain $\Omega$.
+The square-integrable loads and integrated value errors use $L^2$.
+An arbitrary $L^2$ element has no well-defined point evaluation or boundary trace.
+The space $H^1$ adds square-integrable weak gradients and a boundary trace.
+
+The space $H^1_0$ imposes zero trace.
+It is the trial and test space for the pinned string and a membrane fixed at its boundary.
+With flux boundary conditions, the weak formulation instead uses functions whose boundary values are not prescribed.
+A purely Neumann Poisson problem also needs a compatibility condition and determines the solution only up to a constant.
+
+The $L^2$ inner product integrates $uv$.
+The $H^1$ inner product adds the product of the gradients.
+On $H^1_0$, Poincar\'e's inequality makes the gradient term alone an inner product.
+On all of $H^1$, nonzero constants prevent that conclusion.
 }
 \end{frame}
 
@@ -1429,6 +1301,52 @@ Thus convergence depends on both the target's regularity and the chosen norm.
 }
 \end{frame}
 
+\begin{frame}{Regularity from the load to the displacement}
+\begin{columns}[T]
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-0.6, ymax=0.6, xlabel=$x$, title={\scriptsize point load, $u \in H^1_0$}]
+\addplot[ink, line width=1.5pt] table[x=x, y=up]{data/reg_loads.dat};
+\addplot[sorange, line width=1.2pt] table[x=x, y=dup]{data/reg_loads.dat};
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-2.2, ymax=1.2, xlabel=$x$, title={\scriptsize step load, $u \in H^2$}]
+\stepfrom{2}{\addplot[ink, line width=1.5pt] table[x=x, y=us]{data/reg_loads.dat};
+\addplot[sorange, line width=1.2pt] table[x=x, y=dus]{data/reg_loads.dat};
+\addplot[sgreen, line width=1.2pt] table[x=x, y=ddus]{data/reg_loads.dat};}
+\end{axis}
+\end{tikzpicture}
+\column{0.33\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=4.6cm, xmin=0, xmax=1, ymin=-2.2, ymax=1.2, xlabel=$x$, title={\scriptsize uniform load, $u = x(1-x)$}]
+\stepfrom{3}{\addplot[ink, line width=1.5pt] table[x=x, y=uu]{data/reg_loads.dat};
+\addplot[sorange, line width=1.2pt] table[x=x, y=duu]{data/reg_loads.dat};
+\addplot[sgreen, line width=1.2pt] table[x=x, y=dduu]{data/reg_loads.dat};}
+\end{axis}
+\end{tikzpicture}
+\end{columns}
+\centering
+{\scriptsize $u$ black, $u'$ orange, $u''$ green}\\[3pt]
+\chip{point load}{slope jumps, $c_k \sim 1/k^2$}\quad
+\stepfrom{2}{\chip{step load in $L^2$}{curvature jumps, $u'' \in L^2$}\quad}
+\stepfrom{3}{\chip{uniform load}{smooth inside, $c_k \sim 1/k^3$}}
+\note{
+The load determines the displacement's regularity through $-u''=f$.
+A point load is a distribution, and it gives a displacement with a corner.
+A square-integrable load gives $u''\in L^2$ and hence $u\in H^2$ on this interval.
+
+The step load gives a continuous slope and a curvature that jumps at mid-span.
+The uniform load $f=2$ gives the smooth parabola $x(1-x)$.
+The point-load corner belongs to $H^1_0$ but not to $H^2$.
+
+The weak formulation requires only one weak derivative of the displacement, so continuous piecewise-linear hats are admissible.
+The equation also relates the sine coefficients, mode by mode.
+How does each load's regularity appear in them?
+}
+\end{frame}
+
 \begin{frame}{Decay rates of sine coefficients}
 \begin{columns}
 \column{0.7\textwidth}
@@ -1489,6 +1407,79 @@ This nonvanishing overshoot is the Gibbs phenomenon.
 The series does not converge in the sup norm.
 It does converge in $L^2$ because the region of large error shrinks.
 Convergence in one norm therefore does not imply convergence in another.
+How far apart can functions of the same $L^2$ size be?
+}
+\end{frame}
+
+\begin{frame}{Equal $L^2$ norm, increasing slope seminorm}
+\begin{columns}
+\column{0.62\textwidth}
+\begin{tikzpicture}
+\begin{axis}[rep, height=5.6cm, xmin=0, xmax=1, ymin=-1.6, ymax=1.6, xlabel=$x$, legend style={at={(0.5,1.02)}, anchor=south, legend columns=3}]
+\addplot[sblue, line width=1.5pt] table[x=x, y=v]{data/mode1.dat};
+\addlegendentry{$k = 1$}
+\stepfrom{2}{\addplot[sorange, line width=1.3pt] table[x=x, y=v]{data/mode4.dat};
+          \addlegendentry{$k = 4$}}
+\stepfrom{3}{\addplot[sgreen, line width=1pt] table[x=x, y=v]{data/mode16.dat};
+          \addlegendentry{$k = 16$}}
+\end{axis}
+\end{tikzpicture}
+\column{0.38\textwidth}
+\small
+\[
+\phi_k(x) = \sqrt2\,\sin(k\pi x)
+\]
+\[
+\|\phi_k\|_{L^2} = 1, \qquad |\phi_k|_{H^1} = k\pi
+\]
+\chip{$|\phi_k|_{H^1}$ at $k = 1$}{$3.14$}\\[4pt]
+\stepfrom{2}{\chip{$k = 4$}{$12.57$}\\[4pt]}
+\stepfrom{3}{\chip{$k = 16$}{$50.27$}\\[4pt]
+\chip{distance between two different modes}{$\sqrt2 = 1.414$}}
+\end{columns}
+\note{
+The normalized modes $\phi_k=\sqrt2\sin(k\pi x)$ all have $L^2$ norm one.
+Their slope seminorms are $k\pi$.
+For $k=1$, $4$, and $16$, these are $3.14$, $12.57$, and $50.27$.
+Increasing frequency leaves the displacement norm unchanged while increasing the slope seminorm.
+
+Distinct modes are orthogonal, so their $L^2$ distance is $\sqrt2$.
+The sequence of modes therefore has no $L^2$-convergent subsequence.
+A bound on displacement alone does not limit spatial oscillation.
+Which bound does?
+}
+\end{frame}
+
+\begin{frame}{Compactness from bounded energy}
+\begin{columns}
+\column{0.5\textwidth}
+\small
+\[
+u = \sum_{k \ge 1} c_k\,\sqrt2\sin(k\pi x), \qquad |u|_{H^1}^2 = \sum_{k \ge 1} (k\pi)^2 c_k^2
+\]
+\stepfrom{2}{\[
+|u|_{H^1} \le M \;\Longrightarrow\; \Bigl(\sum_{k > K} c_k^2\Bigr)^{1/2} \le \frac{M}{(K+1)\pi}
+\]}
+\column{0.5\textwidth}
+\chip{unit ball of $L^2$}{the modes stay $\sqrt2$ apart, no subsequence converges}\\[4pt]
+\stepfrom{2}{\chip{$M = 10$, tail beyond $K = 4$}{at most $0.637$}\\[4pt]
+\chip{$M = 10$, tail beyond $K = 16$}{at most $0.187$}\\[4pt]}
+\stepfrom{3}{\chip{Rellich, on a bounded interval}{a bounded sequence in $H^1_0$ has an $L^2$-convergent subsequence}}
+\end{columns}
+\note{
+In $\mathbb{R}^n$, every bounded sequence has a convergent subsequence.
+The normalized sine modes show why this fails in $L^2$.
+They all have norm one, yet distinct modes remain $\sqrt2$ apart.
+
+A bound on the slope seminorm also bounds the high-frequency coefficients.
+If $|u|_{H^1}\le M$, then $\sum_{k>K}c_k^2\le M^2/((K+1)\pi)^2$.
+Truncation after mode $K$ therefore gives $L^2$ error at most $M/((K+1)\pi)$.
+For $M=10$, this bound is $0.637$ after mode $4$ and $0.187$ after mode $16$.
+
+The bound makes the high-frequency remainder uniformly small.
+The finitely many remaining coefficients have convergent subsequences.
+Together these facts give an $L^2$-convergent subsequence for every bounded sequence in $H^1_0(0,1)$.
+This is the compact embedding expressed by Rellich's theorem on the interval.
 }
 \end{frame}
 
