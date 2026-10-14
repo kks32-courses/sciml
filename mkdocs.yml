@@ -135,6 +135,7 @@ nav:
     - Adaptive Weights: 01-pinns/adaptive-weights.ipynb
     - Collocation: 01-pinns/collocation.ipynb
     - NTK and spectral bias: 01-pinns/ntk-spectral-bias.ipynb
+    - NTK weights for the boundary loss: 01-pinns/ntk-boundary-weights.ipynb
     - Failure modes on convection: 01-pinns/pinn-failure-modes.ipynb
     - Inverse analysis: 01-pinns/inverse-heat.ipynb
     - Inverse oscillator with a differentiable solver: 01-pinns/inverse-oscillator-diffeq.ipynb
