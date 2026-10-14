@@ -4,14 +4,14 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 
-\title{\textbf{HW\#00: MLP function approximation}}
-\author{CE397 and CSE393: Scientific Machine Learning}
+\title{\textbf{HW\#00: MLP function approximation [100 pts]}}
+\author{Scientific Machine Learning}
 \date{}
 \begin{document}
 \maketitle
 \hrulefill
 
-\section{Theoretical Foundations [2 pts]}
+\section{Theoretical Foundations [25 pts]}
 
 \subsection{The Universal Approximation Theorem (UAT)}
 \begin{enumerate}
@@ -19,14 +19,24 @@
     \item[\textbf{b)}] Briefly discuss the limitations of the UAT. What does it guarantee, and what does it \textit{not} guarantee about network training, architecture, or efficiency?
 \end{enumerate}
 
-\subsection{Backpropagation for a Two-Layer MLP}
-Consider a two-layer MLP with a single input neuron ($x$), a hidden layer with $H$ neurons, and a single linear output neuron ($\hat{y}$). The hidden layer uses a sigmoid activation function, $\sigma(z) = (1 + e^{-z})^{-1}$. The network function is:
-\[ \hat{y}(x; \theta) = \mathbf{w}^{(2)T} \sigma(\mathbf{w}^{(1)} x + \mathbf{b}^{(1)}) + b^{(2)} \]
-where $\mathbf{w}^{(1)}, \mathbf{b}^{(1)} \in \mathbb{R}^H$, $\mathbf{w}^{(2)} \in \mathbb{R}^H$, and $b^{(2)} \in \mathbb{R}$. The loss for a single training example $(x_j, y_j)$ is the squared error $L = (\hat{y}(x_j) - y_j)^2$.
+\subsection{Bernstein Polynomials and a ReLU Network}
+The Bernstein polynomial of degree $n$ for $f$ on $[0,1]$ is
+\[ B_n f(x) = \sum_{k=0}^{n} f\!\left(\tfrac{k}{n}\right) \binom{n}{k} x^k (1-x)^{n-k}. \]
+Take $f_1(x) = \sin(\pi x)$ and $f_2(x) = |x - \tfrac12|$.
+\begin{enumerate}
+    \item[\textbf{a)}] For each function, plot $B_n f$ against $f$ for $n = 4, 16, 64, 256$ and report the largest gap $\max_x |f(x) - B_n f(x)|$ for each $n$.
+    \item[\textbf{b)}] Repeat with a one-hidden-layer ReLU network of width $4, 16, 64, 256$, trained on $200$ evenly spaced samples of $f$.
+    \item[\textbf{c)}] Which function does each representation handle better, and why?
+\end{enumerate}
 
-Using the chain rule, derive the update rules for the parameters by finding the partial derivatives $\frac{\partial L}{\partial w_i^{(2)}}$, $\frac{\partial L}{\partial b^{(2)}}$, $\frac{\partial L}{\partial w_i^{(1)}}$, and $\frac{\partial L}{\partial b_i^{(1)}}$. Recall that $\sigma'(z) = \sigma(z)(1-\sigma(z))$.
+\subsection{Derivatives of Sigmoid and ReLU}
+\begin{enumerate}
+    \item[\textbf{a)}] For $\sigma(z) = (1 + e^{-z})^{-1}$, derive $\sigma'(z)$ by hand and show that $\sigma'(z) = \sigma(z)\,(1 - \sigma(z))$.
+    \item[\textbf{b)}] For $\mathrm{ReLU}(z) = \max(0, z)$, write the derivative for $z < 0$ and for $z > 0$. What happens at $z = 0$?
+    \item[\textbf{c)}] Plot $\sigma$, $\sigma'$, $\mathrm{ReLU}$, and $\mathrm{ReLU}'$ on $[-5, 5]$. Where is $\sigma'$ small, and what does that do to a gradient that passes through such a unit during backpropagation?
+\end{enumerate}
 
-\section{Computational Experiments: Function Approximation [3 pts]}
+\section{Computational Experiments: Function Approximation [25 pts]}
 
 \subsection{Approximating a Discontinuous Function}
 This problem explores the challenge of approximating non-smooth functions. Consider the Heaviside step function on the interval $x \in [0,1]$:
@@ -44,14 +54,7 @@ This problem explores the challenge of approximating non-smooth functions. Consi
     \item[\textbf{d)}] \textbf{Analysis:} Why does a `tanh`-based network struggle with discontinuities? Which modification produced the best result and why? Relate your findings to the fact that compositions of `tanh` are $C^\infty$, while ReLU networks are piecewise linear.
 \end{enumerate}
 
-\subsection{Comparing Activation Functions \& Optimizers}
-For the smooth function $u(x) = 0.5\cos(\pi x^2)$:
-\begin{enumerate}
-    \item[\textbf{a)}] Compare the performance of the following activation functions: Sigmoid, Tanh, ReLU, Leaky ReLU, and SiLU (Swish). For each, plot the final learned function and the training loss vs. epochs on a single log-log plot.
-    \item[\textbf{b)}] Using the best-performing activation function from part (a), compare the convergence behavior of the following optimizers: SGD (with momentum=0.9), RMSprop, and Adam. Plot their training loss curves on a single log-log plot and discuss the differences in convergence speed and stability.
-\end{enumerate}
-
-\section{Compositional Learning [3 pts]}
+\section{Compositional Learning [25 pts]}
 This section explores how to solve complex problems by breaking them into simpler, modular components that can be learned separately and then combined.
 
 \subsection{Learning and Composing Multi-Scale Functions}
@@ -84,27 +87,16 @@ Now, we will tackle the full problem $h(x)$ using a ``divide and conquer" strate
 
 
 
-\section{Regularization in High-Dimensional Spaces [2 pts]}
-\subsection{L1 vs. L2 Regularization for Feature Selection}
-This problem explores how regularization can prevent overfitting and perform feature selection in a high-dimensional setting. We will consider approximating a simple signal, $y = \sin(x)$, from noisy data points. To make the problem challenging, we will transform the input $x$ into a high-dimensional feature space using 100 Gaussian Radial Basis Functions (RBFs), creating an over-parameterized system. The model is a linear combination of these basis functions, and regularization is added to the standard Mean Squared Error loss:
-\[ L_{\text{total}} = \text{MSE} + \lambda \cdot R(W) \]
-where $R(W)$ is the regularization penalty on the weights $W$. We will compare:
-\begin{itemize}
-	\item \textbf{L2 Regularization (Ridge):} $R(W) = \|W\|_2^2 = \sum_i w_i^2$, which penalizes the squared magnitude of the weights.
-	\item \textbf{L1 Regularization (Lasso):} $R(W) = \|W\|_1 = \sum_i |w_i|$, which penalizes the absolute magnitude of the weights.
-\end{itemize}
-
+\section{Regularization [25 pts]}
+\subsection{L1 vs. L2 Penalties}
+Take $40$ evenly spaced points $x_i$ on $[0, 2\pi]$ with readings $y_i = \sin(x_i) + \varepsilon_i$, $\varepsilon_i \sim \mathcal{N}(0, 0.1^2)$.
+Fit $\hat y(x) = \sum_{j=1}^{100} w_j \phi_j(x)$ with Gaussian bumps $\phi_j(x) = \exp\!\left(-(x - c_j)^2 / 2\ell^2\right)$, centers $c_j$ evenly spaced on $[0, 2\pi]$ and $\ell = 0.5$, by minimizing
+\[ \frac{1}{40}\sum_{i=1}^{40} \bigl(\hat y(x_i) - y_i\bigr)^2 + \lambda R(\mathbf{w}), \qquad R(\mathbf{w}) = \sum_j w_j^2 \ \text{(L2)} \quad\text{or}\quad R(\mathbf{w}) = \sum_j |w_j| \ \text{(L1)}. \]
+Solve the L1 problem by soft thresholding or with a library solver.
 \begin{enumerate}
-	\item[\textbf{a)}] \textbf{Function Approximation:} 
-	\begin{itemize}
-		\item Describe the behavior of the model with no regularization. 
-		\item How do the L1 and L2 regularized models approximate the underlying true signal?
-	\end{itemize}
-	\item[\textbf{b)}] \textbf{Learned Weights \& Sparsity:} Examine the plot showing the learned weights (coefficients) for the basis functions.
-	\begin{itemize}
-		\item Compare the distribution of weight values for the L2 (Ridge) and L1 (Lasso) models. What is the most significant visual difference between the two?
-		\item The L1 penalty is known to produce \textbf{sparse} solutions. Explain what sparsity means in this context and how the plot for the L1 model demonstrates it.
-	\end{itemize}
+	\item[\textbf{a)}] Fit with no penalty. Plot the fit against $\sin(x)$ and the readings. What happens between the readings, and why?
+	\item[\textbf{b)}] Fit with L2 and with L1 for $\lambda \in \{10^{-4}, 10^{-3}, 10^{-2}, 10^{-1}\}$. Report the RMSE against $\sin(x)$ for each.
+	\item[\textbf{c)}] At $\lambda = 10^{-2}$, plot the $100$ weights of the L2 and L1 fits. How many are exactly zero in each, and why?
 \end{enumerate}
 
 \end{document}

@@ -124,15 +124,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Note: ReLU(-x-1) means we need to apply ReLU to (-x-1)
     const components = [
       { weight: -20, input: x => -x - 1, label: '-20·ReLU(-x-1)', color: '#E74C3C', 
-        neuronWeight: -20, neuronBias: 1, negateInput: true },
+        neuronWeight: -20, neuronBias: -1, negateInput: true },
       { weight: 5, input: x => x + 1, label: '5·ReLU(x+1)', color: '#3498DB',
-        neuronWeight: 5, neuronBias: -1, negateInput: false },
+        neuronWeight: 5, neuronBias: 1, negateInput: false },
       { weight: -5, input: x => x, label: '-5·ReLU(x)', color: '#9B59B6',
         neuronWeight: -5, neuronBias: 0, negateInput: false },
       { weight: 5, input: x => x - 2, label: '5·ReLU(x-2)', color: '#F39C12',
-        neuronWeight: 5, neuronBias: 2, negateInput: false },
+        neuronWeight: 5, neuronBias: -2, negateInput: false },
       { weight: 15, input: x => x - 3, label: '15·ReLU(x-3)', color: '#1ABC9C',
-        neuronWeight: 15, neuronBias: 3, negateInput: false }
+        neuronWeight: 15, neuronBias: -3, negateInput: false }
     ];
     
     function drawDecomposition() {

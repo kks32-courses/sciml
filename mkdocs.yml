@@ -129,11 +129,17 @@ nav:
     - Binary Cross Entropy: 00-mlp/bce.md
   - PINNs:
     - PINNs oscillator: 01-pinns/pinns.ipynb
+    - Oscillator analysis: 01-pinns/oscillator-analysis.ipynb
     - Soft vs Hard constraint: 01-pinns/poisson.ipynb
+    - Three principles on Poisson: 01-pinns/three-principles.ipynb
     - Adaptive Weights: 01-pinns/adaptive-weights.ipynb
     - Collocation: 01-pinns/collocation.ipynb
+    - NTK and spectral bias: 01-pinns/ntk-spectral-bias.ipynb
+    - Failure modes on convection: 01-pinns/pinn-failure-modes.ipynb
     - Inverse analysis: 01-pinns/inverse-heat.ipynb
+    - Inverse oscillator with a differentiable solver: 01-pinns/inverse-oscillator-diffeq.ipynb
     - Burgers: 01-pinns/burgers.ipynb
+    - Optimizer benchmark on Burgers: 01-pinns/burgers-optimizers.ipynb
     - Variational formulation: 01-pinns/linear-elastic-fixed.ipynb
   - DeepONet:
     - DeepONet: 02-deeponet/deeponet.ipynb
