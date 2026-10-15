@@ -53,6 +53,9 @@ plugins:
       ignore_h1_titles: true
       show_input: true
       theme: light
+      remove_tag_config:
+        remove_cell_tags:
+          - remove-cell
   - git-revision-date-localized:
       type: date
   
