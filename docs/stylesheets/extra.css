@@ -429,3 +429,22 @@ article.md-content__inner {
     page-break-inside: avoid !important;
   }
 }
+/* Show code button for notebook cells tagged hide-input (javascripts/code-toggle.js) */
+.code-toggle {
+  font: inherit;
+  font-size: 0.72rem;
+  color: var(--md-default-fg-color--light);
+  background: transparent;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 4px;
+  padding: 0.15rem 0.65rem;
+  margin: 0.5rem 0 0.4rem;
+  cursor: pointer;
+}
+.code-toggle:hover {
+  color: var(--md-accent-fg-color);
+  border-color: var(--md-accent-fg-color);
+}
+.code-folded {
+  display: none !important;
+}

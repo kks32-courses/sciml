@@ -104,6 +104,7 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js
   - javascripts/katex.js
   - javascripts/adaptive-width.js
+  - javascripts/code-toggle.js
 
 extra_css:
   - https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css
@@ -146,6 +147,7 @@ nav:
     - Optimizer benchmark on Burgers: 01-pinns/burgers-optimizers.ipynb
     - Variational formulation: 01-pinns/linear-elastic-fixed.ipynb
   - DeepONet:
+    - From a PDE solve to operator learning: 02-deeponet/operator_learning_with_frequency_and_sensors.ipynb
     - DeepONet: 02-deeponet/deeponet.ipynb
     - PI-DeepONet: 02-deeponet/pideeponet.ipynb
     - DeepONet Interpretation: 02-deeponet/deeponet-explanation.md
