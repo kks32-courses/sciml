@@ -155,7 +155,8 @@ nav:
   - Function Encoders:
     - Function Encoders: 03-function-encoder/03-function-encoder.ipynb
     - Transfer Learning with Function Encoders: 03-function-encoder/03-fe-transfer.ipynb
-    - Function Encoders as Learned Kernels: 03-function-encoder/03-fe-kernels.ipynb
+    - From Basis Functions to Kernels: 03-function-encoder/03-fe-kernels.ipynb
+    - Inverse Operators in Coefficient Space: 03-function-encoder/03-fe-inverse.ipynb
     - Function Approximation: 03-function-encoder/function_approximation_tutorial.md
     - B2B Operator: 03-function-encoder/03-b2b-operator.ipynb
   - GNS:
