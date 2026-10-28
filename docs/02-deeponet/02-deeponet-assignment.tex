@@ -11,28 +11,28 @@
 	\maketitle
 	\hrulefill
 	\section{Learning the Derivative Operator}
-	Design a DeepONet to learn the derivative operator $\mathcal{G}$ that maps input functions $u(x)$ to their derivatives:
+	Design a DeepONet to learn the derivative operator $\mathcal{G}$ that maps input functions $f(x)$ to their derivatives:
 	
 	\begin{equation*}
-		\mathcal{G}[u](x) = \frac{du}{dx}, \quad x \in [-1, 1]
+		\mathcal{G}[f](x) = \frac{df}{dx}, \quad x \in [-1, 1]
 	\end{equation*}
 	
 	Consider a family of sine functions as the input function space:
 	\begin{equation*}
-		u(x) = A\sin(\omega x + \phi)
+		f(x) = A\sin(\omega x + \phi)
 	\end{equation*}
 	
 	The analytical derivative is:
 	\begin{equation*}
-		\frac{du}{dx} = A\omega\cos(\omega x + \phi)
+		\frac{df}{dx} = A\omega\cos(\omega x + \phi)
 	\end{equation*}
 	
 	\begin{enumerate}
 		\item[\textbf{a)}] Design a DeepONet architecture with:
 		\begin{itemize}
-			\item \textbf{Branch Network:} Input function values $u(x_j)$ at $m = 100$ sensor locations, two hidden layers with 32 neurons each, Tanh activations, output $p = 50$ basis coefficients $b_k(u)$
+			\item \textbf{Branch Network:} Input function values $f(x_j)$ at $m = 100$ sensor locations, two hidden layers with 32 neurons each, Tanh activations, output $p = 50$ basis coefficients $b_k(f)$
 			\item \textbf{Trunk Network:} Input query location $y$, two hidden layers with 32 neurons each, Tanh activations, output $p = 50$ basis functions $t_k(y)$
-			\item \textbf{Output:} $\mathcal{G}(u)(y) = \sum_{k=1}^{p} b_k(u) \cdot t_k(y) + b_0$
+			\item \textbf{Output:} $\mathcal{G}(f)(y) = \sum_{k=1}^{p} b_k(f) \cdot t_k(y) + b_0$
 		\end{itemize}
 		
 		\item[\textbf{b)}] Generate $N = 2000$ training functions:
@@ -41,12 +41,12 @@
 			\item Frequency: $\omega \sim \text{Uniform}(1, 5)$
 			\item Phase: $\phi \sim \text{Uniform}(0, 2\pi)$
 			\item Sample each function at $m = 100$ sensor locations uniformly in $[-1, 1]$
-			\item Compute analytical derivatives: $\frac{du}{dx} = A\omega\cos(\omega x + \phi)$
+			\item Compute analytical derivatives: $\frac{df}{dx} = A\omega\cos(\omega x + \phi)$
 		\end{itemize}
 		
 		\item[\textbf{c)}] Implement the data loss function:
 		\begin{equation*}
-			\mathcal{L}_{data} = \frac{1}{N \cdot P} \sum_{i=1}^{N} \sum_{j=1}^{P} \left|\mathcal{G}_\theta(u^{(i)})(y_j) - \frac{du^{(i)}}{dx}(y_j)\right|^2
+			\mathcal{L}_{data} = \frac{1}{N \cdot P} \sum_{i=1}^{N} \sum_{j=1}^{P} \left|\mathcal{G}_\theta(f^{(i)})(y_j) - \frac{df^{(i)}}{dx}(y_j)\right|^2
 		\end{equation*}
 		
 		\item[\textbf{d)}] Train using 80-10-10 train-validation-test split, batch size 128, Adam optimizer ($lr = 10^{-2}$), ReduceLROnPlateau scheduler (patience=50, factor=0.5), early stopping (patience=100), maximum 500 epochs.
@@ -54,14 +54,14 @@
 		\item[\textbf{e)}] Analyze the learned basis functions:
 		\begin{itemize}
 			\item Visualize the first 8 trunk network basis functions $t_k(y)$
-			\item Test specific cases: $u(x) = \sin(x)$, $u(x) = \sin(2x)$, $u(x) = 2\sin(3x + \pi/4)$
+			\item Test specific cases: $f(x) = \sin(x)$, $f(x) = \sin(2x)$, $f(x) = 2\sin(3x + \pi/4)$
 			\item Plot predictions vs. analytical derivatives for these cases
 			\item Explain how the branch network encodes frequency and amplitude information
 		\end{itemize}
 		
 		\item[\textbf{f)}] Evaluate generalization:
 		\begin{itemize}
-			\item Compute relative $L^2$ error on test set: $\displaystyle\frac{\left\|u'_{pred} - u'_{true}\right\|_2}{\left\|u'_{true}\right\|_2}$
+			\item Compute relative $L^2$ error on test set: $\displaystyle\frac{\left\|f'_{pred} - f'_{true}\right\|_2}{\left\|f'_{true}\right\|_2}$
 			\item Plot predictions vs. true derivatives for 6 test samples
 			\item Report mean and standard deviation of test errors
 		\end{itemize}

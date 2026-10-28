@@ -117,7 +117,7 @@ where $\mathcal{A}$ and $\mathcal{U}$ are function spaces.
 
 \textbf{Examples of operators:}
 \begin{itemize}
-    \item \textbf{Derivative operator:} $\mathcal{G}u = \frac{du}{dx}$
+    \item \textbf{Derivative operator:} $\mathcal{G}f = \frac{df}{dx}$
     \item \textbf{Integration operator:} $\mathcal{G}f = \int_0^x f(t) dt$
     \item \textbf{PDE solution operator:} Given boundary conditions or source terms, map to the PDE solution
 \end{itemize}
@@ -169,15 +169,15 @@ where $\mathcal{A}$ and $\mathcal{U}$ are function spaces.
     \begin{column}{0.5\textwidth}
         \textbf{Function-to-function mapping:}
         \begin{itemize}
-            \item \textbf{Input:} An entire function $u(x) = \sin(x)$
-            \item \textbf{Output:} Another entire function $\mathcal{G}[u](x) = \cos(x)$ (the derivative!)
+            \item \textbf{Input:} An entire function $f(x) = \sin(x)$
+            \item \textbf{Output:} Another entire function $\mathcal{G}[f](x) = \cos(x)$ (the derivative!)
         \end{itemize}
         
         \vspace{0.5cm}
         
         \textbf{Examples in science:}
         \begin{itemize}
-            \item $\mathcal{D}[u] = \frac{du}{dx}$ (Differentiation)
+            \item $\mathcal{D}[f] = \frac{df}{dx}$ (Differentiation)
             \item $\mathcal{I}[f] = \int_0^x f(t) dt$ (Integration)
             \item $\mathcal{S}[f] = u$ where $\nabla^2 u = f$ (PDE solution)
         \end{itemize}
@@ -231,7 +231,7 @@ Neural networks can approximate \textbf{operators} that map functions to functio
 \textbf{Mathematical Statement:} For any continuous operator $\mathcal{G}: V \subset C(K_1) \rightarrow C(K_2)$ and $\epsilon > 0$, there exist constants such that:
 
 \begin{equation*}
-\left|\mathcal{G}(u)(y) - \sum_{k=1}^p \underbrace{\sum_{i=1}^n c_i^k \sigma\left(\sum_{j=1}^m \xi_{ij}^k u(x_j) + \theta_i^k\right)}_{\text{Branch Network}} \underbrace{\sigma(w_k \cdot y + \zeta_k)}_{\text{Trunk Network}}\right| < \epsilon
+\left|\mathcal{G}(f)(y) - \sum_{k=1}^p \underbrace{\sum_{i=1}^n c_i^k \sigma\left(\sum_{j=1}^m \xi_{ij}^k f(x_j) + \theta_i^k\right)}_{\text{Branch Network}} \underbrace{\sigma(w_k \cdot y + \zeta_k)}_{\text{Trunk Network}}\right| < \epsilon
 \end{equation*}
 
 \end{frame}
@@ -243,7 +243,7 @@ Neural networks can approximate \textbf{operators} that map functions to functio
 This looks complex, but the insight is beautiful:
 
 \begin{enumerate}
-    \item \textbf{Branch Network:} Processes function $u$ sampled at sensor points $\{x_j\}$
+    \item \textbf{Branch Network:} Processes function $f$ sampled at sensor points $\{x_j\}$
     \item \textbf{Trunk Network:} Processes output coordinates $y$
     \item \textbf{Combination:} Multiply branch and trunk outputs, then sum
 \end{enumerate}
@@ -251,7 +251,7 @@ This looks complex, but the insight is beautiful:
 \begin{block}{Key insight}
 Any operator can be written as:
 \begin{equation*}
-\mathcal{G}(u)(y) \approx \sum_{k=1}^p b_k(u) \cdot t_k(y)
+\mathcal{G}(f)(y) \approx \sum_{k=1}^p b_k(f) \cdot t_k(y)
 \end{equation*}
 where $b_k$ depends only on the input function and $t_k$ depends only on the output location!
 \end{block}
@@ -271,11 +271,11 @@ This decomposition is the theoretical foundation for the DeepONet architecture.
 
 \begin{block}{Core Architecture}
 \begin{equation*}
-\mathcal{G}_\theta(u)(y) = \sum_{k=1}^p b_k(u) \cdot t_k(y) + b_0
+\mathcal{G}_\theta(f)(y) = \sum_{k=1}^p b_k(f) \cdot t_k(y) + b_0
 \end{equation*}
 where:
 \begin{itemize}
-    \item \textbf{Branch network:} $b_k(u) = \mathcal{B}_k([u(x_1), u(x_2), \ldots, u(x_m)])$
+    \item \textbf{Branch network:} $b_k(f) = \mathcal{B}_k([f(x_1), f(x_2), \ldots, f(x_m)])$
     \item \textbf{Trunk network:} $t_k(y) = \mathcal{T}_k(y)$
     \item \textbf{$p$:} Number of basis functions (typically 50-200)
     \item \textbf{$b_0$:} Bias term
@@ -296,9 +296,9 @@ where:
 
 \textbf{Data flow:}
 \begin{enumerate}
-    \item Input function $u$ sampled at sensor points → Branch network → Coefficients $\{b_k\}$
+    \item Input function $f$ sampled at sensor points → Branch network → Coefficients $\{b_k\}$
     \item Query points $y$ → Trunk network → Basis functions $\{t_k\}$  
-    \item Element-wise multiplication and summation → Output $\mathcal{G}(u)(y)$
+    \item Element-wise multiplication and summation → Output $\mathcal{G}(f)(y)$
 \end{enumerate}
 
 \end{frame}
@@ -307,17 +307,17 @@ where:
 \begin{frame}
 \frametitle{Training Data Structure and Loss Function}
 
-\textbf{Input-output pairs:} $(u^{(i)}, y^{(j)}, \mathcal{G}(u^{(i)})(y^{(j)}))$
+\textbf{Input-output pairs:} $(f^{(i)}, y^{(j)}, \mathcal{G}(f^{(i)})(y^{(j)}))$
 
 \begin{itemize}
-    \item \textbf{$N$} input functions: $\{u^{(i)}\}_{i=1}^N$
-    \item Each function sampled at \textbf{$m$} sensors: $\{u^{(i)}(x_j)\}_{j=1}^m$
-    \item Corresponding outputs at \textbf{query points}: $\{\mathcal{G}(u^{(i)})(y_k)\}$
+    \item \textbf{$N$} input functions: $\{f^{(i)}\}_{i=1}^N$
+    \item Each function sampled at \textbf{$m$} sensors: $\{f^{(i)}(x_j)\}_{j=1}^m$
+    \item Corresponding outputs at \textbf{query points}: $\{\mathcal{G}(f^{(i)})(y_k)\}$
 \end{itemize}
 
 \begin{block}{Loss Function}
 \begin{equation*}
-\mathcal{L}(\theta) = \frac{1}{N \cdot P} \sum_{i=1}^N \sum_{k=1}^P \left|\mathcal{G}_\theta(u^{(i)})(y_k) - \mathcal{G}(u^{(i)})(y_k)\right|^2
+\mathcal{L}(\theta) = \frac{1}{N \cdot P} \sum_{i=1}^N \sum_{k=1}^P \left|\mathcal{G}_\theta(f^{(i)})(y_k) - \mathcal{G}(f^{(i)})(y_k)\right|^2
 \end{equation*}
 \end{block}
 
@@ -337,7 +337,7 @@ where:
 \begin{frame}
 \frametitle{Perfect Starting Point: Learning Derivatives}
 
-\textbf{Problem Setup:} Learn the derivative operator $\mathcal{D}[u] = \frac{du}{dx}$
+\textbf{Problem Setup:} Learn the derivative operator $\mathcal{D}[f] = \frac{df}{dx}$
 
 \begin{columns}[T]
     \begin{column}{0.5\textwidth}
@@ -353,12 +353,12 @@ where:
         
         \textbf{Input functions:} Cubic polynomials
         \begin{equation*}
-        u(x) = ax^3 + bx^2 + cx + d
+        f(x) = ax^3 + bx^2 + cx + d
         \end{equation*}
         
         \textbf{Target operator:}
         \begin{equation*}
-        \mathcal{D}[u](x) = 3ax^2 + 2bx + c
+        \mathcal{D}[f](x) = 3ax^2 + 2bx + c
         \end{equation*}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -378,7 +378,7 @@ where:
 
 \textbf{Key insight:} The derivative of a cubic is always quadratic, so it can be written as:
 \begin{equation*}
-\frac{du}{dx} = w_1 \cdot 1 + w_2 \cdot x + w_3 \cdot x^2
+\frac{df}{dx} = w_1 \cdot 1 + w_2 \cdot x + w_3 \cdot x^2
 \end{equation*}
 where $w_1 = c$, $w_2 = 2b$, $w_3 = 3a$.
 
@@ -829,7 +829,7 @@ with Dirichlet boundary conditions: $u(0) = 0$, $u(1) = 0$
 \begin{itemize}
     \item Universal Approximation Theorem for Operators
     \item Branch-trunk architecture emerges naturally
-    \item Basis function decomposition: $\mathcal{G}(u)(y) = \sum_k b_k(u) \cdot t_k(y)$
+    \item Basis function decomposition: $\mathcal{G}(f)(y) = \sum_k b_k(f) \cdot t_k(y)$
 \end{itemize}
 \end{block}
 

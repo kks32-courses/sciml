@@ -25,8 +25,8 @@ class DeepONetCalculus(Scene):
             x_range=[-2, 2, 1], y_range=[-2, 6, 2], x_length=5, y_length=4, axis_config=axis_config
         ).to_edge(RIGHT, buff=1)
         
-        input_label = input_axes.get_axis_labels(x_label="x", y_label="u(x)")
-        output_label = output_axes.get_axis_labels(x_label="x", y_label="G(u)(x)")
+        input_label = input_axes.get_axis_labels(x_label="x", y_label="f(x)")
+        output_label = output_axes.get_axis_labels(x_label="x", y_label="G(f)(x)")
 
         a = ValueTracker(1)
         c = ValueTracker(1)
@@ -38,8 +38,8 @@ class DeepONetCalculus(Scene):
             output_axes.plot(lambda x: 3 * a.get_value() * x ** 2 + c.get_value(), color=ORANGE)
         )
         
-        input_formula = MathTex(r"u(x) = ax^3 + cx", color=BLUE).next_to(input_axes, DOWN)
-        output_formula = MathTex(r"G(u)(x) = \frac{d}{dx}u(x)", color=ORANGE).next_to(output_axes, DOWN)
+        input_formula = MathTex(r"f(x) = ax^3 + cx", color=BLUE).next_to(input_axes, DOWN)
+        output_formula = MathTex(r"G(f)(x) = \frac{d}{dx}f(x)", color=ORANGE).next_to(output_axes, DOWN)
         operator_G = MathTex(r"G", font_size=72).move_to(ORIGIN)
 
         self.play(
@@ -75,14 +75,14 @@ class DeepONetCalculus(Scene):
         trunk_nn = create_nn(1, 5, 2).scale(0.8).shift(DOWN * 2)
         branch_label = Text("Branch Net").next_to(branch_nn, UP)
         trunk_label = Text("Trunk Net").next_to(trunk_nn, UP)
-        u_input = Text("Input Function u(x)").to_edge(LEFT).shift(UP*2)
+        u_input = Text("Input Function f(x)").to_edge(LEFT).shift(UP*2)
         y_input = Text("Output Coordinate y").to_edge(LEFT).shift(DOWN*2)
         arrow_u = Arrow(u_input.get_right(), branch_nn.get_left(), buff=0.2, color=BLACK)
         arrow_y = Arrow(y_input.get_right(), trunk_nn.get_left(), buff=0.2, color=BLACK)
         dot = Dot(point=RIGHT*4, radius=0.1, color=BLACK)
         arrow_b = Arrow(branch_nn.get_right(), dot.get_left(), buff=0.2, color=BLACK)
         arrow_t = Arrow(trunk_nn.get_right(), dot.get_left(), buff=0.2, color=BLACK)
-        output_G = MathTex(r"G(u)(y)").next_to(dot, RIGHT, buff=0.3)
+        output_G = MathTex(r"G(f)(y)").next_to(dot, RIGHT, buff=0.3)
         arrow_out = Arrow(dot.get_right(), output_G.get_left(), buff=0.2, color=BLACK)
         
         self.play(
@@ -92,10 +92,10 @@ class DeepONetCalculus(Scene):
         self.play(FadeIn(dot, arrow_b, arrow_t, output_G, arrow_out))
         self.wait()
 
-        eq1 = MathTex(r"G(u)(y) \approx \text{BranchNet}(u) \cdot \text{TrunkNet}(y)").scale(0.8).to_edge(DOWN)
+        eq1 = MathTex(r"G(f)(y) \approx \text{BranchNet}(f) \cdot \text{TrunkNet}(y)").scale(0.8).to_edge(DOWN)
         self.play(Write(eq1))
         self.wait()
-        eq2 = MathTex(r"G(u)(y) \approx \sum_{i=1}^{p} \beta_i h_i(y)").scale(0.8).to_edge(DOWN)
+        eq2 = MathTex(r"G(f)(y) \approx \sum_{i=1}^{p} \beta_i h_i(y)").scale(0.8).to_edge(DOWN)
         self.play(Transform(eq1, eq2))
         self.wait()
         
@@ -182,7 +182,7 @@ class DeepONetCalculus(Scene):
         self.play(FadeIn(full_diagram))
         
         output_axes_final = Axes(x_range=[-2, 2, 1], y_range=[-2, 8, 2], x_length=6, y_length=4, axis_config=axis_config).shift(DOWN*0.5)
-        output_axes_label = Text("Final Output G(u)(y)").scale(0.7).next_to(output_axes_final, UP)
+        output_axes_label = Text("Final Output G(f)(y)").scale(0.7).next_to(output_axes_final, UP)
         self.play(Transform(full_diagram, VGroup(output_axes_final, output_axes_label)))
 
         beta_1_true, beta_2_true = -0.5, 4.5

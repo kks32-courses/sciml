@@ -41,13 +41,13 @@
 			
 			% Three input functions (cubic derivatives)
 			\draw[func, blue, thick] (-1.8, -0.5) .. controls (-1, 0.8) and (0, 0.3) .. (1.8, -0.2);
-			\node[blue] at (-1.5, 0.9) {$u_1(x)$};
+			\node[blue] at (-1.5, 0.9) {$f_1(x)$};
 			
 			\draw[func, red, thick] (-1.8, 0.2) .. controls (-0.5, -0.6) and (0.5, 0.9) .. (1.8, 0.5);
-			\node[red] at (1.5, 0.8) {$u_2(x)$};
+			\node[red] at (1.5, 0.8) {$f_2(x)$};
 			
 			\draw[func, purple, thick] (-1.8, 0.8) .. controls (-0.2, -0.8) and (1, 0.6) .. (1.8, -0.8);
-			\node[purple] at (0, -0.5) {$u_3(x)$};
+			\node[purple] at (0, -0.5) {$f_3(x)$};
 			
 			% Fixed sensor locations
 			\foreach \x in {-1.5, -0.75, 0, 0.75, 1.5} {
@@ -60,12 +60,12 @@
 		
 		% Input vector box with spacing
 		\node[vector_box] (input_vec) at (2, 2) {};
-		\node[input_neuron] (u1) at (2, 3.2) {$u_1$};
-		\node[input_neuron] (u2) at (2, 2.7) {$u_2$};
-		\node[input_neuron] (u3) at (2, 2.2) {$u_3$};
+		\node[input_neuron] (u1) at (2, 3.2) {$f_1$};
+		\node[input_neuron] (u2) at (2, 2.7) {$f_2$};
+		\node[input_neuron] (u3) at (2, 2.2) {$f_3$};
 		\node[text centered] at (2, 1.85) {$\vdots$};
-		\node[input_neuron] (uM) at (2, 1.3) {$u_M$};
-		\node[text width=1.8cm, align=center, font=\small] at (2, 0.7) {$\mathbf{u}$};
+		\node[input_neuron] (uM) at (2, 1.3) {$f_M$};
+		\node[text width=1.8cm, align=center, font=\small] at (2, 0.7) {$\mathbf{f}$};
 		
 		% Branch network with spacing
 		\node[branch_net] (branch) at (5.5, 2) {Branch Net};
@@ -101,7 +101,7 @@
 		
 		% Output vector with spacing
 		% \node[output_vector] (output_vec) at (14, 0.25) {};
-		\node[output_neuron] (output) at (13.5, 0.2) {$G(u)(y)$};
+		\node[output_neuron] (output) at (13.5, 0.2) {$G(f)(y)$};
 		
 		% Output function space with more spacing
 		\node[text width=3cm, align=center, font=\bfseries] at (17, 2.75) {Output \\Function Space};
@@ -109,7 +109,7 @@
 		\begin{scope}[shift={(17, 0.2)}]
 			% Axes
 			\draw[axis] (-2, -1.5) -- (2, -1.5) node[right] {$y$};
-			\draw[axis] (-2, -1.5) -- (-2, 1.5) node[above] {$G(u)(y)$};
+			\draw[axis] (-2, -1.5) -- (-2, 1.5) node[above] {$G(f)(y)$};
 			
 			% Bounding box for output function space
 			% \draw[thick, magenta!60] (-2.2, -1.7) rectangle (2.2, 1.7);
@@ -126,7 +126,7 @@
 			
 			% Sum of basis functions (final output)
 			\draw[func, magenta, very thick] (-1.8, 0.5) .. controls (-0.3, 0.8) and (0.7, 0.3) .. (1.8, 0.7);
-			\node[magenta, font=\bfseries] at (0, 0.75) {$G(u)(y)$};
+			\node[magenta, font=\bfseries] at (0, 0.75) {$G(f)(y)$};
 			
 			
 			\node[below] at (0, -1.8) {Basis Aggregation};
@@ -142,7 +142,7 @@
 		
 		% Mathematical expression
 		\node[text width=8cm, align=center, font=\large] at (14.5, -3.0) {
-			$G(u)(y) = \sum_{i=1}^{p} b_i \cdot t_i(y) = \mathbf{b}^T \mathbf{t}$
+			$G(f)(y) = \sum_{i=1}^{p} b_i \cdot t_i(y) = \mathbf{b}^T \mathbf{t}$
 		};
 		
 		% Title

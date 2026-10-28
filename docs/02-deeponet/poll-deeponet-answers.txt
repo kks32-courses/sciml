@@ -1,0 +1,25 @@
+Answers to poll-deeponet.txt, in order, with the slide behind each.
+
+1. The query locations y.
+   The trunk is a network in y and can be evaluated at any point.
+   The branch reads the input at the sensor locations fixed during training, so those cannot move.
+   "Train on one grid, evaluate on any grid" refers to the output grid ("Key Advantages of DeepONet").
+
+2. Basis functions of y, the same for every input function.
+   The input f enters the branch only.
+   Every output is a combination of the same p functions t_k(y), and the branch chooses the coefficients ("The Practical Implementation").
+
+3. The derivative of a cubic is a quadratic, and three functions span the quadratics.
+   The trunk can learn 1, x, x^2 or any other basis of the quadratics.
+   The branch maps (a, b, c, d) to the coefficients (c, 2b, 3a) in that basis.
+   Four values determine a cubic, so three sensors would be too few ("Learning Derivatives").
+
+4. A continuous operator on a compact family of inputs can be approximated to any accuracy.
+   The theorem is about existence.
+   It names no sensor count, no number of basis functions, no amount of data, and no training method.
+   Compactness is the hypothesis that lets finitely many sensors describe every input in the family ("The Breakthrough Theorem", "Decoding the Theorem").
+
+5. The query coordinate that enters the trunk.
+   The residual needs du/dy and d2u/dy2, and y enters the network only through the trunk.
+   Autograd therefore differentiates the trunk output with respect to its input.
+   Derivatives with respect to the parameters are the training gradient, a different use of autograd ("Key Modifications from Standard DeepONet").

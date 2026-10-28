@@ -1,0 +1,29 @@
+After a DeepONet is trained, which of these can change without retraining
+The locations of the sensors x_j
+The query locations y
+The number of trunk outputs p
+The equation whose solution operator it learned
+
+In the DeepONet output sum_k b_k(f) t_k(y), the trunk outputs t_k(y) are
+Coefficients that depend on the input function
+The sensor readings of f
+Basis functions of y, the same for every input function
+The PDE residuals at y
+
+For the derivative of cubic polynomials, a DeepONet with three trunk outputs can be exact because
+The derivative of a cubic is a quadratic, and three functions span the quadratics
+Three sensors are enough to determine a cubic
+The branch network has three hidden layers
+The derivative operator is linear
+
+The universal approximation theorem for operators guarantees that
+Any operator can be learned from enough data
+The number of sensors needed does not depend on the accuracy
+Gradient descent finds the right branch and trunk
+A continuous operator on a compact family of inputs can be approximated to any accuracy
+
+In a physics-informed DeepONet, the derivatives in the PDE residual are taken with respect to
+The sensor values that enter the branch
+The query coordinate that enters the trunk
+The network parameters
+The coefficients b_k(f)
