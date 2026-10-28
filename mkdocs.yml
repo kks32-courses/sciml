@@ -154,6 +154,8 @@ nav:
     - DeepONet Batch Einsum: 02-deeponet/einsum.md
   - Function Encoders:
     - Function Encoders: 03-function-encoder/03-function-encoder.ipynb
+    - Transfer Learning with Function Encoders: 03-function-encoder/03-fe-transfer.ipynb
+    - Function Encoders as Learned Kernels: 03-function-encoder/03-fe-kernels.ipynb
     - Function Approximation: 03-function-encoder/function_approximation_tutorial.md
     - B2B Operator: 03-function-encoder/03-b2b-operator.ipynb
   - GNS:

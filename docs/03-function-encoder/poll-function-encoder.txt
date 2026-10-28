@@ -1,0 +1,29 @@
+After a function encoder is trained, a new function arrives as m noisy samples, and its representation comes from
+A few gradient steps that fine-tune the basis networks on the samples
+A least-squares solve for k coefficients, with the basis fixed
+A forward pass of an encoder network that maps the samples to coefficients
+A search for the nearest training function
+
+A function encoder trained on quadratics with coefficients in [-3, 3] receives a quadratic with coefficients near 20, and its error
+Grows with the distance from the training range, as an autoencoder's does
+Is undefined until the basis is retrained on the larger range
+Stays at the level seen inside the training range, because least squares projects onto the same span
+Falls, because larger functions are easier to fit
+
+The same encoder, with three basis functions, receives a cubic, and it returns
+The best quadratic approximation to the cubic in the least-squares sense
+The cubic, because neural basis functions approximate any continuous function
+Nothing, because the normal equations become singular
+The training quadratic closest to the cubic
+
+A trained function encoder defines the kernel k(x, x') = phi(x)^T phi(x'), and its predictor can be evaluated at a cost independent of the number of samples because
+The kernel depends only on x - x'
+The Gram matrix of a trained basis is diagonal
+The samples are discarded after the basis is trained
+The m kernel terms are combinations of the k basis functions, so the predictor collapses to k coefficients
+
+A B2B operator learns a 10 by 10 matrix between two learned bases, and its singular values decay fast, which shows that
+The underlying operator is compact
+The operator restricted to the training family has low effective rank in those bases
+The two learned bases are orthonormal
+The operator is bounded on L2

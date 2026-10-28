@@ -1,0 +1,25 @@
+Answers to poll-function-encoder.txt, in order, with the slide behind each.
+
+1. A least-squares solve for k coefficients, with the basis fixed.
+   The basis networks are frozen after offline training.
+   The coefficients solve (Phi^T Phi + lambda I) alpha = Phi^T y, a k by k system, with no gradient step and no encoder network ("Online Inference: Compute Coefficients").
+
+2. Stays at the level seen inside the training range, because least squares projects onto the same span.
+   Least squares is the orthogonal projection onto the span of the basis, and projection is linear.
+   A quadratic with large coefficients is a scaled combination of training quadratics, so its relative error equals the type 1 error.
+   An autoencoder's decoder only returns functions near the training set, which is why it fails here ("Function Encoder: Transfer Learning", type 2).
+
+3. The best quadratic approximation to the cubic in the least-squares sense.
+   A cubic lies outside the span of the quadratics, which is type 3 transfer.
+   The projection returns the closest element of the span, the best quadratic fit.
+   The universal approximation theorem promises enough basis functions exist to represent any function, and says nothing about three functions trained on quadratics ("Function Encoder: Transfer Learning", type 3).
+
+4. The m kernel terms are combinations of the k basis functions, so the predictor collapses to k coefficients.
+   The dual predictor sum_l beta_l k(x, x_l) equals phi(x)^T Phi^T beta, a combination of the k basis functions.
+   Evaluation costs O(k) in the primal against O(m) in the dual ("Offline training", inference cost O(k) against O(m)).
+   The learned kernel is not stationary, and a trained Gram matrix is close to the identity only when a penalty asks for it.
+
+5. The operator restricted to the training family has low effective rank in those bases.
+   A finite matrix always has finitely many singular values, so their decay cannot show compactness of an operator on the whole function space.
+   The singular values also change under any rescaling of the learned bases.
+   For the derivative on cubics the rank is at most 3 whatever the matrix size, and the derivative operator itself is unbounded ("B2B linear example").
