@@ -3,7 +3,8 @@
 % CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
 %**************************************************************************************
 
-\documentclass[notes]{beamer}
+\documentclass{beamer}
+\setbeameroption{hide notes}
 
 \mode<presentation> {
 
@@ -19,8 +20,8 @@
 \setbeamercolor*{palette secondary}{use=structure,fg=white,bg=burntorange!80!black}
 \setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=burntorange!60!black}
 
-% To remove the navigation symbols from the bottom of all slides uncomment this line
-%\setbeamertemplate{navigation symbols}{}
+% Keep navigation symbols out of the content area.
+\setbeamertemplate{navigation symbols}{}
 }
 
 \usepackage{amsmath}
@@ -38,7 +39,7 @@
 \usepackage{hyperref}
 
 \AtBeginSection[]{
-	\begin{frame}{Outline}
+	\begin{frame}[shrink=5]{Outline}
 		\tableofcontents[
 		currentsection,      % highlight the current section
 		hideallsubsections   % show only section titles
@@ -62,7 +63,7 @@ University of Texas at Austin \\
 
 \begin{document}
 
-\begin{frame}
+\begin{frame}[shrink=5]
 \titlepage % title page as the first slide
 \end{frame}
 
@@ -86,200 +87,252 @@ University of Texas at Austin \\
     \item Explore mesh independence and super-resolution capabilities
 \end{itemize}
 
-\vspace{1cm}
+\vspace{0.3cm}
 \centering
 \href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno.ipynb}{\beamergotobutton{Open Notebook: FNO}}
 
 \end{frame}
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{The Central Challenge}
-
-We've seen how DeepONet learns operators by decomposing them into branch-trunk architectures.
-
-\vspace{1cm}
-
-\begin{alertblock}{But there's a deeper question}
-What if \textbf{physics itself suggests the right representation}?
-\end{alertblock}
-
-\vspace{0.5cm}
-
-For 50+ years, \textbf{spectral methods} based on Fourier transforms have dominated computational physics because:
+\frametitle{A temperature field becomes smoother}
+Consider heat flow on a periodic ring.
+The input and output are entire temperature fields.
+\[
+u_0(x)=\sin x+\tfrac12\sin3x+\tfrac14\sin7x,
+\qquad u_0\longmapsto u(\cdot,T).
+\]
+\begin{block}{The special inputs}
+Each sine keeps its spatial shape under diffusion.
+Its amplitude changes by a factor that depends on its frequency.
+\end{block}
 \begin{itemize}
-    \item Many PDEs simplify in Fourier space (convolution → multiplication)
-    \item Derivatives become algebraic: $\mathcal{F}\left(\frac{\partial u}{\partial x}\right) = ik\hat{u}(k)$
-    \item Global information propagates naturally
+\item A spectral solver derives those factors from the PDE.
+\item A Fourier layer learns factors from input-output fields.
 \end{itemize}
-
-\vspace{0.5cm}
-
-\textbf{The FNO insight:} Learn operators \textit{in Fourier space} rather than physical space.
-
+\smallskip
+\centering
+\href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno-intuition.ipynb}{\beamergotobutton{Heat-flow intuition notebook}}
 \end{frame}
+
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{Convolutional Neural Networks: The Foundation}
-
-CNNs apply \textbf{local} kernels to extract features:
-
-\begin{equation*}
-(f * g)(x) = \int_{\text{local}} f(x') g(x - x') dx'
-\end{equation*}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.7\textwidth]{figs/cnn.png}
-    \caption*{CNN architecture with convolutional and pooling layers.}
-\end{figure}
-
-\textbf{Key properties:}
+\frametitle{Local convolution in a CNN}
+A shared stencil combines neighboring input values.
+For a one-dimensional periodic blur,
+\[
+y_j=\tfrac13(u_{j-1}+u_j+u_{j+1}).
+\]
+\begin{center}
+\includegraphics[width=0.65\textwidth,height=0.35\textheight,keepaspectratio]{figs/cnn.png}
+\end{center}
 \begin{itemize}
-    \item Translation invariant
-    \item Local receptive field
-    \item Successful for images
-    \item \alert{But limited to local patterns}
+\item Shifting the input shifts the output of the convolution.
+\item A short stencil gives a local interaction in one layer.
 \end{itemize}
-
+\note{This property is translation equivariance for compatible padding and stride. Pooling and classification invariance are separate questions. Stacked local layers can produce a larger receptive field.}
 \end{frame}
+
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{Kernel Operators: The General Form}
-
-A \textbf{kernel operator} maps functions to functions:
-
-\begin{equation*}
-\mathcal{K}(v)(x) = \int_{\Omega} \kappa(x, x') v(x') dx'
-\end{equation*}
-
-where $\kappa(x, x')$ is a \textbf{learned kernel}.
-
-\vspace{1cm}
-
-\textbf{Types of kernels:}
-\begin{enumerate}
-    \item \textbf{Standard convolution:} $\kappa(x, x') = k(x - x')$ (local, translation-invariant)
-    \item \textbf{Graph operators:} $\kappa$ defined on graph edges
-    \item \textbf{Fourier operators:} $\kappa$ learned in spectral space (global, efficient)
-\end{enumerate}
-
-\vspace{0.5cm}
-
-\begin{alertblock}{Why Fourier?}
-Convolution in physical space = multiplication in Fourier space!
-\end{alertblock}
-
+\frametitle{The influence of one initial heat input}
+Place a unit amount of initial heat at position $y$.
+The resulting temperature at $x$ and time $T$ is $G_T(x,y)$.
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=0.42\textheight,keepaspectratio]{figs/heat-point-influence.png}
+\end{center}
+\begin{block}{Green's function}
+$G_T(x,y)$ gives the response at output position $x$ to a localized input at $y$.
+\end{block}
+For the periodic ring, shifting the input shifts the response.
 \end{frame}
+
+\begin{frame}
+\frametitle{A kernel collects the point contributions}
+An interval near $y$ contributes $u_0(y)\,dy$ units of initial heat.
+Its contribution at $x$ after time $T$ is $G_T(x,y)u_0(y)\,dy$.
+\[
+\boxed{u(x,T)=\int_0^{2\pi}G_T(x,y)u_0(y)\,dy.}
+\]
+The same structure defines an integral kernel operator,
+\[
+(\mathcal Kv)(x)=\int_\Omega\kappa(x,y)v(y)\,dy.
+\]
+\begin{itemize}
+\item $y$ locates an input contribution and $x$ locates the output.
+\item The kernel quantifies influence between the two locations.
+\item Physics may specify the kernel, or a model may learn it.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Translation invariance gives convolution}
+On a periodic ring with constant diffusivity, influence depends only on separation.
+\[
+G_T(x,y)=g_T(x-y).
+\]
+The integral operator becomes circular convolution,
+\[
+\boxed{(\mathcal K_gv)(x)=\int_0^{2\pi}g(x-y)v(y)\,dy.}
+\]
+\begin{block}{The condition matters}
+A general Green's function depends on both $x$ and $y$.
+Boundaries and variable coefficients can prevent this convolution form.
+\end{block}
+The Fourier representation below applies to the translation-invariant case.
+\end{frame}
+
 
 %------------------------------------------------
 \section{Fourier Transform: The Mathematical Foundation}
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{The Fourier Transform}
-
-\textbf{Mathematical Definition:}
-
-The Fourier Transform decomposes a function into sinusoidal components:
-
-\begin{equation*}
-\hat{u}(k) = \mathcal{F}(u)(k) = \int_{-\infty}^{\infty} u(x) e^{-ikx} dx
-\end{equation*}
-
-\textbf{Inverse Fourier Transform:}
-
-\begin{equation*}
-u(x) = \mathcal{F}^{-1}(\hat{u})(x) = \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{u}(k) e^{ikx} dk
-\end{equation*}
-
-\vspace{0.5cm}
-
-\textbf{Key insight:} Any function can be written as:
-\begin{equation*}
-u(x) = \sum_{k} \hat{u}_k e^{ikx}
-\end{equation*}
-
-where $\hat{u}_k$ are \textbf{Fourier coefficients} (complex weights) and $e^{ikx}$ are basis functions.
-
+\frametitle{Fourier coordinates on the ring}
+Use the periodic interval $[0,2\pi)$ and integer wave numbers $k$.
+\[
+\widehat v_k=\frac{1}{2\pi}\int_0^{2\pi}v(x)e^{-ikx}\,dx,
+\qquad
+v(x)=\sum_{k\in\mathbb Z}\widehat v_ke^{ikx}.
+\]
+On a uniform grid $x_j=2\pi j/N$, the normalized FFT computes
+\[
+\widehat v_k=\frac1N\sum_{j=0}^{N-1}v(x_j)e^{-ikx_j}.
+\]
+\begin{itemize}
+\item The coefficients describe amplitudes and phases of waves.
+\item The inverse transform adds the waves to reconstruct values.
+\item The FFT changes coordinates without evolving the field.
+\end{itemize}
+\note{The finite-grid formula gives coefficients of the trigonometric interpolant. Resolving the input and nonlinear products is a separate discretization issue.}
 \end{frame}
+
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{Essential Properties of Fourier Transform}
-
-\begin{block}{1. Derivatives become multiplication}
-\begin{equation*}
-\mathcal{F}\left(\frac{\partial u}{\partial x}\right) = ik\hat{u}(k)
-\end{equation*}
+\frametitle{Operations in Fourier coordinates}
+\begin{block}{Differentiation}
+\[
+\widehat{\partial_xv}_k=ik\widehat v_k,
+\qquad \widehat{\partial_{xx}v}_k=-k^2\widehat v_k.
+\]
 \end{block}
-
-\begin{block}{2. Convolution becomes multiplication (Convolution Theorem)}
-\begin{equation*}
-\mathcal{F}(u * v) = \mathcal{F}(u) \cdot \mathcal{F}(v)
-\end{equation*}
+\begin{block}{Convolution with the stated normalization}
+\[
+\widehat{\mathcal K_gv}_k=R(k)\widehat v_k,
+\qquad R(k)=\int_0^{2\pi}g(s)e^{-iks}\,ds.
+\]
 \end{block}
-
-\begin{block}{3. Parseval's theorem (Energy conservation)}
-\begin{equation*}
-\int |u(x)|^2 dx = \int |\hat{u}(k)|^2 dk
-\end{equation*}
+\begin{block}{Squared norm}
+\[
+\frac1{2\pi}\int_0^{2\pi}|v(x)|^2\,dx
+=\sum_k|\widehat v_k|^2.
+\]
 \end{block}
-
-\vspace{0.5cm}
-
-\textbf{Computational advantage:} FFT is $O(N \log N)$, far cheaper than dense convolution $O(N^2)$.
-
 \end{frame}
+
+\begin{frame}
+\frametitle{A Fourier wave keeps its shape under convolution}
+Apply the kernel to one input wave $v(y)=e^{iky}$.
+\begin{align*}
+(\mathcal K_ge^{ik\cdot})(x)
+&=\int_0^{2\pi}g(x-y)e^{iky}\,dy\\[0.4em]
+&=e^{ikx}\int_0^{2\pi}g(s)e^{-iks}\,ds\\[0.4em]
+&=R(k)e^{ikx}.
+\end{align*}
+The substitution is $s=x-y$, with separation interpreted periodically.
+\begin{block}{The eigenfunction connection}
+The frequency stays fixed.
+The complex number $R(k)$ changes amplitude and phase.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{The heat kernel and its Fourier multipliers}
+For $u_t=\nu u_{xx}$, use $\nu=0.14$ and $T=0.65$.
+Mode $k$ satisfies
+\[
+\frac{d\widehat u_k}{dt}=-\nu k^2\widehat u_k,
+\qquad R_T(k)=e^{-\nu k^2T}.
+\]
+\begin{center}
+\includegraphics[width=0.98\textwidth,height=0.43\textheight,keepaspectratio]{figs/heat-kernel-multiplier.png}
+\end{center}
+The point-influence kernel and the modal factors describe the same solution operator.
+\[
+\mathcal L_Tu_0=g_T*u_0
+=\mathcal F^{-1}[R_T\mathcal F(u_0)].
+\]
+\end{frame}
+
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{Fourier Decomposition: Visualization}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{figs/fourier_transform_demo.png}
-    \caption*{Fourier decomposition: A function (left) is represented as a sum of weighted sinusoids (middle), with most energy concentrated in low frequencies (right).}
-\end{figure}
-
-\textbf{Key observation:} Most energy concentrated in low frequencies.
-
-\textbf{FNO exploits this:} Learn weights only for low-frequency modes ($k_{\max} \approx 12-16$), discard high frequencies.
-
+\frametitle{Wave coordinates and spectral evolution}
+\begin{center}
+\includegraphics[width=\textwidth,height=0.40\textheight,keepaspectratio]{figs/fno-three-wave-coordinates.png}
+\end{center}
+For the three-wave heat example,
+\[
+\begin{bmatrix}q_1(T)\\q_3(T)\\q_7(T)\end{bmatrix}
+=\operatorname{diag}(0.913,0.441,0.0116)
+\begin{bmatrix}1\\0.5\\0.25\end{bmatrix}.
+\]
+The multipliers scale the initial amplitudes.
+The final amplitude of mode 3 is $0.5\times0.441\approx0.220$.
 \end{frame}
+
 
 %------------------------------------------------
 \section{Fourier Neural Operator Architecture}
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{The Core Idea}
-
-Instead of learning in physical space, \textbf{learn in Fourier space}:
-
-\begin{equation*}
-v_{t+1}(x) = \sigma\left(W v_t(x) + \mathcal{K}(v_t)(x)\right)
-\end{equation*}
-
-where the kernel operator $\mathcal{K}$ is parameterized in Fourier space:
-
-\begin{equation*}
-\mathcal{K}(v)(x) = \mathcal{F}^{-1}\left(R_\phi \cdot \mathcal{F}(v)\right)(x)
-\end{equation*}
-
-Here, $R_\phi$ are \textbf{learnable weights} in Fourier space.
-
-\vspace{1cm}
-
-\begin{block}{The FNO workflow}
-\begin{equation*}
-\text{Input } u(x) \xrightarrow{\text{FFT}} \text{Fourier Space} \xrightarrow{\text{Learn } R_\phi} \text{Fourier Space} \xrightarrow{\text{IFFT}} \text{ Output}
-\end{equation*}
-\end{block}
-
+\frametitle{Learning the global convolution}
+Supply initial-final field pairs and fit the response $R_\theta(k)$.
+The coordinate transforms remain fixed.
+\[
+\mathcal K_\theta v=\mathcal F^{-1}[R_\theta(k)\widehat v_k].
+\]
+The equivalent periodic spatial kernel is
+\[
+\boxed{g_\theta(s)=\frac1{2\pi}\sum_{k\in\mathcal M}R_\theta(k)e^{iks}.}
+\]
+\begin{itemize}
+\item The retained set $\mathcal M$ specifies the spectral branch.
+\item Set unretained multipliers to zero for this truncated layer.
+\item Each retained Fourier wave extends across the domain.
+\end{itemize}
+\smallskip
+\footnotesize\href{https://arxiv.org/abs/2010.08895}{Li et al., Fourier Neural Operator, Section 4.}
+\note{The kernel formula uses normalized Fourier-series coefficients for fields and an unnormalized integral for the convolution multiplier. A real kernel requires R(-k)=conj(R(k)). For channel-valued features the kernel and multipliers are matrices.}
 \end{frame}
+
+\begin{frame}
+\frametitle{Three learned modes specify a restricted operator}
+\begin{center}
+\includegraphics[width=0.96\textwidth,height=0.45\textheight,keepaspectratio]{figs/heat-retained-kernel.png}
+\end{center}
+The two kernels give the same heat output on the represented span
+\[
+\operatorname{span}\{\sin x,\sin3x,\sin7x\}.
+\]
+Input $v=1$ gives outputs 1 and 0, respectively.
+\begin{block}{What the data identify}
+Three fitted responses determine the action on those modes.
+The truncation convention determines the extension to unretained modes.
+\end{block}
+\end{frame}
+
 
 %------------------------------------------------
 \begin{frame}
@@ -294,67 +347,96 @@ Here, $R_\phi$ are \textbf{learnable weights} in Fourier space.
 \textbf{Architecture consists of:}
 \begin{itemize}
     \item \textbf{Lifting:} $P(u) \rightarrow v_0$ (embed input to high-dimensional space)
-    \item \textbf{Fourier Layers:} $v_{t+1} = \sigma(W v_t + \mathcal{K}(v_t))$ (4 layers)
+    \item \textbf{Fourier Layers:} $v_{\ell+1} = \sigma(W_\ell v_\ell + \mathcal{K}_\ell v_\ell)$ (4 layers)
     \item \textbf{Projection:} $Q(v_4) \rightarrow \text{output}$ (map back to output space)
 \end{itemize}
 
 \end{frame}
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{Spectral Convolution Layer}
-
-Each Fourier layer performs three operations:
-
-\begin{enumerate}
-    \item \textbf{FFT:} $\hat{v} = \mathcal{F}(v)$
-
-    \item \textbf{Linear transform (truncated):}
-    \begin{equation*}
-    \hat{v}_{\text{out}}[k] = R_\phi[k] \cdot \hat{v}[k] \quad \text{for } k \leq k_{\max}
-    \end{equation*}
-
-    \item \textbf{IFFT:} $v_{\text{out}} = \mathcal{F}^{-1}(\hat{v}_{\text{out}})$
-\end{enumerate}
-
-\vspace{1cm}
-
-\begin{alertblock}{Key design choice}
-Only keep low-frequency modes ($k_{\max} \approx 12-16$), discard high frequencies.
-
-\textbf{Why?} Most signal energy in low frequencies + acts as implicit regularization.
-\end{alertblock}
-
+\frametitle{The spectral branch acts globally}
+At each retained frequency, transform the channel coefficients,
+\[
+\widehat z_o(k)=\sum_{i=1}^{C_{\rm in}}R_{oi}(k)\widehat v_i(k),
+\qquad k\in\mathcal M.
+\]
+Set the spectral output to zero outside $\mathcal M$, then reconstruct $z$.
+\[
+z(x)=\sum_{k\in\mathcal M}\widehat z(k)e^{ikx}.
+\]
+\begin{itemize}
+\item $R(k)$ mixes channels at a fixed frequency.
+\item Its inverse Fourier representation is a matrix-valued global kernel.
+\item The mode cutoff is an architectural choice, not a guarantee of accuracy.
+\end{itemize}
 \end{frame}
+
 
 %------------------------------------------------
+
 \begin{frame}
-\frametitle{Spectral Convolution: Mathematical Details}
-
-For 1D problems:
-
-\begin{equation*}
-\text{SpectralConv1d}(v) = \mathcal{F}^{-1}\left(R \cdot \mathcal{F}(v)[:k_{\max}]\right)
-\end{equation*}
-
-For 2D problems:
-
-\begin{equation*}
-\text{SpectralConv2d}(v) = \mathcal{F}^{-1}\left(R_1 \cdot \mathcal{F}(v)[:k_1, :k_2] + R_2 \cdot \mathcal{F}(v)[-k_1:, :k_2]\right)
-\end{equation*}
-
-\vspace{0.5cm}
-
-\textbf{Learnable parameters:} $R \in \mathbb{C}^{c_{in} \times c_{out} \times k_{\max}}$
-
-\vspace{0.5cm}
-
-\textbf{Skip connections:} Standard 1x1 convolution in parallel
-\begin{equation*}
-v_{\text{out}} = \sigma(\text{SpectralConv}(v) + W v)
-\end{equation*}
-
+\frametitle{Global and local transformations in one FNO block}
+The spectral and pointwise paths process the same input features.
+\begin{align*}
+z(x)&=\mathcal F^{-1}[R_\ell\mathcal F(v_\ell)](x),\\
+y(x)&=W_\ell v_\ell(x)+b_\ell,\\
+v_{\ell+1}(x)&=\sigma\bigl(z(x)+y(x)\bigr).
+\end{align*}
+\begin{itemize}
+\item The spectral path combines information across the domain.
+\item $W_\ell$ mixes channels at each position without a spectral cutoff.
+\item $\sigma$ supplies nonlinear frequency interactions.
+\end{itemize}
+In multiple dimensions, $k$ is a vector and the same channel formula applies.
 \end{frame}
+
+\begin{frame}
+\frametitle{A nonlinear operation creates new frequencies}
+\[
+\sin^2x=\tfrac12-\tfrac12\cos2x.
+\]
+\begin{center}
+\includegraphics[width=0.98\textwidth,height=0.43\textheight,keepaspectratio]{figs/fourier-new-modes.png}
+\end{center}
+A multiplier at mode 2 gives $R(2)\times0=0$ for the original input.
+A pointwise nonlinear operation can generate that missing mode.
+\note{The bars show real sine/cosine amplitude magnitudes. The constant is mode zero. A generic activation need not equal squaring, but it can introduce new frequencies.}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pseudospectral evaluation and an FNO block}
+\small
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\textbf{Pseudospectral Burgers}
+\begin{enumerate}
+\item Start with coefficients of $u$.
+\item Apply known multipliers $1$ and $ik$.
+\item IFFT to values of $u$ and $u_x$.
+\item Form the product $u\,u_x$ on the grid.
+\item FFT the product and integrate the PDE in time.
+\end{enumerate}
+\end{column}
+\begin{column}{0.48\textwidth}
+\textbf{FNO features}
+\begin{enumerate}
+\item Start with a feature field $v_\ell$.
+\item FFT and apply learned $R_\ell(k)$.
+\item IFFT and add $W_\ell v_\ell+b_\ell$.
+\item Apply a pointwise activation.
+\item Continue to the next feature layer.
+\end{enumerate}
+\end{column}
+\end{columns}
+\medskip
+The nonlinear spatial operations couple modes.
+FNO layers need not represent physical time steps.
+\smallskip
+\footnotesize\href{https://arxiv.org/html/2306.10619v2}{McCabe et al., Section 2 and Appendix A.}
+\end{frame}
+
 
 %------------------------------------------------
 \section{Example 1: 1D Burgers Equation}
@@ -373,7 +455,7 @@ The 1D viscous Burgers equation models shock wave propagation:
 
 with periodic boundary conditions and initial condition $u(x, 0) = u_0(x)$.
 
-\vspace{1cm}
+\vspace{0.3cm}
 
 \textbf{Operator learning task:} Learn the mapping
 \begin{equation*}
@@ -381,7 +463,7 @@ with periodic boundary conditions and initial condition $u(x, 0) = u_0(x)$.
 \end{equation*}
 from initial condition to solution at time $T = 1$.
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Dataset:} 1024 training samples from varied initial conditions, solved using spectral methods.
 
@@ -401,7 +483,7 @@ from initial condition to solution at time $T = 1$.
             \item Periodic boundary conditions
         \end{itemize}
 
-        \vspace{0.5cm}
+        \vspace{0.2cm}
 
         \textbf{Why this problem:}
         \begin{itemize}
@@ -435,7 +517,7 @@ from initial condition to solution at time $T = 1$.
     \item \textbf{Parameters:} $\sim$287K
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Training Configuration:}
 \begin{itemize}
@@ -454,7 +536,7 @@ from initial condition to solution at time $T = 1$.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{figs/burgers_training.png}
+    \includegraphics[width=\textwidth,height=.36\textheight,keepaspectratio]{figs/burgers_training.png}
     \caption*{Training history showing convergence of relative $L^2$ loss.}
 \end{figure}
 
@@ -474,7 +556,7 @@ from initial condition to solution at time $T = 1$.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{figs/burgers_results.png}
+    \includegraphics[width=\textwidth,height=.42\textheight,keepaspectratio]{figs/burgers_results.png}
     \caption*{FNO predictions (red dashed) vs. true solutions (blue) for test cases.}
 \end{figure}
 
@@ -494,7 +576,7 @@ from initial condition to solution at time $T = 1$.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{figs/burgers_superres.png}
+    \includegraphics[width=0.8\textwidth,height=.34\textheight,keepaspectratio]{figs/burgers_superres.png}
     \caption*{Training at 512 resolution, evaluating at 2048 resolution (4x upsampling).}
 \end{figure}
 
@@ -502,11 +584,12 @@ from initial condition to solution at time $T = 1$.
 \begin{itemize}
     \item \textbf{Train:} 512 grid points
     \item \textbf{Test:} 2048 grid points (4x refinement)
-    \item \textbf{Result:} Maintains accuracy at higher resolution!
+    \item \textbf{Reported result:} Similar accuracy for this example
 \end{itemize}
 \end{alertblock}
 
-\textbf{Why this works:} FNO learns in Fourier space (continuous representation), not tied to specific discretization.
+The same mode labels retain their meaning on the same physical domain.
+Shared parameters do not guarantee equal accuracy on every grid.
 
 \end{frame}
 
@@ -527,7 +610,7 @@ The 2D Darcy flow equation models steady-state flow in porous media:
 
 with zero boundary conditions: $u|_{\partial\Omega} = 0$.
 
-\vspace{1cm}
+\vspace{0.3cm}
 
 \textbf{Operator learning task:} Learn the mapping
 \begin{equation*}
@@ -535,7 +618,7 @@ with zero boundary conditions: $u|_{\partial\Omega} = 0$.
 \end{equation*}
 from permeability coefficient $a$ to pressure/hydraulic head $u$.
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Physical interpretation:}
 \begin{itemize}
@@ -546,13 +629,30 @@ from permeability coefficient $a$ to pressure/hydraulic head $u$.
 
 \end{frame}
 
+\begin{frame}
+\frametitle{A variable coefficient changes the operator}
+For each fixed permeability $a$, Darcy flow is linear in its forcing,
+\[
+u(x)=\int_\Omega G_a(x,y)f(y)\,dy.
+\]
+The Green's function depends on $a$ and the boundary conditions.
+It generally cannot be written as one fixed $g(x-y)$.
+\begin{itemize}
+\item Multiplication by a spatially varying $a$ couples Fourier modes.
+\item The learned task $a\mapsto u$ changes the PDE operator itself.
+\item Nonlinear feature layers and position information support this more general map.
+\end{itemize}
+\note{The Darcy model in this deck includes the coordinates as inputs. Boundary information is important because the fixed Dirichlet problem is not translation invariant. The Fourier branch is a learned convolution of features, not one fixed physical inverse for every permeability field.}
+\end{frame}
+
+
 %------------------------------------------------
 \begin{frame}
 \frametitle{Darcy Flow: Dataset and Physics}
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{figs/darcy_examples.png}
+    \includegraphics[width=0.7\textwidth,height=.38\textheight,keepaspectratio]{figs/darcy_examples.png}
     \caption*{Left: Permeability fields $a(x,y)$ (input). Right: Pressure fields $u(x,y)$ (output).}
 \end{figure}
 
@@ -580,14 +680,14 @@ from permeability coefficient $a$ to pressure/hydraulic head $u$.
     \item \textbf{Parameters:} $\sim$130K
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Spectral Convolution 2D:}
 \begin{equation*}
 \text{FFT2} \rightarrow \text{Multiply modes } [:12, :12] \text{ and } [-12:, :12] \rightarrow \text{IFFT2}
 \end{equation*}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Why two weight matrices?}
 Due to symmetry of real FFT (rfft2), we need weights for both lower and upper frequencies.
@@ -607,7 +707,7 @@ Due to symmetry of real FFT (rfft2), we need weights for both lower and upper fr
     \item \textbf{Epochs:} 200 (500 in original paper)
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Data Normalization:}
 \begin{itemize}
@@ -616,7 +716,7 @@ Due to symmetry of real FFT (rfft2), we need weights for both lower and upper fr
     \item Decode predictions before computing loss
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \begin{alertblock}{Important}
 Normalize data for stable training, but always compute loss on physical quantities!
@@ -630,7 +730,7 @@ Normalize data for stable training, but always compute loss on physical quantiti
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{figs/darcy_results.png}
+    \includegraphics[width=0.8\textwidth,height=.42\textheight,keepaspectratio]{figs/darcy_results.png}
     \caption*{Left: True pressure. Middle: FNO prediction. Right: Error map.}
 \end{figure}
 
@@ -645,64 +745,38 @@ Normalize data for stable training, but always compute loss on physical quantiti
 \end{frame}
 %------------------------------------------------
 \begin{frame}
-\frametitle{What Makes FNO Special?}
-
-\begin{block}{1. Mesh Independence}
-\begin{itemize}
-    \item Train on one resolution, evaluate on any resolution
-    \item Works because we learn in Fourier space (continuous representation)
-    \item Discretization is only for FFT computation
-\end{itemize}
+\frametitle{FNO properties}
+\begin{block}{Shared mode weights}
+On the same physical domain, a retained wave number has the same meaning on different grids.
+Accuracy still depends on sampling, retained modes, and nonlinear aliasing.
 \end{block}
-
-\begin{block}{2. Computational Efficiency}
-\begin{itemize}
-    \item FFT: $O(N \log N)$ vs dense convolution $O(N^2)$
-    \item Once trained: milliseconds per evaluation
-    \item Traditional solver: seconds to minutes
-\end{itemize}
+\begin{block}{Application cost}
+FFTs cost $O(N\log N)$ per fixed channel.
+Mode-wise channel transforms cost $O(MC_{\rm in}C_{\rm out})$.
+Training and reference-data generation add an upfront cost.
 \end{block}
-
-\begin{block}{3. Global Receptive Field}
-\begin{itemize}
-    \item Fourier modes capture global information
-    \item No need to stack many layers for long-range dependencies
-    \item Contrast with CNNs: local receptive fields
-\end{itemize}
+\begin{block}{Global interaction}
+The learned convolution kernel can have global support even with a finite set of modes.
+Nonlinear blocks combine these global transformations with local operations.
 \end{block}
-
 \end{frame}
 
 
 %------------------------------------------------
 \begin{frame}
-\frametitle{Limitations and Considerations}
-
-\begin{alertblock}{1. Periodic Boundary Conditions}
-\begin{itemize}
-    \item Standard FFT assumes periodicity
-    \item Extensions needed for general geometries (Geo-FNO)
-    \item Works perfectly for: Navier-Stokes on periodic domains
-    \item Challenges for: Complex geometries, irregular domains
-\end{itemize}
-\end{alertblock}
-
-\begin{alertblock}{2. Data Requirements}
-\begin{itemize}
-    \item Need many solved PDE instances for training
-    \item Expensive data generation phase
-    \item Can be mitigated with physics-informed training
-\end{itemize}
-\end{alertblock}
-
-\begin{alertblock}{3. Black Box Nature}
-\begin{itemize}
-    \item No explicit PDE enforcement during training (standard FNO)
-    \item May violate physical constraints
-    \item Solution: Physics-Informed FNO
-\end{itemize}
-\end{alertblock}
-
+\frametitle{Discretization, data, and physical constraints}
+\begin{block}{Domain and grid}
+The standard FFT uses a regular grid and a periodic extension.
+Other boundaries and geometries need suitable representations.
+\end{block}
+\begin{block}{Training coverage}
+Supervised learning needs reference input-output pairs.
+Unseen coefficients, forcing functions, or fine scales require evaluation.
+\end{block}
+\begin{block}{Physical constraints}
+A standard prediction loss does not enforce the PDE or conservation laws.
+PDE-aware losses and explicit constraints can address particular requirements.
+\end{block}
 \end{frame}
 
 %------------------------------------------------
@@ -717,15 +791,15 @@ Normalize data for stable training, but always compute loss on physical quantiti
 \textbf{Architecture} & Branch-Trunk & Spectral Convolution \\
 \textbf{Space} & Physical & Fourier \\
 \textbf{Queries} & Arbitrary points & Grid points (FFT) \\
-\textbf{Best for} & Irregular domains & Periodic domains \\
-\textbf{Parameters} & More & Fewer \\
-\textbf{Speed} & Fast & Faster (FFT) \\
-\textbf{Global info} & Via trunk network & Natural in Fourier \\
-\textbf{Mesh free?} & Yes & No (needs FFT grid) \\ \bottomrule
+\textbf{Input handling} & Branch encoding & FFT on a uniform grid \\
+\textbf{Parameters} & Branch/trunk dependent & Width/mode dependent \\
+\textbf{Global interaction} & Learned basis coefficients & Spectral convolution \\
+
+\textbf{Output sampling} & Coordinate queries & FFT grid in this model \\ \bottomrule
 \end{tabular}
 \end{table}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Key difference:}
 \begin{itemize}
@@ -733,12 +807,12 @@ Normalize data for stable training, but always compute loss on physical quantiti
     \item \textbf{FNO:} Learns multiplication in Fourier space
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
-Both are powerful! Choice depends on:
+The choice depends on input sampling, domain representation, and required output queries.
 \begin{itemize}
-    \item Boundary conditions (periodic → FNO, irregular → DeepONet)
-    \item Query pattern (grid → FNO, arbitrary points → DeepONet)
+    \item Encode the boundary conditions and geometry explicitly
+    \item Match the query pattern to the model implementation
 \end{itemize}
 
 \end{frame}
@@ -758,7 +832,7 @@ Both are powerful! Choice depends on:
 \begin{block}{Physics-Informed FNO}
 \begin{itemize}
     \item Add PDE residual to loss function
-    \item Ensures physical consistency
+    \item Penalizes PDE residuals on the evaluated samples
     \item Reduces data requirements
 \end{itemize}
 \end{block}
@@ -813,7 +887,7 @@ Both are powerful! Choice depends on:
     \item \url{https://arxiv.org/abs/2010.08895}
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Extensions:}
 \begin{itemize}
@@ -822,7 +896,7 @@ Both are powerful! Choice depends on:
     \item Neural Operator Review: \url{https://arxiv.org/abs/2108.08481}
 \end{itemize}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Code and Data:}
 \begin{itemize}
@@ -841,19 +915,19 @@ Both are powerful! Choice depends on:
 \centering
 \Large Thank you!
 
-\vspace{2cm}
+\vspace{0.4cm}
 
 \textbf{Contact:} \\
 Krishna Kumar \\
 \textit{krishnak@utexas.edu} \\
 University of Texas at Austin
 
-\vspace{1cm}
+\vspace{0.3cm}
 
 \textbf{Interactive Demo:} \\
 \href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno.ipynb}{\beamergotobutton{FNO Notebook}}
 
-\vspace{0.5cm}
+\vspace{0.2cm}
 
 \textbf{Dataset:} \\
 \href{https://huggingface.co/datasets/kks32/sciml-dataset}{\beamergotobutton{Hugging Face Dataset}}

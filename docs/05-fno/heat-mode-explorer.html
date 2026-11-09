@@ -1,0 +1,227 @@
+<div id="fno-heat-explorer" data-nu="0.14" data-final-time="0.65">
+  <style>
+    #fno-heat-explorer { --hm-ink:var(--md-default-fg-color,var(--jp-ui-font-color1,#243244)); --hm-muted:#5b6573; --hm-axis:#b5bdc5; --hm-field:#399e89; --hm-one:#4d85ca; --hm-three:#dba049; --hm-seven:#8e68bf; color:var(--hm-ink); font:16px/1.5 system-ui,sans-serif; max-width:950px; margin:12px 0; }
+    #fno-heat-explorer * { box-sizing:border-box; }
+    #fno-heat-explorer .hm-heading { font-size:20px; font-weight:600; margin:20px 0 4px; }
+    #fno-heat-explorer .hm-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:12px 20px; margin:16px 0; }
+    #fno-heat-explorer label { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+    #fno-heat-explorer button, #fno-heat-explorer select { font:inherit; color:inherit; background:var(--md-default-bg-color,var(--jp-layout-color0,#fff)); border:1px solid var(--hm-axis); border-radius:5px; padding:6px 12px; }
+    #fno-heat-explorer button:focus-visible, #fno-heat-explorer select:focus-visible, #fno-heat-explorer input:focus-visible { outline:2px solid var(--hm-one); outline-offset:3px; }
+    #fno-heat-explorer .hm-time { display:flex; justify-content:space-between; gap:12px; margin-top:16px; }
+    #fno-heat-explorer output { font-variant-numeric:tabular-nums; }
+    #fno-heat-explorer input[type=range] { width:100%; accent-color:var(--hm-field); margin:8px 0; }
+    #fno-heat-explorer svg { display:block; width:100%; overflow:visible; }
+    #fno-heat-explorer svg text { font:14px system-ui,sans-serif; fill:var(--hm-ink); }
+    #fno-heat-explorer .hm-legend { display:flex; flex-wrap:wrap; gap:8px 18px; color:var(--hm-muted); font-size:14px; }
+    #fno-heat-explorer .hm-key { display:inline-block; width:22px; border-top:3px solid; vertical-align:middle; margin-right:6px; }
+    #fno-heat-explorer [hidden] { display:none !important; }
+    #fno-heat-explorer .hm-note { color:var(--hm-muted); font-size:14px; }
+    #fno-heat-explorer .hm-status { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  </style>
+  <div class="hm-note">The same temperature field, described by values around the ring or by wave amplitudes.</div>
+  <div class="hm-heading hm-main-heading">Temperature profile</div>
+  <div class="hm-note">Temperature relative to its mean. The two ends of this plot meet on the ring.</div>
+  <svg class="hm-field-chart" height="255" role="img" aria-label="Initial and evolving temperature around a periodic ring">
+    <title>Temperature around the ring</title>
+    <desc>The evolving green profile becomes smoother. Its mean stays fixed.</desc>
+    <svg viewBox="0 0 736 255" width="100%" height="255" aria-hidden="true">
+      <line x1="30" x2="722" y1="119.5" y2="119.5" stroke="#b5bdc5"/>
+      <path d="M30.00,119.50 L32.88,112.40 L35.77,105.41 L38.65,98.65 L41.53,92.22 L44.42,86.21 L47.30,80.70 L50.18,75.78 L53.07,71.47 L55.95,67.83 L58.83,64.85 L61.72,62.55 L64.60,60.89 L67.48,59.84 L70.37,59.34 L73.25,59.32 L76.13,59.71 L79.02,60.41 L81.90,61.34 L84.78,62.40 L87.67,63.50 L90.55,64.55 L93.43,65.47 L96.32,66.20 L99.20,66.66 L102.08,66.84 L104.97,66.69 L107.85,66.21 L110.73,65.40 L113.62,64.30 L116.50,62.93 L119.38,61.36 L122.27,59.64 L125.15,57.85 L128.03,56.07 L130.92,54.39 L133.80,52.89 L136.68,51.65 L139.57,50.75 L142.45,50.25 L145.33,50.22 L148.22,50.68 L151.10,51.68 L153.98,53.21 L156.87,55.27 L159.75,57.84 L162.63,60.86 L165.52,64.28 L168.40,68.04 L171.28,72.03 L174.17,76.17 L177.05,80.35 L179.93,84.46 L182.82,88.40 L185.70,92.06 L188.58,95.35 L191.47,98.17 L194.35,100.46 L197.23,102.13 L200.12,103.16 L203.00,103.50 L205.88,103.16 L208.77,102.13 L211.65,100.46 L214.53,98.17 L217.42,95.35 L220.30,92.06 L223.18,88.40 L226.07,84.46 L228.95,80.35 L231.83,76.17 L234.72,72.03 L237.60,68.04 L240.48,64.28 L243.37,60.86 L246.25,57.84 L249.13,55.27 L252.02,53.21 L254.90,51.68 L257.78,50.68 L260.67,50.22 L263.55,50.25 L266.43,50.75 L269.32,51.65 L272.20,52.89 L275.08,54.39 L277.97,56.07 L280.85,57.85 L283.73,59.64 L286.62,61.36 L289.50,62.93 L292.38,64.30 L295.27,65.40 L298.15,66.21 L301.03,66.69 L303.92,66.84 L306.80,66.66 L309.68,66.20 L312.57,65.47 L315.45,64.55 L318.33,63.50 L321.22,62.40 L324.10,61.34 L326.98,60.41 L329.87,59.71 L332.75,59.32 L335.63,59.34 L338.52,59.84 L341.40,60.89 L344.28,62.55 L347.17,64.85 L350.05,67.83 L352.93,71.47 L355.82,75.78 L358.70,80.70 L361.58,86.21 L364.47,92.22 L367.35,98.65 L370.23,105.41 L373.12,112.40 L376.00,119.50 L378.88,126.60 L381.77,133.59 L384.65,140.35 L387.53,146.78 L390.42,152.79 L393.30,158.30 L396.18,163.22 L399.07,167.53 L401.95,171.17 L404.83,174.15 L407.72,176.45 L410.60,178.11 L413.48,179.16 L416.37,179.66 L419.25,179.68 L422.13,179.29 L425.02,178.59 L427.90,177.66 L430.78,176.60 L433.67,175.50 L436.55,174.45 L439.43,173.53 L442.32,172.80 L445.20,172.34 L448.08,172.16 L450.97,172.31 L453.85,172.79 L456.73,173.60 L459.62,174.70 L462.50,176.07 L465.38,177.64 L468.27,179.36 L471.15,181.15 L474.03,182.93 L476.92,184.61 L479.80,186.11 L482.68,187.35 L485.57,188.25 L488.45,188.75 L491.33,188.78 L494.22,188.32 L497.10,187.32 L499.98,185.79 L502.87,183.73 L505.75,181.16 L508.63,178.14 L511.52,174.72 L514.40,170.96 L517.28,166.97 L520.17,162.83 L523.05,158.65 L525.93,154.54 L528.82,150.60 L531.70,146.94 L534.58,143.65 L537.47,140.83 L540.35,138.54 L543.23,136.87 L546.12,135.84 L549.00,135.50 L551.88,135.84 L554.77,136.87 L557.65,138.54 L560.53,140.83 L563.42,143.65 L566.30,146.94 L569.18,150.60 L572.07,154.54 L574.95,158.65 L577.83,162.83 L580.72,166.97 L583.60,170.96 L586.48,174.72 L589.37,178.14 L592.25,181.16 L595.13,183.73 L598.02,185.79 L600.90,187.32 L603.78,188.32 L606.67,188.78 L609.55,188.75 L612.43,188.25 L615.32,187.35 L618.20,186.11 L621.08,184.61 L623.97,182.93 L626.85,181.15 L629.73,179.36 L632.62,177.64 L635.50,176.07 L638.38,174.70 L641.27,173.60 L644.15,172.79 L647.03,172.31 L649.92,172.16 L652.80,172.34 L655.68,172.80 L658.57,173.53 L661.45,174.45 L664.33,175.50 L667.22,176.60 L670.10,177.66 L672.98,178.59 L675.87,179.29 L678.75,179.68 L681.63,179.66 L684.52,179.16 L687.40,178.11 L690.28,176.45 L693.17,174.15 L696.05,171.17 L698.93,167.53 L701.82,163.22 L704.70,158.30 L707.58,152.79 L710.47,146.78 L713.35,140.35 L716.23,133.59 L719.12,126.60 L722.00,119.50" fill="none" stroke="#399e89" stroke-width="3.5"/>
+      <text x="30" y="245">0</text><text x="376" y="245" text-anchor="middle">π</text><text x="722" y="245" text-anchor="end">2π</text>
+    </svg>
+  </svg>
+  <div class="hm-legend hm-field-legend">
+    <span><span class="hm-key" style="border-color:var(--hm-axis)"></span>Initial</span>
+    <span><span class="hm-key hm-current-key" style="border-color:var(--hm-field)"></span>Current</span>
+  </div>
+  <div class="hm-toolbar">
+    <label>Initial profile
+      <select class="hm-profile" aria-label="Choose an initial temperature profile">
+        <option value="sum">Three waves together</option>
+        <option value="compare">Compare all three sine waves</option>
+        <option value="1">sin x</option>
+        <option value="3">sin 3x</option>
+        <option value="7">sin 7x</option>
+      </select>
+    </label>
+    <label><input class="hm-decompose" type="checkbox">Show components and amplitudes</label>
+  </div>
+  <div class="hm-decomposition" hidden>
+    <div class="hm-heading">Sine-mode amplitudes</div>
+    <div class="hm-note">Outline = initial amplitude. Filled bar = current amplitude. The multiplier is exp(−νk²t).</div>
+    <svg class="hm-bar-chart" height="225" role="img" aria-label="Amplitudes and decay multipliers of sine modes one, three, and seven">
+      <title>The same field in wave coordinates</title>
+      <desc>Each colored bar gives the coefficient of a sine wave. Higher modes decay faster.</desc>
+    </svg>
+    <div class="hm-legend">
+      <span><span class="hm-key" style="border-color:var(--hm-one)"></span>k = 1</span>
+      <span><span class="hm-key" style="border-color:var(--hm-three)"></span>k = 3</span>
+      <span><span class="hm-key" style="border-color:var(--hm-seven)"></span>k = 7</span>
+    </div>
+    <div class="hm-note hm-selection">Select a component curve or its bar to identify the same coordinate in both views.</div>
+  </div>
+  <label class="hm-time" for="fno-heat-time"><span>Time t</span><output class="hm-time-value" for="fno-heat-time">0.00</output></label>
+  <input id="fno-heat-time" class="hm-slider" type="range" min="0" max="0.65" step="0.001" value="0" aria-label="Diffusion time">
+  <div class="hm-toolbar">
+    <button class="hm-play" type="button">Play</button>
+    <button class="hm-reset" type="button">Reset</button>
+    <button class="hm-final" type="button">Show final state</button>
+  </div>
+  <div class="hm-note hm-summary">Three waves together. Initial amplitudes 1, 0.5, and 0.25.</div>
+  <div class="hm-status" aria-live="polite"></div>
+  <script>
+  (() => {
+    const root = document.getElementById('fno-heat-explorer');
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+    let reportedHeight=0;
+    function resizeColabOutput(){
+      const api=globalThis.google?.colab?.output;
+      if(api?.setIframeHeight){
+        const height=document.documentElement.scrollHeight;
+        if(height!==reportedHeight){reportedHeight=height;api.setIframeHeight(height,true);}
+      }
+    }
+
+    const query = s => root.querySelector(s);
+    const nu = Number(root.dataset.nu), finalTime = Number(root.dataset.finalTime);
+    const modes = [1, 3, 7], colors = ['var(--hm-one)', 'var(--hm-three)', 'var(--hm-seven)'];
+    const slider = query('.hm-slider'), select = query('.hm-profile');
+    const show = query('.hm-decompose'), player = query('.hm-play');
+    const field = query('.hm-field-chart'), bars = query('.hm-bar-chart');
+    const namespace = 'http://www.w3.org/2000/svg';
+    let time = 0, animation = null, selected = null;
+
+    function element(tag, attributes, text) {
+      const item = document.createElementNS(namespace, tag);
+      for (const [name, value] of Object.entries(attributes)) item.setAttribute(name, value);
+      if (text !== undefined) item.textContent = text;
+      return item;
+    }
+    function initialAmplitudes() {
+      return select.value === 'sum' ? [1, 0.5, 0.25] : select.value === 'compare' ? [1,1,1] : modes.map(k => k === Number(select.value) ? 1 : 0);
+    }
+    function amplitudes() {
+      return initialAmplitudes().map((a, index) => a * Math.exp(-nu * modes[index] ** 2 * time));
+    }
+    function linePath(amplitude, width, height) {
+      const left = 30, right = width - 14, center = height / 2 - 8, scale = 64;
+      const samples = 420;
+      return Array.from({length:samples + 1}, (_, i) => {
+        const x = 2 * Math.PI * i / samples;
+        const y = amplitude.reduce((sum, a, j) => sum + a * Math.sin(modes[j] * x), 0);
+        return `${i === 0 ? 'M' : 'L'}${(left+(right-left)*i/samples).toFixed(2)},${(center-scale*y).toFixed(2)}`;
+      }).join(' ');
+    }
+    function draw() {
+      const current = amplitudes(), initial = initialAmplitudes();
+      const width = Math.max(260, field.getBoundingClientRect().width), height = 255;
+      const compare = select.value === 'compare';
+      query('.hm-main-heading').textContent=compare?'Which oscillation disappears fastest?':'Temperature profile';
+      query('.hm-field-legend').hidden=compare;
+      field.setAttribute('height', compare ? (width < 580 ? 690 : 275) : height);
+      if (compare) {
+        const stacked = width < 580, chartHeight = stacked ? 690 : 275;
+        field.setAttribute('viewBox', `0 0 ${width} ${chartHeight}`);
+        field.replaceChildren(element('title', {}, 'Which spatial oscillation disappears fastest?'));
+        modes.forEach((k,j) => {
+          const panelWidth = stacked ? width : width/3, panelHeight = stacked ? 230 : 275;
+          const ox = stacked ? 0 : j*panelWidth, oy = stacked ? j*panelHeight : 0;
+          const center = oy+105, left=ox+16, span=panelWidth-32;
+          const path = amplitude => Array.from({length:241},(_,i) =>
+            `${i===0?'M':'L'}${(left+span*i/240).toFixed(2)},${(center-55*amplitude*Math.sin(k*2*Math.PI*i/240)).toFixed(2)}`).join(' ');
+          field.append(element('text', {x:ox+panelWidth/2,y:oy+25,'text-anchor':'middle'}, k===1?'sin x':`sin ${k}x`));
+          field.append(element('line',{x1:left,x2:left+span,y1:center,y2:center,stroke:'var(--hm-axis)'}));
+          field.append(element('path',{d:path(1),fill:'none',stroke:'var(--hm-axis)','stroke-width':2,'stroke-dasharray':'5 5'}));
+          field.append(element('path',{d:path(current[j]),fill:'none',stroke:colors[j],'stroke-width':3.5}));
+          field.append(element('text',{x:ox+panelWidth/2,y:oy+195,'text-anchor':'middle'},current[j].toFixed(3)));
+          field.append(element('text',{x:ox+panelWidth/2,y:oy+216,'text-anchor':'middle'},'Amplitude'));
+        });
+      } else {
+      field.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      const center = height / 2 - 8;
+      field.replaceChildren(element('title', {}, 'Temperature around the ring'),
+        element('desc', {}, 'The current profile is the sum of independently decaying sine waves.'));
+      field.append(element('line', {x1:30, x2:width-14, y1:center, y2:center, stroke:'var(--hm-axis)', 'stroke-width':1}));
+      field.append(element('text', {x:19, y:center+5, 'text-anchor':'end'}, '0'));
+      [0, 0.5, 1].forEach((p, j) => {
+        field.append(element('text', {x:30+(width-44)*p, y:245, 'text-anchor':j===0?'start':j===2?'end':'middle'}, ['0','π','2π'][j]));
+      });
+      field.append(element('path', {d:linePath(initial,width,height), fill:'none', stroke:'var(--hm-axis)', 'stroke-width':2, 'stroke-dasharray':'5 5'}));
+      if (show.checked && select.value === 'sum') {
+        modes.forEach((k, j) => {
+          const component = [0,0,0]; component[j] = current[j];
+          const componentPath = element('path', {d:linePath(component,width,height), fill:'none', stroke:colors[j], 'stroke-width':selected===j?3.2:1.6, opacity:selected===null||selected===j?0.9:0.25});
+          field.append(componentPath);
+          const hit = element('path',{d:linePath(component,width,height),fill:'none',stroke:'transparent','stroke-width':14,'pointer-events':'stroke',role:'button',tabindex:0,'aria-label':`Highlight mode ${k}`,'aria-pressed':String(selected===j)});
+          hit.addEventListener('click',()=>{selected=selected===j?null:j;draw();});
+          hit.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selected=selected===j?null:j;draw();}});
+          field.append(hit);
+        });
+      }
+      const currentColor = select.value==='sum' ? 'var(--hm-field)' : colors[modes.indexOf(Number(select.value))];
+      field.append(element('path', {d:linePath(current,width,height), fill:'none', stroke:currentColor, 'stroke-width':3.5, 'pointer-events':'none'}));
+      query('.hm-current-key').style.borderColor = currentColor;
+      }
+
+      query('.hm-decomposition').hidden = !show.checked || compare;
+      if (show.checked && !compare) {
+        const barWidth = Math.max(260, bars.getBoundingClientRect().width);
+        bars.setAttribute('viewBox', `0 0 ${barWidth} 225`);
+        bars.replaceChildren(element('title', {}, 'Coefficients of the three sine modes'));
+        bars.append(element('line', {x1:30,x2:barWidth-14,y1:145,y2:145,stroke:'var(--hm-axis)','stroke-width':1}));
+        modes.forEach((k,j) => {
+          const centerX = 30 + (barWidth-44)*(j+0.5)/3, bw = Math.min(85,(barWidth-44)/6);
+          const bh = 115*current[j];
+          bars.append(element('rect',{x:centerX-bw/2,y:145-115*initial[j],width:bw,height:115*initial[j],rx:4,fill:'none',stroke:colors[j],'stroke-width':2,opacity:0.25}));
+          bars.append(element('rect',{x:centerX-bw/2,y:145-bh,width:bw,height:Math.max(0,bh),rx:4,fill:colors[j],opacity:selected===null||selected===j?1:0.25}));
+          bars.append(element('text',{x:centerX,y:Math.min(138,135-bh),'text-anchor':'middle'},current[j].toFixed(3)));
+          bars.append(element('text',{x:centerX,y:176,'text-anchor':'middle'},`k = ${k}`));
+          bars.append(element('text',{x:centerX,y:201,'text-anchor':'middle'},`× ${Math.exp(-nu*k*k*time).toFixed(3)}`));
+          const hit=element('rect',{x:centerX-bw/2-10,y:18,width:bw+20,height:190,fill:'transparent',role:'button',tabindex:0,'aria-label':`Highlight mode ${k}`,'aria-pressed':String(selected===j)});
+          hit.addEventListener('click',()=>{selected=selected===j?null:j;draw();});
+          hit.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selected=selected===j?null:j;draw();}});
+          bars.append(hit);
+        });
+        query('.hm-selection').textContent=selected===null?'Select a component curve or its bar to identify the same coordinate in both views.':`Mode ${modes[selected]}: ${initial[selected].toFixed(3)} × exp(−${nu} × ${modes[selected]}² × ${time.toFixed(2)}) = ${current[selected].toFixed(3)}.`;
+      }
+      slider.value = String(time);
+      query('.hm-time-value').value = time.toFixed(2);
+      root.dataset.currentTime = String(time);
+      root.dataset.amplitudes = JSON.stringify(current);
+      root.dataset.selectedMode=selected===null?'':String(modes[selected]);
+      const name = select.value === 'sum' ? 'Three waves together' : compare?'Three separate waves, all starting at amplitude one':`Mode k = ${select.value}, starting at amplitude 1`;
+      query('.hm-summary').textContent = compare?'Dashed lines are initial waves. Colored lines show their evolving shapes. Peaks stay at the same positions.':`${name}. ${select.value === 'sum' ? 'Initial amplitudes 1, 0.5, and 0.25.' : `Current amplitude ${Math.exp(-nu*Number(select.value)**2*time).toFixed(3)}.`}`;
+      resizeColabOutput();
+    }
+    function stop() {
+      if (animation !== null) cancelAnimationFrame(animation);
+      animation = null; player.textContent = 'Play';
+    }
+    function announce() {
+      query('.hm-status').textContent = `Time ${time.toFixed(2)}. Amplitudes ${amplitudes().map(a=>a.toFixed(3)).join(', ')}.`;
+    }
+    player.addEventListener('click', () => {
+      if (animation !== null) { stop(); announce(); return; }
+      if (time >= finalTime) time = 0;
+      const startTime = time, startClock = performance.now();
+      player.textContent = 'Pause';
+      function tick(now) {
+        time = Math.min(finalTime, startTime+(now-startClock)*finalTime/8000);
+        draw();
+        if (time >= finalTime) { stop(); announce(); }
+        else animation = requestAnimationFrame(tick);
+      }
+      animation = requestAnimationFrame(tick);
+    });
+    slider.addEventListener('input', () => { stop(); time=Number(slider.value); draw(); });
+    slider.addEventListener('change', announce);
+    query('.hm-reset').addEventListener('click', () => { stop(); time=0; draw(); announce(); });
+    query('.hm-final').addEventListener('click', () => { stop(); time=finalTime; draw(); announce(); });
+    select.addEventListener('change', () => { stop(); selected=null; draw(); announce(); });
+    show.addEventListener('change', draw);
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(draw).observe(root);
+    draw();
+  })();
+  </script>
+</div>

@@ -1,0 +1,29 @@
+During offline training of a function encoder, the coefficients of each training function are
+Free parameters, one vector per training function, updated by gradient descent along with the basis
+Recomputed by least squares on the current basis at every step, and the loss is differentiated through that solve
+Predicted by an encoder network that is trained together with the basis
+The inner products of the function with the basis functions, which equal the least-squares coefficients for any basis
+
+For the Burgers equation B2B maps the input coefficients alpha to the output coefficients beta with a neural network, and for the derivative it uses a matrix, because
+Least squares cannot compute the coefficients of the output of a nonlinear operator
+The Burgers solutions need basis functions that are nonlinear in x
+A matrix has too few parameters to fit the Burgers training set
+The Burgers operator is nonlinear, so beta depends nonlinearly on alpha
+
+The eigen variant of B2B, which uses one learned basis for both input and output, cannot model the elastic plate because
+Plane-stress elasticity is a nonlinear operator
+The plate operator is not compact, so it has no eigenfunctions
+The loading acts along one side of the plate and the displacement is a field over the whole plate, so input and output live on different domains
+The displacement field needs more basis functions than the loading
+
+A DeepONet must read every input at its training sensors, while a trained B2B model can read a new input at different locations because
+Its coefficients come from least squares with the input basis evaluated at the new locations
+It interpolates the new readings onto the training sensor locations
+It fine-tunes the input basis on the new locations with a few gradient steps
+Its branch network takes the sensor locations as extra inputs
+
+The forward solve on the elastic plate smooths the loading, so the inverse map from a measured displacement back to the loading suffers from
+Non-existence, because no loading produces a smooth displacement
+Non-uniqueness, because every displacement comes from many loadings
+Ill-conditioning, because loadings that differ by a fine-scale oscillation produce nearly the same displacement
+Nonlinearity, because the inverse of a linear operator is nonlinear

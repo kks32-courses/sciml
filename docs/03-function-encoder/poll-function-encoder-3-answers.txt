@@ -1,0 +1,33 @@
+Answers to poll-function-encoder-3.txt, in order, with the slide behind each.
+
+1. Recomputed by least squares on the current basis at every step, and the loss is differentiated through that solve.
+   Each training step solves (G^T G + lambda I) alpha = G^T F for every training function on the current basis.
+   The MSE loss compares the resulting estimates with the samples, and backpropagation carries its gradient through the solve to the basis networks ("Offline training: Learn the basis functions").
+   Free coefficient vectors would be fitted by gradient descent alongside the basis, and an encoder would predict them, while the function encoder solves for them exactly at every step.
+   Inner products equal the least-squares coefficients only when the basis is orthonormal.
+
+2. The Burgers operator is nonlinear, so beta depends nonlinearly on alpha.
+   For a linear operator, alpha depends linearly on f through least squares, T f depends linearly on f, and beta depends linearly on T f.
+   So beta = A alpha, and B2B fits the matrix A by least squares on the pairs (alpha_n, beta_n) ("Basis-to-Basis (B2B) Operator Learning", "B2B Variants").
+   Least squares computes the coefficients of any function in the span, the output of a nonlinear operator included.
+   Every learned basis is nonlinear in x, for the derivative as well as for Burgers.
+   On Burgers the linear SVD variant reaches test MSE 1.01e-1, against 5.07e-4 for B2B with a network ("B2B: Quantitative results").
+
+3. The loading acts along one side of the plate and the displacement is a field over the whole plate, so input and output live on different domains.
+   The eigen variant writes T f = sum_j alpha_j lambda_j v_j with the same functions v_j for f and for T f, so f and T f must be functions on the same domain ("B2B Variants").
+   Plane-stress elasticity is linear, and its solution operator smooths the loading, which makes it compact.
+   One basis can be made as large as either function needs, so the number of basis functions does not decide the question.
+   The results table reports the eigen variant only for the derivative and the antiderivative, whose input and output are functions on the same interval ("B2B: Quantitative results").
+
+4. Its coefficients come from least squares with the input basis evaluated at the new locations.
+   The basis networks accept any x, so the m by k matrix of basis values can be built at whatever points the readings come from.
+   Least squares needs only that this matrix has full column rank, which requires at least k readings.
+   No interpolation and no gradient step takes place, and B2B has no branch network.
+   A DeepONet branch reads the m values as a fixed vector, so a reading at a new location lands in the wrong input slot.
+   With the sample locations varied for every function, the DeepONet variants stay above test MSE 10 on the derivative, while B2B reaches 1e-3 to 1e-4 ("B2B linear example", varying sensor locations).
+
+5. Ill-conditioning, because loadings that differ by a fine-scale oscillation produce nearly the same displacement.
+   The forward solve damps the fine scales of the loading, so its singular values decay toward zero.
+   The inverse divides by those singular values, and a small error in the measured displacement becomes a large error in the recovered loading ("System ID: Inverse maps are ill posed").
+   Every loading produces a smooth displacement, and the full displacement field determines the loading through the equilibrium equation, so existence and uniqueness hold for exact data.
+   The inverse of a linear operator is linear.

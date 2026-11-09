@@ -1,0 +1,29 @@
+A Matryoshka loss fits the training family with every prefix phi_1, ..., phi_k of one basis at once, and at its minimizer the first k basis functions
+Are orthonormal, because nesting the prefixes forces the Gram matrix to the identity
+Span the same subspace as the first k POD modes of the family, for every k
+Fit the family worse at each k than the best k-dimensional subspace, the cost of sharing one basis
+Span the same subspace as the k top-ranked functions of a basis trained with the standard loss
+
+Sample noise moves unregularized least-squares coefficients by up to ||epsilon||_2 / sigma_min, with sigma_min the smallest singular value of Phi, and a ridge term lambda > 0
+Bounds the movement for an orthonormal basis, and leaves a nearly dependent basis as sensitive as before
+Removes the effect of the noise, so the fits to noisy and to clean samples agree
+Bounds the movement by a factor set by lambda for any basis, and shrinks the coefficient vector toward zero
+Lowers the noise amplification and the bias together, so a larger lambda gives a better fit
+
+The finite-sample certificate bounds the population risk of the online fit by its empirical risk on m samples plus a gap term, and adding basis functions at fixed m and lambda
+Shrinks the gap term, because a richer basis approximates the new function more closely
+Leaves the gap term unchanged, because the gap depends on m and lambda alone
+Tightens the certificate, because the empirical risk falls as the span grows
+Widens the gap term, so the bound can loosen even as the empirical risk falls
+
+Discretized on n grid points, the identity has n singular values equal to 1 for every n, so as an operator on L2 the identity is
+Bounded and not compact, because its singular values do not tend to zero
+Compact, because every n by n matrix has finitely many singular values
+Unbounded, because its Frobenius norm grows like sqrt(n) under grid refinement
+Compact and bounded, because its largest singular value stays at 1 under grid refinement
+
+Differentiation sends f and f + c to the same derivative, so an inverse model from the coefficients of f' to those of f can represent the spread of possible constants c when
+Its inverse is exact, as in an invertible network built from affine coupling layers
+It is nonlinear, as an MLP with two hidden tanh layers is
+It returns a distribution over inputs, as a conditional normalizing flow does
+It is trained on enough pairs that every constant appears in the training data

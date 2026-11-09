@@ -1,0 +1,30 @@
+Answers to poll-function-encoder-2.txt, in order, with the notebook section behind each.
+
+1. Span the same subspace as the first k POD modes of the family, for every k.
+   The best k-dimensional subspaces of the family are the POD subspaces, and they are nested, so one basis can reach the best error at every k at once.
+   The loss does not change under a triangular change of basis within each prefix, so it fixes the spans and puts no condition on the Gram matrix.
+   A standard basis is trained only through the span of all eight functions, and its four top-ranked functions give test MSE 4.55e-2 against 9.59e-3 for the Matryoshka basis and 3.03e-3 for the first four POD modes (03-function-encoder.ipynb, Part 6, Nested Bases with a Matryoshka Loss).
+
+2. Bounds the movement by a factor set by lambda for any basis, and shrinks the coefficient vector toward zero.
+   With lambda > 0 the factor max_i sigma_i / (sigma_i^2 + lambda) is at most 1/(2 sqrt(lambda)), whatever the singular values of Phi are.
+   With sigma_min = 6.1e-5 the coefficient bound falls from 16283.4 at lambda = 0 to 4.5 at lambda = 1e-2, and the measured worst case falls from 3892.2 to 3.9.
+   The noise still moves the fit at every lambda, with measured coefficient amplification 0.4 at lambda = 1.
+   The ridge also shrinks the fit, which at lambda = 1e-2 stays below the peak of the new function, and the noise bound does not measure this bias (03-function-encoder.ipynb, Part 8, Guarantees at Inference Time).
+
+3. Widens the gap term, so the bound can loosen even as the empirical risk falls.
+   The gap term is of order Y^2 R^2 k / (lambda sqrt(m)), so it grows with the number k of basis functions and shrinks with the number m of samples.
+   The approximation quality of the basis enters through the empirical risk, so a richer basis does not shrink the gap.
+   In the kernels notebook a 12-function basis fitted to 20 noisy samples wiggles between the samples with RMSE 0.289, and the same basis reaches 0.019 with 80 samples.
+   The notebook attributes the wiggles to basis directions the vehicle family does not need, which are free to fit the noise (03-function-encoder.ipynb, Part 8, Guarantees at Inference Time, and 03-fe-kernels.ipynb, Section 9, What the two predictors are made of).
+
+4. Bounded and not compact, because its singular values do not tend to zero.
+   Every n by n matrix is compact, so the test reads how the singular values behave as n grows, and a compact operator needs sigma_k -> 0.
+   The identity keeps n singular values at 1 on every grid, while the Poisson solve keeps 10 singular values above 0.01 sigma_1 on every grid from n = 25 to n = 400.
+   The largest singular value of the identity stays at 1.0000 under refinement, so the identity is bounded, while the largest singular value of the derivative grows from 25.8 to 401.0.
+   The Frobenius norm grows from 5.0 to 20.0 because the identity is not Hilbert-Schmidt, and boundedness depends on the largest singular value alone (03-b2b-operator.ipynb, Is the Operator Compact? A Numerical Check).
+
+5. It returns a distribution over inputs, as a conditional normalizing flow does.
+   Every input on the line f + c has the same derivative, so a model that returns one input per observation picks one point on that line.
+   The linear map, the MLP, and the invertible network return constants near 0, the conditional mean of a_0 given f', and their input errors of 4.68e-1 and 4.69e-1 match the 4.68e-1 of the true f with a_0 set to 0.
+   The invertible network undoes its own forward pass to 9.1e-15 and still fits the inverse direction only to 1.28e-1, because a bijection cannot send a line of inputs to one point.
+   The flow samples spread along the line with a standard deviation of a_0 of 0.559, against 0.577 for the uniform training distribution, and their range contains the true a_0 for 391 of 400 test functions (03-fe-inverse.ipynb, Conditional normalizing flows, and What the two tables show).

@@ -1,0 +1,80 @@
+/* Styles for the gradients-and-optimizers page. Colors follow the site's light and slate schemes. */
+.go-root {
+  --go-ink: #1b1b1a; --go-ink2: #52514e; --go-line: #dcdbd6; --go-contour: #c4c3bd;
+  --go-panel: #ffffff; --go-surface: #fcfcfb; --go-hi: #fdf1c7; --go-accent: #c2410c;
+  --go-surf-lo: #f2efe6; --go-surf-hi: #b9ad92;
+  --go-gd: #52514e; --go-adam: #2a78d6; --go-newton: #eb6834; --go-lbfgs: #1baf7a;
+  position: relative; color: var(--go-ink); margin: 1em 0 1.5em; font-size: 0.72rem; line-height: 1.45;
+}
+[data-md-color-scheme="slate"] .go-root {
+  --go-ink: #f0efec; --go-ink2: #c3c2b7; --go-line: #3b3b39; --go-contour: #4d4c49;
+  --go-panel: #1f1f1e; --go-surface: #1a1a19; --go-hi: #3d3720; --go-accent: #f97316;
+  --go-surf-lo: #2e2b25; --go-surf-hi: #8f8570;
+  --go-gd: #c3c2b7; --go-adam: #3987e5; --go-newton: #d95926; --go-lbfgs: #199e70;
+}
+.go-controls { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin: 0 0 8px; }
+.go-controls label { display: inline-flex; gap: 6px; align-items: center; color: var(--go-ink2); }
+.go-controls input[type=range] { width: 110px; accent-color: var(--go-ink2); }
+.go-controls output { min-width: 3.2em; color: var(--go-ink); font-variant-numeric: tabular-nums; }
+.go-controls select { background: var(--go-panel); color: var(--go-ink); border: 1px solid var(--go-line); border-radius: 6px; padding: 2px 6px; }
+.go-lab { color: var(--go-ink2); }
+.go-sep { flex: 0 0 8px; }
+.go-btn { padding: 4px 12px; border: 1px solid var(--go-line); background: var(--go-panel); color: var(--go-ink); border-radius: 6px; cursor: pointer; font: inherit; }
+.go-btn:hover { border-color: var(--go-ink2); }
+.go-btn.on { background: var(--go-ink); color: var(--go-panel); border-color: var(--go-ink); }
+.go-btn.go-primary { font-weight: 600; }
+.go-btn:disabled { opacity: 0.45; cursor: default; }
+.go-chip { display: inline-flex; align-items: center; gap: 6px; }
+.go-chip.on .go-swatch path { stroke: var(--go-panel); stroke-width: 1.5; }
+.go-status { min-height: 2.9em; padding: 6px 10px; margin: 0 0 8px; background: var(--go-panel); border: 1px solid var(--go-line); border-left: 3px solid var(--go-ink2); border-radius: 4px; }
+.go-grid3 { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.05fr) minmax(0, 1.3fr); gap: 10px; align-items: start; }
+.go-grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; }
+.go-col { display: grid; gap: 10px; }
+@media (max-width: 1000px) { .go-grid3, .go-grid2 { grid-template-columns: minmax(0, 1fr); } }
+.go-panel { background: var(--go-panel); border: 1px solid var(--go-line); border-radius: 8px; padding: 8px; margin-bottom: 10px; }
+.go-grid3 > .go-panel, .go-grid2 > .go-panel, .go-col > .go-panel { margin-bottom: 0; }
+.go-scroll { overflow-x: auto; }
+.go-surf { width: 100%; max-width: 100%; aspect-ratio: 1 / 0.92; }
+.go-cap { color: var(--go-ink2); margin-bottom: 4px; }
+.go-info { min-height: 9em; }
+.go-info > div { margin: 2px 0; }
+.go-infohead { font-weight: 600; }
+.go-check { margin-top: 6px; color: var(--go-ink2); min-height: 1.5em; }
+svg.go-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.go-frame { fill: none; stroke: var(--go-line); }
+.go-axis text { fill: var(--go-ink2); font-size: 11px; }
+.go-axis path, .go-axis line { stroke: var(--go-line); }
+.go-contour { fill: none; stroke: var(--go-contour); stroke-width: 1; }
+.go-mincurve { fill: none; stroke: var(--go-ink); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.go-bowl { fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; }
+.go-traj { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.go-arc { fill: none; stroke: var(--go-ink); stroke-width: 2; }
+.go-arc.go-dashed { stroke: var(--go-ink2); stroke-dasharray: 6 4; stroke-width: 1.6; }
+.go-arc.go-dotted { stroke: var(--go-accent); stroke-dasharray: 2 4; stroke-width: 1.8; }
+.go-arrow { stroke-width: 2.2; fill: none; }
+.go-head { stroke: none; }
+.go-arrow.go-ink { stroke: var(--go-ink); } .go-head.go-ink { fill: var(--go-ink); }
+.go-arrow.go-accent { stroke: var(--go-accent); } .go-head.go-accent { fill: var(--go-accent); }
+.go-x { fill: none; stroke-width: 2; }
+.go-x.go-ink { stroke: var(--go-ink); }
+.go-fill-ink { fill: var(--go-ink); stroke: var(--go-surface); stroke-width: 1.5; }
+.go-hollow { fill: var(--go-panel); stroke: var(--go-accent); stroke-width: 1.5; }
+.go-handle { fill: var(--go-panel); stroke: var(--go-ink); stroke-width: 2.5; cursor: grab; }
+.go-handle.go-start { fill: none; stroke-width: 2; stroke-dasharray: 3 2; }
+.go-lbl { fill: var(--go-ink); font-size: 11px; paint-order: stroke; stroke: var(--go-panel); stroke-width: 3px; }
+.go-cur { stroke: var(--go-surface); stroke-width: 2; }
+.go-crosshair { stroke: var(--go-ink2); stroke-width: 1; stroke-dasharray: 3 3; }
+.go-stroke-gd { stroke: var(--go-gd); } .go-mark-gd, .go-fill-gd { fill: var(--go-gd); }
+.go-stroke-adam { stroke: var(--go-adam); } .go-mark-adam, .go-fill-adam { fill: var(--go-adam); }
+.go-stroke-newton { stroke: var(--go-newton); } .go-mark-newton, .go-fill-newton { fill: var(--go-newton); }
+.go-stroke-lbfgs { stroke: var(--go-lbfgs); } .go-mark-lbfgs, .go-fill-lbfgs { fill: var(--go-lbfgs); }
+.go-hollow.go-stroke-gd, .go-hollow.go-stroke-adam, .go-hollow.go-stroke-newton, .go-hollow.go-stroke-lbfgs { fill: var(--go-panel); }
+.go-swatch { vertical-align: middle; }
+table.go-tape, table.go-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+table.go-tape th, table.go-tape td, table.go-table th, table.go-table td { padding: 3px 6px; border-bottom: 1px solid var(--go-line); text-align: right; white-space: nowrap; }
+table.go-tape th, table.go-table th { color: var(--go-ink2); font-weight: 600; }
+table.go-tape td.op { text-align: left; font-family: var(--md-code-font-family, monospace); font-size: 0.95em; }
+table.go-table td.go-name { text-align: left; }
+.go-note { color: var(--go-ink2); font-family: var(--md-text-font-family, sans-serif); font-size: 0.92em; }
+table.go-tape tr.cur td { background: var(--go-hi); }
+.go-tip { position: absolute; pointer-events: none; background: var(--go-panel); border: 1px solid var(--go-line); padding: 5px 8px; border-radius: 6px; display: none; z-index: 5; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); white-space: nowrap; }

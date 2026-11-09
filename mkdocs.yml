@@ -162,9 +162,12 @@ nav:
   - GNS:
     - GNS: 04-gns/gnn.ipynb
   - Fourier Neural Operator:
+    - Heat Flow and Fourier Operators: 05-fno/fno-intuition.ipynb
+    - CNN Filters and Discretization: 05-fno/fno-cnn-comparisons.ipynb
     - FNO: 05-fno/fno.ipynb
   - Automatic Differentiation:
     - AD: 06-ad/06-ad.ipynb
+    - Gradients and Optimizers: 06-ad/gradients-and-optimizers.md
   - SINDy:
     - SINDy Pendulum: 07-sindy/07b-sindy-pendulum.ipynb
     - SINDy: 07-sindy/07-sindy.ipynb

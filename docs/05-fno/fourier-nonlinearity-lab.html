@@ -1,0 +1,81 @@
+<div id="fno-nonlinearity-lab">
+  <style>
+    #fno-nonlinearity-lab { color:var(--md-default-fg-color,var(--jp-ui-font-color1,#253349)); font:16px/1.5 system-ui,sans-serif; max-width:950px; margin:16px 0; }
+    #fno-nonlinearity-lab * { box-sizing:border-box; }
+    #fno-nonlinearity-lab h3 { font-size:20px; margin:12px 0; }
+    #fno-nonlinearity-lab svg { display:block; width:100%; }
+    #fno-nonlinearity-lab svg text { font:14px system-ui,sans-serif; fill:currentColor; }
+    #fno-nonlinearity-lab .nl-charts { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    #fno-nonlinearity-lab .nl-controls { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin:12px 0; }
+    #fno-nonlinearity-lab label { flex:1; min-width:200px; }
+    #fno-nonlinearity-lab input { width:100%; margin:10px 0; accent-color:#db6a20; }
+    #fno-nonlinearity-lab output { float:right; font-variant-numeric:tabular-nums; }
+    #fno-nonlinearity-lab button { font:inherit; color:inherit; background:var(--md-default-bg-color,var(--jp-layout-color0,#fff)); border:1px solid #aab2bc; border-radius:5px; padding:7px 12px; }
+    #fno-nonlinearity-lab button:focus-visible,#fno-nonlinearity-lab input:focus-visible { outline:2px solid #4d85ca; outline-offset:3px; }
+    #fno-nonlinearity-lab .nl-note { font-size:14px; color:#5b6573; }
+    #fno-nonlinearity-lab .nl-legend { display:flex; flex-wrap:wrap; gap:12px; }
+    #fno-nonlinearity-lab .nl-key { display:inline-block; width:22px; border-top:3px solid; margin-right:6px; vertical-align:middle; }
+    @media(max-width:600px) { #fno-nonlinearity-lab .nl-charts { grid-template-columns:1fr; } }
+  </style>
+  <h3>Can a multiplier create a missing frequency?</h3>
+  <div class="nl-note">Input: sin x. Target: (sin x)². First try changing only R₁.</div>
+  <div class="nl-charts">
+    <svg class="nl-field" height="250" role="img" aria-label="Predicted field compared with the square of sine"></svg>
+    <svg class="nl-bars" height="250" role="img" aria-label="Target and prediction mode amplitude magnitudes"></svg>
+  </div>
+  <div class="nl-legend"><span><span class="nl-key" style="border-color:#7251a1"></span>Target</span><span><span class="nl-key" style="border-color:#db6a20"></span>Prediction</span></div>
+  <div class="nl-controls">
+    <label>R₁ <output class="nl-value">1.00</output><input class="nl-weight" type="range" min="-1.5" max="1.5" step="0.01" value="1" aria-label="Weight on input mode one"></label>
+    <button class="nl-square" type="button">Apply pointwise square</button>
+    <button class="nl-reset" type="button">Reset</button>
+  </div>
+  <div class="nl-note nl-status" aria-live="polite"></div>
+  <script>
+  (()=>{
+    const root=document.getElementById('fno-nonlinearity-lab');if(!root||root.dataset.initialized==='true')return;root.dataset.initialized='true';
+    const q=s=>root.querySelector(s),field=q('.nl-field'),bars=q('.nl-bars'),slider=q('.nl-weight');
+    let reportedHeight=0;
+    function resizeColabOutput(){
+      const api=globalThis.google?.colab?.output;
+      if(api?.setIframeHeight){
+        const height=document.documentElement.scrollHeight;
+        if(height!==reportedHeight){reportedHeight=height;api.setIframeHeight(height,true);}
+      }
+    }
+
+    let weight=1,squared=false;
+    function element(tag,attrs,text){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v]of Object.entries(attrs))e.setAttribute(k,v);if(text!==undefined)e.textContent=text;return e;}
+    function draw(){
+      const width=Math.max(250,field.getBoundingClientRect().width);
+      field.setAttribute('viewBox',`0 0 ${width} 250`);field.replaceChildren(element('title',{},'Target and predicted spatial fields'));
+      field.append(element('line',{x1:28,x2:width-12,y1:125,y2:125,stroke:'#b5bdc5'}));
+      function path(target){return Array.from({length:361},(_,i)=>{const x=2*Math.PI*i/360,y=target?Math.sin(x)**2:squared?(weight*Math.sin(x))**2:weight*Math.sin(x);return `${i?'L':'M'}${(28+(width-40)*i/360).toFixed(2)},${(125-45*y).toFixed(2)}`;}).join(' ');}
+      field.append(element('path',{d:path(true),fill:'none',stroke:'#7251a1','stroke-width':3}));
+      field.append(element('path',{d:path(false),fill:'none',stroke:'#db6a20','stroke-width':2.8}));
+      field.append(element('text',{x:width/2,y:238,'text-anchor':'middle'},squared?'Prediction: (R₁ sin x)²':'Prediction: R₁ sin x'));
+      const spectrum=squared?[weight*weight/2,0,weight*weight/2]:[0,Math.abs(weight),0];
+      const target=[.5,0,.5],bw=Math.max(250,bars.getBoundingClientRect().width);
+      bars.setAttribute('viewBox',`0 0 ${bw} 250`);bars.replaceChildren(element('title',{},'Fourier magnitudes at modes zero, one, and two'));
+      bars.append(element('line',{x1:20,x2:bw-10,y1:195,y2:195,stroke:'#b5bdc5'}));
+      [0,1,2].forEach((k,j)=>{
+        const center=20+(bw-30)*(j+.5)/3;
+        [[target[j],'#7251a1',-24],[spectrum[j],'#db6a20',8]].forEach(([v,color,dx])=>{
+          bars.append(element('rect',{x:center+dx,y:195-100*v,width:16,height:100*v,fill:color}));
+          bars.append(element('text',{x:center+dx+8,y:Math.min(188,188-100*v),'text-anchor':'middle'},v.toFixed(2)));
+        });
+        bars.append(element('text',{x:center,y:220,'text-anchor':'middle'},`k = ${k}`));
+      });
+      bars.append(element('text',{x:bw/2,y:242,'text-anchor':'middle'},'Mode amplitude magnitude'));
+      slider.value=String(weight);q('.nl-value').value=weight.toFixed(2);
+      q('.nl-square').textContent=squared?'Return to multiplier only':'Apply pointwise square';
+      q('.nl-status').textContent=squared?'The pointwise square creates modes 0 and 2. Set R₁ = 1 to match the target.':'Changing R₁ alters mode 1. Predicted mode 2 remains exactly zero.';
+      root.dataset.squared=String(squared);root.dataset.mode2=String(spectrum[2]);root.dataset.weight=String(weight);resizeColabOutput();
+    }
+    slider.addEventListener('input',()=>{weight=Number(slider.value);draw();});
+    q('.nl-square').addEventListener('click',()=>{squared=!squared;draw();});
+    q('.nl-reset').addEventListener('click',()=>{weight=1;squared=false;draw();});
+    if(typeof ResizeObserver!=='undefined')new ResizeObserver(draw).observe(root);
+    draw();
+  })();
+  </script>
+</div>
