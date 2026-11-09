@@ -166,6 +166,7 @@ nav:
   - Fourier Neural Operator:
     - Heat Flow and Fourier Operators: 05-fno/fno-intuition.ipynb
     - CNN Filters and Discretization: 05-fno/fno-cnn-comparisons.ipynb
+    - The FNO Block: 05-fno/fno-block.md
     - FNO: 05-fno/fno.ipynb
   - Automatic Differentiation:
     - AD: 06-ad/06-ad.ipynb

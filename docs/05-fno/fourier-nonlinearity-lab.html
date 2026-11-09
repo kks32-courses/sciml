@@ -18,14 +18,14 @@
     @media(max-width:600px) { #fno-nonlinearity-lab .nl-charts { grid-template-columns:1fr; } }
   </style>
   <h3>Can a multiplier create a missing frequency?</h3>
-  <div class="nl-note">Input: sin x. Target: (sin x)². First try changing only R₁.</div>
+  <div class="nl-note">Input: sin x. Target: (sin x)². First try changing only R(1).</div>
   <div class="nl-charts">
     <svg class="nl-field" height="250" role="img" aria-label="Predicted field compared with the square of sine"></svg>
     <svg class="nl-bars" height="250" role="img" aria-label="Target and prediction mode amplitude magnitudes"></svg>
   </div>
   <div class="nl-legend"><span><span class="nl-key" style="border-color:#7251a1"></span>Target</span><span><span class="nl-key" style="border-color:#db6a20"></span>Prediction</span></div>
   <div class="nl-controls">
-    <label>R₁ <output class="nl-value">1.00</output><input class="nl-weight" type="range" min="-1.5" max="1.5" step="0.01" value="1" aria-label="Weight on input mode one"></label>
+    <label>R(1) <output class="nl-value">1.00</output><input class="nl-weight" type="range" min="-1.5" max="1.5" step="0.01" value="1" aria-label="Weight on input mode one"></label>
     <button class="nl-square" type="button">Apply pointwise square</button>
     <button class="nl-reset" type="button">Reset</button>
   </div>
@@ -52,7 +52,7 @@
       function path(target){return Array.from({length:361},(_,i)=>{const x=2*Math.PI*i/360,y=target?Math.sin(x)**2:squared?(weight*Math.sin(x))**2:weight*Math.sin(x);return `${i?'L':'M'}${(28+(width-40)*i/360).toFixed(2)},${(125-45*y).toFixed(2)}`;}).join(' ');}
       field.append(element('path',{d:path(true),fill:'none',stroke:'#7251a1','stroke-width':3}));
       field.append(element('path',{d:path(false),fill:'none',stroke:'#db6a20','stroke-width':2.8}));
-      field.append(element('text',{x:width/2,y:238,'text-anchor':'middle'},squared?'Prediction: (R₁ sin x)²':'Prediction: R₁ sin x'));
+      field.append(element('text',{x:width/2,y:238,'text-anchor':'middle'},squared?'Prediction: (R(1) sin x)²':'Prediction: R(1) sin x'));
       const spectrum=squared?[weight*weight/2,0,weight*weight/2]:[0,Math.abs(weight),0];
       const target=[.5,0,.5],bw=Math.max(250,bars.getBoundingClientRect().width);
       bars.setAttribute('viewBox',`0 0 ${bw} 250`);bars.replaceChildren(element('title',{},'Fourier magnitudes at modes zero, one, and two'));
@@ -68,7 +68,7 @@
       bars.append(element('text',{x:bw/2,y:242,'text-anchor':'middle'},'Mode amplitude magnitude'));
       slider.value=String(weight);q('.nl-value').value=weight.toFixed(2);
       q('.nl-square').textContent=squared?'Return to multiplier only':'Apply pointwise square';
-      q('.nl-status').textContent=squared?'The pointwise square creates modes 0 and 2. Set R₁ = 1 to match the target.':'Changing R₁ alters mode 1. Predicted mode 2 remains exactly zero.';
+      q('.nl-status').textContent=squared?'The pointwise square creates modes 0 and 2. Set R(1) = 1 to match the target.':'Changing R(1) alters mode 1. Predicted mode 2 remains exactly zero.';
       root.dataset.squared=String(squared);root.dataset.mode2=String(spectrum[2]);root.dataset.weight=String(weight);resizeColabOutput();
     }
     slider.addEventListener('input',()=>{weight=Number(slider.value);draw();});

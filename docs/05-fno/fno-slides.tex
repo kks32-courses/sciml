@@ -72,339 +72,489 @@ University of Texas at Austin \\
 % slides
 %----------------------------------------------------------------------------------------
 
-\section{From CNNs to Kernel Operators: The Conceptual Leap}
+\section{The Green's Function}
 
 %------------------------------------------------
 \begin{frame}
 \frametitle{Learning Objectives}
-
 \begin{itemize}
-    \item Understand the connection between CNNs and kernel operators
-    \item Master Fourier Transform fundamentals for neural operators
-    \item Learn the FNO architecture: spectral convolution layers
-    \item Implement FNO for 1D Burgers equation
-    \item Apply FNO to 2D Darcy Flow problem
-    \item Explore mesh independence and super-resolution capabilities
+\item Write a linear solution operator as a kernel, the Green's function
+\item See why translation invariance turns the kernel into a convolution
+\item Follow one Fourier wave through a convolution
+\item Learn the Fourier multipliers from input-output pairs
+\item Stack Fourier layers and activations into an FNO
+\item Train FNOs on Burgers' equation and Darcy flow
 \end{itemize}
-
 \vspace{0.3cm}
 \centering
-\href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno.ipynb}{\beamergotobutton{Open Notebook: FNO}}
-
+\href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno-intuition.ipynb}{\beamergotobutton{Heat-flow intuition}}
+\href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno-cnn-comparisons.ipynb}{\beamergotobutton{CNN filters and Fourier multipliers}}
+\href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno.ipynb}{\beamergotobutton{FNO}}
 \end{frame}
 
 %------------------------------------------------
-
 \begin{frame}
-\frametitle{A temperature field becomes smoother}
-Consider heat flow on a periodic ring.
-The input and output are entire temperature fields.
+\frametitle{The loaded string}
+Here is a string pinned at both ends.
+A load $f(x)$ pushes on it, and its displacement $u(x)$ satisfies
 \[
-u_0(x)=\sin x+\tfrac12\sin3x+\tfrac14\sin7x,
-\qquad u_0\longmapsto u(\cdot,T).
+-u''(x)=f(x),\qquad u(0)=u(1)=0.
 \]
-\begin{block}{The special inputs}
-Each sine keeps its spatial shape under diffusion.
-Its amplitude changes by a factor that depends on its frequency.
-\end{block}
-\begin{itemize}
-\item A spectral solver derives those factors from the PDE.
-\item A Fourier layer learns factors from input-output fields.
-\end{itemize}
-\smallskip
-\centering
-\href{https://colab.research.google.com/github/kks32-courses/sciml/blob/main/docs/05-fno/fno-intuition.ipynb}{\beamergotobutton{Heat-flow intuition notebook}}
+We want the whole map $f\mapsto u$, for every load at once.
+\bigskip
+
+The equation is local, because $u''$ at $x$ depends only on $u$ near $x$.
+The answer is not local, because a load anywhere bends the whole string.
+How does a load at one point move the rest of the string?
 \end{frame}
 
-
 %------------------------------------------------
-
 \begin{frame}
-\frametitle{Local convolution in a CNN}
-A shared stencil combines neighboring input values.
-For a one-dimensional periodic blur,
+\frametitle{One point load}
+Put a unit load at one point $y$.
+Away from $y$ there is no load, so $u''=0$ and the string is straight.
+The displacement is a tent with its peak under the load,
 \[
-y_j=\tfrac13(u_{j-1}+u_j+u_{j+1}).
+\kappa(x,y)=\begin{cases}x\,(1-y), & x\le y,\\ y\,(1-x), & x\ge y.\end{cases}
 \]
 \begin{center}
-\includegraphics[width=0.65\textwidth,height=0.35\textheight,keepaspectratio]{figs/cnn.png}
+\includegraphics[width=0.62\textwidth,height=0.42\textheight,keepaspectratio]{figs/point-load-family.pdf}
 \end{center}
-\begin{itemize}
-\item Shifting the input shifts the output of the convolution.
-\item A short stencil gives a local interaction in one layer.
-\end{itemize}
-\note{This property is translation equivariance for compatible padding and stride. Pooling and classification invariance are separate questions. Stacked local layers can produce a larger receptive field.}
+At $y=\tfrac12$ the peak is $\tfrac14$, and the slope drops by 1 at the load.
+\note{The slope is $1-y$ to the left of $y$ and $-y$ to the right, so it drops by exactly the unit load. The dashed envelope is $x(1-x)$, the peak of the tent for a load placed at $x$.}
 \end{frame}
 
+%------------------------------------------------
+\begin{frame}
+\frametitle{Adding up point loads}
+Any load is a row of small point loads.
+The piece of load near $y$ has size $f(y)\,dy$, and it makes the tent $\kappa(x,y)\,f(y)\,dy$.
+Adding all the tents gives the displacement,
+\[
+\boxed{u(x)=\int_0^1 \kappa(x,y)\,f(y)\,dy.}
+\]
+Check it with a uniform load $f=1$.
+The integral gives $u=\tfrac12\,x(1-x)$, and that parabola solves $-u''=1$.
+\bigskip
+
+The function $\kappa(x,y)$ is the \textbf{Green's function}.
+It is the kernel of the solution operator, the response at $x$ to a unit load at $y$.
+\end{frame}
 
 %------------------------------------------------
-
 \begin{frame}
-\frametitle{The influence of one initial heat input}
-Place a unit amount of initial heat at position $y$.
-The resulting temperature at $x$ and time $T$ is $G_T(x,y)$.
+\frametitle{The Green's matrix}
+On a grid $x_1,\dots,x_N$ with spacing $h$, the integral becomes a matrix times a vector,
+\[
+u_i=\sum_{j=1}^N \underbrace{\kappa(x_i,y_j)\,h}_{K_{ij}}\;f_j .
+\]
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\includegraphics[width=\linewidth]{figs/string-matrix.png}
+\end{column}
+\begin{column}{0.5\textwidth}
+\small
+Column $j$ of $K$ is the tent for a load at $y_j$.
+\medskip
+
+Learning $K$ means learning $N^2$ entries.
+That is 16{,}384 numbers on 128 points and about a million on 1024 points.
+\medskip
+
+Can a physical symmetry cut that number?
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The shapes of the tents}
+Look at the tents again.
+A load near an end makes a short, lopsided tent.
+A load in the middle makes the tallest tent.
 \begin{center}
-\includegraphics[width=0.96\textwidth,height=0.42\textheight,keepaspectratio]{figs/heat-point-influence.png}
+\includegraphics[width=0.5\textwidth,height=0.4\textheight,keepaspectratio]{figs/point-load-family.pdf}
 \end{center}
-\begin{block}{Green's function}
-$G_T(x,y)$ gives the response at output position $x$ to a localized input at $y$.
-\end{block}
-For the periodic ring, shifting the input shifts the response.
+The pinned ends make every point of the string different.
+So every column of $K$ is a new shape, and we must store all of them.
+What if every point of the domain looked the same?
 \end{frame}
 
+%------------------------------------------------
+\section{A Ring with No Ends}
+
+%------------------------------------------------
 \begin{frame}
-\frametitle{A kernel collects the point contributions}
-An interval near $y$ contributes $u_0(y)\,dy$ units of initial heat.
-Its contribution at $x$ after time $T$ is $G_T(x,y)u_0(y)\,dy$.
+\frametitle{Heat on a ring}
+Here is a thin metal ring with temperature $u(x)$ at the angle $x\in[0,2\pi)$.
+Heat flows for a time $T$ according to $u_t=\nu u_{xx}$, with $\nu=0.14$ and $T=0.65$.
+Every point of the ring looks the same, and heat flow on it has a solution we can write down.
+Put one unit of heat at the point $y$ and let it flow.
+\begin{center}
+\includegraphics[width=0.92\textwidth,height=0.4\textheight,keepaspectratio]{figs/heat-point-influence.png}
+\end{center}
+The heat spreads into a bump centered at $y$.
+Move $y$, and the bump moves with it and keeps its shape.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The ring's matrix}
+The ring has no ends, so the response at $x$ depends only on how far $x$ is from $y$,
 \[
-\boxed{u(x,T)=\int_0^{2\pi}G_T(x,y)u_0(y)\,dy.}
+\kappa(x,y)=\kappa(x-y),
 \]
-The same structure defines an integral kernel operator,
+with the separation $x-y$ measured around the ring.
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\includegraphics[width=\linewidth]{figs/ring-matrix.png}
+\end{column}
+\begin{column}{0.5\textwidth}
+\small
+Every column of the ring's matrix is the same bump, shifted down by one grid point.
+The bump wraps around at the bottom.
+\medskip
+
+One column of $N$ numbers now determines all $N^2$ entries.
+A matrix with this structure is \textbf{circulant}.
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{A convolution}
+Adding up point sources on the ring now gives
 \[
-(\mathcal Kv)(x)=\int_\Omega\kappa(x,y)v(y)\,dy.
+\boxed{u(x,T)=\int_0^{2\pi} \kappa(x-y)\,u_0(y)\,dy.}
 \]
+This integral is the \textbf{convolution} of the initial temperature $u_0$ with the kernel $\kappa$.
+It slides one fixed shape $\kappa$ around the ring and weights it by $u_0$.
+\bigskip
+
+A general Green's function depends on $x$ and $y$ separately.
+Boundaries, as on the string, and a conductivity that changes with $x$ both prevent the convolution form.
+The Fourier layer is built for the convolution case.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{A CNN filter on the ring}
+A CNN computes the same kind of sum with a short filter.
+The blur on a ring of six points is a circulant matrix,
+\[
+\begin{bmatrix}y_1\\y_2\\y_3\\y_4\\y_5\\y_6\end{bmatrix}
+=\frac13
+\begin{bmatrix}
+1&1&0&0&0&1\\
+1&1&1&0&0&0\\
+0&1&1&1&0&0\\
+0&0&1&1&1&0\\
+0&0&0&1&1&1\\
+1&0&0&0&1&1
+\end{bmatrix}
+\begin{bmatrix}u_1\\u_2\\u_3\\u_4\\u_5\\u_6\end{bmatrix}.
+\]
+Each row is the row above, shifted one place.
+Shifting the input shifts the output, as on the ring.
+\note{This is translation equivariance for stride 1 and periodic padding. Pooling and classification invariance are separate questions. Stacked local layers can produce a larger receptive field.}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The width of the heat kernel}
+The heat kernel is a Gaussian with standard deviation $\sqrt{2\nu T}=0.43$.
+On 128 points the spacing is $2\pi/128=0.049$, so the kernel is 8.7 spacings wide.
+\begin{center}
+\includegraphics[width=0.8\textwidth,height=0.3\textheight,keepaspectratio]{figs/cnn-reach.png}
+\end{center}
+\small
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+CNN weights, fitted to 64 heat pairs & 3 & 9 & 17 & 25\\
+Held-out relative error & 0.63 & 0.098 & 0.0035 & 0.00066\\
+\bottomrule
+\end{tabular}
+\end{center}
+A wider filter works, but on 256 points the same kernel is 17.4 spacings wide.
+Can we describe the kernel with numbers that do not count grid points?
+\end{frame}
+
+%------------------------------------------------
+\section{Waves Through a Convolution}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{One wave through three filters}
+Try the simplest input, the single wave $\sin 7x$ on 32 points.
+Apply three image filters, the blur, the shift, and the sharpening filter.
+\begin{center}
+\includegraphics[width=\textwidth,height=0.36\textheight,keepaspectratio]{figs/filters-on-a-wave.png}
+\end{center}
+The blur makes the wave smaller.
+The sharpening filter makes it larger.
+The shift moves it sideways.
+Every output is still a wave with seven periods, so no filter changed the frequency.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The multiplier of a wave}
+Write the wave as $e^{ikx}$.
+Moving it by $s$ multiplies it by one number,
+\[
+e^{ik(x-s)}=e^{-iks}\,e^{ikx}.
+\]
+A convolution adds moved copies, so it also multiplies the wave by one number,
+\[
+\int \kappa(s)\,e^{ik(x-s)}\,ds=\underbrace{\Big(\int \kappa(s)\,e^{-iks}\,ds\Big)}_{R(k)}\,e^{ikx}.
+\]
+The number $R(k)$ is the \textbf{multiplier} of mode $k$.
+\medskip
+
+Check it on the blur, which adds three copies moved by $-1$, $0$, and $1$ grid points.
+Its multiplier is $R(k)=\tfrac13(1+2\cos\theta_k)$ with $\theta_k=2\pi k/N$.
+For $\sin7x$ on 32 points, $\theta_7=1.37$ and $\cos\theta_7=0.20$, so the blur multiplies the wave by 0.46.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The multipliers of three filters}
+\begin{center}
+\includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{figs/filter-responses.png}
+\end{center}
+The orange dots are the wave $\sin7x$ from the last slide.
 \begin{itemize}
-\item $y$ locates an input contribution and $x$ locates the output.
-\item The kernel quantifies influence between the two locations.
-\item Physics may specify the kernel, or a model may learn it.
+\item The blur's multiplier falls with $k$, so it shrinks fast waves.
+\item The sharpening multiplier rises toward 5, so it strengthens fast waves.
+\item The shift keeps every size at 1 and turns the phase by $\theta_k$.
 \end{itemize}
+All three multipliers equal 1 at $k=0$, so all three filters leave a constant unchanged.
 \end{frame}
 
+%------------------------------------------------
 \begin{frame}
-\frametitle{Translation invariance gives convolution}
-On a periodic ring with constant diffusivity, influence depends only on separation.
+\frametitle{The multipliers of heat flow}
+Heat flow on the ring is a convolution, so it also multiplies each wave by one number.
+Put $u=q_k(t)\,e^{ikx}$ into $u_t=\nu u_{xx}$,
 \[
-G_T(x,y)=g_T(x-y).
+\frac{dq_k}{dt}=-\nu k^2q_k,\qquad R(k)=e^{-\nu k^2T}.
 \]
-The integral operator becomes circular convolution,
-\[
-\boxed{(\mathcal K_gv)(x)=\int_0^{2\pi}g(x-y)v(y)\,dy.}
-\]
-\begin{block}{The condition matters}
-A general Green's function depends on both $x$ and $y$.
-Boundaries and variable coefficients can prevent this convolution form.
-\end{block}
-The Fourier representation below applies to the translation-invariant case.
+\begin{center}
+\includegraphics[width=0.9\textwidth,height=0.36\textheight,keepaspectratio]{figs/heat-kernel-multiplier.png}
+\end{center}
+With $\nu T=0.091$, the multiplier is 0.913 at $k=1$, 0.441 at $k=3$, and 0.0116 at $k=7$.
+Fast waves have more curvature, so they decay first.
 \end{frame}
 
-
 %------------------------------------------------
-\section{Fourier Transform: The Mathematical Foundation}
-
-%------------------------------------------------
-
 \begin{frame}
 \frametitle{Fourier coordinates on the ring}
-Use the periodic interval $[0,2\pi)$ and integer wave numbers $k$.
+A field on the ring is a sum of waves with amplitudes $\widehat v_k$,
 \[
-\widehat v_k=\frac{1}{2\pi}\int_0^{2\pi}v(x)e^{-ikx}\,dx,
+v(x)=\sum_{k\in\mathbb Z}\widehat v_k\,e^{ikx},
 \qquad
-v(x)=\sum_{k\in\mathbb Z}\widehat v_ke^{ikx}.
+\widehat v_k=\frac{1}{2\pi}\int_0^{2\pi}v(x)\,e^{-ikx}\,dx.
 \]
-On a uniform grid $x_j=2\pi j/N$, the normalized FFT computes
+On the grid $x_j=2\pi j/N$, the FFT computes the amplitudes from the heights,
 \[
-\widehat v_k=\frac1N\sum_{j=0}^{N-1}v(x_j)e^{-ikx_j}.
+\widehat v_k=\frac1N\sum_{j=0}^{N-1}v(x_j)\,e^{-ikx_j}.
 \]
-\begin{itemize}
-\item The coefficients describe amplitudes and phases of waves.
-\item The inverse transform adds the waves to reconstruct values.
-\item The FFT changes coordinates without evolving the field.
-\end{itemize}
-\note{The finite-grid formula gives coefficients of the trigonometric interpolant. Resolving the input and nonlinear products is a separate discretization issue.}
+The heights $v(x_j)$ and the amplitudes $\widehat v_k$ are two lists that describe the same field.
+The FFT and its inverse convert one list into the other in $O(N\log N)$ operations.
+\note{The finite-grid formula gives the coefficients of the trigonometric interpolant. Resolving the input and the products formed by nonlinear terms is a separate discretization question.}
 \end{frame}
-
 
 %------------------------------------------------
-
 \begin{frame}
-\frametitle{Operations in Fourier coordinates}
-\begin{block}{Differentiation}
-\[
-\widehat{\partial_xv}_k=ik\widehat v_k,
-\qquad \widehat{\partial_{xx}v}_k=-k^2\widehat v_k.
-\]
-\end{block}
-\begin{block}{Convolution with the stated normalization}
-\[
-\widehat{\mathcal K_gv}_k=R(k)\widehat v_k,
-\qquad R(k)=\int_0^{2\pi}g(s)e^{-iks}\,ds.
-\]
-\end{block}
-\begin{block}{Squared norm}
-\[
-\frac1{2\pi}\int_0^{2\pi}|v(x)|^2\,dx
-=\sum_k|\widehat v_k|^2.
-\]
-\end{block}
-\end{frame}
-
-\begin{frame}
-\frametitle{A Fourier wave keeps its shape under convolution}
-Apply the kernel to one input wave $v(y)=e^{iky}$.
-\begin{align*}
-(\mathcal K_ge^{ik\cdot})(x)
-&=\int_0^{2\pi}g(x-y)e^{iky}\,dy\\[0.4em]
-&=e^{ikx}\int_0^{2\pi}g(s)e^{-iks}\,ds\\[0.4em]
-&=R(k)e^{ikx}.
-\end{align*}
-The substitution is $s=x-y$, with separation interpreted periodically.
-\begin{block}{The eigenfunction connection}
-The frequency stays fixed.
-The complex number $R(k)$ changes amplitude and phase.
-\end{block}
-\end{frame}
-
-\begin{frame}
-\frametitle{The heat kernel and its Fourier multipliers}
-For $u_t=\nu u_{xx}$, use $\nu=0.14$ and $T=0.65$.
-Mode $k$ satisfies
-\[
-\frac{d\widehat u_k}{dt}=-\nu k^2\widehat u_k,
-\qquad R_T(k)=e^{-\nu k^2T}.
-\]
-\begin{center}
-\includegraphics[width=0.98\textwidth,height=0.43\textheight,keepaspectratio]{figs/heat-kernel-multiplier.png}
-\end{center}
-The point-influence kernel and the modal factors describe the same solution operator.
-\[
-\mathcal L_Tu_0=g_T*u_0
-=\mathcal F^{-1}[R_T\mathcal F(u_0)].
-\]
-\end{frame}
-
-
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{Wave coordinates and spectral evolution}
+\frametitle{Three waves}
 \begin{center}
 \includegraphics[width=\textwidth,height=0.40\textheight,keepaspectratio]{figs/fno-three-wave-coordinates.png}
 \end{center}
-For the three-wave heat example,
+Take $u_0=\sin x+\tfrac12\sin3x+\tfrac14\sin7x$.
+Heat flow multiplies each amplitude by its own number,
 \[
 \begin{bmatrix}q_1(T)\\q_3(T)\\q_7(T)\end{bmatrix}
-=\operatorname{diag}(0.913,0.441,0.0116)
+=\operatorname{diag}(0.913,\,0.441,\,0.0116)
 \begin{bmatrix}1\\0.5\\0.25\end{bmatrix}.
 \]
-The multipliers scale the initial amplitudes.
-The final amplitude of mode 3 is $0.5\times0.441\approx0.220$.
+The amplitude of mode 3 goes from 0.5 to $0.5\times0.441\approx0.220$.
 \end{frame}
 
-
 %------------------------------------------------
-\section{Fourier Neural Operator Architecture}
-
-%------------------------------------------------
-
 \begin{frame}
-\frametitle{Learning the global convolution}
-Supply initial-final field pairs and fit the response $R_\theta(k)$.
-The coordinate transforms remain fixed.
+\frametitle{One operator in two bases}
+The heights and the wave amplitudes are two coordinate systems for the same field.
+Choosing the Fourier waves is a change of basis, as choosing any other basis is.
+The basis alone does not make the Fourier layer.
+What matters is the matrix of the operator in that basis.
+\begin{center}
+\includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{figs/operator-in-two-bases.png}
+\end{center}
+\small
+In heights, heat flow is a dense circulant matrix.
+In waves, the same operator is diagonal, so output mode $k$ uses input mode $k$ alone.
+A conductivity $1+\tfrac12\sin x$ breaks the shift symmetry, and the matrix in waves is no longer diagonal.
+\note{All three matrices use 64 points and the same finite-volume diffusion, with nu T = 0.091. The largest off-diagonal entry in waves is 8.8e-16 for constant conductivity and 0.09 for the conductivity 1 + sin(x)/2. The colors in the two right panels are log10 of the magnitude.}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Convolution by FFT}
+A field is a sum of waves, and a convolution acts on each wave by itself.
+So three steps compute the convolution,
 \[
-\mathcal K_\theta v=\mathcal F^{-1}[R_\theta(k)\widehat v_k].
+\boxed{u(\cdot,T)=\mathcal F^{-1}\big[R(k)\,\mathcal F(u_0)\big].}
 \]
-The equivalent periodic spatial kernel is
+\begin{enumerate}
+\item The FFT finds the amplitude of each wave in $u_0$.
+\item Multiply amplitude $k$ by $R(k)$.
+\item The inverse FFT adds the changed waves back together.
+\end{enumerate}
+\bigskip
+The kernel matrix has $N^2$ entries.
+The multipliers are $N/2+1$ numbers, and they refer to modes, not to grid points.
+\end{frame}
+
+%------------------------------------------------
+\section{Learning the Multipliers}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Multipliers from data}
+Now suppose we do not know $\nu$.
+We have 64 pairs of initial and final profiles on 128 points, made of modes 0 to 12.
+For every pair $j$, mode $k$ obeys $b_k^{(j)}=R(k)\,a_k^{(j)}$, so the pairs lie on a line through the origin.
+\begin{center}
+\includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{figs/learned-multipliers.png}
+\end{center}
+Least squares fits the slope of each mode,
+$R(k)=\sum_j \overline{a_k^{(j)}}\,b_k^{(j)}\big/\sum_j |a_k^{(j)}|^2$.
+The 13 fitted numbers match $e^{-\nu k^2T}$, and the held-out error is $2.2\times10^{-16}$.
+The best three-weight CNN is the dashed cosine, which cannot follow the heat curve.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{The kernel of a Fourier layer}
+A Fourier layer keeps a set $\mathcal M$ of low modes and sets the others to zero,
 \[
-\boxed{g_\theta(s)=\frac1{2\pi}\sum_{k\in\mathcal M}R_\theta(k)e^{iks}.}
+\mathcal K v=\mathcal F^{-1}\big[R(k)\,\widehat v_k\big],\qquad k\in\mathcal M.
 \]
-\begin{itemize}
-\item The retained set $\mathcal M$ specifies the spectral branch.
-\item Set unretained multipliers to zero for this truncated layer.
-\item Each retained Fourier wave extends across the domain.
-\end{itemize}
+In space, the layer is a convolution with the kernel
+\[
+\kappa(s)=\frac1{2\pi}\sum_{k\in\mathcal M}R(k)\,e^{iks},
+\]
+and every retained wave extends around the whole ring.
+\begin{center}
+\includegraphics[width=0.78\textwidth,height=0.3\textheight,keepaspectratio]{figs/heat-retained-kernel.png}
+\end{center}
+\small
+With only modes 1, 3, and 7 kept, the kernel differs from the heat kernel.
+It gives the same output for every field made of those three modes.
 \smallskip
+
 \footnotesize\href{https://arxiv.org/abs/2010.08895}{Li et al., Fourier Neural Operator, Section 4.}
 \note{The kernel formula uses normalized Fourier-series coefficients for fields and an unnormalized integral for the convolution multiplier. A real kernel requires R(-k)=conj(R(k)). For channel-valued features the kernel and multipliers are matrices.}
 \end{frame}
 
+%------------------------------------------------
 \begin{frame}
-\frametitle{Three learned modes specify a restricted operator}
+\frametitle{Finer grids}
+A CNN's multiplier depends on the grid through $\theta_k=2\pi k/N$.
+On 256 points, mode $k$ sits where mode $k/2$ sat on 128 points.
+So a CNN trained on 128 points applies $e^{-\nu(k/2)^2T}=e^{-\nu k^2(T/4)}$, which is heat flow for the time $T/4$.
+The learned multiplier $R(k)$ is indexed by $k$ itself.
+\medskip
 \begin{center}
-\includegraphics[width=0.96\textwidth,height=0.45\textheight,keepaspectratio]{figs/heat-retained-kernel.png}
+\small
+\begin{tabular}{cccc}
+\toprule
+Points & Fourier layer vs $T$ & 17-weight CNN vs $T$ & 17-weight CNN vs $T/s$\\
+\midrule
+128 & $2.2\times10^{-16}$ & 0.0035 & 0.0035, $s=1$\\
+256 & $2.1\times10^{-16}$ & 0.78 & 0.0028, $s=4$\\
+512 & $2.2\times10^{-16}$ & 1.7 & 0.0021, $s=16$\\
+\bottomrule
+\end{tabular}
 \end{center}
-The two kernels give the same heat output on the represented span
+\medskip
+Both maps were trained once on 128 points.
+The transfer works because the test profiles contain only modes 0 to 12 and every grid resolves them.
+\end{frame}
+
+%------------------------------------------------
+\section{From One Layer to the FNO}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Squaring a wave}
+Every map so far multiplies waves that are already in the input.
+Now square $\sin x$,
 \[
-\operatorname{span}\{\sin x,\sin3x,\sin7x\}.
+\sin^2x=\tfrac12-\tfrac12\cos2x.
 \]
-Input $v=1$ gives outputs 1 and 0, respectively.
-\begin{block}{What the data identify}
-Three fitted responses determine the action on those modes.
-The truncation convention determines the extension to unretained modes.
-\end{block}
+\begin{center}
+\includegraphics[width=0.98\textwidth,height=0.4\textheight,keepaspectratio]{figs/fourier-new-modes.png}
+\end{center}
+The square contains modes 0 and 2, and the input contained only mode 1.
+A multiplier gives $R(2)\times0=0$, so no multiplier can create mode 2.
+A pointwise nonlinear operation can.
+\note{The bars show real sine and cosine amplitude magnitudes. The constant is mode zero. A generic activation need not equal squaring, but it can introduce new frequencies.}
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{One FNO block}
+An FNO block sends a feature field $v_\ell(x)$ down two paths and adds them,
+\begin{align*}
+z(x)&=\mathcal F^{-1}[R_\ell\,\mathcal F(v_\ell)](x) && \text{global, the learned multipliers}\\
+y(x)&=W_\ell\,v_\ell(x)+b_\ell && \text{local, at each point}\\
+v_{\ell+1}(x)&=\sigma\bigl(z(x)+y(x)\bigr) && \text{pointwise activation}
+\end{align*}
+\begin{itemize}
+\item The spectral path multiplies mode $k$ by $R_\ell(k)$, which couples every point of the domain.
+\item The local path multiplies every mode by the same matrix $W_\ell$, and it keeps modes that the spectral cutoff drops.
+\item Both linear paths act on each mode separately. Only the activation $\sigma$ couples different modes.
+\end{itemize}
+In two dimensions, $k$ is a vector and the same formulas apply.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Channels}
+A feature field has $C$ channels at each point, so $R_\ell(k)$ is a $C\times C$ matrix,
+\[
+\widehat z_o(k)=\sum_{i=1}^{C}R_{oi}(k)\,\widehat v_i(k),
+\qquad k\in\mathcal M.
+\]
+At a fixed mode $k$, the matrix mixes the channels.
+Different modes still do not mix.
+\bigskip
+
+Count the numbers in one 1D layer of the Burgers model, with $C=64$ channels and 16 retained modes.
+The spectral path has $64\times64\times16=65{,}536$ complex multipliers.
+That count does not change when the grid is refined.
 \end{frame}
 
 
 %------------------------------------------------
 \begin{frame}
 \frametitle{Complete FNO Architecture}
-
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\textwidth]{figs/fourier_architecture.png}
     \caption*{Fourier Neural Operator architecture.}
 \end{figure}
-
-\textbf{Architecture consists of:}
 \begin{itemize}
-    \item \textbf{Lifting:} $P(u) \rightarrow v_0$ (embed input to high-dimensional space)
-    \item \textbf{Fourier Layers:} $v_{\ell+1} = \sigma(W_\ell v_\ell + \mathcal{K}_\ell v_\ell)$ (4 layers)
-    \item \textbf{Projection:} $Q(v_4) \rightarrow \text{output}$ (map back to output space)
+    \item The lifting $P$ maps the input at each point to $C$ channels, $v_0=P(u)$.
+    \item Four Fourier blocks compute $v_{\ell+1}=\sigma(W_\ell v_\ell+b_\ell+\mathcal K_\ell v_\ell)$.
+    \item The projection $Q$ maps the $C$ channels at each point to the output.
 \end{itemize}
-
 \end{frame}
 
 %------------------------------------------------
-
-\begin{frame}
-\frametitle{The spectral branch acts globally}
-At each retained frequency, transform the channel coefficients,
-\[
-\widehat z_o(k)=\sum_{i=1}^{C_{\rm in}}R_{oi}(k)\widehat v_i(k),
-\qquad k\in\mathcal M.
-\]
-Set the spectral output to zero outside $\mathcal M$, then reconstruct $z$.
-\[
-z(x)=\sum_{k\in\mathcal M}\widehat z(k)e^{ikx}.
-\]
-\begin{itemize}
-\item $R(k)$ mixes channels at a fixed frequency.
-\item Its inverse Fourier representation is a matrix-valued global kernel.
-\item The mode cutoff is an architectural choice, not a guarantee of accuracy.
-\end{itemize}
-\end{frame}
-
-
-%------------------------------------------------
-
-\begin{frame}
-\frametitle{Global and local transformations in one FNO block}
-The spectral and pointwise paths process the same input features.
-\begin{align*}
-z(x)&=\mathcal F^{-1}[R_\ell\mathcal F(v_\ell)](x),\\
-y(x)&=W_\ell v_\ell(x)+b_\ell,\\
-v_{\ell+1}(x)&=\sigma\bigl(z(x)+y(x)\bigr).
-\end{align*}
-\begin{itemize}
-\item The spectral path combines information across the domain.
-\item $W_\ell$ mixes channels at each position without a spectral cutoff.
-\item $\sigma$ supplies nonlinear frequency interactions.
-\end{itemize}
-In multiple dimensions, $k$ is a vector and the same channel formula applies.
-\end{frame}
-
-\begin{frame}
-\frametitle{A nonlinear operation creates new frequencies}
-\[
-\sin^2x=\tfrac12-\tfrac12\cos2x.
-\]
-\begin{center}
-\includegraphics[width=0.98\textwidth,height=0.43\textheight,keepaspectratio]{figs/fourier-new-modes.png}
-\end{center}
-A multiplier at mode 2 gives $R(2)\times0=0$ for the original input.
-A pointwise nonlinear operation can generate that missing mode.
-\note{The bars show real sine/cosine amplitude magnitudes. The constant is mode zero. A generic activation need not equal squaring, but it can introduce new frequencies.}
-\end{frame}
-
 \begin{frame}
 \frametitle{Pseudospectral evaluation and an FNO block}
 \small
@@ -431,12 +581,12 @@ A pointwise nonlinear operation can generate that missing mode.
 \end{column}
 \end{columns}
 \medskip
-The nonlinear spatial operations couple modes.
-FNO layers need not represent physical time steps.
+The solver forms the product $u\,u_x$ at the grid points, and the FNO applies an activation there.
+Both couple modes at the grid points, and FNO layers need not represent physical time steps.
 \smallskip
+
 \footnotesize\href{https://arxiv.org/html/2306.10619v2}{McCabe et al., Section 2 and Appendix A.}
 \end{frame}
-
 
 %------------------------------------------------
 \section{Example 1: 1D Burgers Equation}
@@ -447,7 +597,7 @@ FNO layers need not represent physical time steps.
 
 \textbf{Problem Formulation:}
 
-The 1D viscous Burgers equation models shock wave propagation:
+The 1D viscous Burgers equation combines nonlinear advection with diffusion,
 
 \begin{equation*}
 \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = \nu \frac{\partial^2 u}{\partial x^2}, \quad x \in [0, 2\pi], t \in [0, T]
@@ -465,7 +615,7 @@ from initial condition to solution at time $T = 1$.
 
 \vspace{0.2cm}
 
-\textbf{Dataset:} 1024 training samples from varied initial conditions, solved using spectral methods.
+The data are 1000 training pairs and 100 test pairs with random initial conditions.
 
 \end{frame}
 
@@ -479,7 +629,7 @@ from initial condition to solution at time $T = 1$.
         \begin{itemize}
             \item \textbf{Nonlinear advection:} $u\frac{\partial u}{\partial x}$
             \item \textbf{Viscous diffusion:} $\nu \frac{\partial^2 u}{\partial x^2}$
-            \item Competition creates shock waves
+            \item Advection steepens fronts, and viscosity keeps them smooth
             \item Periodic boundary conditions
         \end{itemize}
 
@@ -488,7 +638,7 @@ from initial condition to solution at time $T = 1$.
         \textbf{Why this problem:}
         \begin{itemize}
             \item Prototype for nonlinear PDEs
-            \item Captures shock formation
+            \item Steep fronts need many Fourier modes
             \item Tests operator learning on complex dynamics
         \end{itemize}
     \end{column}
@@ -496,7 +646,7 @@ from initial condition to solution at time $T = 1$.
         \begin{figure}[ht]
             \centering
             \includegraphics[width=\linewidth]{figs/burgers_examples.png}
-            \caption*{Sample initial conditions (blue) and evolved solutions (red) showing shock formation.}
+            \caption*{Sample initial conditions (blue) and evolved solutions (red) with steepened fronts.}
         \end{figure}
     \end{column}
 \end{columns}
@@ -633,10 +783,10 @@ from permeability coefficient $a$ to pressure/hydraulic head $u$.
 \frametitle{A variable coefficient changes the operator}
 For each fixed permeability $a$, Darcy flow is linear in its forcing,
 \[
-u(x)=\int_\Omega G_a(x,y)f(y)\,dy.
+u(x)=\int_\Omega \kappa_a(x,y)f(y)\,dy.
 \]
 The Green's function depends on $a$ and the boundary conditions.
-It generally cannot be written as one fixed $g(x-y)$.
+It generally cannot be written as one fixed $\kappa(x-y)$.
 \begin{itemize}
 \item Multiplication by a spatially varying $a$ couples Fourier modes.
 \item The learned task $a\mapsto u$ changes the PDE operator itself.
