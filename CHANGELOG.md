@@ -16,6 +16,10 @@
 - Add the deck's stride and pooling GIFs to `docs/05-fno/figs/` for the comparisons notebook.
 - Keep Burgers training in the existing `docs/05-fno/fno.ipynb` and link to it from the intuition lesson.
 - Add course-navigation entries for the introductory lesson and its CNN and discretization companion.
+- Add the UAT theory, 1D Darcy DeepONet, and continuous normalizing flow notebooks to the site navigation.
+- Add `docs/06-ad/inverse-updates.ipynb`, a PyTorch port of the PBDL scale-invariance example from the archived optimization lecture. It compares gradient descent, Newton, the inverse gradient, and the inverse simulator on a scaled linear simulator and on PBDL's squared-input simulator, computes the local inverse by root finding, and shows why inverting heat flow amplifies noise.
+- Add `docs/06-ad/subgradients.ipynb`. It covers the derivatives PyTorch returns at kinks, subgradients and the optimality condition, the subgradient method with fixed and shrinking steps, lasso by subgradient steps versus soft thresholding checked against scikit-learn, and AD failures on ReLU compositions.
+- Link both notebooks from the gradients and optimizers page and add them to the Automatic Differentiation navigation.
 
 ### Fixed
 

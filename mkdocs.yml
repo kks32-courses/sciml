@@ -124,6 +124,7 @@ nav:
     - UAT: 
       - UAT Proof: 00-mlp/uat-proof.md
       - UAT ReLU demo: 00-mlp/uat.md
+      - UAT Theory: 00-mlp/uat-theory.ipynb
     - Regularization: 00-mlp/regularization.md
     - Automatic Differentiation: 00-mlp/ad.md
     - Gradient Descent: 00-mlp/sgd.md
@@ -149,6 +150,7 @@ nav:
   - DeepONet:
     - From a PDE solve to operator learning: 02-deeponet/operator_learning_with_frequency_and_sensors.ipynb
     - DeepONet: 02-deeponet/deeponet.ipynb
+    - DeepONet for 1D Darcy Flow: 02-deeponet/deeponet-code.ipynb
     - PI-DeepONet: 02-deeponet/pideeponet.ipynb
     - DeepONet Interpretation: 02-deeponet/deeponet-explanation.md
     - DeepONet Batch Einsum: 02-deeponet/einsum.md
@@ -168,6 +170,8 @@ nav:
   - Automatic Differentiation:
     - AD: 06-ad/06-ad.ipynb
     - Gradients and Optimizers: 06-ad/gradients-and-optimizers.md
+    - Gradient, Newton, and Inverse-Simulator Updates: 06-ad/inverse-updates.ipynb
+    - Subgradients: 06-ad/subgradients.ipynb
   - SINDy:
     - SINDy Pendulum: 07-sindy/07b-sindy-pendulum.ipynb
     - SINDy: 07-sindy/07-sindy.ipynb
@@ -180,6 +184,7 @@ nav:
     - Van Der Pol with Function Encoder: 08-neural-ode/vanderpol-function-encoder.ipynb
   - Bayesian SciML:
     - Bayesian Neural Networks: 09-bayes-cnf/09a-bnn.ipynb
+    - Continuous Normalizing Flows: 09-bayes-cnf/09b-cnf.ipynb
 
 copyright: |
   &copy; 2025 <a href="https://github.com/kks32-courses"  target="_blank" rel="noopener">Krishna Kumar</a>

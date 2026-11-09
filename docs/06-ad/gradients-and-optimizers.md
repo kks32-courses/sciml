@@ -96,6 +96,7 @@ Now look at what each guess does.
 | L-BFGS | one gradient, loss values in the line search, and $m$ pairs | $2mn$ | the gradients are noisy, or the curvature changes faster than the memory |
 
 The [AD notebook](06-ad.ipynb) runs Adam and L-BFGS in JAX on a full-waveform inversion, and the [Burgers benchmark](../01-pinns/burgers-optimizers.ipynb) compares second-stage optimizers on a PINN.
+The [inverse-update notebook](inverse-updates.ipynb) compares gradient descent and Newton with the inverse gradient and the inverse simulator of Physics-based Deep Learning, and the [subgradient notebook](subgradients.ipynb) treats losses with kinks.
 With a million parameters and minibatch gradients, which of these bowls can we still compute and store?
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
