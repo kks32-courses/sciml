@@ -165,6 +165,7 @@ nav:
     - GNS: 04-gns/gnn.ipynb
   - Fourier Neural Operator:
     - Heat Flow and Fourier Operators: 05-fno/fno-intuition.ipynb
+    - Spectral Methods and FNO: 05-fno/fno-spectral-methods.ipynb
     - CNN Filters and Discretization: 05-fno/fno-cnn-comparisons.ipynb
     - The FNO Block: 05-fno/fno-block.md
     - FNO: 05-fno/fno.ipynb

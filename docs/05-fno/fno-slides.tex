@@ -422,6 +422,32 @@ The multipliers are $N/2+1$ numbers, and they refer to modes, not to grid points
 
 %------------------------------------------------
 \begin{frame}
+\frametitle{Waves, coefficients, and multipliers}
+The waves stay fixed, and training learns how strongly each input wave contributes to the solution.
+\[
+\underbrace{u(x,0)=\sum_k a_k\,e^{ikx}}_{\text{initial temperature}}
+\quad\longrightarrow\quad
+\underbrace{u(x,T)=\sum_k R(k)\,a_k\,e^{ikx}}_{\text{final temperature}}
+\]
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Quantity & What happens to it\\
+\midrule
+Waves $e^{ikx}$ & Fixed sine and cosine patterns\\
+Input coefficients $a_k$ & Computed by the FFT, and different for each input\\
+Multipliers $R(k)$ & Learned during training, and reused for new inputs\\
+\bottomrule
+\end{tabular}
+\end{center}
+\medskip
+For example, training learns $R(3)=0.44$.
+An input with amplitude 1 in wave 3 gives amplitude 0.44, and an input with amplitude 2 gives 0.88.
+So the learned quantity is the scaling rule $R(k)$, and the amount $R(k)\,a_k$ in a particular solution depends on the input.
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
 \frametitle{Multipliers from data}
 Now suppose we do not know $\nu$.
 We have 64 pairs of initial and final profiles on 128 points, made of modes 0 to 12.
