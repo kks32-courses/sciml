@@ -1,0 +1,41 @@
+Answers to poll-fno.txt, in order, with the slide or notebook section behind each.
+
+1. The multiplier R(k), or its matrix of feature-channel weights.
+   The Fourier waves are fixed by the domain, and the FFT computes the coefficients of each input.
+   Training fits the weights that transform those coefficients, and the same weights are used for each input ("Waves, coefficients, and multipliers", "Multipliers from data").
+
+2. The second derivative multiplies sin(8x) by -64, giving it a faster amplitude decay.
+   A sine amplitude q_k satisfies dq_k/dt = -nu k^2 q_k, so its decay factor is exp(-nu k^2 t).
+   The decay rate depends on k^2 and nu, while the initial amplitude sets the starting value.
+   Each Fourier mode evolves independently for this constant-coefficient periodic heat equation ("The multipliers of heat flow", fno-spectral-methods.ipynb, Section 2).
+
+3. i.
+   The positive-frequency coefficient of sin(x) is -i/2, and that of cos(x) is 1/2.
+   Multiplication by i gives i(-i/2) = 1/2, and the multiplier at negative frequency is its conjugate, -i, so the reconstructed field is real.
+   Complex multipliers can change phase as well as amplitude (fno-spectral-methods.ipynb, Section 3, "Amplitude and phase", and Section 5, "Mix channels at each retained frequency").
+
+4. Each retained Fourier coefficient depends on samples across the whole domain.
+   A truncated Fourier multiplier defines a convolution whose spatial kernel generally extends across the domain.
+   Retaining fewer modes limits the kernel's spectral content while preserving this global spatial reach.
+   The pointwise matrix W mixes channels at the same position ("The kernel of a Fourier layer", "One FNO block").
+
+5. Multiplication by the spatially varying diffusivity couples modes even though L is linear in u.
+   The flux is (1 + 0.5 cos(x)) 2 cos(2x), which contains cosine modes 1, 2, and 3.
+   Differentiating gives -0.5 sin(x) - 4 sin(2x) - 1.5 sin(3x).
+   The diffusivity is prescribed independently of u, so L remains linear.
+   Its Fourier matrix is tridiagonal for this coefficient (fno-spectral-methods.ipynb, Section 3, "When independent multipliers are insufficient").
+
+6. Feature channels at the same frequency.
+   At each k, R_l(k) multiplies the vector of feature coefficients at that k.
+   This spectral multiplication preserves the frequency index while mixing channels.
+   Pointwise nonlinear activations can then generate additional frequencies ("Channels", "One FNO block").
+
+7. A constant component and a second harmonic.
+   The identity sin(x)^2 = 1/2 - cos(2x)/2 gives a mean of 1/2 and a mode-2 cosine coefficient of -1/2.
+   The activation creates both components from a feature containing only mode 1.
+   Subsequent spectral layers can apply learned weights to the new components when those modes are retained ("Squaring a wave", fno-spectral-methods.ipynb, Section 5).
+
+8. The model can be evaluated on the finer grid, with accuracy depending on resolved scales and aliasing.
+   Over the same physical domain, each retained Fourier index corresponds to the same physical wavenumber on both grids.
+   The retained weight matrices can therefore be reused, but finer sampling adds no training information about unresolved physics.
+   Nonlinear aliasing can also change with the evaluation grid, so accuracy needs a separate check ("Finer grids", "FNO properties", fno-spectral-methods.ipynb, Section 6).

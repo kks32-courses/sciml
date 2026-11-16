@@ -4,6 +4,7 @@
 
 ### Added
 
+- Add `docs/05-fno/poll-fno.txt` and `poll-fno-answers.txt` in the DeepONet poll format. The eight questions cover learned multipliers, heat-mode decay, phase, global spatial influence, heterogeneous linear diffusion, channel mixing, nonlinear mode creation, and resolution transfer, with separate explanations and lesson references.
 - Add `docs/05-fno/fno-intuition.ipynb`, now 15 cells, that develops Fourier operators through heat flow, shape-preserving sine modes, Fourier coordinates, known spectral multipliers, and multipliers learned from field pairs. Introduce nonlinear mode coupling and the pseudospectral connection only after the linear example.
 - Add `docs/05-fno/heat-mode-explorer.html`, a shared interactive display of the temperature field, its individual sine components, and their amplitudes. Playback, a time slider, and selectable initial fields support the first four sections without changing the example.
 - Add an equal-amplitude, side-by-side diffusion comparison, linked selection of component curves and Fourier bars, initial-amplitude outlines, and explicit decay multipliers. Ask students to observe spatial shape preservation before revealing the derivative and eigenfunction explanation.
@@ -24,6 +25,10 @@
 - Link both notebooks from the gradients and optimizers page and add them to the Automatic Differentiation navigation.
 - Add `docs/05-fno/fno-block.md` with `fno-block.js` and `fno-block.css`, an interactive page that steps through one FNO block on a 64-point ring. It draws the lift, FFT, mode truncation and multiplication by R(k), inverse FFT, local path W, activation, and projection as a data-flow diagram with live plots, and lets the reader change the input, the number of kept modes, the channel, and the random weights. Add it to the Fourier Neural Operator navigation.
 - Add `docs/05-fno/fno-spectral-methods.ipynb`, a page that derives the heat multiplier R(k,t) from one wave, writes the spectral solver as FFT, multiply, inverse FFT, and then follows the Burgers term and a square activation to show how a product in physical space creates new modes. It also covers the CNN comparison, the limits of the method, and the mode-interaction form of nonlinear dynamics. The notebook computes its ten figures and two printed checks, and one figure shows a variable diffusivity sending one wave into three. Add it to the Fourier Neural Operator navigation after the heat flow lab, and link it from the lab's closing cell.
+
+### Changed
+
+- Combine `docs/05-fno/fno-spectral-methods.ipynb` into a continuous lesson from a temperature field and its waves through the heat amplitude ODE, the Fourier solver, a fitted multiplier, Burgers mode interactions, and the full FNO block. Expand the derivations, add the complex least-squares multiplier fit, and place the CNN comparison and physical-structure extensions after the main construction. Place each graph beside its explanation, introduce the solution-operator map with the field-pair fit, and move the abstract generator discussion to the final extension. Preserve all code cells in their dependency order, saved figures, numerical outputs, and execution records. Update the FNO poll references to the revised sections.
 
 ### Fixed
 

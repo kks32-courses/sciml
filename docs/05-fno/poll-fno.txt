@@ -1,0 +1,47 @@
+In a Fourier layer trained on pairs of fields, which quantity is learned and shared across all input functions
+The Fourier coefficients of each input field
+The values of the Fourier waves exp(ikx)
+The multiplier R(k), or its matrix of feature-channel weights
+The wavelengths in the Fourier basis
+
+For periodic heat flow with constant diffusivity and initial field sin(x) + 0.5 sin(8x), the amplitude of mode 8 has a faster exponential decay rate because
+The second derivative multiplies sin(8x) by -64, giving it a faster amplitude decay
+The initial amplitude of sin(8x) is smaller
+The FFT assigns smaller coefficients to higher frequencies regardless of the input
+Diffusion transfers the amplitude of sin(8x) into sin(x)
+
+To map sin(x) to cos(x) with a real-valued linear Fourier layer, the multiplier at positive frequency k = 1 is
+1
+-1
+-i
+i
+
+An FNO spectral branch retains only a few Fourier modes. A change at one input point can still affect distant outputs because
+The pointwise matrix W mixes values at different grid points
+Each retained Fourier coefficient depends on samples across the whole domain
+The FFT learns which distant points need to be connected
+Keeping fewer modes increases the spacing between grid points
+
+With nu(x) = 1 + 0.5 cos(x), applying L u = d/dx(nu(x) du/dx) to sin(2x) produces modes 1, 2, and 3 because
+Diffusion becomes nonlinear in u when its coefficient varies with position
+Truncating the Fourier transform creates the additional modes
+The Fourier basis depends on the temperature field
+Multiplication by the spatially varying diffusivity couples modes even though L is linear in u
+
+At one retained frequency k in a multi-channel FNO, the matrix R_l(k) directly mixes
+All retained frequencies with one another
+Values at neighboring grid points only
+Feature channels at the same frequency
+Different training functions in the batch
+
+If an FNO layer produces the feature v(x) = sin(x), applying the activation sigma(v) = v^2 gives
+A constant component and a second harmonic
+Only the original frequency, with twice its amplitude
+Only a second harmonic, with zero mean
+The same spectrum with all frequencies above the cutoff removed
+
+An FNO is trained on 128 uniformly spaced points and evaluated on 256 points over the same periodic domain. Reusing its weights means that
+The model becomes exact for all frequencies up to the new Nyquist limit
+The model can be evaluated on the finer grid, with accuracy depending on resolved scales and aliasing
+Twice as many Fourier modes have been learned
+The extra evaluation points provide additional training examples
