@@ -27,6 +27,7 @@
 
 ### Fixed
 
+- Clarify the periodic boundary conditions and constant-coefficient assumptions in `docs/05-fno/fno-spectral-methods.ipynb`. Identify the variable-diffusivity example's spatial Fourier matrix as tridiagonal and distinguish quadratic Burgers interactions from general nonlinear dynamics. Correct the Nyquist amplitude scaling for even grids, shorten repeated explanations, and remove rhetorical phrasing while preserving the recorded figures and numerical outputs.
 - Sample a periodic interval without a duplicate endpoint and use a symmetric frequency mask for the Fourier truncation demonstrations in the existing FNO lesson and exercise notebooks.
 - Relabel slide 15's center-5 kernel as sharpening in the supplied local CNN deck. Its weights sum to one and preserve constants.
 - Use one kernel notation in the FNO slides, notebooks, labs, and block page. Every kernel is κ, with κ(x,y) for a general kernel such as the Green's function and κ(x−y) for a convolution, every multiplier is R(k), and the largest kept mode is k_max. The old CNN formula κ(x,x') = k(x−x') reused the wavenumber symbol k, and the slides used g, G_T, and g_T for the same kernels. The heat-on-a-ring slide now says why heat flow is the example.
