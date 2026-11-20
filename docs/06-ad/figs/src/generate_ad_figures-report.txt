@@ -1,0 +1,91 @@
+--- projectile tape at v = 15 m/s, a = 35 deg; observed top from v = 20, a = 50
+observed top = (20.078, 11.964) m, current top = (10.776, 3.773) m
+row          value   tangent, seed v   tangent, seed a     adjoint
+v          15.0000            1.0000            0.0000    -17.4849
+a          35.0000            0.0000            1.0000     -2.8140
+theta       0.6109            0.0000            0.0175   -161.2327
+s           0.5736            0.0000            0.0143   -282.5083
+c           0.8192           -0.0000           -0.0100   -122.3630
+q         225.0000           30.0000            0.0000     -0.5828
+p         129.0547           17.2073            3.2168     -1.0161
+x          10.7763            1.4368            0.1369     -9.3013
+z           3.7728            0.5030            0.1881     -8.1910
+r1         -9.3013            1.4368            0.1369     -9.3013
+r2         -8.1910            0.5030            0.1881     -8.1910
+L          76.8035          -17.4849           -2.8140      1.0000
+J = [[1.4368, 0.1369], [0.5030, 0.1881]], r = (-9.301, -8.191)
+grad L = J^T r = (-17.485 per m/s, -2.814 per degree) = (-17.485, -161.2 per radian)
+Newton step at the start = (17.16 m/s, 27.14 deg)
+descent direction on the plot: 3.5 deg from the v axis with a in degrees, 89.7 deg with a in radians
+--- finite differences of dL/dv at v = 15, a = 35
+forward difference: best relative error 9.8e-10 at h = 1e-07
+central difference: best relative error 9.8e-12 at h = 1e-05
+forward difference at h = 1e-2: 3.3e-04, at h = 1e-13: 8.4e-03
+reverse-mode AD against the tape formula: relative difference 2.0e-16
+--- symbolic differentiation of the logistic iterates l_{n+1} = 4 l_n (1 - l_n), l_1 = x
+n      operations in l_n   operations in dl_n/dx    tape rows for AD
+1                      0                       0                   0
+2                      3                       2                   3
+3                      8                      21                   6
+4                     18                      82                   9
+5                     38                     264                  12
+6                     78                     768                  15
+7                    158                    2096                  18
+--- adjoint of dy/dt = -k y, J = int (y - d)^2 dt, k = 1, y0 = 1, T = 2, d = exp(-2t)
+dJ/dk from the definition = -0.235845, from -int p y dt = -0.235845
+dJ/dy0 by finite difference = 0.316670, p(0) = 0.316670
+Euler with 100 steps: reverse mode -0.233675, finite difference -0.233675, |AD - FD| = 1.1e-10, |AD - continuous| = 2.2e-03
+Euler with 1000 steps: reverse mode -0.235630, finite difference -0.235630, |AD - FD| = 7.0e-12, |AD - continuous| = 2.1e-04
+--- narrow valley L = (x1^2 + 64 x2^2)/2, start (-1.6, 1.1), eta = 0.025, lr = 0.1
+Gradient descent  loss < 1e-6 at step  278, 500 steps, step limit        end (-0.0000, 0.0000), loss 1.29e-11
+Adam              loss < 1e-6 at step  132, 500 steps, step limit        end (0.0000, 0.0000), loss 3.18e-22
+Newton            loss < 1e-6 at step    1,   1 steps, stationary point  end (0.0000, 0.0000), loss 0.00e+00
+L-BFGS            loss < 1e-6 at step    8,  13 steps, stationary point  end (0.0000, 0.0000), loss 7.93e-28
+--- the same valley and start rotated by 45 degrees
+Gradient descent  loss < 1e-6 at step  278, 500 steps, step limit        end (-0.0000, -0.0000), loss 1.29e-11
+Adam              loss < 1e-6 at step  411, 500 steps, step limit        end (-0.0000, -0.0000), loss 2.31e-09
+Newton            loss < 1e-6 at step    1,   1 steps, stationary point  end (0.0000, 0.0000), loss 9.52e-30
+L-BFGS            loss < 1e-6 at step    8,  13 steps, stationary point  end (0.0000, 0.0000), loss 7.93e-28
+--- Rosenbrock, start (-1.2, 1), eta = 0.001, lr = 0.1
+Gradient descent  loss < 1e-6 at step None, 500 steps, step limit        end (-0.5097, 0.2674), loss 2.28e+00
+Adam              loss < 1e-6 at step None, 500 steps, step limit        end (0.8754, 0.7659), loss 1.55e-02
+Newton            loss < 1e-6 at step    5,   7 steps, stationary point  end (1.0000, 1.0000), loss 0.00e+00
+L-BFGS            loss < 1e-6 at step   38,  42 steps, stationary point  end (1.0000, 1.0000), loss 0.00e+00
+--- double well L = (x1^2 - 1)^2/4 + x2^2, start (0.3, 1.2), eta = 0.3, lr = 0.1
+Gradient descent  loss < 1e-6 at step   12,  36 steps, stationary point  end (1.0000, 0.0000), loss 3.25e-26
+Adam              loss < 1e-6 at step  108, 500 steps, step limit        end (1.0000, 0.0000), loss 2.59e-23
+Newton            loss < 1e-6 at step None,   4 steps, stationary point  end (0.0000, 0.0000), loss 2.50e-01
+L-BFGS            loss < 1e-6 at step    7,  10 steps, stationary point  end (1.0000, -0.0000), loss 1.64e-25
+Newton on Rosenbrock, loss by step: 24.200, 4.732, 1411.845, 0.056, 0.313, 0.000
+--- projectile, top of the arc observed, start (15 m/s, 35 deg), eta = 0.1, lr = 0.5
+Gradient descent  loss < 1e-6 at step None, 500 steps, step limit        end (20.0010, 49.9684), loss 6.63e-05
+Adam              loss < 1e-6 at step  141, 500 steps, step limit        end (20.0000, 50.0000), loss 2.08e-21
+Newton            loss < 1e-6 at step    8,  10 steps, stationary point  end (20.0000, 50.0000), loss 0.00e+00
+L-BFGS            loss < 1e-6 at step   12,  16 steps, stationary point  end (20.0000, 50.0000), loss 1.42e-29
+--- projectile, landing distance observed
+Gradient descent  loss < 1e-6 at step   11,  52 steps, stationary point  end (20.4092, 35.5171), loss 5.68e-27
+Adam              loss < 1e-6 at step  136, 500 steps, step limit        end (19.9307, 41.2983), loss 3.09e-21
+Newton            loss < 1e-6 at step    5,   6 steps, Hessian singular  end (19.9416, 41.0651), loss 4.27e-27
+L-BFGS            loss < 1e-6 at step    4,   7 steps, stationary point  end (20.3825, 35.7386), loss 0.00e+00
+first steps on the valley: GD (0.040, -1.760), Adam (0.100, -0.100), Newton (1.600, -1.100)
+L-BFGS bowl at step 1: curvatures [70.42 70.42] (the loss has 1 and 64)
+L-BFGS bowl at step 2: curvatures [62.57 65.43] (the loss has 1 and 64)
+L-BFGS bowl at step 4: curvatures [  2.26 115.72] (the loss has 1 and 64)
+landing distance R* = 40.16 m
+--- scaled simulator, steps to |x| < 1e-3 from (1, 1): alpha 1: GD 1, inverse 11, alpha 3: GD 33, inverse 11, alpha 10: GD 363, inverse 11
+error factor per gradient step at alpha = 10: 0.9802
+--- nonlinear simulator y = (x1, x2^2), L = |y|^2, start (3, 3), gradient (6, 108); after 10 steps
+Gradient descent   end (2.451, 0.962), distance 2.633, loss 6.8639
+Newton             end (0.052, 0.924), distance 0.925, loss 0.7311
+Inverse gradient   end (0.085, 0.591), distance 0.597, loss 0.1289
+Inverse simulator  end (0.085, 0.504), distance 0.511, loss 0.0718
+inverse heat factor at k = 12 with nu T = 0.091: 4.91e+05
+--- derivatives PyTorch returns at x = 0: torch.abs(x) 0, torch.relu(x) 0, torch.clamp(x, min=0) 1, torch.maximum(x, 0) 0.5
+relu(x) - relu(-x) at 0: 0 (the function is x, with derivative 1); sqrt(x^2) at 0: nan
+--- subgradient method on |x| from 1.05, |x| after 1000 steps: fixed 0.1 -> 0.0500, 0.1/sqrt(k) -> 0.0032, 0.1/k -> 0.3015
+fixed step, x_9 to x_13: 0.15, 0.05, -0.05, 0.05, -0.05
+--- lasso, 50 samples, 20 features, lambda = 0.1
+objective: subgradient 0.50880, ISTA 0.50876, scikit-learn 0.50876
+exact zeros: subgradient 0, ISTA 15, scikit-learn 15; subgradient coefficients below 1e-3: 15; max |ISTA - scikit-learn| = 2.7e-13
+--- waveform inversion in 06-ad.ipynb (stored output, Adam, 1000 steps): Initial loss: 3.944778e+00 Final loss: 1.083972e-02
+time loop: 5000 steps of 1000 grid values = 5,000,000 stored values per field

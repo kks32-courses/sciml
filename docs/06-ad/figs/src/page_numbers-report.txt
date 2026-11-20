@@ -1,0 +1,63 @@
+apex true [ '20.0776', '11.9638' ] R true 40.1553
+v          15.00000      1.00000      0.00000    -17.48493
+a          35.00000      0.00000      1.00000     -2.81404
+theta       0.61087      0.00000      0.01745   -161.23266
+s           0.57358      0.00000      0.01430   -282.50825
+c           0.81915      0.00000     -0.01001   -122.36304
+q         225.00000     30.00000      0.00000     -0.58283
+p         129.05470     17.20729      3.21680     -1.01614
+x          10.77629      1.43684      0.13691     -9.30134
+z           3.77282      0.50304      0.18808     -8.19097
+r1         -9.30134      1.43684      0.13691     -9.30134
+r2         -8.19097      0.50304      0.18808     -8.19097
+L          76.80347    -17.48493     -2.81404      1.00000
+
+valley 0 start [ -1.6, 1.1 ] f0 40.0000 eta 0.025 lr 0.1
+  gd      f<1e-6 at   278 | steps  500 step limit         x [ -0, 0 ] f 1.29e-11 max f 40.0
+  adam    f<1e-6 at   132 | steps  500 step limit         x [ 0, 0 ] f 3.18e-22 max f 40.0
+  newton  f<1e-6 at     1 | steps    1 stationary point   x [ 0, 0 ] f 0.00e+0 max f 40.0
+  lbfgs   f<1e-6 at     8 | steps   13 stationary point   x [ 0, 0 ] f 7.93e-28 max f 40.0
+
+valley 45 start [ -1.6, 1.1 ] f0 116.7025 eta 0.025 lr 0.1
+  gd      f<1e-6 at   219 | steps  500 step limit         x [ -0, -0 ] f 6.32e-13 max f 116.7
+  adam    f<1e-6 at  null | steps  500 step limit         x [ -0.0035, -0.0035 ] f 1.20e-5 max f 116.7
+  newton  f<1e-6 at     1 | steps    1 stationary point   x [ 0, 0 ] f 3.28e-28 max f 116.7
+  lbfgs   f<1e-6 at     4 | steps    6 stationary point   x [ 0, 0 ] f 1.39e-38 max f 116.7
+
+rosenbrock start [ -1.2, 1 ] f0 24.2000 eta 0.001 lr 0.1
+  gd      f<1e-6 at  null | steps  500 step limit         x [ -0.5097, 0.2674 ] f 2.28e+0 max f 24.2
+  adam    f<1e-6 at  null | steps  500 step limit         x [ 0.8754, 0.7659 ] f 1.55e-2 max f 24.2
+  newton  f<1e-6 at     5 | steps    7 stationary point   x [ 1, 1 ] f 0.00e+0 max f 1411.8
+    newton f history 24.200 4.732 1411.845 0.056 0.313 0.000 0.000 0.000
+  lbfgs   f<1e-6 at    38 | steps   42 stationary point   x [ 1, 1 ] f 0.00e+0 max f 24.2
+
+doublewell start [ 0.3, 1.2 ] f0 1.6470 eta 0.3 lr 0.1
+  gd      f<1e-6 at    12 | steps   36 stationary point   x [ 1, 0 ] f 3.25e-26 max f 1.6
+  adam    f<1e-6 at   108 | steps  500 step limit         x [ 1, 0 ] f 2.59e-23 max f 1.6
+  newton  f<1e-6 at  null | steps    4 stationary point   x [ 0, 0 ] f 2.50e-1 max f 1.6
+  lbfgs   f<1e-6 at     7 | steps   10 stationary point   x [ 1, -0 ] f 1.64e-25 max f 1.6
+
+projectile apex start [ 15, 35 ] f0 76.8035 eta 0.1 lr 0.5
+  gd      f<1e-6 at  null | steps  500 step limit         x [ 20.001, 49.9684 ] f 6.63e-5 max f 76.8
+  adam    f<1e-6 at   141 | steps  500 step limit         x [ 20, 50 ] f 2.08e-21 max f 76.8
+  newton  f<1e-6 at     8 | steps   10 stationary point   x [ 20, 50 ] f 0.00e+0 max f 702.5
+  lbfgs   f<1e-6 at    12 | steps   16 stationary point   x [ 20, 50 ] f 0.00e+0 max f 76.8
+
+projectile landing start [ 15, 35 ] f0 173.0298 eta 0.1 lr 0.5
+  gd      f<1e-6 at    11 | steps   52 stationary point   x [ 20.4092, 35.5171 ] f 5.68e-27 max f 173.0
+  adam    f<1e-6 at   136 | steps  500 step limit         x [ 19.9307, 41.2983 ] f 3.09e-21 max f 173.0
+  newton  f<1e-6 at     5 | steps    6 Hessian singular   x [ 19.9416, 41.0651 ] f 4.27e-27 max f 437.1
+  lbfgs   f<1e-6 at     4 | steps    7 stationary point   x [ 20.3825, 35.7386 ] f 0.00e+0 max f 173.0
+
+valley 45, rotated start [ '-1.9092', '-0.3536' ] f0 40.0000
+  gd      f<1e-6 at   278 | steps  500 step limit         f 1.29e-11
+  adam    f<1e-6 at   411 | steps  500 step limit         f 2.31e-9
+  newton  f<1e-6 at     1 | steps    1 stationary point   f 9.52e-30
+  lbfgs   f<1e-6 at     8 | steps   13 stationary point   f 7.93e-28
+gd x=-1.6000,1.1000 d=0.0400,-1.7600 | x=-1.5600,-0.6600 d=0.0390,1.0560 | x=-1.5210,0.3960 d=0.0380,-0.6336 | x=-1.4830,-0.2376 d=0.0371,0.3802
+adam x=-1.6000,1.1000 d=0.1000,-0.1000 | x=-1.5000,1.0000 d=0.0998,-0.0996 | x=-1.4002,0.9004 d=0.0994,-0.0990 | x=-1.3008,0.8014 d=0.0988,-0.0980
+newton x=-1.6000,1.1000 d=1.6000,-1.1000 | x=0.0000,0.0000 d=0.0000,0.0000
+lbfgs x=-1.6000,1.1000 d=0.0227,-0.9997 t=1 | x=-1.5773,0.1003 d=0.0269,-0.1008 t=1 | x=-1.5504,-0.0006 d=0.0272,-0.0058 t=1 | x=-1.5231,-0.0064 d=0.6501,-0.0577 t=1
+noise 0.05 | gd: step limit k=500 mean|x| last100=0.4152 | adam: step limit k=500 mean|x| last100=0.4537 | newton: left the plot k=22 mean|x| last100=2.8565 | lbfgs: line search failed k=3 mean|x| last100=1.6781
+noise 0.1 | gd: step limit k=500 mean|x| last100=0.8305 | adam: step limit k=500 mean|x| last100=0.5945 | newton: left the plot k=3 mean|x| last100=3.7570 | lbfgs: line search failed k=3 mean|x| last100=1.7015
+noise 0.2 | gd: step limit k=500 mean|x| last100=1.6610 | adam: step limit k=500 mean|x| last100=0.6433 | newton: left the plot k=2 mean|x| last100=4.3638 | lbfgs: line search failed k=6 mean|x| last100=1.6918
